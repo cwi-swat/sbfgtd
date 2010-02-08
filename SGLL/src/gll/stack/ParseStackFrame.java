@@ -66,4 +66,12 @@ public class ParseStackFrame{
 		}
 		return results;
 	}
+	
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < stackNodes.length; i++){
+			sb.append(stackNodes[i].getMethodName());
+		}
+		return sb.toString();
+	}
 }
