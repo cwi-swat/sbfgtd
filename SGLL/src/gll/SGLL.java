@@ -123,16 +123,6 @@ public class SGLL implements IGLL{
 			System.out.println("Reduce non-terminal:\t"+node.getNonTerminalName()+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 
 			// TODO Construct the result.
-			
-			// Update the stack.
-			int byteToMoveTo = stack.location;
-			for(int i = nrOfPrevFrames - 1; i >= 1; i--){
-				ParseStack newStack = new ParseStack(prevFrames.get(i), byteToMoveTo);
-				tryNonTerminalReduction(newStack);
-			}
-			
-			stack.currentTop = prevFrames.get(0);
-			tryNonTerminalReduction(stack);
 		}
 	}
 	
@@ -170,9 +160,22 @@ public class SGLL implements IGLL{
 				ParseStack stack = lowestStacks.get(i);
 				ParseStackFrame frame = stack.currentTop;
 				
-				stackBeingWorkedOn = stack;
-				frame.nextSymbol();
-				callMethod(frame.getCurrentNode().getMethodName());
+				if(frame.isComplete()){
+					// Update the stack.
+					int byteToMoveTo = stack.location;
+					List<ParseStackFrame> prevFrames = frame.getCurrentNode().getEdges(); // TODO Centralize edge data
+					for(int j = prevFrames.size() - 1; j >= 1; j--){
+						ParseStack newStack = new ParseStack(prevFrames.get(j), byteToMoveTo);
+						tryNonTerminalReduction(newStack);
+					}
+					
+					stack.currentTop = prevFrames.get(0);
+					tryNonTerminalReduction(stack);
+				}else{
+					stackBeingWorkedOn = stack;
+					frame.nextSymbol();
+					callMethod(frame.getCurrentNode().getMethodName());
+				}
 			}
 		}while(stacks.size() > 0);
 		
