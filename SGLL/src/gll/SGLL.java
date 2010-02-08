@@ -87,8 +87,9 @@ public class SGLL implements IGLL{
 		int byteToMoveTo = stackBeingWorkedOn.location + terminalData.length;
 		List<ParseStackFrame> prevFrames = terminalNode.getEdges();
 		for(int i = prevFrames.size() - 1; i >= 1; i--){
-			ParseStack stack = new ParseStack(prevFrames.get(i), byteToMoveTo);
-			tryNonTerminalReduction(stack);
+			ParseStack newStack = new ParseStack(prevFrames.get(i), byteToMoveTo);
+			stacks.add(newStack);
+			tryNonTerminalReduction(newStack);
 		}
 		
 		stackBeingWorkedOn.currentTop = prevFrames.get(0);
@@ -166,6 +167,7 @@ public class SGLL implements IGLL{
 					List<ParseStackFrame> prevFrames = frame.getCurrentNode().getEdges(); // TODO Centralize edge data
 					for(int j = prevFrames.size() - 1; j >= 1; j--){
 						ParseStack newStack = new ParseStack(prevFrames.get(j), byteToMoveTo);
+						stacks.add(newStack);
 						tryNonTerminalReduction(newStack);
 					}
 					
