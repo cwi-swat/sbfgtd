@@ -1,10 +1,10 @@
 package gll.stack;
 
 public class ParseStack{
-	public ParseStackNode currentTop;
+	public ParseStackFrame currentTop;
 	public int location;
 	
-	public ParseStack(ParseStackNode root){
+	public ParseStack(ParseStackFrame root){
 		super();
 		
 		currentTop = root;
@@ -18,10 +18,10 @@ public class ParseStack{
 		this.location = stack.location;
 	}
 	
-	public ParseStack(ParseStackNode node, int location){
+	public ParseStack(ParseStackFrame frame, int location){
 		super();
 		
-		this.currentTop = node;
+		this.currentTop = frame;
 		this.location = location;
 	}
 }

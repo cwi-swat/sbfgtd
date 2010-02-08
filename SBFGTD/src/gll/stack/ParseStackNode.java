@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ParseStackNode{
-	public List<ParseStackNode> edges;
+	public List<ParseStackFrame> edges;
 	
 	public ParseStackNode(){
 		super();
 		
-		edges = new ArrayList<ParseStackNode>();
+		edges = new ArrayList<ParseStackFrame>();
 	}
 	
-	public void addEdge(ParseStackNode edge){
+	public void addEdge(ParseStackFrame edge){
 		edges.add(edge);
 	}
 	
