@@ -34,6 +34,10 @@ public class ParseStackFrame{
 		return stackNodes[index];
 	}
 	
+	public boolean isComplete(){
+		return ((stackNodes.length - 1) == index);
+	}
+	
 	public void addResult(INode result){
 		List<INode> results = parseResults[index];
 		if(results == null){
