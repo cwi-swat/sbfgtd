@@ -10,16 +10,20 @@ public class ParseStackFrame{
 	public final ParseStackNode[] stackNodes;
 	public final List<INode>[] parseResults;
 	
+	public final int frameNumber;
+	
 	// Updatable
 	public int index;
 	
-	public ParseStackFrame(ParseStackNode... stackNodes){
+	public ParseStackFrame(int frameNumber, ParseStackNode... stackNodes){
 		super();
 		
 		this.stackNodes = stackNodes;
 		this.parseResults = (List<INode>[]) new List[stackNodes.length];
 		
-		index = 0;
+		this.frameNumber = frameNumber;
+		
+		index = -1;
 	}
 	
 	public void nextSymbol(){

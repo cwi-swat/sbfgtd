@@ -8,13 +8,16 @@ import gll.stack.ParseStackNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class SGLL implements IGLL{
 	protected final byte[] input;
 	
 	protected final ParseStackFrame root;
-	protected List<ParseStack> stacks;
+	protected Set<ParseStack> stacks;
 	
 	// Updated temporary stuff.
 	protected ParseStack stackBeingWorkedOn;
@@ -24,9 +27,9 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		root = new ParseStackFrame(new NonTerminalParseStackNode(start));
+		root = new ParseStackFrame(0, new NonTerminalParseStackNode(start));
 			
-		stacks = new ArrayList<ParseStack>();
+		stacks = new HashSet<ParseStack>();
 		stacks.add(new ParseStack(root));
 	}
 	
@@ -56,13 +59,11 @@ public class SGLL implements IGLL{
 	// TODO Add sharing.
 	private void updateStack(ParseStack parseStack, ParseStackNode... symbolsToExpect){
 		ParseStackFrame prev = parseStack.currentTop;
-		ParseStackFrame current = new ParseStackFrame(symbolsToExpect);
+		ParseStackFrame current = new ParseStackFrame(prev.frameNumber + 1, symbolsToExpect);
 		for(int i = symbolsToExpect.length - 1; i >= 0; i--){
 			symbolsToExpect[i].addEdge(prev);
 		}
 		parseStack.currentTop = current;
-		
-		stacks.add(parseStack);
 	}
 	
 	public void reduceTerminal(){
@@ -73,6 +74,7 @@ public class SGLL implements IGLL{
 		if(!terminalMatchesAtPosition(terminalData)){
 			System.out.println("Failed to reduce terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 			// This stack dies of, up to the last split point.
+			stacks.remove(stackBeingWorkedOn);
 			return;
 		}
 		
@@ -81,29 +83,24 @@ public class SGLL implements IGLL{
 
 		// TODO Construct the result.
 		
-		// Update the stack.
+		// Try to reduce the non terminals on top of the stack (if possible).
 		int byteToMoveTo = stackBeingWorkedOn.location + terminalData.length;
-		List<ParseStackFrame> prevFrames = terminalNode.edges;
+		List<ParseStackFrame> prevFrames = terminalNode.getEdges();
 		for(int i = prevFrames.size() - 1; i >= 1; i--){
 			ParseStack stack = new ParseStack(prevFrames.get(i), byteToMoveTo);
-			stacks.add(stack);
 			tryNonTerminalReduction(stack);
 		}
 		
 		stackBeingWorkedOn.currentTop = prevFrames.get(0);
 		stackBeingWorkedOn.location = byteToMoveTo;
-		stacks.add(stackBeingWorkedOn);
 		tryNonTerminalReduction(stackBeingWorkedOn);
-		
-		// Try to reduce the non terminals on top of the stack (if possible).
-		
 	}
 	
-	private boolean tryNonTerminalReduction(ParseStack stack){
+	private void tryNonTerminalReduction(ParseStack stack){
 		ParseStackFrame frame = stack.currentTop;
 		ParseStackNode node = frame.getCurrentNode();
 		if(node.isNonTerminal()){
-			List<ParseStackFrame> prevFrames = node.edges;
+			List<ParseStackFrame> prevFrames = node.getEdges();
 			int nrOfPrevFrames = prevFrames.size();
 			
 			if(nrOfPrevFrames == 0){ // Root reached.
@@ -117,7 +114,9 @@ public class SGLL implements IGLL{
 					System.out.println("Failed to reduce non-terminal:\t"+node.getNonTerminalName()+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 				}
 				
-				return false;
+				stacks.remove(stack);
+				
+				return;
 			}
 			
 			// Temp
@@ -129,18 +128,12 @@ public class SGLL implements IGLL{
 			int byteToMoveTo = stack.location;
 			for(int i = nrOfPrevFrames - 1; i >= 1; i--){
 				ParseStack newStack = new ParseStack(prevFrames.get(i), byteToMoveTo);
-				if(!tryNonTerminalReduction(newStack)){
-					stacks.add(newStack);
-				}
+				tryNonTerminalReduction(newStack);
 			}
 			
 			stack.currentTop = prevFrames.get(0);
-			if(!tryNonTerminalReduction(stack)){
-				stacks.add(stack);
-			}
-			return true;
+			tryNonTerminalReduction(stack);
 		}
-		return false;
 	}
 	
 	private void callMethod(String methodName){
@@ -154,21 +147,34 @@ public class SGLL implements IGLL{
 	}
 	
 	public INode parse(){
-		List<ParseStack> currentStacks = stacks;
-		stacks = new ArrayList<ParseStack>();
-		
 		do{
-			for(int i = currentStacks.size() - 1; i >= 0; i--){
-				ParseStack stack = currentStacks.get(i);
+			int index = 0;
+			List<ParseStack> lowestStacks = new ArrayList<ParseStack>();
+			
+			// Clone
+			Iterator<ParseStack> stacksIterator = stacks.iterator();
+			while(stacksIterator.hasNext()){
+				ParseStack stack = stacksIterator.next();
+				ParseStackFrame pf = stack.currentTop;
+				if(pf.frameNumber > index){
+					index = pf.frameNumber;
+					lowestStacks = new ArrayList<ParseStack>();
+					lowestStacks.add(stack);
+				}else if(pf.frameNumber == index){
+					lowestStacks.add(stack);
+				}
+			}
+			
+			// Parse
+			for(int i = lowestStacks.size() - 1; i >= 0; i--){
+				ParseStack stack = lowestStacks.get(i);
 				ParseStackFrame frame = stack.currentTop;
 				
 				stackBeingWorkedOn = stack;
+				frame.nextSymbol();
 				callMethod(frame.getCurrentNode().getMethodName());
 			}
-			
-			currentStacks = stacks;
-			stacks = new ArrayList<ParseStack>();
-		}while(currentStacks.size() > 0);
+		}while(stacks.size() > 0);
 		
 		// Temp
 		return null;
