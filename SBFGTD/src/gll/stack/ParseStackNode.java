@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ParseStackNode{
-	public List<ParseStackFrame> edges;
+	private final List<ParseStackFrame> edges;
 	
 	public ParseStackNode(){
 		super();
@@ -18,6 +18,10 @@ public abstract class ParseStackNode{
 	
 	public int numberOfEdges(){
 		return edges.size();
+	}
+	
+	public List<ParseStackFrame> getEdges(){
+		return edges;
 	}
 	
 	public boolean isTerminal(){
