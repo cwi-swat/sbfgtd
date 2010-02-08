@@ -9,8 +9,12 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 		this.nonTerminal = nonTerminal;
 	}
 	
-	public String getMethodName(){
+	public String getName(){
 		return nonTerminal;
+	}
+	
+	public String getMethodName(){
+		return getName();
 	}
 	
 	public byte[] getTerminalData(){

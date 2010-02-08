@@ -32,6 +32,8 @@ public abstract class ParseStackNode{
 		return (this instanceof NonTerminalParseStackNode);
 	}
 	
+	public abstract String getName();
+	
 	public abstract String getMethodName();
 	
 	public abstract byte[] getTerminalData();

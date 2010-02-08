@@ -13,14 +13,16 @@ public class NonTerminalNode implements INode{
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-
+		
+		int nrOfChildren = children.length;
+		
 		sb.append(name);
 		sb.append('(');
-		for(int i = children.length - 1; i >= 2; i--){
-			sb.append(children[i]);
-			sb.append(',');
-		}
 		sb.append(children[0]);
+		for(int i = 1; i < nrOfChildren; i++){
+			sb.append(',');
+			sb.append(children[i]);
+		}
 		sb.append(')');
 		
 		return sb.toString();

@@ -1,15 +1,15 @@
 package gll.nodes;
 
 public class TerminalNode implements INode{
-	public final String content;
+	public final byte[] content;
 	
-	public TerminalNode(String content){
+	public TerminalNode(byte[] content){
 		super();
 		
 		this.content = content;
 	}
 	
 	public String toString(){
-		return content;
+		return new String(content);
 	}
 }

@@ -1,6 +1,8 @@
 package gll;
 
 import gll.nodes.INode;
+import gll.nodes.NonTerminalNode;
+import gll.nodes.TerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStack;
 import gll.stack.ParseStackFrame;
@@ -72,49 +74,58 @@ public class SGLL implements IGLL{
 		byte[] terminalData = terminalNode.getTerminalData();
 		
 		if(!terminalMatchesAtPosition(terminalData)){
-			System.out.println("Failed to reduce terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+			System.out.println("Failed to reduce:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 			// This stack dies of, up to the last split point.
 			stacks.remove(stackBeingWorkedOn);
 			return;
 		}
 		
-		// TODO Construct the result.
+		// Construct the result.
+		frame.addResult(new TerminalNode(terminalData));
 		
 		// Try to reduce the non terminals on top of the stack (if possible).
 		stackBeingWorkedOn.location += terminalData.length;
 	}
 	
-	private void tryNonTerminalReduction(ParseStack stack, ParseStackFrame frame){
+	private void reduceFrame(ParseStack stack, ParseStackFrame frame){
 		if(frame.frameNumber == 0){ // Root reached.
-			if(stack.location == input.length){
-				// Temp
-				System.out.println("Reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
-				
-				// TODO Construct the result.
-			}else{
+			stacks.remove(stack); // Remove the stack from the todo-list.
+			
+			if(stack.location != input.length){
 				// Temp
 				System.out.println("Failed to reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+				
+				return;
 			}
 			
-			stacks.remove(stack);
+			// Temp
+			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 			
-			return; // The end.
+			// Return the result.
+			return;
 		}
 		
 		// Temp
 		System.out.println("Reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 
 		// TODO Construct the result.
+		INode[] results = frame.getResults();
 		
 		// Update the stack.
 		int byteToMoveTo = stack.location;
 		List<ParseStackFrame> prevFrames = frame.getCurrentNode().getEdges(); // TODO Centralize edge data
 		for(int j = prevFrames.size() - 1; j >= 1; j--){
-			ParseStack newStack = new ParseStack(prevFrames.get(j), byteToMoveTo);
+			ParseStackFrame prevFrame = prevFrames.get(j);
+			ParseStackNode node = prevFrame.getCurrentNode();
+			prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
+			ParseStack newStack = new ParseStack(prevFrame, byteToMoveTo);
 			stacks.add(newStack);
 		}
 		
-		stack.currentTop = prevFrames.get(0);
+		ParseStackFrame prevFrame = prevFrames.get(0);
+		ParseStackNode node = prevFrame.getCurrentNode();
+		prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
+		stack.currentTop = prevFrame;
 	}
 	
 	private void callMethod(String methodName){
@@ -152,7 +163,7 @@ public class SGLL implements IGLL{
 				ParseStackFrame frame = stack.currentTop;
 				
 				if(frame.isComplete()){
-					tryNonTerminalReduction(stack, frame);
+					reduceFrame(stack, frame);
 				}else{
 					stackBeingWorkedOn = stack;
 					frame.nextSymbol();
@@ -162,6 +173,6 @@ public class SGLL implements IGLL{
 		}while(stacks.size() > 0);
 		
 		// Temp
-		return null;
+		return new NonTerminalNode("<START>", root.getResults());
 	}
 }

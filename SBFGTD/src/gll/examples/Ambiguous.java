@@ -1,6 +1,7 @@
 package gll.examples;
 
 import gll.SGLL;
+import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
@@ -32,8 +33,8 @@ public class Ambiguous extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous a = new Ambiguous("S", "a".getBytes());
-		/*INode result = */a.parse();
+		INode result = a.parse();
 		
-		//System.out.println(result);
+		System.out.println(result);
 	}
 }
