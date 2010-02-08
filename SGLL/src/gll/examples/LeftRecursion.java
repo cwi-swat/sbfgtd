@@ -1,6 +1,7 @@
 package gll.examples;
 
 import gll.SGLL;
+import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
@@ -34,6 +35,8 @@ public class LeftRecursion extends SGLL{
 	
 	public static void main(String[] args){
 		LeftRecursion lr = new LeftRecursion("S", "aa".getBytes());
-		lr.parse();
+		INode result = lr.parse();
+		
+		System.out.println(result);
 	}
 }

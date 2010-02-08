@@ -9,8 +9,12 @@ public class TerminalParseStackNode extends ParseStackNode{
 		this.terminal = terminal;
 	}
 	
-	public String getMethodName(){
+	public String getName(){
 		return new String(terminal);
+	}
+	
+	public String getMethodName(){
+		return getName();
 	}
 	
 	public byte[] getTerminalData(){

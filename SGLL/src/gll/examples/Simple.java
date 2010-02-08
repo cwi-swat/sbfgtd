@@ -1,6 +1,7 @@
 package gll.examples;
 
 import gll.SGLL;
+import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
@@ -35,6 +36,8 @@ public class Simple extends SGLL{
 	
 	public static void main(String[] args){
 		Simple s = new Simple("S", "aab".getBytes());
-		s.parse();
+		INode result = s.parse();
+		
+		System.out.println(result);
 	}
 }
