@@ -52,7 +52,7 @@ public class SGLL implements IGLL{
 	public void expectAlternative(ParseStackNode... symbolsToExpect){
 		ParseStack parseStack = new ParseStack(stackBeingWorkedOn);
 		stacks.add(parseStack);
-		//stacks.remove(stackBeingWorkedOn); // TODO Think of a better way to do this.
+		stacks.remove(stackBeingWorkedOn); // TODO Think of a better way to do this.
 		updateStack(parseStack, symbolsToExpect);
 	}
 	
@@ -97,20 +97,20 @@ public class SGLL implements IGLL{
 			
 			if(stack.location != input.length){
 				// Temp
-				System.out.println("Failed to reduce(2):\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+				System.out.println("Failed to reduce(2):\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 				
 				return;
 			}
 			
 			// Temp
-			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 			
 			// Return the result.
 			return;
 		}
 		
 		// Temp
-		System.out.println("Reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+		System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 
 		// TODO Construct the result.
 		INode[] results = frame.getResults();
@@ -166,10 +166,11 @@ public class SGLL implements IGLL{
 				ParseStack stack = lowestStacks.get(i);
 				ParseStackFrame frame = stack.currentTop;
 				
+				stackBeingWorkedOn = stack;
+				
 				if(frame.isComplete()){
 					reduceFrame(stack, frame);
 				}else{
-					stackBeingWorkedOn = stack;
 					frame.nextSymbol();
 					callMethod(frame.getCurrentNode().getMethodName());
 				}
