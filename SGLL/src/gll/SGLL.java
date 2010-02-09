@@ -51,6 +51,8 @@ public class SGLL implements IGLL{
 	
 	public void expectAlternative(ParseStackNode... symbolsToExpect){
 		ParseStack parseStack = new ParseStack(stackBeingWorkedOn);
+		stacks.add(parseStack);
+		//stacks.remove(stackBeingWorkedOn); // TODO Think of a better way to do this.
 		updateStack(parseStack, symbolsToExpect);
 	}
 	
@@ -74,11 +76,13 @@ public class SGLL implements IGLL{
 		byte[] terminalData = terminalNode.getTerminalData();
 		
 		if(!terminalMatchesAtPosition(terminalData)){
-			System.out.println("Failed to reduce:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+			System.out.println("Failed to reduce(1):\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 			// This stack dies of, up to the last split point.
 			stacks.remove(stackBeingWorkedOn);
 			return;
 		}
+		
+		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
 		
 		// Construct the result.
 		frame.addResult(new TerminalNode(terminalData));
@@ -93,7 +97,7 @@ public class SGLL implements IGLL{
 			
 			if(stack.location != input.length){
 				// Temp
-				System.out.println("Failed to reduce:\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
+				System.out.println("Failed to reduce(2):\t"+frame+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 				
 				return;
 			}
@@ -173,6 +177,6 @@ public class SGLL implements IGLL{
 		}while(stacks.size() > 0);
 		
 		// Temp
-		return new NonTerminalNode("<START>", root.getResults());
+		return new NonTerminalNode("parsetree", root.getResults());
 	}
 }
