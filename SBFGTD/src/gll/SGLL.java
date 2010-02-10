@@ -83,7 +83,7 @@ public class SGLL implements IGLL{
 			return;
 		}
 		
-		System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
+		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
 		
 		// Construct the result.
 		frame = new ParseStackFrame(frame);
