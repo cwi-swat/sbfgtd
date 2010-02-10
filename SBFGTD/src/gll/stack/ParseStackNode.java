@@ -1,27 +1,9 @@
 package gll.stack;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class ParseStackNode{
-	private final List<ParseStackFrame> edges;
 	
 	public ParseStackNode(){
 		super();
-		
-		edges = new ArrayList<ParseStackFrame>();
-	}
-	
-	public void addEdge(ParseStackFrame edge){
-		edges.add(edge);
-	}
-	
-	public int numberOfEdges(){
-		return edges.size();
-	}
-	
-	public List<ParseStackFrame> getEdges(){
-		return edges;
 	}
 	
 	public boolean isTerminal(){
