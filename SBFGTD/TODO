@@ -1,0 +1,14 @@
+-Fix recognition issues.		*
+-Prune 'dead'/incomplete stacks		*
+-Fix GSS-result issues	*
+-Discard all results of 'dead'/incomplete stacks
+-Synchronize levels
+-Merge stacks
+-Add epsilon support
+-Fix left recursion
+-Look-ahead
+-Output results
+-Add filters
+-Optimize
+-Add code generation
+-Add AST generation
