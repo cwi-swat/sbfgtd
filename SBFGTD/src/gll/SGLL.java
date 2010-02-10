@@ -151,7 +151,7 @@ public class SGLL implements IGLL{
 	public INode parse(){
 		do{
 			int leastProgressedLocation = Integer.MAX_VALUE;
-			List<ParseStack> highestStacks = new ArrayList<ParseStack>();
+			List<ParseStack> leastProgressedStacks = new ArrayList<ParseStack>();
 			
 			// Clone
 			Iterator<ParseStack> stacksIterator = stacks.iterator();
@@ -160,16 +160,16 @@ public class SGLL implements IGLL{
 				int location = stack.location;
 				if(location < leastProgressedLocation){
 					leastProgressedLocation = location;
-					highestStacks = new ArrayList<ParseStack>();
-					highestStacks.add(stack);
+					leastProgressedStacks = new ArrayList<ParseStack>();
+					leastProgressedStacks.add(stack);
 				}else if(location == leastProgressedLocation){
-					highestStacks.add(stack);
+					leastProgressedStacks.add(stack);
 				}
 			}
 			
 			// Parse
-			for(int i = highestStacks.size() - 1; i >= 0; i--){
-				ParseStack stack = highestStacks.get(i);
+			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){
+				ParseStack stack = leastProgressedStacks.get(i);
 				ParseStackFrame frame = stack.currentTop;
 				
 				stackBeingWorkedOn = stack;
