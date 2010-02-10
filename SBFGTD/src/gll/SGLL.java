@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 public class SGLL implements IGLL{
-	protected final byte[] input;
+	private final byte[] input;
 	
-	protected Set<ParseStack> stacks;
+	private Set<ParseStack> stacks;
 	
 	private final List<INode> results;
 	
 	// Updated temporary stuff.
-	protected ParseStack stackBeingWorkedOn;
+	private ParseStack stackBeingWorkedOn;
 	
 	public SGLL(String start, byte[] input){
 		super();

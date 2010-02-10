@@ -1,7 +1,7 @@
 package gll.nodes;
 
 public class Alternative implements INode{
-	public final INode[] alternatives;
+	private final INode[] alternatives;
 	
 	public Alternative(INode[] alternatives){
 		super();

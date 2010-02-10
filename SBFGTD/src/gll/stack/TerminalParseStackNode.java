@@ -1,7 +1,7 @@
 package gll.stack;
 
 public class TerminalParseStackNode extends ParseStackNode{
-	public final byte[] terminal;
+	private final byte[] terminal;
 	
 	public TerminalParseStackNode(byte[] terminal){
 		super();
