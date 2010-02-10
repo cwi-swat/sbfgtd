@@ -30,7 +30,7 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		ParseStackFrame root = new ParseStackFrame(new NonTerminalParseStackNode(start));
+		ParseStackFrame root = createParseStackFrame(new NonTerminalParseStackNode(start));
 			
 		stacks = new HashSet<ParseStack>();
 		stacks.add(new ParseStack(root));
@@ -38,7 +38,7 @@ public class SGLL implements IGLL{
 		results = new ArrayList<INode>();
 	}
 	
-	public boolean terminalMatchesAtPosition(byte[] terminalData){
+	private boolean terminalMatchesAtPosition(byte[] terminalData){
 		int location = stackBeingWorkedOn.getCurrentLocation();
 		int size = terminalData.length;
 		
@@ -65,7 +65,7 @@ public class SGLL implements IGLL{
 	
 	// TODO Add sharing.
 	private void updateStack(ParseStack parseStack, ParseStackNode... symbolsToExpect){
-		ParseStackFrame current = new ParseStackFrame(symbolsToExpect);
+		ParseStackFrame current = createParseStackFrame(symbolsToExpect);
 		current.addEdge(parseStack.getTop());
 		parseStack.setTop(current);
 	}
@@ -85,7 +85,6 @@ public class SGLL implements IGLL{
 		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
 		
 		// Construct the result.
-		frame = new ParseStackFrame(frame);
 		frame.addResult(new TerminalNode(terminalData));
 		stackBeingWorkedOn.setTop(frame);
 		
@@ -126,17 +125,28 @@ public class SGLL implements IGLL{
 		for(int j = numberOfPrevFrames - 1; j >= 1; j--){
 			ParseStackFrame prevFrame = prevFrames.get(j);
 			ParseStackNode node = prevFrame.getCurrentNode();
-			prevFrame = new ParseStackFrame(prevFrame);
-			prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
+			prevFrame = createParseStackFrame(prevFrame, node.getName(), results);
 			ParseStack newStack = new ParseStack(prevFrame, byteToMoveTo);
 			stacks.add(newStack);
 		}
 		
 		ParseStackFrame prevFrame = prevFrames.get(0);
 		ParseStackNode node = prevFrame.getCurrentNode();
-		prevFrame = new ParseStackFrame(prevFrame);
-		prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
+		prevFrame = createParseStackFrame(prevFrame, node.getName(), results);
 		stack.setTop(prevFrame);
+	}
+	
+	private ParseStackFrame createParseStackFrame(ParseStackNode... symbolsToExpect){
+		// TODO Add sharing.
+		return new ParseStackFrame(symbolsToExpect);
+	}
+	
+	private ParseStackFrame createParseStackFrame(ParseStackFrame frameToClone, String nodeName, INode[] results){
+		// TODO Add sharing.
+		ParseStackFrame clonedStackFrame = new ParseStackFrame(frameToClone);
+		clonedStackFrame.addResult(new NonTerminalNode(nodeName, results)); // Always a non-terminal
+		
+		return clonedStackFrame;
 	}
 	
 	private void callMethod(String methodName){
