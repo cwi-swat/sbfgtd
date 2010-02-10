@@ -167,7 +167,7 @@ public class SGLL implements IGLL{
 				stackBeingWorkedOn = stack;
 				
 				if(frame.isComplete()){
-					reduceFrame(stack, frame);
+					reduceFrame(stack, new ParseStackFrame(frame)); // TODO Add sharing.
 				}else{
 					frame.nextSymbol();
 					callMethod(frame.getCurrentNode().getMethodName());

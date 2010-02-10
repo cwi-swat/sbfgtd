@@ -30,12 +30,31 @@ public class ParseStackFrame{
 		index = -1;
 	}
 	
-	public void addEdge(ParseStackFrame edge){
-		edges.add(edge);
+	public ParseStackFrame(ParseStackFrame stackFrame){
+		super();
+		
+		edges = stackFrame.edges;
+		
+		stackNodes = stackFrame.stackNodes;
+		
+		int nrOfStackNodes = stackNodes.length;
+		parseResults = (List<INode>[]) new List[nrOfStackNodes];
+		for(int i = nrOfStackNodes - 1; i >= 0; i--){
+			List<INode> result = stackFrame.parseResults[i];
+			if(result == null) break;
+			
+			List<INode> newResult = new ArrayList<INode>();
+			for(int j = result.size() - 1; j >= 0; j--){
+				newResult.add(result.get(j));
+			}
+			parseResults[i] = newResult;
+		}
+		
+		frameNumber = stackFrame.frameNumber;
 	}
 	
-	public int numberOfEdges(){
-		return edges.size();
+	public void addEdge(ParseStackFrame edge){
+		edges.add(edge);
 	}
 	
 	public List<ParseStackFrame> getEdges(){
