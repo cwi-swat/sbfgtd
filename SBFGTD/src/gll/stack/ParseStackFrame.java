@@ -39,7 +39,7 @@ public class ParseStackFrame{
 		
 		int nrOfStackNodes = stackNodes.length;
 		parseResults = (List<INode>[]) new List[nrOfStackNodes];
-		for(int i = nrOfStackNodes - 1; i >= 0; i--){
+		for(int i = 0; i < nrOfStackNodes; i++){
 			List<INode> result = stackFrame.parseResults[i];
 			if(result == null) break;
 			
@@ -51,6 +51,8 @@ public class ParseStackFrame{
 		}
 		
 		frameNumber = stackFrame.frameNumber;
+		
+		index = stackFrame.index;
 	}
 	
 	public void addEdge(ParseStackFrame edge){
