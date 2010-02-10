@@ -18,8 +18,9 @@ import java.util.Set;
 public class SGLL implements IGLL{
 	protected final byte[] input;
 	
-	protected ParseStackFrame root;
 	protected Set<ParseStack> stacks;
+	
+	private final List<INode> results;
 	
 	// Updated temporary stuff.
 	protected ParseStack stackBeingWorkedOn;
@@ -29,10 +30,12 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		root = new ParseStackFrame(0, new NonTerminalParseStackNode(start));
+		ParseStackFrame root = new ParseStackFrame(0, new NonTerminalParseStackNode(start));
 			
 		stacks = new HashSet<ParseStack>();
 		stacks.add(new ParseStack(root));
+		
+		results = new ArrayList<INode>();
 	}
 	
 	public boolean terminalMatchesAtPosition(byte[] terminalData){
@@ -105,7 +108,7 @@ public class SGLL implements IGLL{
 			// Temp
 			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 			
-			root = frame;
+			results.add(frame.getResults()[0]); // Temp
 			
 			return;
 		}
@@ -172,7 +175,7 @@ public class SGLL implements IGLL{
 				stackBeingWorkedOn = stack;
 				
 				if(frame.isComplete()){
-					reduceFrame(stack, frame); // TODO Add sharing.
+					reduceFrame(stack, frame);
 				}else{
 					frame.nextSymbol();
 					callMethod(frame.getCurrentNode().getMethodName());
@@ -180,6 +183,14 @@ public class SGLL implements IGLL{
 			}
 		}while(stacks.size() > 0);
 		
-		return new NonTerminalNode("parsetree", root.getResults());
+		// Temp
+		// Construct the result
+		int nrOfResults = results.size();
+		INode[] allResults = new INode[nrOfResults];
+		for(int i = nrOfResults - 1; i >= 0; i--){
+			allResults[i] = results.get(i);
+		}
+		
+		return new NonTerminalNode("parsetree", allResults);
 	}
 }
