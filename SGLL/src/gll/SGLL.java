@@ -63,7 +63,6 @@ public class SGLL implements IGLL{
 		updateStack(stackBeingWorkedOn, symbolsToExpect);
 	}
 	
-	// TODO Add sharing.
 	private void updateStack(ParseStack parseStack, ParseStackNode... symbolsToExpect){
 		ParseStackFrame current = createParseStackFrame(symbolsToExpect);
 		current.addEdge(parseStack.getTop());
@@ -82,7 +81,7 @@ public class SGLL implements IGLL{
 			return;
 		}
 		
-		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
+		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 		
 		// Construct the result.
 		frame.addResult(new TerminalNode(terminalData));
@@ -100,13 +99,11 @@ public class SGLL implements IGLL{
 			stacks.remove(stack); // Remove the stack from the todo-list.
 			
 			if(stack.getCurrentLocation() != input.length){
-				// Temp
 				System.out.println("Failed to reduce(2):\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 				
 				return;
 			}
 			
-			// Temp
 			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 			
 			results.add(frame.getResults()[0]); // Temp
@@ -114,10 +111,9 @@ public class SGLL implements IGLL{
 			return;
 		}
 		
-		// Temp
 		System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 
-		// TODO Construct the result.
+		// Construct the result.
 		INode[] results = frame.getResults();
 		
 		// Update the stack.
