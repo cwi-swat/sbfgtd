@@ -18,7 +18,7 @@ import java.util.Set;
 public class SGLL implements IGLL{
 	protected final byte[] input;
 	
-	protected final ParseStackFrame root;
+	protected ParseStackFrame root;
 	protected Set<ParseStack> stacks;
 	
 	// Updated temporary stuff.
@@ -80,10 +80,12 @@ public class SGLL implements IGLL{
 			return;
 		}
 		
-		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
+		System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode());
 		
 		// Construct the result.
+		frame = new ParseStackFrame(frame);
 		frame.addResult(new TerminalNode(terminalData));
+		stackBeingWorkedOn.currentTop = frame;
 		
 		// Try to reduce the non terminals on top of the stack (if possible).
 		stackBeingWorkedOn.location += terminalData.length;
@@ -103,7 +105,8 @@ public class SGLL implements IGLL{
 			// Temp
 			System.out.println("Reduce:\t"+frame+"\tAt stack: "+stack.hashCode()); // Temp
 			
-			// Return the result.
+			root = frame;
+			
 			return;
 		}
 		
@@ -119,6 +122,7 @@ public class SGLL implements IGLL{
 		for(int j = prevFrames.size() - 1; j >= 1; j--){
 			ParseStackFrame prevFrame = prevFrames.get(j);
 			ParseStackNode node = prevFrame.getCurrentNode();
+			prevFrame = new ParseStackFrame(prevFrame);
 			prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
 			ParseStack newStack = new ParseStack(prevFrame, byteToMoveTo);
 			stacks.add(newStack);
@@ -126,6 +130,7 @@ public class SGLL implements IGLL{
 		
 		ParseStackFrame prevFrame = prevFrames.get(0);
 		ParseStackNode node = prevFrame.getCurrentNode();
+		prevFrame = new ParseStackFrame(prevFrame);
 		prevFrame.addResult(new NonTerminalNode(node.getName(), results)); // Always a non-terminal
 		stack.currentTop = prevFrame;
 	}
@@ -167,7 +172,7 @@ public class SGLL implements IGLL{
 				stackBeingWorkedOn = stack;
 				
 				if(frame.isComplete()){
-					reduceFrame(stack, new ParseStackFrame(frame)); // TODO Add sharing.
+					reduceFrame(stack, frame); // TODO Add sharing.
 				}else{
 					frame.nextSymbol();
 					callMethod(frame.getCurrentNode().getMethodName());
