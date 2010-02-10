@@ -1,8 +1,8 @@
 package gll.nodes;
 
 public class NonTerminalNode implements INode{
-	public final String name;
-	public final INode[] children;
+	private final String name;
+	private final INode[] children;
 	
 	public NonTerminalNode(String name, INode[] children){
 		super();

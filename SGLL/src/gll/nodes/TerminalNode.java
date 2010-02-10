@@ -1,7 +1,7 @@
 package gll.nodes;
 
 public class TerminalNode implements INode{
-	public final byte[] content;
+	private final byte[] content;
 	
 	public TerminalNode(byte[] content){
 		super();

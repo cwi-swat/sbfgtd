@@ -1,7 +1,7 @@
 package gll.stack;
 
 public class NonTerminalParseStackNode extends ParseStackNode{
-	public final String nonTerminal;
+	private final String nonTerminal;
 	
 	public NonTerminalParseStackNode(String nonTerminal){
 		super();

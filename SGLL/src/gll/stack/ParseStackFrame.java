@@ -9,13 +9,13 @@ import java.util.List;
 public class ParseStackFrame{
 	private final List<ParseStackFrame> edges;
 	
-	public final ParseStackNode[] stackNodes;
-	public final List<INode>[] parseResults;
+	private final ParseStackNode[] stackNodes;
+	private final List<INode>[] parseResults;
 	
 	public final int frameNumber;
 	
 	// Updatable
-	public int index;
+	private int index;
 	
 	public ParseStackFrame(int frameNumber, ParseStackNode... stackNodes){
 		super();
