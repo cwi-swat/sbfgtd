@@ -177,7 +177,6 @@ public class SGLL implements IGLL{
 			}
 		}while(stacks.size() > 0);
 		
-		// Temp
 		return new NonTerminalNode("parsetree", root.getResults());
 	}
 }
