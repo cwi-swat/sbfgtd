@@ -64,9 +64,7 @@ public class SGLL implements IGLL{
 	private void updateStack(ParseStack parseStack, ParseStackNode... symbolsToExpect){
 		ParseStackFrame prev = parseStack.currentTop;
 		ParseStackFrame current = new ParseStackFrame(prev.frameNumber + 1, symbolsToExpect);
-		for(int i = symbolsToExpect.length - 1; i >= 0; i--){
-			symbolsToExpect[i].addEdge(prev);
-		}
+		current.addEdge(prev);
 		parseStack.currentTop = current;
 	}
 	
@@ -117,7 +115,7 @@ public class SGLL implements IGLL{
 		
 		// Update the stack.
 		int byteToMoveTo = stack.location;
-		List<ParseStackFrame> prevFrames = frame.getCurrentNode().getEdges(); // TODO Centralize edge data
+		List<ParseStackFrame> prevFrames = frame.getEdges(); // TODO Centralize edge data
 		for(int j = prevFrames.size() - 1; j >= 1; j--){
 			ParseStackFrame prevFrame = prevFrames.get(j);
 			ParseStackNode node = prevFrame.getCurrentNode();

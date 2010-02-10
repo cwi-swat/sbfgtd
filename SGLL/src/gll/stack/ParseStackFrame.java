@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParseStackFrame{
+	private final List<ParseStackFrame> edges;
+	
 	public final ParseStackNode[] stackNodes;
 	public final List<INode>[] parseResults;
 	
@@ -18,12 +20,26 @@ public class ParseStackFrame{
 	public ParseStackFrame(int frameNumber, ParseStackNode... stackNodes){
 		super();
 		
+		this.edges = new ArrayList<ParseStackFrame>();
+		
 		this.stackNodes = stackNodes;
 		this.parseResults = (List<INode>[]) new List[stackNodes.length];
 		
 		this.frameNumber = frameNumber;
 		
 		index = -1;
+	}
+	
+	public void addEdge(ParseStackFrame edge){
+		edges.add(edge);
+	}
+	
+	public int numberOfEdges(){
+		return edges.size();
+	}
+	
+	public List<ParseStackFrame> getEdges(){
+		return edges;
 	}
 	
 	public void nextSymbol(){
