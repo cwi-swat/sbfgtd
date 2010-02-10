@@ -1,8 +1,8 @@
 package gll.stack;
 
 public class ParseStack{
-	public ParseStackFrame currentTop;
-	public int location;
+	private ParseStackFrame currentTop;
+	private int location;
 	
 	public ParseStack(ParseStackFrame root){
 		super();
@@ -23,5 +23,21 @@ public class ParseStack{
 		
 		this.currentTop = frame;
 		this.location = location;
+	}
+	
+	public ParseStackFrame getTop(){
+		return currentTop;
+	}
+	
+	public void setTop(ParseStackFrame top){
+		this.currentTop = top;
+	}
+	
+	public int getCurrentLocation(){
+		return location;
+	}
+	
+	public void moveLocation(int bytes){
+		location += bytes;
 	}
 }

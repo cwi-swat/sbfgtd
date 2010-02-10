@@ -12,7 +12,7 @@ public class ParseStackFrame{
 	private final ParseStackNode[] stackNodes;
 	private final List<INode>[] parseResults;
 	
-	public final int frameNumber;
+	private final int frameNumber;
 	
 	// Updatable
 	private int index;
@@ -61,6 +61,10 @@ public class ParseStackFrame{
 	
 	public List<ParseStackFrame> getEdges(){
 		return edges;
+	}
+	
+	public int getFrameNumber(){
+		return frameNumber;
 	}
 	
 	public void nextSymbol(){
