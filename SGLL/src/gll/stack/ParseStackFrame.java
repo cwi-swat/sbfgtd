@@ -12,20 +12,16 @@ public class ParseStackFrame{
 	private final ParseStackNode[] stackNodes;
 	private final List<INode>[] parseResults;
 	
-	private final int frameNumber;
-	
 	// Updatable
 	private int index;
 	
-	public ParseStackFrame(int frameNumber, ParseStackNode... stackNodes){
+	public ParseStackFrame(ParseStackNode... stackNodes){
 		super();
 		
 		this.edges = new ArrayList<ParseStackFrame>();
 		
 		this.stackNodes = stackNodes;
 		this.parseResults = (List<INode>[]) new List[stackNodes.length];
-		
-		this.frameNumber = frameNumber;
 		
 		index = -1;
 	}
@@ -50,8 +46,6 @@ public class ParseStackFrame{
 			parseResults[i] = newResult;
 		}
 		
-		frameNumber = stackFrame.frameNumber;
-		
 		index = stackFrame.index;
 	}
 	
@@ -61,10 +55,6 @@ public class ParseStackFrame{
 	
 	public List<ParseStackFrame> getEdges(){
 		return edges;
-	}
-	
-	public int getFrameNumber(){
-		return frameNumber;
 	}
 	
 	public void nextSymbol(){

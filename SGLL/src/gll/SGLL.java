@@ -30,7 +30,7 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		ParseStackFrame root = new ParseStackFrame(0, new NonTerminalParseStackNode(start));
+		ParseStackFrame root = new ParseStackFrame(new NonTerminalParseStackNode(start));
 			
 		stacks = new HashSet<ParseStack>();
 		stacks.add(new ParseStack(root));
@@ -65,9 +65,8 @@ public class SGLL implements IGLL{
 	
 	// TODO Add sharing.
 	private void updateStack(ParseStack parseStack, ParseStackNode... symbolsToExpect){
-		ParseStackFrame prev = parseStack.getTop();
-		ParseStackFrame current = new ParseStackFrame(prev.getFrameNumber() + 1, symbolsToExpect);
-		current.addEdge(prev);
+		ParseStackFrame current = new ParseStackFrame(symbolsToExpect);
+		current.addEdge(parseStack.getTop());
 		parseStack.setTop(current);
 	}
 	
@@ -95,7 +94,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceFrame(ParseStack stack, ParseStackFrame frame){
-		if(frame.getFrameNumber() == 0){ // Root reached.
+		List<ParseStackFrame> prevFrames = frame.getEdges();
+		int numberOfPrevFrames = prevFrames.size();
+		
+		if(numberOfPrevFrames == 0){ // Root reached.
 			stacks.remove(stack); // Remove the stack from the todo-list.
 			
 			if(stack.getCurrentLocation() != input.length){
@@ -121,8 +123,7 @@ public class SGLL implements IGLL{
 		
 		// Update the stack.
 		int byteToMoveTo = stack.getCurrentLocation();
-		List<ParseStackFrame> prevFrames = frame.getEdges(); // TODO Centralize edge data
-		for(int j = prevFrames.size() - 1; j >= 1; j--){
+		for(int j = numberOfPrevFrames - 1; j >= 1; j--){
 			ParseStackFrame prevFrame = prevFrames.get(j);
 			ParseStackNode node = prevFrame.getCurrentNode();
 			prevFrame = new ParseStackFrame(prevFrame);
