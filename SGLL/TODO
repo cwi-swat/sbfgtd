@@ -6,8 +6,9 @@
 -Merge stacks
 -Add epsilon support
 -Fix left recursion
--Look-ahead
+-Add support for more complex patterns
 -Output results
+-Look-ahead
 -Add filters
 -Optimize
 -Add code generation
