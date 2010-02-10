@@ -1,4 +1,4 @@
-package gll.examples;
+package gll.tests;
 
 import gll.SGLL;
 import gll.nodes.INode;
