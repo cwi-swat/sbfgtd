@@ -5,18 +5,20 @@ import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
+// TODO This is broken.
+
 /*
-S ::= AA
+S ::= A
 A ::= BB
-B ::= bb | b
+B ::= aa | a
 */
-public class Ambiguous4 extends SGLL{
+public class Ambiguous5 extends SGLL{
 	private final String NONTERMINAL_A = "A";
 	private final String NONTERMINAL_B = "B";
-	private final byte[] TERMINAL_b = "b".getBytes();
-	private final byte[] TERMINAL_bb = "bb".getBytes();
+	private final byte[] TERMINAL_a = "a".getBytes();
+	private final byte[] TERMINAL_aa = "aa".getBytes();
 	
-	public Ambiguous4(String start, byte[] input){
+	public Ambiguous5(String start, byte[] input){
 		super(start, input);
 	}
 	
@@ -25,26 +27,26 @@ public class Ambiguous4 extends SGLL{
 	}
 	
 	public void A(){
-		expect(new NonTerminalParseStackNode(NONTERMINAL_B), new NonTerminalParseStackNode(NONTERMINAL_B));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_B));
 	}
 	
 	public void B(){
-		expectAlternative(new TerminalParseStackNode(TERMINAL_bb));
+		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_b));
+		expectAlternative(new TerminalParseStackNode(TERMINAL_aa));
 	}
 	
-	public void b(){
+	public void a(){
 		reduceTerminal();
 	}
 	
-	public void bb(){
+	public void aa(){
 		reduceTerminal();
 	}
 	
 	public static void main(String[] args){
-		Ambiguous4 a4 = new Ambiguous4("S", "bbbbbb".getBytes());
-		INode result = a4.parse();
+		Ambiguous5 a5 = new Ambiguous5("S", "aaa".getBytes());
+		INode result = a5.parse();
 		
 		System.out.println(result);
 	}
