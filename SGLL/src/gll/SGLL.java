@@ -185,7 +185,12 @@ public class SGLL implements IGLL{
 					reduceFrame(stack, frame);
 				}else{
 					frame.nextNode();
-					callMethod(frame.getCurrentNode().getMethodName());
+					ParseStackNode node = frame.getCurrentNode();
+					if(node.isTerminal()){
+						reduceTerminal();
+					}else{
+						callMethod(node.getMethodName());
+					}
 				}
 			}
 		}while(stacks.size() > 0);

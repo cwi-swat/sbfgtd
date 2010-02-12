@@ -27,10 +27,6 @@ public class Ambiguous extends SGLL{
 		expect(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
-	public void a(){
-		reduceTerminal();
-	}
-	
 	public static void main(String[] args){
 		Ambiguous a = new Ambiguous("S", "a".getBytes());
 		INode result = a.parse();
