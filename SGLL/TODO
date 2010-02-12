@@ -13,3 +13,5 @@
 -Optimize
 -Add code generation
 -Add AST generation
+
+-Write a proper version
