@@ -2,7 +2,6 @@ package gll;
 
 import gll.nodes.INode;
 import gll.nodes.NonTerminalNode;
-import gll.nodes.TerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStack;
 import gll.stack.ParseStackFrame;
@@ -84,7 +83,6 @@ public class SGLL implements IGLL{
 		//System.out.println("Matched terminal:\t"+new String(terminalData)+"\tAt stack: "+stackBeingWorkedOn.hashCode()); // Temp
 		
 		// Construct the result.
-		frame.addResult(new TerminalNode(terminalData));
 		stackBeingWorkedOn.setTop(frame);
 		
 		// Try to reduce the non terminals on top of the stack (if possible).
@@ -120,15 +118,13 @@ public class SGLL implements IGLL{
 		int byteToMoveTo = stack.getCurrentLocation();
 		for(int j = numberOfPrevFrames - 1; j >= 1; j--){
 			ParseStackFrame prevFrame = prevFrames.get(j);
-			ParseStackNode node = prevFrame.getCurrentNode();
-			prevFrame = createParseStackFrame(prevFrame, node.getName(), results);
+			prevFrame = createParseStackFrame(prevFrame, results);
 			ParseStack newStack = new ParseStack(prevFrame, byteToMoveTo);
 			stacks.add(newStack);
 		}
 		
 		ParseStackFrame prevFrame = prevFrames.get(0);
-		ParseStackNode node = prevFrame.getCurrentNode();
-		prevFrame = createParseStackFrame(prevFrame, node.getName(), results);
+		prevFrame = createParseStackFrame(prevFrame, results);
 		stack.setTop(prevFrame);
 	}
 	
@@ -137,10 +133,11 @@ public class SGLL implements IGLL{
 		return new ParseStackFrame(symbolsToExpect);
 	}
 	
-	private ParseStackFrame createParseStackFrame(ParseStackFrame frameToClone, String nodeName, INode[] results){
+	private ParseStackFrame createParseStackFrame(ParseStackFrame frameToClone, INode[] results){
 		// TODO Add sharing.
 		ParseStackFrame clonedStackFrame = new ParseStackFrame(frameToClone);
-		clonedStackFrame.addResult(new NonTerminalNode(nodeName, results)); // Always a non-terminal
+		ParseStackNode node = clonedStackFrame.getCurrentNode();
+		node.addResult(new NonTerminalNode(node.getNonTerminalName(), results)); // Always a non-terminal
 		
 		return clonedStackFrame;
 	}

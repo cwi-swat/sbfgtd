@@ -1,5 +1,7 @@
 package gll.stack;
 
+import gll.nodes.INode;
+
 public abstract class ParseStackNode{
 	
 	public ParseStackNode(){
@@ -21,4 +23,8 @@ public abstract class ParseStackNode{
 	public abstract byte[] getTerminalData();
 	
 	public abstract String getNonTerminalName();
+	
+	public abstract void addResult(INode result);
+	
+	public abstract INode getResult();
 }
