@@ -5,7 +5,7 @@ import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-//TODO This is broken
+// TODO This is broken
 
 /*
 S ::= A
@@ -20,17 +20,17 @@ public class LeftRecursion extends SGLL{
 	}
 	
 	public void S(){
+		expect(new NonTerminalParseStackNode(NONTERMINAL_A));
+	}
+	
+	public void A(){
 		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a));
 		
 		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
-	public void A(){
-		expect(new TerminalParseStackNode(TERMINAL_a));
-	}
-	
 	public static void main(String[] args){
-		LeftRecursion lr = new LeftRecursion("S", "aa".getBytes());
+		LeftRecursion lr = new LeftRecursion("S", "aaa".getBytes());
 		INode result = lr.parse();
 		
 		System.out.println(result);
