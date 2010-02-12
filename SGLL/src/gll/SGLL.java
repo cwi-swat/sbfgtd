@@ -184,7 +184,7 @@ public class SGLL implements IGLL{
 				if(frame.isComplete()){
 					reduceFrame(stack, frame);
 				}else{
-					frame.nextSymbol();
+					frame.nextNode();
 					callMethod(frame.getCurrentNode().getMethodName());
 				}
 			}
