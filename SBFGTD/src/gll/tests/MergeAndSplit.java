@@ -8,9 +8,9 @@ import gll.stack.TerminalParseStackNode;
 // TODO This is broken.
 
 /*
-S ::= ABA
-A ::= a
-B ::= Aa | aA
+S ::= aAa
+A ::= Aa | aA
+B ::= a
 */
 public class MergeAndSplit extends SGLL{
 	private final String NONTERMINAL_A = "A";
@@ -22,17 +22,17 @@ public class MergeAndSplit extends SGLL{
 	}
 	
 	public void S(){
-		expect(new NonTerminalParseStackNode(NONTERMINAL_A), new NonTerminalParseStackNode(NONTERMINAL_B), new NonTerminalParseStackNode(NONTERMINAL_A));
+		expect(new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a));
 	}
 	
 	public void A(){
-		expect(new TerminalParseStackNode(TERMINAL_a));
+		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_B), new TerminalParseStackNode(TERMINAL_a));
+		
+		expectAlternative(new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
 	}
 	
 	public void B(){
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a));
-		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_A));
+		expect(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
 	public static void main(String[] args){
