@@ -10,11 +10,11 @@ import gll.stack.TerminalParseStackNode;
 /*
 S ::= SSS | SS | a
 */
-public class Ambiguous6 extends SGLL{
+public class AmbiguousRecursive extends SGLL{
 	private final String NONTERMINAL_S = "S";
 	private final byte[] TERMINAL_a = "a".getBytes();
 	
-	public Ambiguous6(String start, byte[] input){
+	public AmbiguousRecursive(String start, byte[] input){
 		super(start, input);
 	}
 	
@@ -26,13 +26,9 @@ public class Ambiguous6 extends SGLL{
 		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
-	public void a(){
-		reduceTerminal();
-	}
-	
 	public static void main(String[] args){
-		Ambiguous6 a6 = new Ambiguous6("S", "aaa".getBytes());
-		INode result = a6.parse();
+		AmbiguousRecursive ar = new AmbiguousRecursive("S", "aaa".getBytes());
+		INode result = ar.parse();
 		
 		System.out.println(result);
 	}

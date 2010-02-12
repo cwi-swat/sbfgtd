@@ -29,10 +29,6 @@ public class LeftRecursion extends SGLL{
 		expect(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
-	public void a(){
-		reduceTerminal();
-	}
-	
 	public static void main(String[] args){
 		LeftRecursion lr = new LeftRecursion("S", "aa".getBytes());
 		INode result = lr.parse();

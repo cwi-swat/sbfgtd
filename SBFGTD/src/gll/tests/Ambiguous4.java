@@ -34,14 +34,6 @@ public class Ambiguous4 extends SGLL{
 		expectAlternative(new TerminalParseStackNode(TERMINAL_b));
 	}
 	
-	public void b(){
-		reduceTerminal();
-	}
-	
-	public void bb(){
-		reduceTerminal();
-	}
-	
 	public static void main(String[] args){
 		Ambiguous4 a4 = new Ambiguous4("S", "bbbbbb".getBytes());
 		INode result = a4.parse();

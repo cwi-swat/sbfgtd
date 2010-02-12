@@ -26,14 +26,6 @@ public class Simple extends SGLL{
 		expect(new TerminalParseStackNode(TERMINAL_aa));
 	}
 	
-	public void aa(){
-		reduceTerminal();
-	}
-	
-	public void b(){
-		reduceTerminal();
-	}
-	
 	public static void main(String[] args){
 		Simple s = new Simple("S", "aab".getBytes());
 		INode result = s.parse();
