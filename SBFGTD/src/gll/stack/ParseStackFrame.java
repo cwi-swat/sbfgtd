@@ -57,12 +57,16 @@ public class ParseStackFrame{
 		return edges;
 	}
 	
-	public void nextSymbol(){
+	public void nextNode(){
 		index++;
 	}
 	
 	public ParseStackNode getCurrentNode(){
 		return stackNodes[index];
+	}
+	
+	public ParseStackNode peekNextNode(){ // Unsafe
+		return stackNodes[index + 1];
 	}
 	
 	public boolean isComplete(){
