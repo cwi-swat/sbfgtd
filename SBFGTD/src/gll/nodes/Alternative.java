@@ -9,6 +9,10 @@ public class Alternative implements INode{
 		this.alternatives = alternatives;
 	}
 	
+	public int getLength(){
+		return alternatives[0].getLength(); // All the alternatives will have the same length.
+	}
+	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		

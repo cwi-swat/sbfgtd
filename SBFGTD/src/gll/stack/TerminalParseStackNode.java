@@ -37,4 +37,24 @@ public class TerminalParseStackNode extends ParseStackNode{
 	public INode getResult(){
 		return result;
 	}
+	
+	public int getLength(){
+		return terminal.length;
+	}
+	
+	public boolean isMergable(ParseStackNode other){
+		if(!(other instanceof TerminalParseStackNode)) return false;
+		
+		TerminalParseStackNode otherNode = (TerminalParseStackNode) other;
+		
+		byte[] otherTerminal = otherNode.terminal;
+		int terminalLength = terminal.length;
+		if(terminalLength == otherTerminal.length){
+			for(int i = terminalLength - 1; i >= 0; i--){
+				if(terminal[i] != otherTerminal[i]) return false;
+			}
+		}
+		
+		return true;
+	}
 }

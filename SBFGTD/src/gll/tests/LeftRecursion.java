@@ -24,9 +24,9 @@ public class LeftRecursion extends SGLL{
 	}
 	
 	public void A(){
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
+		expect(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
 	public static void main(String[] args){

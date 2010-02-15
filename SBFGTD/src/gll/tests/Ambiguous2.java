@@ -21,9 +21,9 @@ public class Ambiguous2 extends SGLL{
 	}
 	
 	public void S(){
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_A), new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_b), new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
+		expect(new TerminalParseStackNode(TERMINAL_b), new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
 	}
 	
 	public void A(){
