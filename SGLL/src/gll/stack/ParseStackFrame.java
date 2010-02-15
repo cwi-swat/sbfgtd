@@ -2,25 +2,27 @@ package gll.stack;
 
 import gll.nodes.INode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ParseStackFrame{
-	private final List<ParseStackFrame> edges;
+	private final Set<ParseStackFrame> edges;
 	
 	private final ParseStackNode[] stackNodes;
 	
 	// Updatable
 	private int index;
+	private int level;
 	
 	public ParseStackFrame(ParseStackNode... stackNodes){
 		super();
 		
-		this.edges = new ArrayList<ParseStackFrame>();
+		this.edges = new HashSet<ParseStackFrame>();
 		
 		this.stackNodes = stackNodes;
 		
 		index = -1;
+		level = 0;
 	}
 	
 	public ParseStackFrame(ParseStackFrame stackFrame){
@@ -29,21 +31,41 @@ public class ParseStackFrame{
 		edges = stackFrame.edges;
 		
 		index = stackFrame.index;
+		level = stackFrame.level;
 		
 		int nrOfStackNodes = stackFrame.stackNodes.length;
 		stackNodes = new ParseStackNode[nrOfStackNodes];
-		System.arraycopy(stackFrame.stackNodes, 0, stackNodes, 0, nrOfStackNodes);
-		ParseStackNode node = stackFrame.stackNodes[index];
-		if(node.isNonTerminal()){
-			stackNodes[index] = new NonTerminalParseStackNode(node.getNonTerminalName());
+		for(int i = nrOfStackNodes - 1; i >= 0; i--){
+			ParseStackNode node = stackFrame.stackNodes[i];
+			if(node.isNonTerminal()){
+				stackNodes[i] = new NonTerminalParseStackNode(node.getNonTerminalName());
+			}else{
+				stackNodes[i] = node;
+			}
 		}
+	}
+	
+	public ParseStackFrame mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
+		ParseStackFrame merged = this;
+		
+		merged.edges.addAll(stackFrame.edges);
+		
+		return merged;
+	}
+	
+	public int getLevel(){
+		return level;
+	}
+	
+	public void moveLevel(int bytes){
+		level += bytes;
 	}
 	
 	public void addEdge(ParseStackFrame edge){
 		edges.add(edge);
 	}
 	
-	public List<ParseStackFrame> getEdges(){
+	public Set<ParseStackFrame> getEdges(){
 		return edges;
 	}
 	
@@ -74,5 +96,22 @@ public class ParseStackFrame{
 			sb.append(stackNodes[i].getMethodName());
 		}
 		return sb.toString();
+	}
+	
+	public boolean isMergable(ParseStackFrame otherFrame){
+		if(index != otherFrame.index) return false;
+		
+		ParseStackNode[] otherStackNodes = otherFrame.stackNodes;
+		int nrOfStackNodes = stackNodes.length;
+		if(nrOfStackNodes != otherStackNodes.length) return false;
+		for(int i = nrOfStackNodes - 1; i >= 0; i--){
+			if(!stackNodes[i].isMergable(otherStackNodes[i])) return false;
+		}
+		
+		return (level == otherFrame.level);
+	}
+	
+	public int getNextLevel(){ // Unsafe operation; only works when a terminal is the next symbol.
+		return (level + stackNodes[index + 1].getLength());
 	}
 }

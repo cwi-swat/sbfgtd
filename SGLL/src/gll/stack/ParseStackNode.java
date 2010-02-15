@@ -16,6 +16,8 @@ public abstract class ParseStackNode{
 		return (this instanceof NonTerminalParseStackNode);
 	}
 	
+	public abstract boolean isMergable(ParseStackNode node);
+	
 	public abstract String getName();
 	
 	public abstract String getMethodName();
@@ -27,4 +29,6 @@ public abstract class ParseStackNode{
 	public abstract void addResult(INode result);
 	
 	public abstract INode getResult();
+	
+	public abstract int getLength();
 }

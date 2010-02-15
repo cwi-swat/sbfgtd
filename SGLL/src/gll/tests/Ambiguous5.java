@@ -31,9 +31,9 @@ public class Ambiguous5 extends SGLL{
 	}
 	
 	public void B(){
-		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
+		expect(new TerminalParseStackNode(TERMINAL_a));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_aa));
+		expect(new TerminalParseStackNode(TERMINAL_aa));
 	}
 	
 	public static void main(String[] args){

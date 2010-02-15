@@ -26,9 +26,9 @@ public class MergeAndSplit extends SGLL{
 	}
 	
 	public void A(){
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_B), new TerminalParseStackNode(TERMINAL_a));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_B), new TerminalParseStackNode(TERMINAL_a));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
+		expect(new TerminalParseStackNode(TERMINAL_a), new NonTerminalParseStackNode(NONTERMINAL_B));
 	}
 	
 	public void B(){

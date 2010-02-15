@@ -19,11 +19,11 @@ public class AmbiguousRecursive extends SGLL{
 	}
 	
 	public void S(){
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S));
 		
-		expectAlternative(new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S));
+		expect(new NonTerminalParseStackNode(NONTERMINAL_S), new NonTerminalParseStackNode(NONTERMINAL_S));
 		
-		expectAlternative(new TerminalParseStackNode(TERMINAL_a));
+		expect(new TerminalParseStackNode(TERMINAL_a));
 	}
 	
 	public static void main(String[] args){
