@@ -127,6 +127,8 @@ public class SGLL implements IGLL{
 	
 	private void tryExpand(ParseStackFrame frame){// TODO Implement
 		// TODO Merge stacks where possible
+		
+		
 	}
 	
 	public INode parse(){// TODO Implement
@@ -145,6 +147,7 @@ public class SGLL implements IGLL{
 				if(nextLevel < closestNextLevel){
 					leastProgressedStacks = new ArrayList<ParseStackFrame>();
 					leastProgressedStacks.add(frame);
+					closestNextLevel = nextLevel;
 				}else if(nextLevel == closestNextLevel){
 					leastProgressedStacks.add(frame);
 				}
@@ -163,7 +166,7 @@ public class SGLL implements IGLL{
 			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
 			List<ParseStackFrame> copyOfLastIteration = lastIteration;
 			do{
-				List<ParseStackFrame> stacksToReduce = new ArrayList<ParseStackFrame>();
+				List<ParseStackFrame> stacksToReduce = null;
 				int highestStackFrameNumber = -1;
 				for(int i = copyOfLastIteration.size() - 1; i >= 0; i--){
 					ParseStackFrame frame = copyOfLastIteration.get(i);
@@ -171,16 +174,17 @@ public class SGLL implements IGLL{
 					if(frameNumber > highestStackFrameNumber){
 						stacksToReduce = new ArrayList<ParseStackFrame>();
 						stacksToReduce.add(frame);
-						copyOfLastIteration.remove(i);
+						highestStackFrameNumber = frameNumber;
 					}else if(frameNumber == highestStackFrameNumber){
 						stacksToReduce.add(frame);
-						copyOfLastIteration.remove(i);
 					}
 				}
 				
 				lastIteration = new ArrayList<ParseStackFrame>();
 				for(int i = stacksToReduce.size() - 1; i >= 0; i--){
 					ParseStackFrame frame = stacksToReduce.get(i);
+					copyOfLastIteration.remove(frame); // TODO Optimize.
+					
 					if(frame.isComplete()){
 						reduceNonTerminals(frame);
 					}else{
@@ -190,13 +194,39 @@ public class SGLL implements IGLL{
 				copyOfLastIteration.addAll(lastIteration);
 			}while(copyOfLastIteration.size() > 0);
 			
-			// Expand stacks. TODO Keep looping till fully expanded
-			List<ParseStackFrame> copyOfStacksToExpand = stacksToExpand;
-			for(int i = copyOfStacksToExpand.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = copyOfStacksToExpand.get(i);
+			// Expand stacks.
+			List<ParseStackFrame> copyOfStacksToExpand;
+			do{
+				copyOfStacksToExpand = stacksToExpand;
+				stacksToExpand = null;
+				int lowestStackFrameNumber = -1;
+				for(int i = copyOfStacksToExpand.size() - 1; i >= 0; i--){
+					ParseStackFrame frame = copyOfStacksToExpand.get(i);
+					int frameNumber = frame.getFrameNumber();
+					if(frameNumber < lowestStackFrameNumber){
+						if(frameNumber - 1 == lowestStackFrameNumber){
+							lastIteration = stacksToExpand;
+						}else{
+							lastIteration = new ArrayList<ParseStackFrame>();
+						}
+						
+						stacksToExpand = new ArrayList<ParseStackFrame>();
+						stacksToExpand.add(frame);
+					}else if(frameNumber == lowestStackFrameNumber){
+						stacksToExpand.add(frame);
+					}else if(frameNumber - 1 == lowestStackFrameNumber){
+						lastIteration.add(frame);
+					}
+				}
 				
-				tryExpand(frame);
-			}
+				for(int i = stacksToExpand.size() - 1; i >= 0; i--){
+					ParseStackFrame frame = stacksToExpand.get(i);
+					copyOfStacksToExpand.remove(i);
+					
+					tryExpand(frame);
+				}
+				copyOfStacksToExpand.addAll(lastIteration);
+			}while(copyOfStacksToExpand.size() > 0);
 			
 			// Update the todo list.
 			for(int i = lastIteration.size() - 1; i >= 0; i--){
