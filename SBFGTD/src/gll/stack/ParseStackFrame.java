@@ -69,7 +69,7 @@ public class ParseStackFrame{
 		return edges;
 	}
 	
-	public void nextNode(){
+	public void moveToNextNode(){
 		++index;
 	}
 	

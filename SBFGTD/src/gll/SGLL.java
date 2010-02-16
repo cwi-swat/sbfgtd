@@ -1,6 +1,7 @@
 package gll;
 
 import gll.nodes.INode;
+import gll.nodes.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackFrame;
 import gll.stack.ParseStackNode;
@@ -15,8 +16,6 @@ import java.util.Set;
 public class SGLL implements IGLL{
 	private final byte[] input;
 	
-	private final ParseStackNode root;
-	
 	private final Set<ParseStackFrame> todoList;
 	
 	// Updatable
@@ -25,12 +24,13 @@ public class SGLL implements IGLL{
 	
 	private List<ParseStackFrame> lastExpects;
 	
+	private final ParseStackNode root;
+	private final ParseStackFrame rootFrame;
+	
 	public SGLL(String start, byte[] input){
 		super();
 		
 		this.input = input;
-		
-		root = new NonTerminalParseStackNode(start);
 		
 		todoList = new HashSet<ParseStackFrame>();
 		
@@ -39,7 +39,9 @@ public class SGLL implements IGLL{
 		lastExpects = new ArrayList<ParseStackFrame>();
 		
 		// Initialize
-		ParseStackFrame rootFrame = new ParseStackFrame(root);
+		root = new NonTerminalParseStackNode(start);
+		rootFrame = new ParseStackFrame(root);
+		
 		todoList.add(rootFrame);
 		
 		tryExpand(rootFrame);
@@ -77,15 +79,36 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void tryReduction(ParseStackFrame frame){
-		// TODO Implement
+	private void reduceTerminal(ParseStackFrame frame){
+		ParseStackNode terminal = frame.getCurrentNode();
+		byte[] data = terminal.getTerminalData();
 		
-		// TODO Merge stacks where possible.
+		int location = frame.getLevel();
+		if(location + data.length > input.length){
+			return; // Can't reduce.
+		}
+		
+		for(int i = data.length - 1; i >= 0; i--){
+			if(data[i] != input[location + i]) return; // Didn't match
+		}
+		
+		Set<ParseStackFrame> edges = frame.getEdges();
+		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
+		while(edgesIterator.hasNext()){
+			ParseStackFrame prevFrame = edgesIterator.next();
+			lastIteration.add(prevFrame);
+		}
 	}
 	
-	private void tryExpand(ParseStackFrame frame){
-		// TODO Implement
-		
+	private void reduceNonTerminals(ParseStackFrame frame){// TODO Implement
+		ParseStackNode node = frame.getCurrentNode();
+		Set<ParseStackFrame> edges = frame.getEdges();
+		if(edges.size() == 0){
+			return; // Root reached.
+		}
+	}
+	
+	private void tryExpand(ParseStackFrame frame){// TODO Implement
 		// TODO Merge stacks where possible
 	}
 	
@@ -110,19 +133,34 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			// Do reductions where possible.
+			// Do terminal reductions where possible.
 			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){
 				ParseStackFrame frame = leastProgressedStacks.get(i);
 				todoList.remove(frame);
 				
-				tryReduction(frame);
+				frame.moveToNextNode();
+				reduceTerminal(frame);
 			}
 			
-			// Expand stacks.
-			List<ParseStackFrame> copyOfLastIteration = lastIteration;
-			lastIteration = new ArrayList<ParseStackFrame>();
-			for(int i = copyOfLastIteration.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = copyOfLastIteration.get(i);
+			// Do non-terminal reductions where possible.
+			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
+			do{
+				List<ParseStackFrame> copyOfLastIteration = lastIteration;
+				lastIteration = new ArrayList<ParseStackFrame>();
+				for(int i = copyOfLastIteration.size() - 1; i >= 0; i--){
+					ParseStackFrame frame = copyOfLastIteration.get(i);
+					if(frame.isComplete()){
+						reduceNonTerminals(frame);
+					}else{
+						stacksToExpand.add(frame);
+					}
+				}
+			}while(lastIteration.size() > 0);
+			
+			// Expand stacks. TODO Keep looping till fully expanded
+			List<ParseStackFrame> copyOfStacksToExpand = stacksToExpand;
+			for(int i = copyOfStacksToExpand.size() - 1; i >= 0; i--){
+				ParseStackFrame frame = copyOfStacksToExpand.get(i);
 				
 				tryExpand(frame);
 			}
@@ -133,6 +171,6 @@ public class SGLL implements IGLL{
 			}
 		}while(todoList.size() > 0);
 		
-		return null;// Temp
+		return new NonTerminalNode(root.getName(), rootFrame.getResults());// Temp
 	}
 }
