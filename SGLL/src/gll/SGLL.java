@@ -56,6 +56,14 @@ public class SGLL implements IGLL{
 		lastExpects.add(newFrame);
 	}
 	
+	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
+		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
+		ParseStackNode currentNode = clone.getCurrentNode();
+		currentNode.addResult(result);
+		clone.moveLevel(currentNode.getLength());
+		return clone;
+	}
+	
 	private void callMethod(String methodName){
 		try{
 			Method method = this.getClass().getMethod(methodName);
@@ -99,16 +107,13 @@ public class SGLL implements IGLL{
 		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
 			ParseStackNode node = prevFrame.getCurrentNode();
-			node.addResult(new NonTerminalNode(node.getNonTerminalName(), results));
+			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
 			boolean merged = false;
 			for(int i = lastIteration.size() - 1; i >= 0; i--){
 				ParseStackFrame possiblyAnAlternative = lastIteration.get(i);
-				if(prevFrame.isMergable(possiblyAnAlternative)){
-					ParseStackFrame mergedFrame = prevFrame.mergeWith(possiblyAnAlternative);
-					
-					lastIteration.remove(i);
-					lastIteration.add(mergedFrame);
+				if(possiblyAnAlternative.isMergable(prevFrame)){
+					possiblyAnAlternative.mergeWith(prevFrame);
 					merged = true;
 					break;
 				}
