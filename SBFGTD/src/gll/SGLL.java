@@ -56,18 +56,6 @@ public class SGLL implements IGLL{
 		lastExpects.add(newFrame);
 	}
 	
-	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
-		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
-		ParseStackNode currentNode = clone.getCurrentNode();
-		currentNode.addResult(result);
-		clone.moveLevel(currentNode.getLength());
-		return clone;
-	}
-	
-	private ParseStackFrame mergeFrames(ParseStackFrame psf1, ParseStackFrame psf2){
-		return psf1.mergeWith(psf2);
-	}
-	
 	private void callMethod(String methodName){
 		try{
 			Method method = this.getClass().getMethod(methodName);
@@ -100,14 +88,35 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceNonTerminals(ParseStackFrame frame){// TODO Implement
-		ParseStackNode node = frame.getCurrentNode();
 		Set<ParseStackFrame> edges = frame.getEdges();
 		if(edges.size() == 0){
 			return; // Root reached.
 		}
 		
-		for(int i = edges.size() - 1; i >= 0; i--){
+		INode[] results = frame.getResults();
+		
+		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
+		while(edgesIterator.hasNext()){
+			ParseStackFrame prevFrame = edgesIterator.next();
+			ParseStackNode node = prevFrame.getCurrentNode();
+			node.addResult(new NonTerminalNode(node.getNonTerminalName(), results));
 			
+			boolean merged = false;
+			for(int i = lastIteration.size() - 1; i >= 0; i--){
+				ParseStackFrame possiblyAnAlternative = lastIteration.get(i);
+				if(prevFrame.isMergable(possiblyAnAlternative)){
+					ParseStackFrame mergedFrame = prevFrame.mergeWith(possiblyAnAlternative);
+					
+					lastIteration.remove(i);
+					lastIteration.add(mergedFrame);
+					merged = true;
+					break;
+				}
+			}
+			
+			if(!merged){
+				lastIteration.add(prevFrame);
+			}
 		}
 	}
 	
@@ -174,7 +183,7 @@ public class SGLL implements IGLL{
 					}
 				}
 				copyOfLastIteration.addAll(lastIteration);
-			}while(lastIteration.size() > 0);
+			}while(copyOfLastIteration.size() > 0);
 			
 			// Expand stacks. TODO Keep looping till fully expanded
 			List<ParseStackFrame> copyOfStacksToExpand = stacksToExpand;
