@@ -52,8 +52,7 @@ public class SGLL implements IGLL{
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){
-		ParseStackFrame newFrame = new ParseStackFrame(symbolsToExpect);
-		newFrame.addEdge(stackFrameBeingWorkedOn);
+		ParseStackFrame newFrame = new ParseStackFrame(stackFrameBeingWorkedOn, symbolsToExpect);
 		lastExpects.add(newFrame);
 	}
 	
@@ -106,6 +105,10 @@ public class SGLL implements IGLL{
 		if(edges.size() == 0){
 			return; // Root reached.
 		}
+		
+		for(int i = edges.size() - 1; i >= 0; i--){
+			
+		}
 	}
 	
 	private void tryExpand(ParseStackFrame frame){// TODO Implement
@@ -144,17 +147,33 @@ public class SGLL implements IGLL{
 			
 			// Do non-terminal reductions where possible.
 			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
+			List<ParseStackFrame> copyOfLastIteration = lastIteration;
 			do{
-				List<ParseStackFrame> copyOfLastIteration = lastIteration;
-				lastIteration = new ArrayList<ParseStackFrame>();
+				List<ParseStackFrame> stacksToReduce = new ArrayList<ParseStackFrame>();
+				int highestStackFrameNumber = -1;
 				for(int i = copyOfLastIteration.size() - 1; i >= 0; i--){
 					ParseStackFrame frame = copyOfLastIteration.get(i);
+					int frameNumber = frame.getFrameNumber();
+					if(frameNumber > highestStackFrameNumber){
+						stacksToReduce = new ArrayList<ParseStackFrame>();
+						stacksToReduce.add(frame);
+						copyOfLastIteration.remove(i);
+					}else if(frameNumber == highestStackFrameNumber){
+						stacksToReduce.add(frame);
+						copyOfLastIteration.remove(i);
+					}
+				}
+				
+				lastIteration = new ArrayList<ParseStackFrame>();
+				for(int i = stacksToReduce.size() - 1; i >= 0; i--){
+					ParseStackFrame frame = stacksToReduce.get(i);
 					if(frame.isComplete()){
 						reduceNonTerminals(frame);
 					}else{
 						stacksToExpand.add(frame);
 					}
 				}
+				copyOfLastIteration.addAll(lastIteration);
 			}while(lastIteration.size() > 0);
 			
 			// Expand stacks. TODO Keep looping till fully expanded

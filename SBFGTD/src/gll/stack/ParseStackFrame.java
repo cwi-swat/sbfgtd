@@ -10,6 +10,8 @@ public class ParseStackFrame{
 	
 	private final ParseStackNode[] stackNodes;
 	
+	private final int frameNumber;
+	
 	// Updatable
 	private int index;
 	private int level;
@@ -18,6 +20,22 @@ public class ParseStackFrame{
 		super();
 		
 		this.edges = new HashSet<ParseStackFrame>();
+		
+		this.frameNumber = 0;
+		
+		this.stackNodes = stackNodes;
+		
+		index = -1;
+		level = 0;
+	}
+	
+	public ParseStackFrame(ParseStackFrame prevStackFrame, ParseStackNode... stackNodes){
+		super();
+		
+		this.edges = new HashSet<ParseStackFrame>();
+		edges.add(prevStackFrame);
+		
+		this.frameNumber = prevStackFrame.index + 1;
 		
 		this.stackNodes = stackNodes;
 		
@@ -29,6 +47,8 @@ public class ParseStackFrame{
 		super();
 		
 		edges = stackFrame.edges;
+		
+		frameNumber = stackFrame.frameNumber;
 		
 		index = stackFrame.index;
 		level = stackFrame.level;
@@ -51,6 +71,10 @@ public class ParseStackFrame{
 		merged.edges.addAll(stackFrame.edges);
 		
 		return merged;
+	}
+	
+	public int getFrameNumber(){
+		return frameNumber;
 	}
 	
 	public int getLevel(){
