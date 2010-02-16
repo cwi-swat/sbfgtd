@@ -3,6 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.nodes.INode;
 import gll.stack.NonTerminalParseStackNode;
+import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
 /*
@@ -11,27 +12,27 @@ A ::= BB
 B ::= bb | b
 */
 public class Ambiguous4 extends SGLL{
-	private final String NONTERMINAL_A = "A";
-	private final String NONTERMINAL_B = "B";
-	private final byte[] TERMINAL_b = "b".getBytes();
-	private final byte[] TERMINAL_bb = "bb".getBytes();
+	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
+	private final ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
+	private final ParseStackNode TERMINAL_bb = new TerminalParseStackNode("bb".getBytes());
 	
 	public Ambiguous4(String start, byte[] input){
 		super(start, input);
 	}
 	
 	public void S(){
-		expect(new NonTerminalParseStackNode(NONTERMINAL_A), new NonTerminalParseStackNode(NONTERMINAL_A));
+		expect(NONTERMINAL_A, NONTERMINAL_A);
 	}
 	
 	public void A(){
-		expect(new NonTerminalParseStackNode(NONTERMINAL_B), new NonTerminalParseStackNode(NONTERMINAL_B));
+		expect(NONTERMINAL_B, NONTERMINAL_B);
 	}
 	
 	public void B(){
-		expect(new TerminalParseStackNode(TERMINAL_bb));
+		expect(TERMINAL_bb);
 		
-		expect(new TerminalParseStackNode(TERMINAL_b));
+		expect(TERMINAL_b);
 	}
 	
 	public static void main(String[] args){
