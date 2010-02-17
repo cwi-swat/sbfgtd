@@ -50,6 +50,7 @@ public class SGLL implements IGLL{
 	
 	public void expect(ParseStackNode... symbolsToExpect){
 		ParseStackFrame newFrame = new ParseStackFrame(stackFrameBeingWorkedOn, symbolsToExpect);
+		newFrame.setLevel(stackFrameBeingWorkedOn.getLevel());
 		lastExpects.add(newFrame);
 	}
 	

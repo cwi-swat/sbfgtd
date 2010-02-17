@@ -80,6 +80,10 @@ public class ParseStackFrame{
 		return level;
 	}
 	
+	public void setLevel(int level){
+		this.level = level;
+	}
+	
 	public void moveLevel(int bytes){
 		level += bytes;
 	}
