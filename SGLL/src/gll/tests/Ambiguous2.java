@@ -12,10 +12,10 @@ A ::= B
 B ::= b
 */
 public class Ambiguous2 extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
-	private final ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
 	
 	public Ambiguous2(String start, byte[] input){
 		super(start, input);

@@ -46,11 +46,7 @@ public class SGLL implements IGLL{
 		
 		todoList.add(rootFrame);
 		
-		tryExpand(rootFrame);
-		
-		for(int i = lastIterationTodoList.size() - 1; i >= 0; i--){
-			todoList.add(lastIterationTodoList.get(i));
-		}
+		lastIterationTodoList.add(rootFrame);
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){
@@ -164,7 +160,41 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	public INode parse(){// TODO Implement
+	private void expand(List<ParseStackFrame> stacksToExpand){
+		List<ParseStackFrame> copyOfStacksToExpand = stacksToExpand;
+		do{
+			int lowestStackFrameNumber = Integer.MAX_VALUE;
+			for(int i = copyOfStacksToExpand.size() - 1; i >= 0; i--){
+				ParseStackFrame frame = copyOfStacksToExpand.get(i);
+				int frameNumber = frame.getFrameNumber();
+				if(frameNumber < lowestStackFrameNumber){
+					stacksToExpand = new ArrayList<ParseStackFrame>();
+					stacksToExpand.add(frame);
+					lowestStackFrameNumber = frameNumber;
+				}else if(frameNumber == lowestStackFrameNumber){
+					stacksToExpand.add(frame);
+				}
+			}
+			
+			lastIterationTodoList = new ArrayList<ParseStackFrame>();
+			for(int i = stacksToExpand.size() - 1; i >= 0; i--){
+				ParseStackFrame frame = stacksToExpand.get(i);
+				copyOfStacksToExpand.remove(frame); // TODO Optimize.
+				
+				tryExpand(frame);
+			}
+			stackFrameBeingWorkedOn = null; // Clear.
+			copyOfStacksToExpand.addAll(lastIterationTodoList);
+		}while(copyOfStacksToExpand.size() > 0);
+	}
+	
+	public INode parse(){
+		expand(lastIterationTodoList);
+		
+		for(int i = lastIterationTodoList.size() - 1; i >= 0; i--){
+			todoList.add(lastIterationTodoList.get(i));
+		}
+		
 		do{
 			// Initialize.
 			lastIterationTodoList = new ArrayList<ParseStackFrame>();
@@ -227,32 +257,7 @@ public class SGLL implements IGLL{
 			}while(copyOfLastIteration.size() > 0);
 			
 			// Expand stacks.
-			List<ParseStackFrame> copyOfStacksToExpand;
-			do{
-				copyOfStacksToExpand = stacksToExpand;
-				stacksToExpand = null;
-				int lowestStackFrameNumber = -1;
-				for(int i = copyOfStacksToExpand.size() - 1; i >= 0; i--){
-					ParseStackFrame frame = copyOfStacksToExpand.get(i);
-					int frameNumber = frame.getFrameNumber();
-					if(frameNumber < lowestStackFrameNumber){
-						stacksToExpand = new ArrayList<ParseStackFrame>();
-						stacksToExpand.add(frame);
-					}else if(frameNumber == lowestStackFrameNumber){
-						stacksToExpand.add(frame);
-					}
-				}
-				
-				lastIterationTodoList = new ArrayList<ParseStackFrame>();
-				for(int i = stacksToExpand.size() - 1; i >= 0; i--){
-					ParseStackFrame frame = stacksToExpand.get(i);
-					copyOfStacksToExpand.remove(frame); // TODO Optimize.
-					
-					tryExpand(frame);
-				}
-				stackFrameBeingWorkedOn = null; // Clear.
-				copyOfStacksToExpand.addAll(lastIterationTodoList);
-			}while(copyOfStacksToExpand.size() > 0);
+			expand(stacksToExpand);
 			
 			// Update the todo list.
 			for(int i = expandedStacks.size() - 1; i >= 0; i--){

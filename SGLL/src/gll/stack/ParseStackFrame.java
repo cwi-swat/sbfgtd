@@ -36,7 +36,6 @@ public class ParseStackFrame{
 		edges.add(prevStackFrame);
 		
 		this.frameNumber = prevStackFrame.index + 1;
-		
 		this.stackNodes = stackNodes;
 		
 		index = -1;
