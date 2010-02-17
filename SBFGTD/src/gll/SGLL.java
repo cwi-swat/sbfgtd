@@ -66,8 +66,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void tryExpand(ParseStackFrame frame){// TODO Implement
-		frame.moveToNextNode();
-		ParseStackNode node = frame.getCurrentNode();
+		ParseStackNode node = frame.getNextNode();
 		if(node.isTerminal()){
 			expandedStacks.add(frame);
 			return; // Can't unfold any further.
@@ -104,6 +103,7 @@ public class SGLL implements IGLL{
 	
 	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
 		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
+		clone.moveToNextNode();
 		ParseStackNode currentNode = clone.getCurrentNode();
 		currentNode.addResult(result);
 		clone.moveLevel(currentNode.getLength());
@@ -111,6 +111,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceTerminal(ParseStackFrame frame){
+		frame.moveToNextNode();
 		ParseStackNode terminal = frame.getCurrentNode();
 		byte[] data = terminal.getTerminalData();
 		
@@ -129,7 +130,7 @@ public class SGLL implements IGLL{
 		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
 		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
-			ParseStackNode node = prevFrame.getCurrentNode();
+			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
 			lastIterationTodoList.add(prevFrame);
@@ -138,7 +139,11 @@ public class SGLL implements IGLL{
 	
 	private void reduceNonTerminal(ParseStackFrame frame){// TODO Implement
 		Set<ParseStackFrame> edges = frame.getEdges();
-		if(edges.size() == 0 && frame.getLevel() == input.length){
+		if(edges.size() == 0){
+			if(frame.getLevel() != input.length){
+				return; // Parse failed.
+			}
+			
 			INode[] results = frame.getResults();
 			for(int i = results.length - 1; i >= 0; i--){
 				parseResults.add(results[i]);
@@ -151,7 +156,7 @@ public class SGLL implements IGLL{
 		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
 		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
-			ParseStackNode node = prevFrame.getCurrentNode();
+			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
 			boolean merged = false;

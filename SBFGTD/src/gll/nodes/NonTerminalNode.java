@@ -14,7 +14,7 @@ public class NonTerminalNode implements INode{
 		
 		int length = 0;
 		for(int i = children.length - 1; i >= 0; i--){
-			length += children[0].getLength();
+			length += children[i].getLength();
 		}
 		this.length = length;
 	}
