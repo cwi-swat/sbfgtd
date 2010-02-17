@@ -6,8 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-// TODO This is broken
-
 /*
 S ::= Aab | bab
 A ::= B
@@ -16,17 +14,18 @@ B ::= b
 public class Ambiguous2 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
 	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
-	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	private final static ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
+	private final static ParseStackNode TERMINAL_ab = new TerminalParseStackNode("ab".getBytes());
+	private final static ParseStackNode TERMINAL_bab = new TerminalParseStackNode("bab".getBytes());
 	
 	public Ambiguous2(String start, byte[] input){
 		super(start, input);
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A, TERMINAL_a, NONTERMINAL_B);
+		expect(NONTERMINAL_A, TERMINAL_ab);
 		
-		expect(TERMINAL_b, TERMINAL_a, NONTERMINAL_B);
+		expect(TERMINAL_bab);
 	}
 	
 	public void A(){
