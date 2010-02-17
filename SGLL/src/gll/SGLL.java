@@ -1,5 +1,6 @@
 package gll;
 
+import gll.nodes.Alternative;
 import gll.nodes.INode;
 import gll.nodes.NonTerminalNode;
 import gll.nodes.TerminalNode;
@@ -137,7 +138,7 @@ public class SGLL implements IGLL{
 	
 	private void reduceNonTerminal(ParseStackFrame frame){// TODO Implement
 		Set<ParseStackFrame> edges = frame.getEdges();
-		if(edges.size() == 0){
+		if(edges.size() == 0 && frame.getLevel() == input.length){
 			INode[] results = frame.getResults();
 			for(int i = results.length - 1; i >= 0; i--){
 				parseResults.add(results[i]);
@@ -277,12 +278,16 @@ public class SGLL implements IGLL{
 			}
 		}while(todoList.size() > 0);
 		
+		// Return the result(s).
 		int nrOfParseResults = parseResults.size();
+		
+		if(nrOfParseResults == 1) return new NonTerminalNode("<START>", new INode[]{parseResults.get(0)});
+		
 		INode[] results = new INode[nrOfParseResults];
 		for(int i = nrOfParseResults - 1; i >= 0; i--){
 			results[i] = parseResults.get(i);
 		}
 		
-		return new NonTerminalNode("<START>", results);
+		return new NonTerminalNode("<START>", new INode[]{new Alternative(results)});
 	}
 }
