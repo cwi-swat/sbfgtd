@@ -54,7 +54,8 @@ public class ParseStackFrame{
 		
 		int nrOfStackNodes = stackFrame.stackNodes.length;
 		stackNodes = new ParseStackNode[nrOfStackNodes];
-		for(int i = nrOfStackNodes - 1; i >= 0; i--){
+		System.arraycopy(stackFrame.stackNodes, 0, stackNodes, 0, index);
+		for(int i = nrOfStackNodes - 1; i >= index; i--){
 			ParseStackNode node = stackFrame.stackNodes[i];
 			if(node.isNonTerminal()){
 				stackNodes[i] = new NonTerminalParseStackNode(node.getNonTerminalName());
