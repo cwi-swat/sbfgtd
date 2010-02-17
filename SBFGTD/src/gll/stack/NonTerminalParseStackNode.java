@@ -48,16 +48,24 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 		parseResults.add(result);
 	}
 	
+	public INode[] getResults(){
+		int nrOfR = parseResults.size();
+		INode[] results = new INode[nrOfR];
+		for(int j = nrOfR - 1; j >= 0; j--){
+			results[j] = parseResults.get(j);
+		}
+		return results;
+	}
+	
 	public INode getResult(){
-		List<INode> r = parseResults;
-		int nrOfR = r.size();
+		int nrOfR = parseResults.size();
 		if(nrOfR == 1){
-			return r.get(0);
+			return parseResults.get(0);
 		}
 		
 		INode[] alternatives = new INode[nrOfR];
 		for(int j = nrOfR - 1; j >= 0; j--){
-			alternatives[j] = r.get(j);
+			alternatives[j] = parseResults.get(j);
 		}
 		return new Alternative(alternatives);
 	}

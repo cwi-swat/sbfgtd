@@ -70,6 +70,11 @@ public class ParseStackFrame{
 		
 		merged.edges.addAll(stackFrame.edges);
 		
+		INode[] results = stackFrame.getCurrentNode().getResults();
+		for(int i = results.length - 1; i >= 0; i--){
+			stackNodes[index].addResult(results[i]);
+		}
+		
 		return merged;
 	}
 	
@@ -131,6 +136,7 @@ public class ParseStackFrame{
 	}
 	
 	public boolean isMergable(ParseStackFrame otherFrame){
+		if(level != otherFrame.level) return false;
 		if(index != otherFrame.index) return false;
 		
 		ParseStackNode[] otherStackNodes = otherFrame.stackNodes;
@@ -140,7 +146,7 @@ public class ParseStackFrame{
 			if(!stackNodes[i].isMergable(otherStackNodes[i])) return false;
 		}
 		
-		return (level == otherFrame.level);
+		return true;
 	}
 	
 	public int getNextLevel(){ // Unsafe operation; only works when a terminal is the next symbol.
