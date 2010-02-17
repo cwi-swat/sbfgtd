@@ -135,6 +135,6 @@ public class ParseStackFrame{
 	}
 	
 	public int getNextLevel(){ // Unsafe operation; only works when a terminal is the next symbol.
-		return (level + stackNodes[index + 1].getLength());
+		return (level + stackNodes[index].getLength());
 	}
 }

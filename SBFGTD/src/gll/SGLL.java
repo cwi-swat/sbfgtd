@@ -44,8 +44,6 @@ public class SGLL implements IGLL{
 		root = new NonTerminalParseStackNode(start);
 		rootFrame = new ParseStackFrame(root);
 		
-		todoList.add(rootFrame);
-		
 		lastIterationTodoList.add(rootFrame);
 	}
 	
@@ -182,6 +180,7 @@ public class SGLL implements IGLL{
 				copyOfStacksToExpand.remove(frame); // TODO Optimize.
 				
 				tryExpand(frame);
+				lastExpects = new ArrayList<ParseStackFrame>(); // Clear.
 			}
 			stackFrameBeingWorkedOn = null; // Clear.
 			copyOfStacksToExpand.addAll(lastIterationTodoList);
@@ -191,8 +190,8 @@ public class SGLL implements IGLL{
 	public INode parse(){
 		expand(lastIterationTodoList);
 		
-		for(int i = lastIterationTodoList.size() - 1; i >= 0; i--){
-			todoList.add(lastIterationTodoList.get(i));
+		for(int i = expandedStacks.size() - 1; i >= 0; i--){
+			todoList.add(expandedStacks.get(i));
 		}
 		
 		do{
@@ -247,7 +246,7 @@ public class SGLL implements IGLL{
 					ParseStackFrame frame = stacksToReduce.get(i);
 					copyOfLastIteration.remove(frame); // TODO Optimize.
 					
-					if(frame.isComplete()){
+					if(!frame.isComplete()){
 						reduceNonTerminals(frame);
 					}else{
 						stacksToExpand.add(frame);
