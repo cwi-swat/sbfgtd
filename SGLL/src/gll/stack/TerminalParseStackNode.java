@@ -34,6 +34,10 @@ public class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
+	public INode[] getResults(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public INode getResult(){
 		return result;
 	}

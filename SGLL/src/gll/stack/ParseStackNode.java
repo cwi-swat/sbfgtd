@@ -28,6 +28,8 @@ public abstract class ParseStackNode{
 	
 	public abstract void addResult(INode result);
 	
+	public abstract INode[] getResults();
+	
 	public abstract INode getResult();
 	
 	public abstract int getLength();
