@@ -11,9 +11,9 @@ S ::= Ab
 A ::= aa
 */
 public class Simple extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
-	private final ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
+	private final static ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
 	
 	public Simple(String start, byte[] input){
 		super(start, input);

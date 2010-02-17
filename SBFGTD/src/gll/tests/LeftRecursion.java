@@ -13,8 +13,8 @@ S ::= A
 A ::= Aa | a
 */
 public class LeftRecursion extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
 	public LeftRecursion(String start, byte[] input){
 		super(start, input);

@@ -14,9 +14,9 @@ A ::= Aa | aA
 B ::= a
 */
 public class MergeAndSplit extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
 	public MergeAndSplit(String start, byte[] input){
 		super(start, input);

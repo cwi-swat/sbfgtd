@@ -11,9 +11,9 @@ S ::= AA
 A ::= aa | a
 */
 public class Ambiguous3 extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
-	private final ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
 	
 	public Ambiguous3(String start, byte[] input){
 		super(start, input);

@@ -12,10 +12,10 @@ A ::= BB
 B ::= bb | b
 */
 public class Ambiguous4 extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
-	private final ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
-	private final ParseStackNode TERMINAL_bb = new TerminalParseStackNode("bb".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
+	private final static ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
+	private final static ParseStackNode TERMINAL_bb = new TerminalParseStackNode("bb".getBytes());
 	
 	public Ambiguous4(String start, byte[] input){
 		super(start, input);

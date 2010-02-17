@@ -14,12 +14,12 @@ B ::= A
 A ::= a
 */
 public class MergeAndSplit2 extends SGLL{
-	private final ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
-	private final ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
-	private final ParseStackNode NONTERMINAL_C = new NonTerminalParseStackNode("C");
-	private final ParseStackNode NONTERMINAL_D = new NonTerminalParseStackNode("D");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
-	private final ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
+	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
+	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
+	private final static ParseStackNode NONTERMINAL_C = new NonTerminalParseStackNode("C");
+	private final static ParseStackNode NONTERMINAL_D = new NonTerminalParseStackNode("D");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
 	
 	public MergeAndSplit2(String start, byte[] input){
 		super(start, input);

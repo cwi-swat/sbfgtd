@@ -12,8 +12,8 @@ import gll.stack.TerminalParseStackNode;
 S ::= SSS | SS | a
 */
 public class AmbiguousRecursive extends SGLL{
-	private final ParseStackNode NONTERMINAL_S = new NonTerminalParseStackNode("S");
-	private final ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
+	private final static ParseStackNode NONTERMINAL_S = new NonTerminalParseStackNode("S");
+	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
 	public AmbiguousRecursive(String start, byte[] input){
 		super(start, input);
