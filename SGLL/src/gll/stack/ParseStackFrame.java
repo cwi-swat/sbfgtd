@@ -54,8 +54,8 @@ public class ParseStackFrame{
 		
 		int nrOfStackNodes = stackFrame.stackNodes.length;
 		stackNodes = new ParseStackNode[nrOfStackNodes];
-		System.arraycopy(stackFrame.stackNodes, 0, stackNodes, 0, index);
-		for(int i = nrOfStackNodes - 1; i >= index; i--){
+		System.arraycopy(stackFrame.stackNodes, 0, stackNodes, 0, index + 1);
+		for(int i = nrOfStackNodes - 1; i > index; i--){
 			ParseStackNode node = stackFrame.stackNodes[i];
 			if(node.isNonTerminal()){
 				stackNodes[i] = new NonTerminalParseStackNode(node.getNonTerminalName());
@@ -105,6 +105,10 @@ public class ParseStackFrame{
 		return stackNodes[index];
 	}
 	
+	public ParseStackNode getNextNode(){
+		return stackNodes[index + 1];
+	}
+	
 	public boolean isComplete(){
 		return ((stackNodes.length - 1) == index);
 	}
@@ -140,6 +144,6 @@ public class ParseStackFrame{
 	}
 	
 	public int getNextLevel(){ // Unsafe operation; only works when a terminal is the next symbol.
-		return (level + stackNodes[index].getLength());
+		return (level + stackNodes[index + 1].getLength());
 	}
 }
