@@ -2,6 +2,7 @@ package gll;
 
 import gll.nodes.INode;
 import gll.nodes.NonTerminalNode;
+import gll.nodes.TerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackFrame;
 import gll.stack.ParseStackNode;
@@ -120,10 +121,15 @@ public class SGLL implements IGLL{
 			if(data[i] != input[location + i]) return; // Didn't match
 		}
 		
+		INode[] results = new INode[]{terminal.getResult()};
+		
 		Set<ParseStackFrame> edges = frame.getEdges();
 		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
 		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
+			ParseStackNode node = prevFrame.getCurrentNode();
+			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
+			
 			lastIterationTodoList.add(prevFrame);
 		}
 	}
