@@ -70,9 +70,11 @@ public class ParseStackFrame{
 		
 		merged.edges.addAll(stackFrame.edges);
 		
-		INode[] results = stackFrame.getCurrentNode().getResults();
-		for(int i = results.length - 1; i >= 0; i--){
-			stackNodes[index].addResult(results[i]);
+		if(index > -1){
+			INode[] results = stackFrame.getCurrentNode().getResults();
+			for(int i = results.length - 1; i >= 0; i--){
+				stackNodes[index].addResult(results[i]);
+			}
 		}
 		
 		return merged;
