@@ -87,9 +87,11 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			if(stackFrameBeingWorkedOn.isMergable(expectFrame)){ // Found left recursion
-				stackFrameBeingWorkedOn.addEdge(stackFrameBeingWorkedOn);
-				continue;
+			if(expectFrame.getNextNode().isNonTerminal()){ // Only check if we have a non terminal on the left side.
+				if(stackFrameBeingWorkedOn.isMergable(expectFrame)){ // Found left recursion
+					stackFrameBeingWorkedOn.addEdge(stackFrameBeingWorkedOn);
+					continue;
+				}
 			}
 			
 			// TODO Check for hidden left recursion.
