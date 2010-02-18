@@ -94,12 +94,15 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			// TODO Check for hidden left recursion.
+			// TODO Check for transitive self references.
+			
+			// TODO Check for opportunities to introduce 'cycles' on parallel stacks.
 			
 			lastIterationTodoList.add(expectFrame);
 		}
 	}
 	
+	// TODO Increase frame number when needed (self reference).
 	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
 		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
 		clone.moveToNextNode();
