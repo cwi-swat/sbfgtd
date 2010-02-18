@@ -96,9 +96,7 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			// TODO Check for transitive self references (more).
-			
-			// TODO Check for opportunities to introduce 'cycles' on parallel stacks (more).
+			// TODO Filter 'useless' cycles.
 			
 			possiblyMergeableStacks.add(expectFrame);
 			lastIterationTodoList.add(expectFrame);
