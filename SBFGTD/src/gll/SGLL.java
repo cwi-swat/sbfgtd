@@ -121,6 +121,13 @@ public class SGLL implements IGLL{
 			if(data[i] != input[location + i]) return; // Didn't match
 		}
 		
+		// Don't 'complete' the frame if it isn't done.
+		if(!frame.isComplete()){
+			frame.moveLevel(terminal.getLength());
+			lastIterationTodoList.add(frame);
+			return;
+		}
+		
 		INode[] results = frame.getResults();
 		
 		Set<ParseStackFrame> edges = frame.getEdges();
@@ -134,7 +141,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void reduceNonTerminal(ParseStackFrame frame){// TODO Implement
+	private void reduceNonTerminal(ParseStackFrame frame){
 		Set<ParseStackFrame> edges = frame.getEdges();
 		if(edges.size() == 0){
 			if(frame.getLevel() != input.length){
