@@ -80,6 +80,8 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 		
 		NonTerminalParseStackNode otherNode = (NonTerminalParseStackNode) other;
 		
+		if(length != otherNode.length) return false;
+		
 		return nonTerminal.equals(otherNode.nonTerminal);
 	}
 }
