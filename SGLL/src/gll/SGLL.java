@@ -68,6 +68,50 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	private boolean eliminateLeftNullable(ParseStackFrame frame){
+		boolean removedEdge = false;
+		
+		if(!frame.isProductive()){
+			Set<ParseStackFrame> edges = frame.getEdges();
+			Iterator<ParseStackFrame> edgesIterator = edges.iterator();
+			OUTER : while(edgesIterator.hasNext()){
+				ParseStackFrame edge = edgesIterator.next();
+				
+				boolean encounteredSelf = false;
+				List<ParseStackFrame> framesToCheck = new ArrayList<ParseStackFrame>();
+				Set<ParseStackFrame> framesChecked = new HashSet<ParseStackFrame>();
+				
+				framesToCheck.add(edge);
+				
+				while(framesToCheck.size() > 0){
+					ParseStackFrame frameToCheck = framesToCheck.remove(0);
+					if(framesChecked.contains(frameToCheck)) continue;
+					
+					framesChecked.add(frameToCheck);
+					
+					if(frameToCheck.isProductive()) break;
+					if(frameToCheck == frame){
+						encounteredSelf = true;
+						continue;
+					}
+					
+					edges = frameToCheck.getEdges();
+					edgesIterator = edges.iterator();
+					while(edgesIterator.hasNext()){
+						framesToCheck.add(edgesIterator.next());
+					}
+				}
+				if(encounteredSelf){ // Encountered left Nullable frame.
+					frame.removeEdge(edge);
+					removedEdge = true;
+					break OUTER;
+				}
+			}
+		}
+		
+		return removedEdge;
+	}
+	
 	private void tryExpand(ParseStackFrame frame){// TODO Implement
 		ParseStackNode node = frame.getNextNode();
 		if(node.isTerminal()){
@@ -81,10 +125,15 @@ public class SGLL implements IGLL{
 		// Merge stack if possible.
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackFrame expectFrame = lastExpects.get(i);
+			
 			for(int j = possiblyMergeableStacks.size() - 1; j >= 0; j--){
 				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(j);
 				if(possiblyAnAlternative.isMergable(expectFrame)){
 					possiblyAnAlternative.mergeWith(expectFrame);
+					
+					// Filter 'useless' cycles.
+					eliminateLeftNullable(possiblyAnAlternative);
+					
 					continue OUTER;
 				}
 			}
@@ -92,11 +141,16 @@ public class SGLL implements IGLL{
 			if(expectFrame.getNextNode().isNonTerminal()){ // Only check if we have a non terminal on the left side.
 				if(stackFrameBeingWorkedOn.isMergable(expectFrame)){ // Found left recursion
 					stackFrameBeingWorkedOn.addEdge(stackFrameBeingWorkedOn);
+
+					// Filter 'useless' cycles.
+					eliminateLeftNullable(stackFrameBeingWorkedOn);
+					
 					continue;
 				}
 			}
 			
-			// TODO Filter 'useless' cycles.
+			// Filter 'useless' cycles.
+			if(eliminateLeftNullable(expectFrame)) continue;
 			
 			possiblyMergeableStacks.add(expectFrame);
 			lastIterationTodoList.add(expectFrame);

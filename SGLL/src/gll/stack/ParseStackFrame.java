@@ -100,6 +100,10 @@ public class ParseStackFrame{
 		edges.add(edge);
 	}
 	
+	public void removeEdge(ParseStackFrame edge){
+		edges.remove(edge);
+	}
+	
 	public Set<ParseStackFrame> getEdges(){
 		return edges;
 	}
@@ -114,6 +118,16 @@ public class ParseStackFrame{
 	
 	public ParseStackNode getNextNode(){
 		return stackNodes[index + 1];
+	}
+	
+	public boolean isProductive(){
+		for(int i = stackNodes.length - 1; i >= 0; i--){
+			ParseStackNode node = stackNodes[i];
+			if(node.isTerminal()){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean isComplete(){
