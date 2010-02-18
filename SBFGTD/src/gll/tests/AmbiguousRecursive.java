@@ -6,8 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-// TODO This is broken (doesn't terminate).
-
 /*
 S ::= SSS | SS | a
 */
