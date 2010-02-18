@@ -53,10 +53,10 @@ public class TerminalParseStackNode extends ParseStackNode{
 		
 		byte[] otherTerminal = otherNode.terminal;
 		int terminalLength = terminal.length;
-		if(terminalLength == otherTerminal.length){
-			for(int i = terminalLength - 1; i >= 0; i--){
-				if(terminal[i] != otherTerminal[i]) return false;
-			}
+		if(terminalLength != otherTerminal.length) return false;
+		
+		for(int i = terminalLength - 1; i >= 0; i--){
+			if(terminal[i] != otherTerminal[i]) return false;
 		}
 		
 		return true;
