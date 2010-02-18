@@ -23,6 +23,7 @@ public class SGLL implements IGLL{
 	private ParseStackFrame stackFrameBeingWorkedOn;
 	private List<ParseStackFrame> lastIterationTodoList;
 	private List<ParseStackFrame> lastTerminalReducedStacks;
+	private List<ParseStackFrame> possiblyMergeableStacks;
 	private List<ParseStackFrame> expandedStacks;
 	
 	private List<ParseStackFrame> lastExpects;
@@ -38,6 +39,7 @@ public class SGLL implements IGLL{
 		
 		lastIterationTodoList = new ArrayList<ParseStackFrame>();
 		lastTerminalReducedStacks = new ArrayList<ParseStackFrame>();
+		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
 		expandedStacks = new ArrayList<ParseStackFrame>();
 		
 		lastExpects = new ArrayList<ParseStackFrame>();
@@ -79,8 +81,8 @@ public class SGLL implements IGLL{
 		// Merge stack if possible.
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackFrame expectFrame = lastExpects.get(i);
-			for(int j = lastIterationTodoList.size() - 1; j >= 0; j--){
-				ParseStackFrame possiblyAnAlternative = lastIterationTodoList.get(j);
+			for(int j = possiblyMergeableStacks.size() - 1; j >= 0; j--){
+				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(j);
 				if(possiblyAnAlternative.isMergable(expectFrame)){
 					possiblyAnAlternative.mergeWith(expectFrame);
 					continue OUTER;
@@ -94,15 +96,15 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			// TODO Check for transitive self references.
+			// TODO Check for transitive self references (more).
 			
-			// TODO Check for opportunities to introduce 'cycles' on parallel stacks.
+			// TODO Check for opportunities to introduce 'cycles' on parallel stacks (more).
 			
+			possiblyMergeableStacks.add(expectFrame);
 			lastIterationTodoList.add(expectFrame);
 		}
 	}
 	
-	// TODO Increase frame number when needed (self reference).
 	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
 		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
 		clone.moveToNextNode();
@@ -216,6 +218,8 @@ public class SGLL implements IGLL{
 			stackFrameBeingWorkedOn = null; // Clear.
 			copyOfStacksToExpand.addAll(lastIterationTodoList);
 		}while(copyOfStacksToExpand.size() > 0);
+		
+		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
 	}
 	
 	public INode parse(){
