@@ -1,13 +1,14 @@
 -Fix recognition issues.		*
 -Prune 'dead'/incomplete stacks		*
 -Fix GSS-result issues	*
--Discard all results of 'dead'/incomplete stacks
--Synchronize levels
--Merge stacks
+-Discard all results of 'dead'/incomplete stacks *
+-Synchronize levels *
+-Merge stacks *
 -Add epsilon support
--Fix left recursion
+-Fix termination problems with non-productive loops properly
+-Fix left recursion *
 -Add support for more complex patterns
--Output results
+-Output results *
 -Look-ahead
 -Add filters
 -Optimize
