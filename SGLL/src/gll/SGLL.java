@@ -112,7 +112,7 @@ public class SGLL implements IGLL{
 		return removedEdge;
 	}
 	
-	private void tryExpand(ParseStackFrame frame){// TODO Implement
+	private void tryExpand(ParseStackFrame frame){
 		ParseStackNode node = frame.getNextNode();
 		if(node.isTerminal()){
 			expandedStacks.add(frame);
@@ -126,10 +126,12 @@ public class SGLL implements IGLL{
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackFrame expectFrame = lastExpects.get(i);
 			
-			for(int j = possiblyMergeableStacks.size() - 1; j >= 0; j--){
+			for(int j = possiblyMergeableStacks.size() - 1; j >= 0; j--){ // Share (also handles left recursion).
 				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(j);
 				if(possiblyAnAlternative.isMergable(expectFrame)){
-					possiblyAnAlternative.mergeWith(expectFrame);
+					if(possiblyAnAlternative.isProductive() || possiblyAnAlternative != stackFrameBeingWorkedOn){ // Filter non-productive self loops.
+						possiblyAnAlternative.mergeWith(expectFrame);
+					}
 					
 					// Filter 'useless' cycles.
 					eliminateNonProductiveSelfRecursion(possiblyAnAlternative);
@@ -137,20 +139,6 @@ public class SGLL implements IGLL{
 					continue OUTER;
 				}
 			}
-			
-			if(expectFrame.getNextNode().isNonTerminal()){ // Only check if we have a non terminal on the left side.
-				if(stackFrameBeingWorkedOn.isMergable(expectFrame)){ // Found left recursion
-					stackFrameBeingWorkedOn.addEdge(stackFrameBeingWorkedOn);
-
-					// Filter 'useless' cycles.
-					eliminateNonProductiveSelfRecursion(stackFrameBeingWorkedOn);
-					
-					continue;
-				}
-			}
-			
-			// Filter 'useless' cycles.
-			if(eliminateNonProductiveSelfRecursion(expectFrame)) continue;
 			
 			possiblyMergeableStacks.add(expectFrame);
 			lastIterationTodoList.add(expectFrame);
