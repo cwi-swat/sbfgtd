@@ -68,7 +68,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private boolean eliminateLeftNullable(ParseStackFrame frame){
+	private boolean eliminateNonProductiveSelfRecursion(ParseStackFrame frame){
 		boolean removedEdge = false;
 		
 		if(!frame.isProductive()){
@@ -101,7 +101,7 @@ public class SGLL implements IGLL{
 						framesToCheck.add(edgesIterator.next());
 					}
 				}
-				if(encounteredSelf){ // Encountered left Nullable frame.
+				if(encounteredSelf){ // Encountered non productive self loop frame.
 					frame.removeEdge(edge);
 					removedEdge = true;
 					break OUTER;
@@ -132,7 +132,7 @@ public class SGLL implements IGLL{
 					possiblyAnAlternative.mergeWith(expectFrame);
 					
 					// Filter 'useless' cycles.
-					eliminateLeftNullable(possiblyAnAlternative);
+					eliminateNonProductiveSelfRecursion(possiblyAnAlternative);
 					
 					continue OUTER;
 				}
@@ -143,14 +143,14 @@ public class SGLL implements IGLL{
 					stackFrameBeingWorkedOn.addEdge(stackFrameBeingWorkedOn);
 
 					// Filter 'useless' cycles.
-					eliminateLeftNullable(stackFrameBeingWorkedOn);
+					eliminateNonProductiveSelfRecursion(stackFrameBeingWorkedOn);
 					
 					continue;
 				}
 			}
 			
 			// Filter 'useless' cycles.
-			if(eliminateLeftNullable(expectFrame)) continue;
+			if(eliminateNonProductiveSelfRecursion(expectFrame)) continue;
 			
 			possiblyMergeableStacks.add(expectFrame);
 			lastIterationTodoList.add(expectFrame);
