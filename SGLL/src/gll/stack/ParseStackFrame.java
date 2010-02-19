@@ -121,13 +121,7 @@ public class ParseStackFrame{
 	}
 	
 	public boolean isProductive(){
-		for(int i = stackNodes.length - 1; i >= 0; i--){
-			ParseStackNode node = stackNodes[i];
-			if(node.isTerminal()){
-				return true;
-			}
-		}
-		return false;
+		return (stackNodes.length > 1 || stackNodes[0].isTerminal());
 	}
 	
 	public boolean isComplete(){
