@@ -105,14 +105,6 @@ public class ParseStackFrame{
 		level += bytes;
 	}
 	
-	public void addEdge(ParseStackFrame edge){
-		edges.add(edge);
-	}
-	
-	public void removeEdge(ParseStackFrame edge){
-		edges.remove(edge);
-	}
-	
 	public Set<ParseStackFrame> getEdges(){
 		return edges;
 	}
