@@ -16,6 +16,8 @@ public class ParseStackFrame{
 	private int index;
 	private int level;
 	
+	private boolean containsSelfRecursion;
+	
 	public ParseStackFrame(ParseStackNode... stackNodes){
 		super();
 		
@@ -27,6 +29,7 @@ public class ParseStackFrame{
 		
 		index = -1;
 		level = 0;
+		containsSelfRecursion = false;
 	}
 	
 	public ParseStackFrame(ParseStackFrame prevStackFrame, ParseStackNode... stackNodes){
@@ -40,6 +43,7 @@ public class ParseStackFrame{
 		
 		index = -1;
 		level = 0;
+		containsSelfRecursion = false;
 	}
 	
 	public ParseStackFrame(ParseStackFrame stackFrame){
@@ -51,6 +55,7 @@ public class ParseStackFrame{
 		
 		index = stackFrame.index;
 		level = stackFrame.level;
+		containsSelfRecursion = stackFrame.containsSelfRecursion;
 		
 		int nrOfStackNodes = stackFrame.stackNodes.length;
 		stackNodes = new ParseStackNode[nrOfStackNodes];
@@ -65,10 +70,12 @@ public class ParseStackFrame{
 		}
 	}
 	
-	public ParseStackFrame mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
-		ParseStackFrame merged = this;
-		
-		merged.edges.addAll(stackFrame.edges);
+	public void markSelfRecursive(){
+		containsSelfRecursion = true;
+	}
+	
+	public void mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
+		edges.addAll(stackFrame.edges);
 		
 		if(index > -1){
 			INode[] results = stackFrame.getCurrentNode().getResults();
@@ -76,8 +83,6 @@ public class ParseStackFrame{
 				stackNodes[index].addResult(results[i]);
 			}
 		}
-		
-		return merged;
 	}
 	
 	public int getFrameNumber(){
