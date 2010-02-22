@@ -74,6 +74,10 @@ public class ParseStackFrame{
 		containsSelfRecursion = true;
 	}
 	
+	public boolean isMarkedSelfRecursive(){
+		return containsSelfRecursion;
+	}
+	
 	public void mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
 		edges.addAll(stackFrame.edges);
 		
