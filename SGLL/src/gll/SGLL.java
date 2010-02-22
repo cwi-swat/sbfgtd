@@ -68,16 +68,13 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private boolean eliminateNonProductiveSelfRecursion(ParseStackFrame frame){
-		boolean removedEdge = false;
-		
+	private boolean containsNonProductiveSelfRecursion(ParseStackFrame frame){
 		if(!frame.isProductive()){
 			Set<ParseStackFrame> edges = frame.getEdges();
 			Iterator<ParseStackFrame> edgesIterator = edges.iterator();
-			OUTER : while(edgesIterator.hasNext()){
+			while(edgesIterator.hasNext()){
 				ParseStackFrame edge = edgesIterator.next();
 				
-				boolean encounteredSelf = false;
 				List<ParseStackFrame> framesToCheck = new ArrayList<ParseStackFrame>();
 				Set<ParseStackFrame> framesChecked = new HashSet<ParseStackFrame>();
 				
@@ -90,9 +87,9 @@ public class SGLL implements IGLL{
 					framesChecked.add(frameToCheck);
 					
 					if(frameToCheck.isProductive()) break;
-					if(frameToCheck == frame){
-						encounteredSelf = true;
-						continue;
+					if(frameToCheck.hasSameFirstNonTerminal(frame)){
+						// Encountered non productive self loop frame.
+						return true;
 					}
 					
 					edges = frameToCheck.getEdges();
@@ -101,15 +98,10 @@ public class SGLL implements IGLL{
 						framesToCheck.add(edgesIterator.next());
 					}
 				}
-				if(encounteredSelf){ // Encountered non productive self loop frame.
-					frame.removeEdge(edge);
-					removedEdge = true;
-					break OUTER;
-				}
 			}
 		}
 		
-		return removedEdge;
+		return false;
 	}
 	
 	private void tryExpand(ParseStackFrame frame){
@@ -130,11 +122,10 @@ public class SGLL implements IGLL{
 				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(j);
 				if(possiblyAnAlternative.isMergable(expectFrame)){
 					if(possiblyAnAlternative.isProductive() || possiblyAnAlternative != stackFrameBeingWorkedOn){ // Filter non-productive self loops.
-						possiblyAnAlternative.mergeWith(expectFrame);
+						if(!containsNonProductiveSelfRecursion(expectFrame)){// Filter 'useless' cycles.
+							possiblyAnAlternative.mergeWith(expectFrame);
+						}
 					}
-					
-					// Filter 'useless' cycles.
-					eliminateNonProductiveSelfRecursion(possiblyAnAlternative);
 					
 					continue OUTER;
 				}
@@ -277,15 +268,18 @@ public class SGLL implements IGLL{
 			// Get least progressed stacks from the todo list.
 			List<ParseStackFrame> leastProgressedStacks = null;
 			int closestNextLevel = Integer.MAX_VALUE;
+			int closestNextLevelLength = -1;
 			Iterator<ParseStackFrame> todoListIterator = todoList.iterator();
 			while(todoListIterator.hasNext()){
 				ParseStackFrame frame = todoListIterator.next();
 				int nextLevel = frame.getNextLevel();
+				int nextLevelLength = frame.getNextLevelLength();
 				if(nextLevel < closestNextLevel){
 					leastProgressedStacks = new ArrayList<ParseStackFrame>();
 					leastProgressedStacks.add(frame);
 					closestNextLevel = nextLevel;
-				}else if(nextLevel == closestNextLevel){
+					closestNextLevelLength = nextLevelLength;
+				}else if(nextLevel == closestNextLevel && nextLevelLength == closestNextLevel){
 					leastProgressedStacks.add(frame);
 				}
 			}
