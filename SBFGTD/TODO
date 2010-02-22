@@ -11,6 +11,7 @@
 -Output results *
 -Look-ahead
 -Add filters
+-Add (parse) error handling.
 -Optimize
 -Add code generation
 -Add AST generation
