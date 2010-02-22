@@ -6,6 +6,14 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
+// TODO Broken
+
+/*
+S ::= AA | B
+A ::= CC | a
+B ::= AA | CC
+C ::= AA | a
+*/
 public class NotAUselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
 	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
@@ -41,8 +49,8 @@ public class NotAUselessSelfLoop extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		NotAUselessSelfLoop pusl = new NotAUselessSelfLoop("S", "aaa".getBytes());
-		INode result = pusl.parse();
+		NotAUselessSelfLoop nausl = new NotAUselessSelfLoop("S", "aaa".getBytes());
+		INode result = nausl.parse();
 		
 		System.out.println(result);
 	}
