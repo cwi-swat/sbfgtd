@@ -4,6 +4,7 @@
 -Discard all results of 'dead'/incomplete stacks *
 -Synchronize levels *
 -Merge stacks *
+-Fix ambiguity cluster synchronization
 -Add epsilon support
 -Fix termination problems with non-productive loops properly
 -Fix left recursion *
