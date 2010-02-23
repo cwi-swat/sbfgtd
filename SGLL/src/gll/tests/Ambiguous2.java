@@ -41,6 +41,6 @@ public class Ambiguous2 extends SGLL{
 		INode result = a2.parse();
 		
 		System.out.println(result);
-		System.out.println("parsetree([S(A(B(b)),ab),S(bab)]) <- good");
+		System.out.println("parsetree([S(bab),S(A(B(b)),ab)]) <- good");
 	}
 }

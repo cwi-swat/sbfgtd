@@ -68,7 +68,7 @@ public class SGLL implements IGLL{
 	
 	private boolean containsNonProductiveSelfRecursion(ParseStackFrame frame){
 		if(!frame.isProductive()){
-			Set<ParseStackFrame> edges = frame.getEdges();
+			List<ParseStackFrame> edges = frame.getEdges();
 			Iterator<ParseStackFrame> edgesIterator = edges.iterator();
 			while(edgesIterator.hasNext()){
 				ParseStackFrame edge = edgesIterator.next();
@@ -151,7 +151,7 @@ public class SGLL implements IGLL{
 			ParseStackFrame possiblyAnAlternative = possiblyMergeableStacksIterator.next();
 			if(possiblyAnAlternative.isMergable(frame)){
 				if(possiblyAnAlternative.isMarkedSelfRecursive()){
-					System.out.println("Detected possibly useless self recursion."); // Temp.
+					System.out.println("Possibly detected (useless) self recursion."); // Temp.
 				}
 				
 				possiblyAnAlternative.mergeWith(frame);
@@ -184,7 +184,7 @@ public class SGLL implements IGLL{
 		
 		List<INode> results = frame.getResults();
 		
-		Set<ParseStackFrame> edges = frame.getEdges();
+		List<ParseStackFrame> edges = frame.getEdges();
 		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
 		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
@@ -199,7 +199,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceNonTerminal(ParseStackFrame frame){
-		Set<ParseStackFrame> edges = frame.getEdges();
+		List<ParseStackFrame> edges = frame.getEdges();
 		if(edges.size() == 0){
 			if(frame.getLevel() != input.length){
 				return; // Parse failed.
@@ -244,7 +244,7 @@ public class SGLL implements IGLL{
 			stacksToExpand.addAll(lastIterationTodoList);
 		}while(stacksToExpand.size() > 0);
 		
-		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
+		possiblyMergeableStacks = new ArrayList<ParseStackFrame>(); // Clear.
 	}
 	
 	public INode parse(){
