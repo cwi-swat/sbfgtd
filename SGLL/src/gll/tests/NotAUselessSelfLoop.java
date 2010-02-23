@@ -6,8 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-// TODO Broken
-
 /*
 S ::= AA | B
 A ::= CC | a

@@ -314,9 +314,9 @@ public class SGLL implements IGLL{
 		if(nrOfParseResults == 0) throw new RuntimeException("Parse Error");
 		if(nrOfParseResults == 1) return new NonTerminalNode("parsetree", new INode[]{parseResults[0]});
 		
-		INode[] results = new INode[nrOfParseResults];
+		List<INode> results = new ArrayList<INode>(nrOfParseResults);
 		for(int i = nrOfParseResults - 1; i >= 0; i--){
-			results[i] = parseResults[i];
+			results.add(parseResults[i]);
 		}
 		
 		return new NonTerminalNode("parsetree", new INode[]{new Alternative(results)});
