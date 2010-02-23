@@ -9,10 +9,8 @@ import gll.stack.ParseStackNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class SGLL implements IGLL{
 	private final byte[] input;
@@ -74,7 +72,7 @@ public class SGLL implements IGLL{
 				ParseStackFrame edge = edgesIterator.next();
 				
 				List<ParseStackFrame> framesToCheck = new ArrayList<ParseStackFrame>();
-				Set<ParseStackFrame> framesChecked = new HashSet<ParseStackFrame>();
+				List<ParseStackFrame> framesChecked = new ArrayList<ParseStackFrame>();
 				
 				framesToCheck.add(edge);
 				
