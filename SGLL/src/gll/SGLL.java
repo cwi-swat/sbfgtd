@@ -205,9 +205,9 @@ public class SGLL implements IGLL{
 				return; // Parse failed.
 			}
 			
-			if(rootFrame == null){ // Only done once.
-				rootFrame = frame;
-			}
+			if(rootFrame != null) throw new RuntimeException("Something went wrong.");
+			
+			rootFrame = frame; // Only done once.
 			
 			return; // Root reached.
 		}
