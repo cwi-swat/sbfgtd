@@ -134,7 +134,7 @@ public class ParseStackFrame{
 	public List<INode> getResults(){
 		int nrOfNodes = stackNodes.length;
 		List<INode> results = new ArrayList<INode>(nrOfNodes);
-		for(int i = nrOfNodes - 1; i >= 0; i--){
+		for(int i = 0; i < nrOfNodes; i++){
 			results.add(stackNodes[i].getResult());
 		}
 		return results;
