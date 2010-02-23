@@ -22,11 +22,11 @@ public class Ambiguous5 extends SGLL{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A, NONTERMINAL_A);
+		expect(NONTERMINAL_A);
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B);
+		expect(NONTERMINAL_B, NONTERMINAL_B);
 	}
 	
 	public void B(){
@@ -40,5 +40,6 @@ public class Ambiguous5 extends SGLL{
 		INode result = a5.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree(S([A(B(a),B(aa)),A(B(aa),B(a))])) <- good");
 	}
 }

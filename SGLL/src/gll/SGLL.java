@@ -21,13 +21,13 @@ public class SGLL implements IGLL{
 	
 	// Updatable
 	private ParseStackFrame stackFrameBeingWorkedOn;
-	private Set<ParseStackFrame> lastIterationTodoList;
-	private Set<ParseStackFrame> possiblyMergeableStacks;
+	private List<ParseStackFrame> lastIterationTodoList;
+	private List<ParseStackFrame> possiblyMergeableStacks;
 	private List<ParseStackFrame> expandedStacks;
 	
 	private List<ParseStackFrame> lastExpects;
 	
-	private final List<INode> parseResults;
+	private ParseStackFrame rootFrame;
 	
 	public SGLL(String start, byte[] input){
 		super();
@@ -36,13 +36,13 @@ public class SGLL implements IGLL{
 		
 		todoList = new HashSet<ParseStackFrame>();
 		
-		lastIterationTodoList = new HashSet<ParseStackFrame>();
-		possiblyMergeableStacks = new HashSet<ParseStackFrame>();
+		lastIterationTodoList = new ArrayList<ParseStackFrame>();
+		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
 		expandedStacks = new ArrayList<ParseStackFrame>();
 		
 		lastExpects = new ArrayList<ParseStackFrame>();
 		
-		parseResults = new ArrayList<INode>();
+		rootFrame = null;
 		
 		// Initialize
 		ParseStackNode root = new NonTerminalParseStackNode(start);
@@ -186,10 +186,10 @@ public class SGLL implements IGLL{
 				return; // Parse failed.
 			}
 			
-			INode[] results = frame.getResults();
-			for(int i = results.length - 1; i >= 0; i--){
-				parseResults.add(results[i]);
+			if(rootFrame == null){ // Only done once.
+				rootFrame = frame;
 			}
+			
 			return; // Root reached.
 		}
 		
@@ -219,11 +219,11 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void expand(Set<ParseStackFrame> stacksToExpand){
+	private void expand(List<ParseStackFrame> stacksToExpand){
 		expandedStacks = new ArrayList<ParseStackFrame>();
 		
 		do{
-			lastIterationTodoList = new HashSet<ParseStackFrame>(); // Clear.
+			lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
 			Iterator<ParseStackFrame> stacksToExpandIterator = stacksToExpand.iterator();
 			while(stacksToExpandIterator.hasNext()){
 				ParseStackFrame frame = stacksToExpandIterator.next();
@@ -236,7 +236,7 @@ public class SGLL implements IGLL{
 			stacksToExpand.addAll(lastIterationTodoList);
 		}while(stacksToExpand.size() > 0);
 		
-		possiblyMergeableStacks = new HashSet<ParseStackFrame>();
+		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
 	}
 	
 	public INode parse(){
@@ -248,24 +248,21 @@ public class SGLL implements IGLL{
 		
 		do{
 			// Initialize.
-			lastIterationTodoList = new HashSet<ParseStackFrame>();
+			lastIterationTodoList = new ArrayList<ParseStackFrame>();
 			lastExpects = new ArrayList<ParseStackFrame>();
 			
 			// Get least progressed stacks from the todo list.
 			List<ParseStackFrame> leastProgressedStacks = null;
 			int closestNextLevel = Integer.MAX_VALUE;
-			int closestNextLevelLength = -1;
 			Iterator<ParseStackFrame> todoListIterator = todoList.iterator();
 			while(todoListIterator.hasNext()){
 				ParseStackFrame frame = todoListIterator.next();
 				int nextLevel = frame.getNextLevel();
-				int nextLevelLength = frame.getNextLevelLength();
 				if(nextLevel < closestNextLevel){
 					leastProgressedStacks = new ArrayList<ParseStackFrame>();
 					leastProgressedStacks.add(frame);
 					closestNextLevel = nextLevel;
-					closestNextLevelLength = nextLevelLength;
-				}else if(nextLevel == closestNextLevel && nextLevelLength == closestNextLevelLength){
+				}else if(nextLevel == closestNextLevel){
 					leastProgressedStacks.add(frame);
 				}
 			}
@@ -279,12 +276,12 @@ public class SGLL implements IGLL{
 			}
 			
 			// Do non-terminal reductions where possible.
-			Set<ParseStackFrame> stacksToExpand = new HashSet<ParseStackFrame>();
+			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
 			possiblyMergeableStacks = lastIterationTodoList;
 			List<ParseStackFrame> stacksToReduce = new ArrayList<ParseStackFrame>();
 			stacksToReduce.addAll(lastIterationTodoList);
 			do{
-				lastIterationTodoList = new HashSet<ParseStackFrame>(); // Clear.
+				lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
 				for(int i = stacksToReduce.size() - 1; i >= 0; i--){
 					ParseStackFrame frame = stacksToReduce.get(i);
 					
@@ -299,7 +296,7 @@ public class SGLL implements IGLL{
 				stacksToReduce.addAll(lastIterationTodoList);
 			}while(stacksToReduce.size() > 0);
 			
-			possiblyMergeableStacks = new HashSet<ParseStackFrame>(); // Clear.
+			possiblyMergeableStacks = new ArrayList<ParseStackFrame>(); // Clear.
 			
 			// Expand stacks.
 			expand(stacksToExpand);
@@ -311,14 +308,15 @@ public class SGLL implements IGLL{
 		}while(todoList.size() > 0);
 		
 		// Return the result(s).
-		int nrOfParseResults = parseResults.size();
+		INode[] parseResults = rootFrame.getResults();
+		int nrOfParseResults = parseResults.length;
 		
 		if(nrOfParseResults == 0) throw new RuntimeException("Parse Error");
-		if(nrOfParseResults == 1) return new NonTerminalNode("parsetree", new INode[]{parseResults.get(0)});
+		if(nrOfParseResults == 1) return new NonTerminalNode("parsetree", new INode[]{parseResults[0]});
 		
 		INode[] results = new INode[nrOfParseResults];
 		for(int i = nrOfParseResults - 1; i >= 0; i--){
-			results[i] = parseResults.get(i);
+			results[i] = parseResults[i];
 		}
 		
 		return new NonTerminalNode("parsetree", new INode[]{new Alternative(results)});

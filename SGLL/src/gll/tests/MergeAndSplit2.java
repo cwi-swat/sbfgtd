@@ -53,5 +53,6 @@ public class MergeAndSplit2 extends SGLL{
 		INode result = ms2.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S(D(C(B(A(a)),aa))),S(D(C(B(A(a)),a)),a)]) <- good");
 	}
 }

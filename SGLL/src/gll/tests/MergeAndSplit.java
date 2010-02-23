@@ -8,7 +8,7 @@ import gll.stack.TerminalParseStackNode;
 
 /*
 S ::= aAa
-A ::= Aa | aA
+A ::= Ba | aB
 B ::= a
 */
 public class MergeAndSplit extends SGLL{
@@ -39,5 +39,6 @@ public class MergeAndSplit extends SGLL{
 		INode result = ms.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree(S(a,[A(a,B(a)),A(B(a),a)],a)) <- good");
 	}
 }

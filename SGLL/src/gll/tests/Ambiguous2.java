@@ -6,6 +6,8 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
+// TODO Broken
+
 /*
 S ::= Aab | bab
 A ::= B
@@ -41,5 +43,6 @@ public class Ambiguous2 extends SGLL{
 		INode result = a2.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S(A(B(b)),ab),S(bab)]) <- good");
 	}
 }

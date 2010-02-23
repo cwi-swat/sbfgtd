@@ -40,5 +40,6 @@ public class Ambiguous4 extends SGLL{
 		INode result = a4.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S(A(B(b),B(b)),A(B(bb),B(bb))),S([A(B(bb),B(b)),A(B(b),B(bb))],[A(B(bb),B(b)),A(B(b),B(bb))]),S(A(B(bb),B(bb)),A(B(b),B(b)))]) <- good");
 	}
 }

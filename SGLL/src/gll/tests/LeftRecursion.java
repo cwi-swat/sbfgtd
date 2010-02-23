@@ -33,5 +33,6 @@ public class LeftRecursion extends SGLL{
 		INode result = lr.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree(S(A(A(A(a),a),a))) <- good");
 	}
 }
