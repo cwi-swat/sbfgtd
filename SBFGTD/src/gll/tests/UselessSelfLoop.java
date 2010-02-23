@@ -43,5 +43,6 @@ public class UselessSelfLoop extends SGLL{
 		INode result = usl.parse();
 		
 		System.out.println(result);
+		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good");
 	}
 }

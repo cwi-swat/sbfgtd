@@ -32,5 +32,6 @@ public class Simple extends SGLL{
 		INode result = s.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree(S(A(aa),b)) <- good");
 	}
 }

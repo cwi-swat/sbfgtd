@@ -6,8 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-// TODO Broken
-
 /*
 S ::= SSS | SS | a
 */
@@ -32,5 +30,6 @@ public class AmbiguousRecursive extends SGLL{
 		INode result = ar.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S(S(a),S(S(a),S(a))),S(S(S(a),S(a)),S(a)),S(S(a),S(a),S(a))]) <- good");
 	}
 }

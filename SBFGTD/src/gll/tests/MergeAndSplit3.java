@@ -6,8 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
-// TODO Broken.
-
 /*
 S ::= A | C
 A ::= Ba | a
@@ -51,5 +49,6 @@ public class MergeAndSplit3 extends SGLL{
 		INode result = ms3.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))]) <- good");
 	}
 }

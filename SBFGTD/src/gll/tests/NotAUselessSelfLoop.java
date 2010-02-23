@@ -53,5 +53,6 @@ public class NotAUselessSelfLoop extends SGLL{
 		INode result = nausl.parse();
 		
 		System.out.println(result);
+		System.out.println("parsetree([S([B(A(a),A(C(a),C(a))),B(A(C(a),C(a)),A(a)),B(C(A(a),A(a)),C(a)),B(C(a)),C(A(a),A(a))]),S(A(a),A(C(a),C(a))),S(A(C(a),C(a)),A(a))]) <- good");
 	}
 }
