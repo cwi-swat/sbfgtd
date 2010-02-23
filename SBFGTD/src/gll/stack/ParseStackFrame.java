@@ -3,16 +3,12 @@ package gll.stack;
 import gll.nodes.INode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ParseStackFrame{
-	private final Set<ParseStackFrame> edges;
+	private final List<ParseStackFrame> edges;
 	
 	private final ParseStackNode[] stackNodes;
-	
-	private final int frameNumber;
 	
 	// Updatable
 	private int index;
@@ -23,9 +19,7 @@ public class ParseStackFrame{
 	public ParseStackFrame(ParseStackNode... stackNodes){
 		super();
 		
-		this.edges = new HashSet<ParseStackFrame>();
-		
-		this.frameNumber = 0;
+		this.edges = new ArrayList<ParseStackFrame>();
 		
 		this.stackNodes = stackNodes;
 		
@@ -37,10 +31,9 @@ public class ParseStackFrame{
 	public ParseStackFrame(ParseStackFrame prevStackFrame, ParseStackNode... stackNodes){
 		super();
 		
-		this.edges = new HashSet<ParseStackFrame>();
+		this.edges = new ArrayList<ParseStackFrame>();
 		edges.add(prevStackFrame);
 		
-		this.frameNumber = prevStackFrame.frameNumber + 1;
 		this.stackNodes = stackNodes;
 		
 		index = -1;
@@ -52,8 +45,6 @@ public class ParseStackFrame{
 		super();
 		
 		edges = stackFrame.edges;
-		
-		frameNumber = stackFrame.frameNumber;
 		
 		index = stackFrame.index;
 		level = stackFrame.level;
@@ -80,21 +71,6 @@ public class ParseStackFrame{
 		return containsSelfRecursion;
 	}
 	
-	public void mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
-		edges.addAll(stackFrame.edges);
-		
-		if(index > -1){
-			INode[] results = stackFrame.getCurrentNode().getResults();
-			for(int i = results.length - 1; i >= 0; i--){
-				stackNodes[index].addResult(results[i]);
-			}
-		}
-	}
-	
-	public int getFrameNumber(){
-		return frameNumber;
-	}
-	
 	public int getLevel(){
 		return level;
 	}
@@ -107,7 +83,7 @@ public class ParseStackFrame{
 		level += bytes;
 	}
 	
-	public Set<ParseStackFrame> getEdges(){
+	public List<ParseStackFrame> getEdges(){
 		return edges;
 	}
 	
@@ -160,6 +136,23 @@ public class ParseStackFrame{
 		}
 		
 		return true;
+	}
+	
+	public void mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
+		List<ParseStackFrame> otherEdges = stackFrame.edges;
+		for(int i = otherEdges.size() - 1; i >= 0; i--){ // Make sure every edge is unique.
+			ParseStackFrame edge = otherEdges.get(i);
+			if(!edges.contains(edge)){
+				edges.add(edge);
+			}
+		}
+		
+		if(index > -1){
+			INode[] results = stackFrame.getCurrentNode().getResults();
+			for(int i = results.length - 1; i >= 0; i--){
+				stackNodes[index].addResult(results[i]);
+			}
+		}
 	}
 	
 	public boolean hasSameFirstNonTerminal(ParseStackFrame otherFrame){ // Assumes this frame is 'non-productive'
