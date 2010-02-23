@@ -145,6 +145,22 @@ public class SGLL implements IGLL{
 		return clone;
 	}
 	
+	private boolean tryMerge(ParseStackFrame frame){
+		Iterator<ParseStackFrame> possiblyMergeableStacksIterator = possiblyMergeableStacks.iterator();
+		while(possiblyMergeableStacksIterator.hasNext()){
+			ParseStackFrame possiblyAnAlternative = possiblyMergeableStacksIterator.next();
+			if(possiblyAnAlternative.isMergable(frame)){
+				if(possiblyAnAlternative.isMarkedSelfRecursive()){
+					System.out.println("Detected possibly useless self recursion."); // Temp.
+				}
+				
+				possiblyAnAlternative.mergeWith(frame);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void reduceTerminal(ParseStackFrame frame){
 		frame.moveToNextNode();
 		ParseStackNode terminal = frame.getCurrentNode();
@@ -175,6 +191,9 @@ public class SGLL implements IGLL{
 			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
+			if(tryMerge(prevFrame)) continue;
+
+			possiblyMergeableStacks.add(prevFrame);
 			lastIterationTodoList.add(prevFrame);
 		}
 	}
@@ -196,23 +215,12 @@ public class SGLL implements IGLL{
 		INode[] results = frame.getResults();
 		
 		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
-		OUTER : while(edgesIterator.hasNext()){
+		while(edgesIterator.hasNext()){
 			ParseStackFrame prevFrame = edgesIterator.next();
 			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
-			Iterator<ParseStackFrame> possiblyMergeableStacksIterator = possiblyMergeableStacks.iterator();
-			while(possiblyMergeableStacksIterator.hasNext()){
-				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacksIterator.next();
-				if(possiblyAnAlternative.isMergable(prevFrame)){
-					if(possiblyAnAlternative.isMarkedSelfRecursive()){
-						System.out.println("Self recursive."); // Temp.
-					}
-					
-					possiblyAnAlternative.mergeWith(prevFrame);
-					continue OUTER;
-				}
-			}
+			if(tryMerge(prevFrame)) continue;
 			
 			possiblyMergeableStacks.add(prevFrame);
 			lastIterationTodoList.add(prevFrame);
@@ -277,7 +285,6 @@ public class SGLL implements IGLL{
 			
 			// Do non-terminal reductions where possible.
 			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
-			possiblyMergeableStacks = lastIterationTodoList;
 			List<ParseStackFrame> stacksToReduce = new ArrayList<ParseStackFrame>();
 			stacksToReduce.addAll(lastIterationTodoList);
 			do{
