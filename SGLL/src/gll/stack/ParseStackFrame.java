@@ -2,7 +2,9 @@ package gll.stack;
 
 import gll.nodes.INode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ParseStackFrame{
@@ -129,11 +131,11 @@ public class ParseStackFrame{
 		return ((stackNodes.length - 1) == index);
 	}
 	
-	public INode[] getResults(){
+	public List<INode> getResults(){
 		int nrOfNodes = stackNodes.length;
-		INode[] results = new INode[nrOfNodes];
+		List<INode> results = new ArrayList<INode>(nrOfNodes);
 		for(int i = nrOfNodes - 1; i >= 0; i--){
-			results[i] = stackNodes[i].getResult();
+			results.add(stackNodes[i].getResult());
 		}
 		return results;
 	}
