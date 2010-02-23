@@ -230,7 +230,6 @@ public class SGLL implements IGLL{
 	private void expand(List<ParseStackFrame> stacksToExpand){
 		expandedStacks = new ArrayList<ParseStackFrame>();
 		
-		possiblyMergeableStacks.addAll(stacksToExpand); // Test
 		do{
 			lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
 			Iterator<ParseStackFrame> stacksToExpandIterator = stacksToExpand.iterator();
