@@ -17,7 +17,7 @@ import java.util.Set;
 public class SGLL implements IGLL{
 	private final byte[] input;
 	
-	private final Set<ParseStackFrame> todoList;
+	private final List<ParseStackFrame> todoList;
 	
 	// Updatable
 	private ParseStackFrame stackFrameBeingWorkedOn;
@@ -34,7 +34,7 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		todoList = new HashSet<ParseStackFrame>();
+		todoList = new ArrayList<ParseStackFrame>();
 		
 		lastIterationTodoList = new ArrayList<ParseStackFrame>();
 		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
