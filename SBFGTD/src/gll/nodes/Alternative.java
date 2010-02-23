@@ -1,29 +1,33 @@
 package gll.nodes;
 
+import java.util.List;
+
 public class Alternative implements INode{
-	private final INode[] alternatives;
+	private final List<INode> alternatives;
 	
-	public Alternative(INode[] alternatives){
+	public Alternative(List<INode> alternatives){
 		super();
 		
 		this.alternatives = alternatives;
 	}
 	
 	public int getLength(){
-		return alternatives[0].getLength(); // All the alternatives will have the same length.
+		return alternatives.get(0).getLength(); // All the alternatives will have the same length.
 	}
 	
 	public String toString(){
+		if(alternatives.size() == 1) return alternatives.get(0).toString();
+		
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append('[');
-		for(int i = alternatives.length - 1; i >= 2; i--){
-			sb.append(alternatives[i]);
+		for(int i = alternatives.size() - 1; i >= 2; i--){
+			sb.append(alternatives.get(i));
 			sb.append(',');
 		}
-		sb.append(alternatives[1]);
+		sb.append(alternatives.get(1));
 		sb.append(',');
-		sb.append(alternatives[0]);
+		sb.append(alternatives.get(0));
 		sb.append(']');
 		
 		return sb.toString();
