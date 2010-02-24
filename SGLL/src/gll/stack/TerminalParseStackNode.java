@@ -3,6 +3,8 @@ package gll.stack;
 import gll.nodes.INode;
 import gll.nodes.TerminalNode;
 
+import java.util.List;
+
 public class TerminalParseStackNode extends ParseStackNode{
 	private final byte[] terminal;
 	private final INode result;
@@ -34,7 +36,7 @@ public class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public INode[] getResults(){
+	public List<INode> getResults(){
 		throw new UnsupportedOperationException();
 	}
 	

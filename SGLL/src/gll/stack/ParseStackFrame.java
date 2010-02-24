@@ -150,9 +150,9 @@ public class ParseStackFrame{
 		}
 		
 		if(index > -1){
-			INode[] results = stackFrame.getCurrentNode().getResults();
-			for(int i = results.length - 1; i >= 0; i--){
-				stackNodes[index].addResult(results[i]);
+			List<INode> results = stackFrame.getCurrentNode().getResults();
+			for(int i = results.size() - 1; i >= 0; i--){
+				stackNodes[index].addResult(results.get(i));
 			}
 		}
 	}
