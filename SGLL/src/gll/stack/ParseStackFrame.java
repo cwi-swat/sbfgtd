@@ -140,10 +140,12 @@ public class ParseStackFrame{
 	
 	public void mergeWith(ParseStackFrame stackFrame){ // NOTE: assuming they are indeed mergable.
 		List<ParseStackFrame> otherEdges = stackFrame.edges;
-		for(int i = otherEdges.size() - 1; i >= 0; i--){ // Make sure every edge is unique.
-			ParseStackFrame edge = otherEdges.get(i);
-			if(!edges.contains(edge)){
-				edges.add(edge);
+		if(edges != otherEdges){
+			for(int i = otherEdges.size() - 1; i >= 0; i--){ // Make sure every edge is unique.
+				ParseStackFrame edge = otherEdges.get(i);
+				if(!edges.contains(edge)){
+					edges.add(edge);
+				}
 			}
 		}
 		
