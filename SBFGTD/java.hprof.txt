@@ -1,0 +1,270 @@
+JAVA PROFILE 1.0.1, created Wed Feb 24 10:37:14 2010
+
+Header for -agentlib:hprof (or -Xrunhprof) ASCII Output (J2SE 1.5 JVMTI based)
+
+@(#)jvm.hprof.txt	1.3 04/02/09
+
+ Copyright (c) 2004 Sun Microsystems, Inc. All  Rights Reserved.
+
+WARNING!  This file format is under development, and is subject to
+change without notice.
+
+This file contains the following types of records:
+
+THREAD START
+THREAD END      mark the lifetime of Java threads
+
+TRACE           represents a Java stack trace.  Each trace consists
+                of a series of stack frames.  Other records refer to
+                TRACEs to identify (1) where object allocations have
+                taken place, (2) the frames in which GC roots were
+                found, and (3) frequently executed methods.
+
+HEAP DUMP       is a complete snapshot of all live objects in the Java
+                heap.  Following distinctions are made:
+
+                ROOT    root set as determined by GC
+                CLS     classes 
+                OBJ     instances
+                ARR     arrays
+
+SITES           is a sorted list of allocation sites.  This identifies
+                the most heavily allocated object types, and the TRACE
+                at which those allocations occurred.
+
+CPU SAMPLES     is a statistical profile of program execution.  The VM
+                periodically samples all running threads, and assigns
+                a quantum to active TRACEs in those threads.  Entries
+                in this record are TRACEs ranked by the percentage of
+                total quanta they consumed; top-ranked TRACEs are
+                typically hot spots in the program.
+
+CPU TIME        is a profile of program execution obtained by measuring
+                the time spent in individual methods (excluding the time
+                spent in callees), as well as by counting the number of
+                times each method is called. Entries in this record are
+                TRACEs ranked by the percentage of total CPU time. The
+                "count" field indicates the number of times each TRACE 
+                is invoked.
+
+MONITOR TIME    is a profile of monitor contention obtained by measuring
+                the time spent by a thread waiting to enter a monitor.
+                Entries in this record are TRACEs ranked by the percentage
+                of total monitor contention time and a brief description
+                of the monitor.  The "count" field indicates the number of 
+                times the monitor was contended at that TRACE.
+
+MONITOR DUMP    is a complete snapshot of all the monitors and threads in 
+                the System.
+
+HEAP DUMP, SITES, CPU SAMPLES|TIME and MONITOR DUMP|TIME records are generated 
+at program exit.  They can also be obtained during program execution by typing 
+Ctrl-\ (on Solaris) or by typing Ctrl-Break (on Win32).
+
+--------
+
+THREAD START (obj=50000120, id = 200004, name="Signal Dispatcher", group="system")
+THREAD START (obj=50000120, id = 200001, name="main", group="main")
+THREAD START (obj=50000120, id = 200006, name="SIGTERM handler", group="system")
+THREAD END (id = 200006)
+THREAD END (id = 200002)
+TRACE 300062:
+	gll.stack.ParseStackFrame.isMergable(ParseStackFrame.java:134)
+	gll.SGLL.tryMerge(SGLL.java:149)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300068:
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:145)
+	gll.SGLL.tryMerge(SGLL.java:154)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300064:
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:144)
+	gll.SGLL.tryMerge(SGLL.java:154)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300066:
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:56)
+	gll.SGLL.updateFrame(SGLL.java:138)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300076:
+	gll.nodes.Alternative.getLength(Alternative.java:15)
+	gll.nodes.NonTerminalNode.<init>(NonTerminalNode.java:20)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300073:
+	gll.stack.NonTerminalParseStackNode.getResults(NonTerminalParseStackNode.java:55)
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:151)
+	gll.SGLL.tryMerge(SGLL.java:154)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+TRACE 300069:
+	gll.SGLL.parse(SGLL.java:296)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300070:
+	gll.stack.NonTerminalParseStackNode.addResult(NonTerminalParseStackNode.java:48)
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:153)
+	gll.SGLL.tryMerge(SGLL.java:154)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+TRACE 300060:
+	java.util.ArrayList.<init>(ArrayList.java:113)
+	java.util.ArrayList.<init>(ArrayList.java:120)
+	gll.stack.NonTerminalParseStackNode.<init>(NonTerminalParseStackNode.java:20)
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:59)
+TRACE 300061:
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:54)
+	gll.SGLL.updateFrame(SGLL.java:138)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300080:
+	gll.SGLL.reduceNonTerminal(SGLL.java:216)
+	gll.SGLL.parse(SGLL.java:296)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300088:
+	java.lang.Shutdown.halt0(Shutdown.java:Unknown line)
+	java.lang.Shutdown.halt(Shutdown.java:145)
+	java.lang.Shutdown.exit(Shutdown.java:219)
+	java.lang.Terminator$1.handle(Terminator.java:35)
+TRACE 300024:
+	java.security.SecureClassLoader.getPermissions(SecureClassLoader.java:178)
+	java.net.URLClassLoader.getPermissions(URLClassLoader.java:439)
+	sun.misc.Launcher$AppClassLoader.getPermissions(Launcher.java:276)
+	java.security.SecureClassLoader.getProtectionDomain(SecureClassLoader.java:192)
+TRACE 300036:
+	java.lang.ClassLoader.defineClass1(ClassLoader.java:Unknown line)
+	java.lang.ClassLoader.defineClass(ClassLoader.java:620)
+	java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+	java.net.URLClassLoader.defineClass(URLClassLoader.java:260)
+TRACE 300053:
+	java.util.ArrayList.<init>(ArrayList.java:113)
+	gll.stack.ParseStackFrame.getResults(ParseStackFrame.java:112)
+	gll.SGLL.reduceNonTerminal(SGLL.java:213)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300054:
+	gll.stack.ParseStackFrame.isMergable(ParseStackFrame.java:128)
+	gll.SGLL.tryMerge(SGLL.java:149)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300055:
+	java.util.ArrayList.indexOf(ArrayList.java:214)
+	java.util.ArrayList.contains(ArrayList.java:201)
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:145)
+	gll.SGLL.tryExpand(SGLL.java:122)
+TRACE 300056:
+	java.util.ArrayList.<init>(ArrayList.java:113)
+	java.util.ArrayList.<init>(ArrayList.java:120)
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:34)
+	gll.SGLL.expect(SGLL.java:55)
+TRACE 300057:
+	java.util.ArrayList.RangeCheck(ArrayList.java:545)
+	java.util.ArrayList.get(ArrayList.java:321)
+	gll.nodes.NonTerminalNode.<init>(NonTerminalNode.java:20)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+TRACE 300058:
+	java.util.ArrayList.ensureCapacity(ArrayList.java:162)
+	java.util.ArrayList.add(ArrayList.java:351)
+	gll.stack.NonTerminalParseStackNode.addResult(NonTerminalParseStackNode.java:48)
+	gll.SGLL.updateFrame(SGLL.java:141)
+TRACE 300059:
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:45)
+	gll.SGLL.updateFrame(SGLL.java:138)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300063:
+	gll.SGLL.callMethod(SGLL.java:63)
+	gll.SGLL.tryExpand(SGLL.java:112)
+	gll.SGLL.expand(SGLL.java:237)
+	gll.SGLL.parse(SGLL.java:309)
+TRACE 300065:
+	gll.SGLL.callMethod(SGLL.java:62)
+	gll.SGLL.tryExpand(SGLL.java:112)
+	gll.SGLL.expand(SGLL.java:237)
+	gll.SGLL.parse(SGLL.java:309)
+TRACE 300071:
+	gll.SGLL.parse(SGLL.java:292)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300072:
+	gll.stack.NonTerminalParseStackNode.<init>(NonTerminalParseStackNode.java:20)
+	gll.stack.ParseStackFrame.<init>(ParseStackFrame.java:59)
+	gll.SGLL.updateFrame(SGLL.java:138)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+TRACE 300074:
+	gll.tests.AmbiguousRecursive.S(AmbiguousRecursive.java:23)
+	sun.reflect.GeneratedMethodAccessor1.invoke(<Unknown Source>:Unknown line)
+	sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	java.lang.reflect.Method.invoke(Method.java:585)
+TRACE 300075:
+	java.lang.Object.getClass(Object.java:Unknown line)
+	gll.SGLL.callMethod(SGLL.java:62)
+	gll.SGLL.tryExpand(SGLL.java:112)
+	gll.SGLL.expand(SGLL.java:237)
+TRACE 300077:
+	gll.SGLL.updateFrame(SGLL.java:138)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300078:
+	gll.SGLL.reduceTerminal(SGLL.java:190)
+	gll.SGLL.parse(SGLL.java:283)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300079:
+	sun.reflect.Reflection.getClassAccessFlags(Reflection.java:Unknown line)
+	sun.reflect.Reflection.quickCheckMemberAccess(Reflection.java:51)
+	java.lang.reflect.Method.invoke(Method.java:571)
+	gll.SGLL.callMethod(SGLL.java:63)
+TRACE 300081:
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+	gll.tests.AmbiguousRecursive.main(AmbiguousRecursive.java:38)
+TRACE 300082:
+	gll.stack.ParseStackFrame.mergeWith(ParseStackFrame.java:151)
+	gll.SGLL.tryMerge(SGLL.java:154)
+	gll.SGLL.reduceNonTerminal(SGLL.java:220)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300083:
+	gll.stack.NonTerminalParseStackNode.addResult(NonTerminalParseStackNode.java:48)
+	gll.SGLL.updateFrame(SGLL.java:141)
+	gll.SGLL.reduceNonTerminal(SGLL.java:218)
+	gll.SGLL.parse(SGLL.java:296)
+TRACE 300084:
+	gll.SGLL.expect(SGLL.java:55)
+	gll.tests.AmbiguousRecursive.S(AmbiguousRecursive.java:21)
+	sun.reflect.GeneratedMethodAccessor1.invoke(<Unknown Source>:Unknown line)
+	sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+CPU SAMPLES BEGIN (total = 1968) Wed Feb 24 10:37:34 2010
+rank   self  accum   count trace method
+   1 90.14% 90.14%    1774 300062 gll.stack.ParseStackFrame.isMergable
+   2  4.37% 94.51%      86 300068 gll.stack.ParseStackFrame.mergeWith
+   3  1.78% 96.29%      35 300064 gll.stack.ParseStackFrame.mergeWith
+   4  0.66% 96.95%      13 300066 gll.stack.ParseStackFrame.<init>
+   5  0.66% 97.61%      13 300076 gll.nodes.Alternative.getLength
+   6  0.46% 98.07%       9 300073 gll.stack.NonTerminalParseStackNode.getResults
+   7  0.20% 98.27%       4 300069 gll.SGLL.parse
+   8  0.20% 98.48%       4 300070 gll.stack.NonTerminalParseStackNode.addResult
+   9  0.10% 98.58%       2 300060 java.util.ArrayList.<init>
+  10  0.10% 98.68%       2 300061 gll.stack.ParseStackFrame.<init>
+  11  0.10% 98.78%       2 300080 gll.SGLL.reduceNonTerminal
+  12  0.10% 98.88%       2 300088 java.lang.Shutdown.halt0
+  13  0.05% 98.93%       1 300024 java.security.SecureClassLoader.getPermissions
+  14  0.05% 98.98%       1 300036 java.lang.ClassLoader.defineClass1
+  15  0.05% 99.03%       1 300053 java.util.ArrayList.<init>
+  16  0.05% 99.09%       1 300054 gll.stack.ParseStackFrame.isMergable
+  17  0.05% 99.14%       1 300055 java.util.ArrayList.indexOf
+  18  0.05% 99.19%       1 300056 java.util.ArrayList.<init>
+  19  0.05% 99.24%       1 300057 java.util.ArrayList.RangeCheck
+  20  0.05% 99.29%       1 300058 java.util.ArrayList.ensureCapacity
+  21  0.05% 99.34%       1 300059 gll.stack.ParseStackFrame.<init>
+  22  0.05% 99.39%       1 300063 gll.SGLL.callMethod
+  23  0.05% 99.44%       1 300065 gll.SGLL.callMethod
+  24  0.05% 99.49%       1 300071 gll.SGLL.parse
+  25  0.05% 99.54%       1 300072 gll.stack.NonTerminalParseStackNode.<init>
+  26  0.05% 99.59%       1 300074 gll.tests.AmbiguousRecursive.S
+  27  0.05% 99.64%       1 300075 java.lang.Object.getClass
+  28  0.05% 99.70%       1 300077 gll.SGLL.updateFrame
+  29  0.05% 99.75%       1 300078 gll.SGLL.reduceTerminal
+  30  0.05% 99.80%       1 300079 sun.reflect.Reflection.getClassAccessFlags
+  31  0.05% 99.85%       1 300081 gll.SGLL.reduceNonTerminal
+  32  0.05% 99.90%       1 300082 gll.stack.ParseStackFrame.mergeWith
+  33  0.05% 99.95%       1 300083 gll.stack.NonTerminalParseStackNode.addResult
+  34  0.05% 100.00%       1 300084 gll.SGLL.expect
+CPU SAMPLES END

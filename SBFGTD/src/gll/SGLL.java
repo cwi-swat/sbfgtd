@@ -9,7 +9,6 @@ import gll.stack.ParseStackNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class SGLL implements IGLL{
@@ -27,6 +26,8 @@ public class SGLL implements IGLL{
 	
 	private ParseStackFrame rootFrame;
 	
+	private int location;
+	
 	public SGLL(String start, byte[] input){
 		super();
 		
@@ -41,6 +42,8 @@ public class SGLL implements IGLL{
 		lastExpects = new ArrayList<ParseStackFrame>();
 		
 		rootFrame = null;
+		
+		location = 0;
 		
 		// Initialize
 		ParseStackNode root = new NonTerminalParseStackNode(start);
@@ -67,9 +70,8 @@ public class SGLL implements IGLL{
 	private boolean containsNonProductiveSelfRecursion(ParseStackFrame frame){
 		if(!frame.isProductive()){
 			List<ParseStackFrame> edges = frame.getEdges();
-			Iterator<ParseStackFrame> edgesIterator = edges.iterator();
-			while(edgesIterator.hasNext()){
-				ParseStackFrame edge = edgesIterator.next();
+			for(int i = edges.size() - 1; i >= 0; i--){
+				ParseStackFrame edge = edges.get(i);
 				
 				List<ParseStackFrame> framesToCheck = new ArrayList<ParseStackFrame>();
 				List<ParseStackFrame> framesChecked = new ArrayList<ParseStackFrame>();
@@ -89,9 +91,8 @@ public class SGLL implements IGLL{
 					}
 					
 					edges = frameToCheck.getEdges();
-					edgesIterator = edges.iterator();
-					while(edgesIterator.hasNext()){
-						framesToCheck.add(edgesIterator.next());
+					for(int j = edges.size() - 1; j >= 0; j--){
+						framesToCheck.add(edges.get(j));
 					}
 				}
 			}
@@ -114,9 +115,8 @@ public class SGLL implements IGLL{
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackFrame expectFrame = lastExpects.get(i);
 			
-			Iterator<ParseStackFrame> possiblyMergeableStacksIterator = possiblyMergeableStacks.iterator();
-			while(possiblyMergeableStacksIterator.hasNext()){ // Share (also handles left recursion).
-				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacksIterator.next();
+			for(int j = possiblyMergeableStacks.size() - 1; j >= 0; j--){ // Share (also handles left recursion).
+				ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(j);
 				if(possiblyAnAlternative.isMergable(expectFrame)){
 					if(possiblyAnAlternative.isProductive() || possiblyAnAlternative != stackFrameBeingWorkedOn){ // Remove non-productive self loops.
 						possiblyAnAlternative.mergeWith(expectFrame);
@@ -144,9 +144,8 @@ public class SGLL implements IGLL{
 	}
 	
 	private boolean tryMerge(ParseStackFrame frame){
-		Iterator<ParseStackFrame> possiblyMergeableStacksIterator = possiblyMergeableStacks.iterator();
-		while(possiblyMergeableStacksIterator.hasNext()){
-			ParseStackFrame possiblyAnAlternative = possiblyMergeableStacksIterator.next();
+		for(int i = possiblyMergeableStacks.size() - 1; i >= 0; i--){
+			ParseStackFrame possiblyAnAlternative = possiblyMergeableStacks.get(i);
 			if(possiblyAnAlternative.isMergable(frame)){
 				if(possiblyAnAlternative.isMarkedSelfRecursive()){
 					System.out.println("Possibly detected (useless) self recursion."); // Temp.
@@ -183,14 +182,13 @@ public class SGLL implements IGLL{
 		List<INode> results = frame.getResults();
 		
 		List<ParseStackFrame> edges = frame.getEdges();
-		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
-		while(edgesIterator.hasNext()){
-			ParseStackFrame prevFrame = edgesIterator.next();
+		for(int i = edges.size() - 1; i >= 0; i--){
+			ParseStackFrame prevFrame = edges.get(i);
 			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
-			
-			if(tryMerge(prevFrame)) continue;
 
+			if(tryMerge(prevFrame)) continue;
+			
 			possiblyMergeableStacks.add(prevFrame);
 			lastIterationTodoList.add(prevFrame);
 		}
@@ -212,9 +210,8 @@ public class SGLL implements IGLL{
 		
 		List<INode> results = frame.getResults();
 		
-		Iterator<ParseStackFrame> edgesIterator = edges.iterator();
-		while(edgesIterator.hasNext()){
-			ParseStackFrame prevFrame = edgesIterator.next();
+		for(int i = edges.size() - 1; i >= 0; i--){
+			ParseStackFrame prevFrame = edges.get(i);
 			ParseStackNode node = prevFrame.getNextNode();
 			prevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
 			
@@ -230,10 +227,8 @@ public class SGLL implements IGLL{
 		
 		do{
 			lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
-			Iterator<ParseStackFrame> stacksToExpandIterator = stacksToExpand.iterator();
-			while(stacksToExpandIterator.hasNext()){
-				ParseStackFrame frame = stacksToExpandIterator.next();
-				stacksToExpandIterator.remove();
+			for(int i = stacksToExpand.size() - 1; i >= 0; i--){
+				ParseStackFrame frame = stacksToExpand.remove(i);
 				
 				tryExpand(frame);
 				lastExpects = new ArrayList<ParseStackFrame>(); // Clear.
@@ -260,9 +255,8 @@ public class SGLL implements IGLL{
 			// Get least progressed stacks from the todo list.
 			List<ParseStackFrame> leastProgressedStacks = null;
 			int closestNextLevel = Integer.MAX_VALUE;
-			Iterator<ParseStackFrame> todoListIterator = todoList.iterator();
-			while(todoListIterator.hasNext()){
-				ParseStackFrame frame = todoListIterator.next();
+			for(int i = todoList.size() - 1; i >= 0; i--){
+				ParseStackFrame frame = todoList.get(i);
 				int nextLevel = frame.getNextLevel();
 				if(nextLevel < closestNextLevel){
 					leastProgressedStacks = new ArrayList<ParseStackFrame>();
@@ -272,6 +266,10 @@ public class SGLL implements IGLL{
 					leastProgressedStacks.add(frame);
 				}
 			}
+			
+			location = closestNextLevel;
+			
+System.out.println("Moving to: "+closestNextLevel); // Temp.
 			
 			// Do terminal reductions where possible.
 			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){
@@ -310,7 +308,7 @@ public class SGLL implements IGLL{
 			for(int i = expandedStacks.size() - 1; i >= 0; i--){
 				todoList.add(expandedStacks.get(i));
 			}
-		}while(todoList.size() > 0);
+		}while(todoList.size() > 0 && location < input.length);
 		
 		// Return the result(s).
 		if(rootFrame == null) throw new RuntimeException("Parse Error.");
