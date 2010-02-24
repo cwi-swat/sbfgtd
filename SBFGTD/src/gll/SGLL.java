@@ -15,10 +15,9 @@ import java.util.List;
 public class SGLL implements IGLL{
 	private final byte[] input;
 	
-	private List<ParseStackFrame>[] todoList;
+	private final List<ParseStackFrame> todoList;
 	
-	private int currentLevel;
-	
+	// Updatable
 	private ParseStackFrame stackFrameBeingWorkedOn;
 	private List<ParseStackFrame> lastIterationTodoList;
 	private List<ParseStackFrame> possiblyMergeableStacks;
@@ -33,9 +32,7 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		todoList = (List<ParseStackFrame>[]) new List[0];
-		
-		currentLevel = 0;
+		todoList = new ArrayList<ParseStackFrame>();
 		
 		lastIterationTodoList = new ArrayList<ParseStackFrame>();
 		possiblyMergeableStacks = new ArrayList<ParseStackFrame>();
@@ -252,23 +249,7 @@ public class SGLL implements IGLL{
 		expand(lastIterationTodoList);
 		
 		for(int i = expandedStacks.size() - 1; i >= 0; i--){
-			ParseStackFrame frame = expandedStacks.get(i);
-			int nextLevel = frame.getNextLevel();
-			if(nextLevel <= input.length){
-				int pointToInsertAt = nextLevel - currentLevel - 1;
-				if(pointToInsertAt >= todoList.length){
-					List<ParseStackFrame>[] oldTodoList = todoList;
-					todoList = (List<ParseStackFrame>[]) new List[pointToInsertAt + 1];
-					System.arraycopy(oldTodoList, 0, todoList, 0, oldTodoList.length);
-				}
-				List<ParseStackFrame> lengthSlot = todoList[pointToInsertAt];
-				if(lengthSlot == null){
-					lengthSlot = new ArrayList<ParseStackFrame>();
-					todoList[pointToInsertAt] = lengthSlot;
-				}
-				
-				lengthSlot.add(frame);
-			}
+			todoList.add(expandedStacks.get(i));
 		}
 		
 		do{
@@ -278,31 +259,24 @@ public class SGLL implements IGLL{
 			
 			// Get least progressed stacks from the todo list.
 			List<ParseStackFrame> leastProgressedStacks = null;
-			for(int i = 0; i < todoList.length; i++){
-				List<ParseStackFrame> lengthSlot = todoList[i];
-				if(lengthSlot != null){
-					leastProgressedStacks = lengthSlot;
-					currentLevel += i;
-					currentLevel++;
-					
-					// Shift todoList
-					List<ParseStackFrame>[] oldTodoList = todoList;
-					int newListSize = todoList.length - i - 1;
-					if((newListSize > 0) && ((i + 1) < todoList.length)){
-						todoList = (List<ParseStackFrame>[]) new List[newListSize];
-						System.arraycopy(oldTodoList, i + 1, todoList, 0, newListSize);
-					}else{
-						todoList = (List<ParseStackFrame>[]) new List[0];
-					}
-					break;
+			int closestNextLevel = Integer.MAX_VALUE;
+			Iterator<ParseStackFrame> todoListIterator = todoList.iterator();
+			while(todoListIterator.hasNext()){
+				ParseStackFrame frame = todoListIterator.next();
+				int nextLevel = frame.getNextLevel();
+				if(nextLevel < closestNextLevel){
+					leastProgressedStacks = new ArrayList<ParseStackFrame>();
+					leastProgressedStacks.add(frame);
+					closestNextLevel = nextLevel;
+				}else if(nextLevel == closestNextLevel){
+					leastProgressedStacks.add(frame);
 				}
 			}
-			
-System.out.println("Moving to: "+currentLevel); // Temp
 			
 			// Do terminal reductions where possible.
 			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){
 				ParseStackFrame frame = leastProgressedStacks.get(i);
+				todoList.remove(frame);
 				
 				reduceTerminal(frame);
 			}
@@ -334,25 +308,9 @@ System.out.println("Moving to: "+currentLevel); // Temp
 			
 			// Update the todo list.
 			for(int i = expandedStacks.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = expandedStacks.get(i);
-				int nextLevel = frame.getNextLevel();
-				if(nextLevel <= input.length){
-					int pointToInsertAt = nextLevel - currentLevel - 1;
-					if(pointToInsertAt >= todoList.length){
-						List<ParseStackFrame>[] oldTodoList = todoList;
-						todoList = (List<ParseStackFrame>[]) new List[pointToInsertAt + 1];
-						System.arraycopy(oldTodoList, 0, todoList, 0, oldTodoList.length);
-					}
-					List<ParseStackFrame> lengthSlot = todoList[pointToInsertAt];
-					if(lengthSlot == null){
-						lengthSlot = new ArrayList<ParseStackFrame>();
-						todoList[pointToInsertAt] = lengthSlot;
-					}
-					
-					lengthSlot.add(frame);
-				}
+				todoList.add(expandedStacks.get(i));
 			}
-		}while(currentLevel != input.length);
+		}while(todoList.size() > 0);
 		
 		// Return the result(s).
 		if(rootFrame == null) throw new RuntimeException("Parse Error.");
