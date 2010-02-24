@@ -51,14 +51,6 @@ public class TerminalParseStackNode extends ParseStackNode{
 		
 		TerminalParseStackNode otherNode = (TerminalParseStackNode) other;
 		
-		byte[] otherTerminal = otherNode.terminal;
-		int terminalLength = terminal.length;
-		if(terminalLength != otherTerminal.length) return false;
-		
-		for(int i = terminalLength - 1; i >= 0; i--){
-			if(terminal[i] != otherTerminal[i]) return false;
-		}
-		
-		return true;
+		return (terminal == otherNode.terminal); // Terminals are shared, so == works.
 	}
 }
