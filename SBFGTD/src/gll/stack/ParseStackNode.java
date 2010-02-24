@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.nodes.INode;
 
+import java.util.List;
+
 public abstract class ParseStackNode{
 	
 	public ParseStackNode(){
@@ -28,7 +30,7 @@ public abstract class ParseStackNode{
 	
 	public abstract void addResult(INode result);
 	
-	public abstract INode[] getResults();
+	public abstract List<INode> getResults();
 	
 	public abstract INode getResult();
 	
