@@ -71,8 +71,6 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 		
 		NonTerminalParseStackNode otherNode = (NonTerminalParseStackNode) other;
 		
-		if(length != otherNode.length) return false;
-		
-		return nonTerminal.equals(otherNode.nonTerminal);
+		return ((nonTerminal == otherNode.nonTerminal) && (length == otherNode.length)); // Non terminals are interned, so == works.
 	}
 }
