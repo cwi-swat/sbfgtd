@@ -7,19 +7,11 @@ public class NonTerminalNode implements INode{
 	private final String name;
 	private final List<INode> children;
 	
-	private final int length;
-	
 	public NonTerminalNode(String name, List<INode> children){
 		super();
 		
 		this.name = name;
 		this.children = children;
-		
-		int length = 0;
-		for(int i = children.size() - 1; i >= 0; i--){
-			length += children.get(i).getLength();
-		}
-		this.length = length;
 	}
 	
 	public NonTerminalNode(String name, INode child){
@@ -28,12 +20,6 @@ public class NonTerminalNode implements INode{
 		this.name = name;
 		this.children = new ArrayList<INode>(1);
 		children.add(child);
-		
-		this.length = child.getLength();
-	}
-	
-	public int getLength(){
-		return length;
 	}
 	
 	public String toString(){

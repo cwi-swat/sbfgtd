@@ -38,13 +38,6 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public void addResult(INode result){
-		int resultLength = result.getLength();
-		if(length == -1){
-			length = resultLength;
-		}else if(length != resultLength){
-			throw new RuntimeException("Result length is different."); // Temp
-		}
-		
 		parseResults.add(result);
 	}
 	
@@ -57,8 +50,7 @@ public class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public int getLength(){
-		if(length == -1) throw new RuntimeException("Length not set yet"); // Temp
-		return length;
+		throw new UnsupportedOperationException();
 	}
 	
 	public boolean isMergable(ParseStackNode other){

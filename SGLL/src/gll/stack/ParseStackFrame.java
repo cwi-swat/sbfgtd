@@ -11,8 +11,8 @@ public class ParseStackFrame{
 	private final ParseStackNode[] stackNodes;
 	
 	// Updatable
-	private int index;
 	private int level;
+	private int index;
 	
 	private boolean containsSelfRecursion;
 	
@@ -22,9 +22,9 @@ public class ParseStackFrame{
 		this.edges = new ArrayList<ParseStackFrame>();
 		
 		this.stackNodes = stackNodes;
-		
-		index = -1;
+
 		level = 0;
+		index = -1;
 		containsSelfRecursion = false;
 	}
 	
@@ -36,8 +36,8 @@ public class ParseStackFrame{
 		
 		this.stackNodes = stackNodes;
 		
+		level = prevStackFrame.level;
 		index = -1;
-		level = 0;
 		containsSelfRecursion = false;
 	}
 	
@@ -46,8 +46,8 @@ public class ParseStackFrame{
 		
 		edges = stackFrame.edges;
 		
-		index = stackFrame.index;
 		level = stackFrame.level;
+		index = stackFrame.index;
 		containsSelfRecursion = stackFrame.containsSelfRecursion;
 		
 		int nrOfStackNodes = stackFrame.stackNodes.length;
@@ -77,10 +77,6 @@ public class ParseStackFrame{
 	
 	public void setLevel(int level){
 		this.level = level;
-	}
-	
-	public void moveLevel(int bytes){
-		level += bytes;
 	}
 	
 	public List<ParseStackFrame> getEdges(){
