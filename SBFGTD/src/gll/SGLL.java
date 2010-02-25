@@ -57,7 +57,6 @@ public class SGLL implements IGLL{
 	
 	public void expect(ParseStackNode... symbolsToExpect){
 		ParseStackFrame newFrame = new ParseStackFrame(stackFrameBeingWorkedOn, symbolsToExpect);
-		newFrame.setLevel(stackFrameBeingWorkedOn.getLevel());
 		lastExpects.add(newFrame);
 	}
 	
@@ -143,7 +142,7 @@ public class SGLL implements IGLL{
 		clone.moveToNextNode();
 		ParseStackNode currentNode = clone.getCurrentNode();
 		currentNode.addResult(result);
-		clone.moveLevel(currentNode.getLength());
+		clone.setLevel(location);
 		return clone;
 	}
 	
@@ -170,18 +169,18 @@ public class SGLL implements IGLL{
 		ParseStackNode terminal = frame.getCurrentNode();
 		byte[] data = terminal.getTerminalData();
 		
-		int location = frame.getLevel();
-		if(location + data.length > input.length){
+		int level = frame.getLevel();
+		if(level + data.length > input.length){
 			return; // Can't reduce.
 		}
 		
 		for(int i = data.length - 1; i >= 0; i--){
-			if(data[i] != input[location + i]) return; // Didn't match
+			if(data[i] != input[level + i]) return; // Didn't match
 		}
 		
 		// Don't 'complete' the frame if it isn't done.
 		if(!frame.isComplete()){
-			frame.moveLevel(terminal.getLength());
+			frame.setLevel(location);
 			lastIterationTodoList.add(frame);
 			return;
 		}
@@ -286,7 +285,7 @@ public class SGLL implements IGLL{
 			
 			location = closestNextLevel;
 			
-//System.out.println("Moving to: "+closestNextLevel); // Temp.
+//System.out.println("Moving to: "+location); // Temp.
 			
 			// Do terminal reductions where possible.
 			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){

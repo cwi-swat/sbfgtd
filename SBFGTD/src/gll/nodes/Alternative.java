@@ -11,10 +11,6 @@ public class Alternative implements INode{
 		this.alternatives = alternatives;
 	}
 	
-	public int getLength(){
-		return alternatives.get(0).getLength(); // All the alternatives will have the same length.
-	}
-	
 	public String toString(){
 		if(alternatives.size() == 1) return alternatives.get(0).toString();
 		

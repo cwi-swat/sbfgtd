@@ -9,10 +9,6 @@ public class TerminalNode implements INode{
 		this.content = content;
 	}
 	
-	public int getLength(){
-		return content.length;
-	}
-	
 	public String toString(){
 		return new String(content);
 	}
