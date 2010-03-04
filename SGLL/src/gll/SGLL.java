@@ -202,7 +202,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
-		for(int i = lastExpects.size() - 1; i >= 0; i--){
+		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
@@ -245,7 +245,7 @@ public class SGLL implements IGLL{
 						possiblySharedNode.addEdge(stackBeingWorkedOn);
 					}
 
-					return;
+					continue OUTER;
 				}
 			}
 			
