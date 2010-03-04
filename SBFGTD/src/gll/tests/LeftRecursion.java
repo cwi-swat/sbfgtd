@@ -14,8 +14,8 @@ public class LeftRecursion extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public LeftRecursion(String start, byte[] input){
-		super(start, input);
+	public LeftRecursion(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -29,8 +29,8 @@ public class LeftRecursion extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		LeftRecursion lr = new LeftRecursion("S", "aaa".getBytes());
-		INode result = lr.parse();
+		LeftRecursion lr = new LeftRecursion("aaa".getBytes());
+		INode result = lr.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree(S(A(A(A(a),a),a))) <- good");

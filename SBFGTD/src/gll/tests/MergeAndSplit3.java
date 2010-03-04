@@ -18,8 +18,8 @@ public class MergeAndSplit3 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_C = new NonTerminalParseStackNode("C");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public MergeAndSplit3(String start, byte[] input){
-		super(start, input);
+	public MergeAndSplit3(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -45,8 +45,8 @@ public class MergeAndSplit3 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit3 ms3 = new MergeAndSplit3("S", "aaa".getBytes());
-		INode result = ms3.parse();
+		MergeAndSplit3 ms3 = new MergeAndSplit3("aaa".getBytes());
+		INode result = ms3.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree([S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))]) <- good");

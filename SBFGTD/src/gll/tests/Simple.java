@@ -15,8 +15,8 @@ public class Simple extends SGLL{
 	private final static ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
 	private final static ParseStackNode TERMINAL_b = new TerminalParseStackNode("b".getBytes());
 	
-	public Simple(String start, byte[] input){
-		super(start, input);
+	public Simple(byte[] input){
+		super( input);
 	}
 	
 	public void S(){
@@ -28,8 +28,8 @@ public class Simple extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Simple s = new Simple("S", "aab".getBytes());
-		INode result = s.parse();
+		Simple s = new Simple("aab".getBytes());
+		INode result = s.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree(S(A(aa),b)) <- good");

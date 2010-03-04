@@ -13,8 +13,8 @@ public class AmbiguousRecursive extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S = new NonTerminalParseStackNode("S");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public AmbiguousRecursive(String start, byte[] input){
-		super(start, input);
+	public AmbiguousRecursive(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -26,8 +26,8 @@ public class AmbiguousRecursive extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		AmbiguousRecursive ar = new AmbiguousRecursive("S", "aaa".getBytes());
-		INode result = ar.parse();
+		AmbiguousRecursive ar = new AmbiguousRecursive("aaa".getBytes());
+		INode result = ar.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree([S(S(a),S(S(a),S(a))),S(S(a),S(a),S(a)),S(S(S(a),S(a)),S(a))]) <- good");

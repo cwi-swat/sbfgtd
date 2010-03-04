@@ -18,8 +18,8 @@ public class NotAUselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_C = new NonTerminalParseStackNode("C");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public NotAUselessSelfLoop(String start, byte[] input){
-		super(start, input);
+	public NotAUselessSelfLoop(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -47,8 +47,8 @@ public class NotAUselessSelfLoop extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		NotAUselessSelfLoop nausl = new NotAUselessSelfLoop("S", "aaa".getBytes());
-		INode result = nausl.parse();
+		NotAUselessSelfLoop nausl = new NotAUselessSelfLoop("aaa".getBytes());
+		INode result = nausl.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree([S([B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a))),B(C(A(a),A(a)),C(a)),B(A(C(a),C(a)),A(a))]),S(A(a),A(C(a),C(a))),S(A(C(a),C(a)),A(a))]) <- good");

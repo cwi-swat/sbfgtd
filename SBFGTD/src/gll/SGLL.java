@@ -4,65 +4,59 @@ import gll.nodes.Alternative;
 import gll.nodes.INode;
 import gll.nodes.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackFrame;
 import gll.stack.ParseStackNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SGLL implements IGLL{
 	private final byte[] input;
 	
-	private final List<ParseStackFrame> todoList;
+	private final List<ParseStackNode> todoList;
 	
 	// Updatable
-	private ParseStackFrame stackFrameBeingWorkedOn;
-	private List<ParseStackFrame> lastIterationTodoList;
-	private List<ParseStackFrame> possiblyMergeableExpandStacks;
-	private Map<ParseStackFrame, List<ParseStackFrame>> possiblyMergeableStacks;
-	private List<ParseStackFrame> expandedStacks;
-	
-	private List<ParseStackFrame> lastExpects;
-	
-	private ParseStackFrame rootFrame;
+	private final List<ParseStackNode> stacksToExpand;
+	private List<ParseStackNode> stacksWithTerminalsToReduce;
+	private final List<ParseStackNode> stacksWithNonTerminalsToReduce;
+	private List<ParseStackNode[]> lastExpects;
+	private List<ParseStackNode> possiblySharedExpectNodes;
+	private List<ParseStackNode> possiblySharedNextNodes;
+	private List<ParseStackNode> possiblySharedEdgeNodes;
 	
 	private int location;
 	
-	public SGLL(String start, byte[] input){
+	private ParseStackNode rootNode;
+	
+	public SGLL(byte[] input){
 		super();
 		
 		this.input = input;
 		
-		todoList = new ArrayList<ParseStackFrame>();
+		todoList = new ArrayList<ParseStackNode>();
 		
-		lastIterationTodoList = new ArrayList<ParseStackFrame>();
-		possiblyMergeableExpandStacks = new ArrayList<ParseStackFrame>();
-		possiblyMergeableStacks = new HashMap<ParseStackFrame, List<ParseStackFrame>>();
-		expandedStacks = new ArrayList<ParseStackFrame>();
-		
-		lastExpects = new ArrayList<ParseStackFrame>();
-		
-		rootFrame = null;
+		stacksToExpand = new ArrayList<ParseStackNode>();
+		stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
+		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
 		location = 0;
 		
-		// Initialize
-		ParseStackNode root = new NonTerminalParseStackNode(start);
-		ParseStackFrame rootFrame = new ParseStackFrame(root);
-		lastIterationTodoList.add(rootFrame);
+		rootNode = null;
+	}
+	
+	private static List<List<INode>> createEmptyPrefix(){
+		List<List<INode>>  emptyPrefix = new ArrayList<List<INode>>();
+		emptyPrefix.add(new ArrayList<INode>());
+		return emptyPrefix;
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){
-		ParseStackFrame newFrame = new ParseStackFrame(stackFrameBeingWorkedOn, symbolsToExpect);
-		lastExpects.add(newFrame);
+		lastExpects.add(symbolsToExpect);
 	}
 	
 	private void callMethod(String methodName){
 		try{
-			Method method = this.getClass().getMethod(methodName);
+			Method method = getClass().getMethod(methodName);
 			method.invoke(this);
 		}catch(Exception ex){
 			// Not going to happen.
@@ -70,268 +64,215 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private boolean containsNonProductiveSelfRecursion(ParseStackFrame frame){
-		if(!frame.isProductive()){
-			List<ParseStackFrame> edges = frame.getEdges();
+	private INode buildResult(String nonTerminalName, List<List<INode>> results){ // NOTE: I'm not entirely sure about this.
+		List<INode> resultsCollection = new ArrayList<INode>();
+		for(int i = results.size() - 1; i >= 0; i--){
+			INode node = new NonTerminalNode(nonTerminalName, results.get(i));
+			resultsCollection.add(node);
+		}
+		
+		return new Alternative(resultsCollection);
+	}
+	
+	private ParseStackNode updateNextNode(ParseStackNode node){
+		if(node.startLocationIsSet()){
+			if(node.getStartLocation() == location){
+				return node;
+			}
+			
+			for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
+				ParseStackNode possibleAlternative = possiblySharedNextNodes.get(i);
+				if(possibleAlternative.isSimilar(node)){
+					return possibleAlternative;
+				}
+			}
+			
+			ParseStackNode copy = node.getCleanCopy();
+			copy.setStartLocation(location);
+			
+			possiblySharedNextNodes.add(copy);
+			stacksToExpand.add(copy);
+			
+			return copy;
+		}
+		
+		node.setStartLocation(location);
+		stacksToExpand.add(node);
+		return node;
+	}
+	
+	private ParseStackNode updateEdgeNode(ParseStackNode node){
+		if(node.endLocationIsSet()){
+			if(node.getEndLocation() == location){
+				return node;
+			}
+			
+			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
+				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
+				if(possibleAlternative.isSimilar(node)){
+					return possibleAlternative;
+				}
+			}
+			
+			ParseStackNode copy = node.getCleanWithPrefixCopy();
+			copy.setStartLocation(node.getStartLocation());
+			copy.setEndLocation(location);
+			
+			possiblySharedEdgeNodes.add(copy);
+			stacksWithNonTerminalsToReduce.add(copy);
+			
+			return copy;
+		}
+		
+		node.setEndLocation(location);
+		stacksWithNonTerminalsToReduce.add(node);
+		return node;
+	}
+	
+	private void move(ParseStackNode node){
+		List<List<INode>> results = node.getResults();
+		
+		// Move
+		if(node.hasNexts()){
+			List<ParseStackNode> nexts = node.getNexts();
+			for(int i = nexts.size() - 1; i >= 0; i--){
+				ParseStackNode next = nexts.get(i);
+				next = updateNextNode(next);
+				next.addPrefixResults(results);
+			}
+		}
+		
+		if(node.hasEdges()){
+			List<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
-				ParseStackFrame edge = edges.get(i);
-				
-				List<ParseStackFrame> framesToCheck = new ArrayList<ParseStackFrame>();
-				List<ParseStackFrame> framesChecked = new ArrayList<ParseStackFrame>();
-				
-				framesToCheck.add(edge);
-				
-				while(framesToCheck.size() > 0){
-					ParseStackFrame frameToCheck = framesToCheck.remove(0);
-					if(framesChecked.contains(frameToCheck)) continue;
-					
-					framesChecked.add(frameToCheck);
-					
-					if(frameToCheck.isProductive()) break;
-					if(frameToCheck.hasSameFirstNonTerminal(frame)){
-						// Encountered non productive self loop frame.
-						return true;
-					}
-					
-					edges = frameToCheck.getEdges();
-					for(int j = edges.size() - 1; j >= 0; j--){
-						framesToCheck.add(edges.get(j));
-					}
-				}
+				ParseStackNode edge = edges.get(i);
+				edge = updateEdgeNode(edge);
+				INode result = buildResult(edge.getNonTerminalName(), results);
+				edge.addResult(result);
+			}
+		}else if(!node.hasNexts() && location == input.length){
+			rootNode = node;
+		}
+	}
+	
+	private void reduceTerminal(ParseStackNode terminal){
+		byte[] terminalData = terminal.getTerminalData();
+		int startLocation = terminal.getStartLocation();
+		
+		for(int i = terminalData.length - 1; i >= 0; i--){
+			if(terminalData[i] != input[startLocation + i]) return; // Did not match.
+		}
+		
+		move(terminal);
+	}
+	
+	private void reduceNonTerminal(ParseStackNode nonTerminal){
+		move(nonTerminal);
+	}
+	
+	private void reduce(){
+		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
+		possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
+		
+		// Reduce terminals.
+		while(stacksWithTerminalsToReduce.size() > 0){
+			ParseStackNode terminal = stacksWithTerminalsToReduce.remove(stacksWithTerminalsToReduce.size() - 1);
+			reduceTerminal(terminal);
+
+			todoList.remove(terminal);
+		}
+		
+		// Reduce non-terminals.
+		while(stacksWithNonTerminalsToReduce.size() > 0){
+			ParseStackNode nonTerminal = stacksWithNonTerminalsToReduce.remove(stacksWithNonTerminalsToReduce.size() - 1);
+			reduceNonTerminal(nonTerminal);
+		}
+	}
+	
+	private void findStacksToReduce(){
+		// Find the stacks that will progress the least.
+		int closestNextLocation = Integer.MAX_VALUE;
+		for(int i = todoList.size() - 1; i >= 0; i--){
+			ParseStackNode node = todoList.get(i);
+			int nextLocation = node.getStartLocation() + node.getLength();
+			if(nextLocation < closestNextLocation){
+				stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
+				stacksWithTerminalsToReduce.add(node);
+				closestNextLocation = nextLocation;
+			}else if(nextLocation == closestNextLocation){
+				stacksWithTerminalsToReduce.add(node);
 			}
 		}
 		
-		return false;
+		location = closestNextLocation;
 	}
 	
-	private void tryExpand(ParseStackFrame frame){
-		ParseStackNode node = frame.getNextNode();
+	private void handleExpects(ParseStackNode stackBeingWorkedOn){
+		for(int i = lastExpects.size() - 1; i >= 0; i--){
+			ParseStackNode[] expectedNodes = lastExpects.get(i);
+			int nrOfNodes = expectedNodes.length;
+			ParseStackNode current = expectedNodes[nrOfNodes - 1].getCleanCopy();
+			current.addEdge(stackBeingWorkedOn);
+			for(int j = nrOfNodes - 2; j >= 0; j--){
+				ParseStackNode prev = expectedNodes[j].getCleanCopy();
+				prev.addNext(current);
+				current = prev;
+			}
+			/*
+			// TODO Handle sharing (and loops).
+			for(int j = possiblySharedExpectNodes.size() - 1; j >= 0; j--){
+				ParseStackNode possiblySharedNode = possiblySharedExpectNodes.get(j);
+				if(possiblySharedNode == current){
+					
+				}
+			}*/
+			
+			current.setStartLocation(location);
+			current.addPrefixResults(createEmptyPrefix()); // This is a 'start' node; so it needs an empty prefix.
+			
+			stacksToExpand.add(current);
+		}
+	}
+	
+	private void expandStack(ParseStackNode node){
 		if(node.isTerminal()){
-			expandedStacks.add(frame);
-			return; // Can't unfold any further.
-		}
-		
-		stackFrameBeingWorkedOn = frame;
-		callMethod(node.getMethodName());
-		
-		// Merge stack if possible.
-		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
-			ParseStackFrame expectFrame = lastExpects.get(i);
-			
-			for(int j = possiblyMergeableExpandStacks.size() - 1; j >= 0; j--){ // Share (also handles left recursion).
-				ParseStackFrame possiblyAnAlternative = possiblyMergeableExpandStacks.get(j);
-				if(possiblyAnAlternative.isMergable(expectFrame)){
-					if(possiblyAnAlternative.isProductive() || possiblyAnAlternative != stackFrameBeingWorkedOn){ // Remove non-productive self loops.
-						possiblyAnAlternative.mergeWith(expectFrame);
-						if(containsNonProductiveSelfRecursion(expectFrame)){// Mark 'useless' cycles.
-							possiblyAnAlternative.markSelfRecursive();
-						}
-					}
-					
-					continue OUTER;
-				}
+			if(location != node.getStartLocation()){
+				throw new RuntimeException("WTF?");
 			}
-			
-			possiblyMergeableExpandStacks.add(expectFrame);
-			lastIterationTodoList.add(expectFrame);
-		}
-	}
-	
-	private ParseStackFrame updateFrame(ParseStackFrame parseStackFrame, INode result){
-		ParseStackFrame clone = new ParseStackFrame(parseStackFrame);
-		clone.moveToNextNode();
-		ParseStackNode currentNode = clone.getCurrentNode();
-		currentNode.addResult(result);
-		clone.setLevel(location);
-		return clone;
-	}
-	
-	private boolean tryMerge(ParseStackFrame originalFrame, ParseStackFrame frame){
-		List<ParseStackFrame> possibilities = possiblyMergeableStacks.get(originalFrame);
-		if(possibilities == null) return false;
-		
-		for(int i = possibilities.size() - 1; i >= 0; i--){
-			ParseStackFrame possiblyAnAlternative = possibilities.get(i);
-			if(possiblyAnAlternative.isMergable(frame)){
-				if(possiblyAnAlternative.isMarkedSelfRecursive()){
-					System.out.println("Possibly detected (useless) self recursion."); // Temp.
-				}
-				
-				possiblyAnAlternative.mergeWith(frame);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private void reduceTerminal(ParseStackFrame frame){
-		frame.moveToNextNode();
-		ParseStackNode terminal = frame.getCurrentNode();
-		byte[] data = terminal.getTerminalData();
-		
-		int level = frame.getLevel();
-		if(level + data.length > input.length){
-			return; // Can't reduce.
-		}
-		
-		for(int i = data.length - 1; i >= 0; i--){
-			if(data[i] != input[level + i]) return; // Didn't match
-		}
-		
-		// Don't 'complete' the frame if it isn't done.
-		if(!frame.isComplete()){
-			frame.setLevel(location);
-			lastIterationTodoList.add(frame);
+			if(location + node.getLength() <= input.length) todoList.add(node);
 			return;
 		}
 		
-		List<INode> results = frame.getResults();
+		callMethod(node.getMethodName());
 		
-		List<ParseStackFrame> edges = frame.getEdges();
-		for(int i = edges.size() - 1; i >= 0; i--){
-			ParseStackFrame prevFrame = edges.get(i);
-			ParseStackNode node = prevFrame.getNextNode();
-			ParseStackFrame newPrevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
-
-			if(tryMerge(prevFrame, newPrevFrame)) continue;
-			
-			List<ParseStackFrame> possibilities = possiblyMergeableStacks.get(prevFrame);
-			if(possibilities == null){
-				possibilities = new ArrayList<ParseStackFrame>();
-				possiblyMergeableStacks.put(prevFrame, possibilities);
-			}
-			possibilities.add(newPrevFrame);
-			lastIterationTodoList.add(newPrevFrame);
+		handleExpects(node);
+	}
+	
+	private void expand(){
+		possiblySharedExpectNodes = new ArrayList<ParseStackNode>();
+		while(stacksToExpand.size() > 0){
+			lastExpects = new ArrayList<ParseStackNode[]>();
+			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
 		}
 	}
 	
-	private void reduceNonTerminal(ParseStackFrame frame){
-		List<ParseStackFrame> edges = frame.getEdges();
-		if(edges.size() == 0){
-			if(frame.getLevel() != input.length){
-				return; // Parse failed.
-			}
-			
-			if(rootFrame != null) throw new RuntimeException("Something went wrong.");
-			
-			rootFrame = frame; // Only done once.
-			
-			return; // Root reached.
-		}
-		
-		List<INode> results = frame.getResults();
-		
-		for(int i = edges.size() - 1; i >= 0; i--){
-			ParseStackFrame prevFrame = edges.get(i);
-			ParseStackNode node = prevFrame.getNextNode();
-			ParseStackFrame newPrevFrame = updateFrame(prevFrame, new NonTerminalNode(node.getNonTerminalName(), results));
-
-			if(tryMerge(prevFrame, newPrevFrame)) continue;
-			
-			List<ParseStackFrame> possibilities = possiblyMergeableStacks.get(prevFrame);
-			if(possibilities == null){
-				possibilities = new ArrayList<ParseStackFrame>();
-				possiblyMergeableStacks.put(prevFrame, possibilities);
-			}
-			possibilities.add(newPrevFrame);
-			lastIterationTodoList.add(newPrevFrame);
-		}
-	}
-	
-	private void expand(List<ParseStackFrame> stacksToExpand){
-		expandedStacks = new ArrayList<ParseStackFrame>();
+	public INode parse(String start){
+		// Initialize.
+		ParseStackNode rootNode = new NonTerminalParseStackNode(start);
+		rootNode.setStartLocation(0);
+		stacksToExpand.add(rootNode);
+		expand();
 		
 		do{
-			lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
-			for(int i = stacksToExpand.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = stacksToExpand.remove(i);
-				
-				tryExpand(frame);
-				lastExpects = new ArrayList<ParseStackFrame>(); // Clear.
-			}
-			stackFrameBeingWorkedOn = null; // Clear.
-			stacksToExpand.addAll(lastIterationTodoList);
-		}while(stacksToExpand.size() > 0);
+			findStacksToReduce();
+			
+			reduce();
+			
+			expand();
+		}while(todoList.size() > 0);
 		
-		possiblyMergeableExpandStacks = new ArrayList<ParseStackFrame>(); // Clear.
-	}
-	
-	public INode parse(){
-		expand(lastIterationTodoList);
+		if(this.rootNode == null) throw new RuntimeException("Parse error.");
 		
-		for(int i = expandedStacks.size() - 1; i >= 0; i--){
-			todoList.add(expandedStacks.get(i));
-		}
-		
-		do{
-			// Initialize.
-			lastIterationTodoList = new ArrayList<ParseStackFrame>();
-			lastExpects = new ArrayList<ParseStackFrame>();
-			
-			// Get least progressed stacks from the todo list.
-			List<ParseStackFrame> leastProgressedStacks = null;
-			int closestNextLevel = Integer.MAX_VALUE;
-			for(int i = todoList.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = todoList.get(i);
-				int nextLevel = frame.getNextLevel();
-				if(nextLevel < closestNextLevel){
-					leastProgressedStacks = new ArrayList<ParseStackFrame>();
-					leastProgressedStacks.add(frame);
-					closestNextLevel = nextLevel;
-				}else if(nextLevel == closestNextLevel){
-					leastProgressedStacks.add(frame);
-				}
-			}
-			
-			location = closestNextLevel;
-			
-//System.out.println("Moving to: "+location); // Temp.
-			
-			// Do terminal reductions where possible.
-			for(int i = leastProgressedStacks.size() - 1; i >= 0; i--){
-				ParseStackFrame frame = leastProgressedStacks.get(i);
-				todoList.remove(frame);
-				
-				reduceTerminal(frame);
-			}
-			
-			// Do non-terminal reductions where possible.
-			List<ParseStackFrame> stacksToExpand = new ArrayList<ParseStackFrame>();
-			List<ParseStackFrame> stacksToReduce = new ArrayList<ParseStackFrame>();
-			stacksToReduce.addAll(lastIterationTodoList);
-			do{
-				lastIterationTodoList = new ArrayList<ParseStackFrame>(); // Clear.
-				for(int i = stacksToReduce.size() - 1; i >= 0; i--){
-					ParseStackFrame frame = stacksToReduce.get(i);
-					
-					if(frame.isComplete()){
-						reduceNonTerminal(frame);
-					}else{
-						stacksToExpand.add(frame);
-					}
-				}
-				
-				stacksToReduce = new ArrayList<ParseStackFrame>();
-				stacksToReduce.addAll(lastIterationTodoList);
-			}while(stacksToReduce.size() > 0);
-			
-			possiblyMergeableStacks = new HashMap<ParseStackFrame, List<ParseStackFrame>>(); // Clear.
-			
-			// Expand stacks.
-			expand(stacksToExpand);
-			
-			// Update the todo list.
-			for(int i = expandedStacks.size() - 1; i >= 0; i--){
-				todoList.add(expandedStacks.get(i));
-			}
-		}while(todoList.size() > 0 && location < input.length);
-		
-		// Return the result(s).
-		if(rootFrame == null) throw new RuntimeException("Parse Error.");
-		
-		List<INode> parseResults = rootFrame.getResults();
-		if(parseResults.size() == 1) return new NonTerminalNode("parsetree", parseResults.get(0));
-		
-		return new NonTerminalNode("parsetree", new Alternative(parseResults));
+		return new NonTerminalNode("parsetree", this.rootNode.getResult());
 	}
 }

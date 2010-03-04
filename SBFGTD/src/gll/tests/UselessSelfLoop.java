@@ -16,8 +16,8 @@ public class UselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_B = new NonTerminalParseStackNode("B");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public UselessSelfLoop(String start, byte[] input){
-		super(start, input);
+	public UselessSelfLoop(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -39,8 +39,8 @@ public class UselessSelfLoop extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		UselessSelfLoop usl = new UselessSelfLoop("S", "a".getBytes());
-		INode result = usl.parse();
+		UselessSelfLoop usl = new UselessSelfLoop("a".getBytes());
+		INode result = usl.parse("S");
 		
 		System.out.println(result);
 		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good");

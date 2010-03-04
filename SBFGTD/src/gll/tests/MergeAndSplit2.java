@@ -21,8 +21,8 @@ public class MergeAndSplit2 extends SGLL{
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	private final static ParseStackNode TERMINAL_aa = new TerminalParseStackNode("aa".getBytes());
 	
-	public MergeAndSplit2(String start, byte[] input){
-		super(start, input);
+	public MergeAndSplit2(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -49,8 +49,8 @@ public class MergeAndSplit2 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit2 ms2 = new MergeAndSplit2("S", "aaa".getBytes());
-		INode result = ms2.parse();
+		MergeAndSplit2 ms2 = new MergeAndSplit2("aaa".getBytes());
+		INode result = ms2.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree([S(D(C(B(A(a)),aa))),S(D(C(B(A(a)),a)),a)]) <- good");

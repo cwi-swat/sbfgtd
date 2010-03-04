@@ -12,8 +12,8 @@ public class WorstCase extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S = new NonTerminalParseStackNode("S");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public WorstCase(String start, byte[] input){
-		super(start, input);
+	public WorstCase(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -26,56 +26,56 @@ public class WorstCase extends SGLL{
 	
 	public static void main(String[] args){
 		long start = System.currentTimeMillis();
-		WorstCase wc = new WorstCase("S", "aaaaaaaaaa".getBytes());
-		wc.parse();
+		WorstCase wc = new WorstCase("aaaaaaaaaa".getBytes());
+		wc.parse("S");
 		long end = System.currentTimeMillis();
 		System.out.println("10 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("15 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("20 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("25 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("30 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("35 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("40 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("45 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("S", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
-		wc.parse();
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("50 "+(end - start)+"ms");
 	}
