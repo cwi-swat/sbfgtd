@@ -29,13 +29,13 @@ public class RunAll{
 		Ambiguous6.main(args);
 		System.out.println();
 		
-		/*System.out.println("AmbiguousRecursive:");
+		System.out.println("AmbiguousRecursive:");
 		AmbiguousRecursive.main(args);
-		System.out.println();*/
+		System.out.println();
 		
-		/*System.out.println("LeftRecursion:");
+		System.out.println("LeftRecursion:");
 		LeftRecursion.main(args);
-		System.out.println();*/
+		System.out.println();
 		
 		System.out.println("MergeAndSplit:");
 		MergeAndSplit.main(args);
@@ -47,9 +47,9 @@ public class RunAll{
 		MergeAndSplit3.main(args);
 		System.out.println();*/
 		
-		/*System.out.println("NotAUselessSelfLoop:");
+		System.out.println("NotAUselessSelfLoop:");
 		NotAUselessSelfLoop.main(args);
-		System.out.println();*/
+		System.out.println();
 		
 		//System.out.println("UselessSelfLoop:");
 		//UselessSelfLoop.main(args);

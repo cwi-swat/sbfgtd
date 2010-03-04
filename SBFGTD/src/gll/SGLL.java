@@ -20,7 +20,7 @@ public class SGLL implements IGLL{
 	private List<ParseStackNode> stacksWithTerminalsToReduce;
 	private final List<ParseStackNode> stacksWithNonTerminalsToReduce;
 	private List<ParseStackNode[]> lastExpects;
-	private List<ParseStackNode> possiblySharedExpectNodes;
+	private List<ParseStackNode> possiblySharedExpects;
 	private List<ParseStackNode> possiblySharedNextNodes;
 	private List<ParseStackNode> possiblySharedEdgeNodes;
 	
@@ -204,26 +204,63 @@ public class SGLL implements IGLL{
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
 		for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
-			int nrOfNodes = expectedNodes.length;
-			ParseStackNode current = expectedNodes[nrOfNodes - 1].getCleanCopy();
-			current.addEdge(stackBeingWorkedOn);
-			for(int j = nrOfNodes - 2; j >= 0; j--){
-				ParseStackNode prev = expectedNodes[j].getCleanCopy();
-				prev.addNext(current);
-				current = prev;
-			}
-			/*
-			// TODO Handle sharing (and loops).
-			for(int j = possiblySharedExpectNodes.size() - 1; j >= 0; j--){
-				ParseStackNode possiblySharedNode = possiblySharedExpectNodes.get(j);
-				if(possiblySharedNode == current){
+			
+			// Handle sharing (and loops).
+			ParseStackNode first = expectedNodes[0].getCleanCopy();
+			ParseStackNode current = first;
+			ParseStackNode prev;
+			int k = 1;
+			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
+				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
+				ParseStackNode prevPossiblySharedNode = possiblySharedNode;
+				if(possiblySharedNode.equalSymbol(current)){
+					SHARE: for(; k < expectedNodes.length; k++){ // Shared.
+						List<ParseStackNode> nexts = possiblySharedNode.getNexts();
+						if(nexts == null){
+							break;
+						}
+						prev = current;
+						current = expectedNodes[k];
+						for(int l = nexts.size() - 1; l >= 0; l--){
+							possiblySharedNode = nexts.get(l);
+							if(possiblySharedNode.equalSymbol(current)){
+								continue SHARE;
+							}
+						}
+						
+						current = current.getCleanCopy();
+						prev.addNext(current);
+						break;
+					}
 					
+					if(k < expectedNodes.length){
+						current = prevPossiblySharedNode;
+						for(; k < expectedNodes.length; k++){ // Unshared.
+							prev = current;
+							current = expectedNodes[k].getCleanCopy();
+							prev.addNext(current);
+						}
+						current.addEdge(stackBeingWorkedOn);
+					}else{
+						possiblySharedNode.addEdge(stackBeingWorkedOn);
+					}
+
+					return;
 				}
-			}*/
+			}
 			
-			current.setStartLocation(location);
+			for(; k < expectedNodes.length; k++){ // Unshared.
+				prev = current;
+				current = expectedNodes[k].getCleanCopy();
+				prev.addNext(current);
+			}
 			
-			stacksToExpand.add(current);
+			current.addEdge(stackBeingWorkedOn);
+			
+			first.setStartLocation(location);
+			
+			stacksToExpand.add(first);
+			possiblySharedExpects.add(first);
 		}
 	}
 	
@@ -242,7 +279,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expand(){
-		possiblySharedExpectNodes = new ArrayList<ParseStackNode>();
+		possiblySharedExpects = new ArrayList<ParseStackNode>();
 		while(stacksToExpand.size() > 0){
 			lastExpects = new ArrayList<ParseStackNode[]>();
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));

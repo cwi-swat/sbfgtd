@@ -71,6 +71,6 @@ public class Ambiguous6 extends SGLL{
 		INode result = a6.parse("S");
 		
 		System.out.println(result);
-		System.out.println("parsetree([S(A(B(C([D(E(F(G(a)))),D(a)])))),S(E(F(G(a))))]) <- good");
+		System.out.println("parsetree([S(E(F(G(a)))),S(A(B(C([D(E(F(G(a)))),D(a)]))))]) <- good");
 	}
 }
