@@ -14,8 +14,8 @@ public class Ambiguous extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A = new NonTerminalParseStackNode("A");
 	private final static ParseStackNode TERMINAL_a = new TerminalParseStackNode("a".getBytes());
 	
-	public Ambiguous(String start, byte[] input){
-		super(start, input);
+	public Ambiguous(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -29,8 +29,8 @@ public class Ambiguous extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous a = new Ambiguous("S", "a".getBytes());
-		INode result = a.parse();
+		Ambiguous a = new Ambiguous("a".getBytes());
+		INode result = a.parse("S");
 		
 		System.out.println(result);
 		System.out.println("parsetree([S(A(a)),S(a)]) <- good");

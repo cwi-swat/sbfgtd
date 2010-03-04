@@ -18,8 +18,8 @@ public class Ambiguous2 extends SGLL{
 	private final static ParseStackNode TERMINAL_ab = new TerminalParseStackNode("ab".getBytes());
 	private final static ParseStackNode TERMINAL_bab = new TerminalParseStackNode("bab".getBytes());
 	
-	public Ambiguous2(String start, byte[] input){
-		super(start, input);
+	public Ambiguous2(byte[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -37,10 +37,10 @@ public class Ambiguous2 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous2 a2 = new Ambiguous2("S", "bab".getBytes());
-		INode result = a2.parse();
+		Ambiguous2 a2 = new Ambiguous2("bab".getBytes());
+		INode result = a2.parse("S");
 		
 		System.out.println(result);
-		System.out.println("parsetree([S(bab),S(A(B(b)),ab)]) <- good");
+		System.out.println("parsetree([S(A(B(b)),ab),S(bab)]) <- good");
 	}
 }

@@ -6,58 +6,95 @@ import gll.nodes.INode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NonTerminalParseStackNode extends ParseStackNode{
+public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
 
 	private final List<INode> parseResults;
-	private int length;
+	
+	private int endLocation;
 	
 	public NonTerminalParseStackNode(String nonTerminal){
 		super();
 		
 		this.nonTerminal = nonTerminal;
-
+		
 		this.parseResults = new ArrayList<INode>();
-		this.length = -1;
+		
+		this.endLocation = -1;
 	}
 	
-	public String getName(){
-		return nonTerminal;
+	public NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
+		super();
+
+		this.nonTerminal = nonTerminalParseStackNode.nonTerminal;
+		
+		this.parseResults = new ArrayList<INode>();
+		
+		this.endLocation = -1;
+		
+		this.nexts = nonTerminalParseStackNode.nexts;
+		this.edges = nonTerminalParseStackNode.edges;
+	}
+	
+	public boolean isTerminal(){
+		return false;
+	}
+	
+	public boolean isNonTerminal(){
+		return true;
 	}
 	
 	public String getMethodName(){
-		return getName();
+		return nonTerminal;
 	}
 	
 	public byte[] getTerminalData(){
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String getNonTerminalName(){
 		return nonTerminal;
 	}
 	
-	public void addResult(INode result){
-		parseResults.add(result);
+	public ParseStackNode getCleanCopy(){
+		return new NonTerminalParseStackNode(this);
 	}
 	
-	public List<INode> getResults(){
-		return parseResults;
+	public ParseStackNode getCleanWithPrefixCopy(){
+		NonTerminalParseStackNode copy = new NonTerminalParseStackNode(this);
+		copy.prefixResults = prefixResults;
+		return copy;
 	}
 	
-	public INode getResult(){
-		return new Alternative(parseResults);
+	public boolean isSimilar(ParseStackNode node){
+		return (node.isNonTerminal() && (node.getNonTerminalName() == nonTerminal) && (node.getStartLocation() == startLocation) && (node.getNexts() == nexts) && (node.getEdges() == edges));
+	}
+	
+	public void setEndLocation(int endLocation){
+		this.endLocation = endLocation;
+	}
+	
+	public boolean endLocationIsSet(){
+		return (endLocation != -1);
+	}
+	
+	public int getEndLocation(){
+		return endLocation;
 	}
 	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isMergable(ParseStackNode other){
-		if(!(other instanceof NonTerminalParseStackNode)) return false;
-		
-		NonTerminalParseStackNode otherNode = (NonTerminalParseStackNode) other;
-		
-		return ((nonTerminal == otherNode.nonTerminal) && (length == otherNode.length)); // Non terminals are interned, so == works.
+	public void addResult(INode result){
+		parseResults.add(result);
+	}
+	
+	public INode getResult(){
+		return new Alternative(parseResults);
+	}
+	
+	public String toString(){
+		return nonTerminal;
 	}
 }
