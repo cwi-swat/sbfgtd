@@ -70,6 +70,10 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return (node.isNonTerminal() && (node.getNonTerminalName() == nonTerminal) && (node.getStartLocation() == startLocation) && (node.getNexts() == nexts) && (node.getEdges() == edges));
 	}
 	
+	public boolean equalSymbol(ParseStackNode node){
+		return (node.isNonTerminal() && (node.getNonTerminalName() == nonTerminal));
+	}
+	
 	public void setEndLocation(int endLocation){
 		this.endLocation = endLocation;
 	}

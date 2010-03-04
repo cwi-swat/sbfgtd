@@ -44,6 +44,8 @@ public abstract class ParseStackNode{
 	
 	public abstract boolean isSimilar(ParseStackNode node);
 	
+	public abstract boolean equalSymbol(ParseStackNode node);
+	
 	// Linking.
 	public void addNext(ParseStackNode next){
 		if(nexts == null) nexts = new ArrayList<ParseStackNode>();

@@ -73,6 +73,10 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return (node.isTerminal() && (node.getTerminalData() == terminal) && (node.getStartLocation() == startLocation) && (node.getNexts() == nexts) && (node.getEdges() == edges));
 	}
 	
+	public boolean equalSymbol(ParseStackNode node){
+		return (node.isTerminal() && (node.getTerminalData() == terminal));
+	}
+	
 	public void setEndLocation(int endLocation){
 		throw new UnsupportedOperationException();
 	}
