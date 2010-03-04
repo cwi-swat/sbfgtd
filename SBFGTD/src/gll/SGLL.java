@@ -44,12 +44,6 @@ public class SGLL implements IGLL{
 		rootNode = null;
 	}
 	
-	private static List<List<INode>> createEmptyPrefix(){
-		List<List<INode>>  emptyPrefix = new ArrayList<List<INode>>();
-		emptyPrefix.add(new ArrayList<INode>());
-		return emptyPrefix;
-	}
-	
 	public void expect(ParseStackNode... symbolsToExpect){
 		lastExpects.add(symbolsToExpect);
 	}
@@ -228,7 +222,6 @@ public class SGLL implements IGLL{
 			}*/
 			
 			current.setStartLocation(location);
-			current.addPrefixResults(createEmptyPrefix()); // This is a 'start' node; so it needs an empty prefix.
 			
 			stacksToExpand.add(current);
 		}
