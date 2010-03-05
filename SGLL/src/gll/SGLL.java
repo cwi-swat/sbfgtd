@@ -8,7 +8,9 @@ import gll.stack.ParseStackNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SGLL implements IGLL{
 	private final byte[] input;
@@ -22,7 +24,7 @@ public class SGLL implements IGLL{
 	private List<ParseStackNode[]> lastExpects;
 	private List<ParseStackNode> possiblySharedExpects;
 	private List<ParseStackNode> possiblySharedNextNodes;
-	private List<ParseStackNode> possiblySharedEdgeNodes;
+	private Map<Integer, List<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int location;
 	
@@ -101,11 +103,18 @@ public class SGLL implements IGLL{
 				return node;
 			}
 			
-			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
-				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
-				if(possibleAlternative.isSimilar(node)){
-					return possibleAlternative;
+			Integer startIndex = new Integer(node.getStartLocation());
+			List<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
+			if(possiblySharedEdgeNodes != null){
+				for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
+					ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
+					if(possibleAlternative.isSimilar(node)){
+						return possibleAlternative;
+					}
 				}
+			}else{
+				possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
+				possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
 			}
 			
 			ParseStackNode copy = node.getCleanWithPrefixCopy();
@@ -166,7 +175,7 @@ public class SGLL implements IGLL{
 	
 	private void reduce(){
 		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-		possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
+		possiblySharedEdgeNodesMap = new HashMap<Integer, List<ParseStackNode>>();
 		
 		// Reduce terminals.
 		while(stacksWithTerminalsToReduce.size() > 0){
