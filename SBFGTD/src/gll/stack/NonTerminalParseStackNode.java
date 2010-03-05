@@ -67,7 +67,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean isSimilar(ParseStackNode node){
-		return (node.isNonTerminal() && (node.getNonTerminalName() == nonTerminal) && (node.getStartLocation() == startLocation) && (node.getNexts() == nexts) && (node.getEdges() == edges));
+		return (node.isNonTerminal() && (node.getNonTerminalName() == nonTerminal) && (node.getNexts() == nexts) && (node.getEdges() == edges));
 	}
 	
 	public boolean equalSymbol(ParseStackNode node){
