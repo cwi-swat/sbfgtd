@@ -70,7 +70,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean isSimilar(ParseStackNode node){
-		return (node.isTerminal() && (node.getTerminalData() == terminal) && (node.getStartLocation() == startLocation) && (node.getNexts() == nexts) && (node.getEdges() == edges));
+		return (node.isTerminal() && (node.getTerminalData() == terminal) && (node.getNexts() == nexts) && (node.getEdges() == edges));
 	}
 	
 	public boolean equalSymbol(ParseStackNode node){

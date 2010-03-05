@@ -103,7 +103,8 @@ public class SGLL implements IGLL{
 				return node;
 			}
 			
-			Integer startIndex = new Integer(node.getStartLocation());
+			int startLocation = node.getStartLocation();
+			Integer startIndex = new Integer(startLocation);
 			List<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
 			if(possiblySharedEdgeNodes != null){
 				for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
@@ -118,7 +119,7 @@ public class SGLL implements IGLL{
 			}
 			
 			ParseStackNode copy = node.getCleanWithPrefixCopy();
-			copy.setStartLocation(node.getStartLocation());
+			copy.setStartLocation(startLocation);
 			copy.setEndLocation(location);
 			
 			possiblySharedEdgeNodes.add(copy);
