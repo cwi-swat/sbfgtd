@@ -102,6 +102,14 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public String toString(){
-		return new String(terminal);
+		StringBuilder sb = new StringBuilder();
+		sb.append(new String(terminal));
+		sb.append('(');
+		sb.append(startLocation);
+		sb.append(" + ");
+		sb.append(getLength());
+		sb.append(')');
+		
+		return sb.toString();
 	}
 }

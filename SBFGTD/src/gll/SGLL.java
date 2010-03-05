@@ -215,11 +215,11 @@ public class SGLL implements IGLL{
 				ParseStackNode prevPossiblySharedNode = possiblySharedNode;
 				if(possiblySharedNode.equalSymbol(current)){
 					SHARE: for(; k < expectedNodes.length; k++){ // Shared.
+						prevPossiblySharedNode = possiblySharedNode;
 						List<ParseStackNode> nexts = possiblySharedNode.getNexts();
 						if(nexts == null){
 							break;
 						}
-						prev = current;
 						current = expectedNodes[k];
 						for(int l = nexts.size() - 1; l >= 0; l--){
 							possiblySharedNode = nexts.get(l);
@@ -227,9 +227,6 @@ public class SGLL implements IGLL{
 								continue SHARE;
 							}
 						}
-						
-						current = current.getCleanCopy();
-						prev.addNext(current);
 						break;
 					}
 					
@@ -244,7 +241,7 @@ public class SGLL implements IGLL{
 					}else{
 						possiblySharedNode.addEdge(stackBeingWorkedOn);
 					}
-
+					
 					continue OUTER;
 				}
 			}

@@ -30,6 +30,6 @@ public class AmbiguousRecursive extends SGLL{
 		INode result = ar.parse("S");
 		
 		System.out.println(result);
-		System.out.println("parsetree([S(S(a),S(S(a),S(a))),S(S(a),S(a),S(a)),S(S(S(a),S(a)),S(a))]) <- good");
+		System.out.println("parsetree([S(S(a),S(a),S(a)),S(S(S(a),S(a)),S(a)),S(S(a),S(S(a),S(a)))]) <- good");
 	}
 }
