@@ -43,9 +43,9 @@ public class RunAll{
 		System.out.println("MergeAndSplit2:");
 		MergeAndSplit2.main(args);
 		System.out.println();
-		/*System.out.println("MergeAndSplit3:");
+		System.out.println("MergeAndSplit3:");
 		MergeAndSplit3.main(args);
-		System.out.println();*/
+		System.out.println();
 		
 		System.out.println("NotAUselessSelfLoop:");
 		NotAUselessSelfLoop.main(args);
