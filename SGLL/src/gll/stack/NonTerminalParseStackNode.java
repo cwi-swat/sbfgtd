@@ -99,6 +99,16 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public String toString(){
-		return nonTerminal;
+		StringBuilder sb = new StringBuilder();
+		sb.append(nonTerminal);
+		sb.append('(');
+		sb.append(startLocation);
+		sb.append(',');
+		sb.append(endLocation);
+		sb.append(',');
+		sb.append(parseResults.toString());
+		sb.append(')');
+		
+		return sb.toString();
 	}
 }
