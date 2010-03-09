@@ -219,7 +219,7 @@ public class SGLL implements IGLL{
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
-			ParseStackNode first = expectedNodes[0].getCleanCopy();
+			ParseStackNode first = expectedNodes[0];
 			ParseStackNode current = first;
 			ParseStackNode prev;
 			int k = 1;
@@ -259,6 +259,8 @@ public class SGLL implements IGLL{
 				}
 			}
 			
+			first = first.getCleanCopy();
+			current = first;
 			for(; k < expectedNodes.length; k++){ // Unshared.
 				prev = current;
 				current = expectedNodes[k].getCleanCopy();
