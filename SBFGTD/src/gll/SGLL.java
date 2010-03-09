@@ -60,7 +60,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private INode buildResult(String nonTerminalName, List<List<INode>> results){ // NOTE: I'm not entirely sure about this.
+	private INode buildResult(String nonTerminalName, List<List<INode>> results){
 		List<INode> resultsCollection = new ArrayList<INode>();
 		for(int i = results.size() - 1; i >= 0; i--){
 			INode node = new NonTerminalNode(nonTerminalName, results.get(i));
@@ -252,7 +252,7 @@ public class SGLL implements IGLL{
 						}
 						current.addEdge(stackBeingWorkedOn);
 					}else{
-						possiblySharedNode.addEdge(stackBeingWorkedOn);
+						possiblySharedNode.addEdge(stackBeingWorkedOn); // Loop
 					}
 					
 					continue OUTER;
