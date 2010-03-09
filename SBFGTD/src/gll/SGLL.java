@@ -136,16 +136,6 @@ public class SGLL implements IGLL{
 	private void move(ParseStackNode node){
 		List<List<INode>> results = node.getResults();
 		
-		// Move
-		if(node.hasNexts()){
-			List<ParseStackNode> nexts = node.getNexts();
-			for(int i = nexts.size() - 1; i >= 0; i--){
-				ParseStackNode next = nexts.get(i);
-				next = updateNextNode(next);
-				next.addPrefixResults(results);
-			}
-		}
-		
 		if(node.hasEdges()){
 			List<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
@@ -154,8 +144,21 @@ public class SGLL implements IGLL{
 				INode result = buildResult(edge.getNonTerminalName(), results);
 				edge.addResult(result);
 			}
-		}else if(!node.hasNexts() && location == input.length){
-			rootNode = node;
+		}else if(location == input.length){
+			if(!node.hasNexts()){
+				rootNode = node;
+			}
+			return;
+		}
+		
+		// Move
+		if(node.hasNexts()){
+			List<ParseStackNode> nexts = node.getNexts();
+			for(int i = nexts.size() - 1; i >= 0; i--){
+				ParseStackNode next = nexts.get(i);
+				next = updateNextNode(next);
+				next.addPrefixResults(results);
+			}
 		}
 	}
 	
