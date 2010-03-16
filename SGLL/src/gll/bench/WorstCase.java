@@ -29,10 +29,7 @@ public class WorstCase extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		WorstCase wc = new WorstCase("aaaaa".getBytes());
-		wc.parse("S");
-		
-		/*long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		WorstCase wc = new WorstCase("aaaaaaaaaa".getBytes());
 		wc.parse("S");
 		long end = System.currentTimeMillis();
@@ -90,6 +87,6 @@ public class WorstCase extends SGLL{
 		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
 		wc.parse("S");
 		end = System.currentTimeMillis();
-		System.out.println("300 "+(end - start)+"ms");*/
+		System.out.println("300 "+(end - start)+"ms");
 	}
 }
