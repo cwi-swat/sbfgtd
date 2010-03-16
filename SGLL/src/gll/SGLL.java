@@ -1,8 +1,5 @@
 package gll;
 
-import gll.nodes.Alternative;
-import gll.nodes.INode;
-import gll.nodes.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 
@@ -23,12 +20,11 @@ public class SGLL implements IGLL{
 	private final List<ParseStackNode> stacksWithNonTerminalsToReduce;
 	private List<ParseStackNode[]> lastExpects;
 	private List<ParseStackNode> possiblySharedExpects;
+	private List<ParseStackNode> possiblySharedExpectsEndNodes;
 	private List<ParseStackNode> possiblySharedNextNodes;
 	private Map<Integer, List<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int location;
-	
-	private ParseStackNode rootNode;
 	
 	public SGLL(byte[] input){
 		super();
@@ -42,8 +38,6 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
 		location = 0;
-		
-		rootNode = null;
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){
@@ -60,104 +54,62 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private INode buildResult(String nonTerminalName, List<List<INode>> results){
-		List<INode> resultsCollection = new ArrayList<INode>();
-		for(int i = results.size() - 1; i >= 0; i--){
-			INode node = new NonTerminalNode(nonTerminalName, results.get(i));
-			resultsCollection.add(node);
-		}
-		
-		return new Alternative(resultsCollection);
-	}
-	
 	private ParseStackNode updateNextNode(ParseStackNode node){
-		if(node.startLocationIsSet()){
-			if(node.getStartLocation() == location){
-				return node;
-			}
-			
+		ParseStackNode nodeToCheck = node;
+		
+		if(!nodeToCheck.startLocationIsSet()){
 			for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
 				ParseStackNode possibleAlternative = possiblySharedNextNodes.get(i);
+				if(possibleAlternative.isSimilar(nodeToCheck)){
+					return possibleAlternative;
+				}
+			}
+		}
+		
+		nodeToCheck = nodeToCheck.getCleanCopy();
+		nodes++;
+		nodeToCheck.setStartLocation(location);
+		possiblySharedNextNodes.add(nodeToCheck);
+		stacksToExpand.add(nodeToCheck);
+		return nodeToCheck;
+	}
+	
+	private ParseStackNode updateEdgeNode(ParseStackNode node){
+		int startLocation = node.getStartLocation();
+		Integer startIndex = new Integer(startLocation);
+		List<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
+		if(possiblySharedEdgeNodes != null){
+			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
+				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
 					return possibleAlternative;
 				}
 			}
-			
-			ParseStackNode copy = node.getCleanCopy();
-			copy.setStartLocation(location);
-			
-			possiblySharedNextNodes.add(copy);
-			stacksToExpand.add(copy);
-			
-			return copy;
+		}else{
+			possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
+			possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
 		}
 		
-		node.setStartLocation(location);
-		stacksToExpand.add(node);
-		return node;
-	}
-	
-	private ParseStackNode updateEdgeNode(ParseStackNode node){
-		if(node.endLocationIsSet()){
-			if(node.getEndLocation() == location){
-				return node;
-			}
-			
-			int startLocation = node.getStartLocation();
-			Integer startIndex = new Integer(startLocation);
-			List<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
-			if(possiblySharedEdgeNodes != null){
-				for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
-					ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
-					if(possibleAlternative.isSimilar(node)){
-						return possibleAlternative;
-					}
-				}
-			}else{
-				possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
-				possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
-			}
-			
-			ParseStackNode copy = node.getCleanWithPrefixCopy();
-			copy.setStartLocation(startLocation);
-			copy.setEndLocation(location);
-			
-			possiblySharedEdgeNodes.add(copy);
-			stacksWithNonTerminalsToReduce.add(copy);
-			
-			return copy;
-		}
-		
-		node.setEndLocation(location);
+		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.add(node);
+		
 		return node;
 	}
 	
 	private void move(ParseStackNode node){
-		List<List<INode>> results = node.getResults();
-		
 		if(node.hasEdges()){
 			List<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
 				ParseStackNode edge = edges.get(i);
 				edge = updateEdgeNode(edge);
-				INode result = buildResult(edge.getNonTerminalName(), results);
-				edge.addResult(result);
 			}
 		}else if(location == input.length){
-			if(!node.hasNexts()){
-				rootNode = node;
-			}
-			return;
-		}
-		
-		// Move
-		if(node.hasNexts()){
+			return; // EOF reached.
+		}else if(node.hasNexts()){
 			List<ParseStackNode> nexts = node.getNexts();
 			for(int i = nexts.size() - 1; i >= 0; i--){
 				ParseStackNode next = nexts.get(i);
 				next = updateNextNode(next);
-				next.addPrefixResults(results);
 			}
 		}
 	}
@@ -214,73 +166,49 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
+	int nodes = 0;
+	int edges = 0;
+	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
 			ParseStackNode first = expectedNodes[0];
-			ParseStackNode current = first;
-			ParseStackNode prev;
-			int k = 1;
+			
 			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
 				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
-				ParseStackNode prevPossiblySharedNode = possiblySharedNode;
-				if(possiblySharedNode.equalSymbol(current)){
-					SHARE: for(; k < expectedNodes.length; k++){ // Shared.
-						prevPossiblySharedNode = possiblySharedNode;
-						List<ParseStackNode> nexts = possiblySharedNode.getNexts();
-						if(nexts == null){
-							break;
-						}
-						current = expectedNodes[k];
-						for(int l = nexts.size() - 1; l >= 0; l--){
-							possiblySharedNode = nexts.get(l);
-							if(possiblySharedNode.equalSymbol(current)){
-								continue SHARE;
-							}
-						}
-						break;
-					}
-					
-					if(k < expectedNodes.length){
-						current = prevPossiblySharedNode;
-						for(; k < expectedNodes.length; k++){ // Unshared.
-							prev = current;
-							current = expectedNodes[k].getCleanCopy();
-							prev.addNext(current);
-						}
-						current.addEdge(stackBeingWorkedOn);
-					}else{
-						possiblySharedNode.addEdge(stackBeingWorkedOn); // Loop
-					}
-					
-					continue OUTER;
+				if(possiblySharedNode.isSimilar(first)){
+					possiblySharedExpectsEndNodes.get(j).addEdge(stackBeingWorkedOn);
+					edges++;
+					continue OUTER; // Shared.
 				}
 			}
 			
 			first = first.getCleanCopy();
-			current = first;
-			for(; k < expectedNodes.length; k++){ // Unshared.
+			nodes++;
+			ParseStackNode current = first;
+			ParseStackNode prev;
+			
+			for(int k = 1; k < expectedNodes.length; k++){
 				prev = current;
-				current = expectedNodes[k].getCleanCopy();
+				current = expectedNodes[k];
 				prev.addNext(current);
 			}
 			
 			current.addEdge(stackBeingWorkedOn);
+			edges++;
 			
 			first.setStartLocation(location);
 			
 			stacksToExpand.add(first);
 			possiblySharedExpects.add(first);
+			possiblySharedExpectsEndNodes.add(current);
 		}
 	}
 	
 	private void expandStack(ParseStackNode node){
 		if(node.isTerminal()){
-			if(location != node.getStartLocation()){
-				throw new RuntimeException("WTF?");
-			}
 			if(location + node.getLength() <= input.length) todoList.add(node);
 			return;
 		}
@@ -292,15 +220,16 @@ public class SGLL implements IGLL{
 	
 	private void expand(){
 		possiblySharedExpects = new ArrayList<ParseStackNode>();
+		possiblySharedExpectsEndNodes = new ArrayList<ParseStackNode>();
 		while(stacksToExpand.size() > 0){
 			lastExpects = new ArrayList<ParseStackNode[]>();
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
 		}
 	}
 	
-	public INode parse(String start){
+	public void parse(String start){
 		// Initialize.
-		ParseStackNode rootNode = new NonTerminalParseStackNode(start);
+		ParseStackNode rootNode = new NonTerminalParseStackNode(start, -1);
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);
 		expand();
@@ -313,8 +242,8 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
-		if(this.rootNode == null) throw new RuntimeException("Parse error before: "+location);
-		
-		return new NonTerminalNode("parsetree", this.rootNode.getResult());
+
+		System.out.println("Nodes: "+nodes);
+		System.out.println("Edges: "+edges);
 	}
 }
