@@ -55,22 +55,24 @@ public class SGLL implements IGLL{
 	}
 	
 	private ParseStackNode updateNextNode(ParseStackNode node){
-		ParseStackNode nodeToCheck = node;
-		
-		if(!nodeToCheck.startLocationIsSet()){
-			for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
-				ParseStackNode possibleAlternative = possiblySharedNextNodes.get(i);
-				if(possibleAlternative.isSimilar(nodeToCheck)){
-					return possibleAlternative;
+		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
+			ParseStackNode possibleAlternative = possiblySharedNextNodes.get(i);
+			if(possibleAlternative.isSimilar(node)){
+				//System.out.println(possibleAlternative+" "+node);
+				if(node.hasEdges()){
+					possibleAlternative.addEdges(node.getEdges());
+					edges += node.getEdges().size();
 				}
+				return possibleAlternative;
 			}
 		}
 		
-		nodeToCheck = nodeToCheck.getCleanCopy();
-		nodeToCheck.setStartLocation(location);
-		possiblySharedNextNodes.add(nodeToCheck);
-		stacksToExpand.add(nodeToCheck);
-		return nodeToCheck;
+		node.setStartLocation(location);
+		//System.out.println(node);
+		possiblySharedNextNodes.add(node);
+		stacksToExpand.add(node);
+		nodes++;
+		return node;
 	}
 	
 	private ParseStackNode updateEdgeNode(ParseStackNode node){
@@ -176,6 +178,7 @@ public class SGLL implements IGLL{
 				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
 				if(possiblySharedNode.isSimilar(first)){
 					possiblySharedExpectsEndNodes.get(j).addEdge(stackBeingWorkedOn);
+					edges++;
 					continue OUTER; // Shared.
 				}
 			}
@@ -186,13 +189,16 @@ public class SGLL implements IGLL{
 			
 			for(int k = 1; k < expectedNodes.length; k++){
 				prev = current;
-				current = expectedNodes[k];
+				current = expectedNodes[k].getCleanCopy();
 				prev.addNext(current);
 			}
 			
 			current.addEdge(stackBeingWorkedOn);
+			edges++;
 			
 			first.setStartLocation(location);
+			//System.out.println(first);
+			nodes++;
 			
 			stacksToExpand.add(first);
 			possiblySharedExpects.add(first);
@@ -220,10 +226,15 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	int nodes = 0;
+	int edges = 0;
+	
 	public void parse(String start){
 		// Initialize.
 		ParseStackNode rootNode = new NonTerminalParseStackNode(start, -1);
+		nodes++;
 		rootNode.setStartLocation(0);
+		//System.out.println(rootNode);
 		stacksToExpand.add(rootNode);
 		expand();
 		
@@ -234,5 +245,8 @@ public class SGLL implements IGLL{
 			
 			expand();
 		}while(todoList.size() > 0);
+		
+		System.out.println("Nodes "+nodes);
+		System.out.println("Edges: "+edges);
 	}
 }

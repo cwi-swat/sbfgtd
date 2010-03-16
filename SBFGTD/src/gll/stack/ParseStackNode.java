@@ -63,6 +63,13 @@ public abstract class ParseStackNode{
 		edges.add(edge);
 	}
 	
+	public void addEdges(List<ParseStackNode> edgesToAdd){
+		for(int i = edgesToAdd.size() - 1; i >= 0; i--){
+			ParseStackNode node = edgesToAdd.get(i);
+			if(!edges.contains(node)) edges.add(node);
+		}
+	}
+	
 	public boolean hasEdges(){
 		return (edges != null);
 	}
