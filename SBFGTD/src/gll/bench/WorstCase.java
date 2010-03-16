@@ -29,6 +29,9 @@ public class WorstCase extends SGLL{
 	}
 	
 	public static void main(String[] args){
+		/*WorstCase wc = new WorstCase("aaa".getBytes());
+		wc.parse("S");*/
+		
 		long start = System.currentTimeMillis();
 		WorstCase wc = new WorstCase("aaaaaaaaaa".getBytes());
 		wc.parse("S");
