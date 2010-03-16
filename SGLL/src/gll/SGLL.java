@@ -61,7 +61,6 @@ public class SGLL implements IGLL{
 				//System.out.println(possibleAlternative+" "+node);
 				if(node.hasEdges()){
 					possibleAlternative.addEdges(node.getEdges());
-					edges += node.getEdges().size();
 				}
 				return possibleAlternative;
 			}
@@ -227,9 +226,10 @@ public class SGLL implements IGLL{
 	}
 	
 	int nodes = 0;
-	int edges = 0;
+	public static int edges = 0;
 	
 	public void parse(String start){
+		edges = 0;
 		// Initialize.
 		ParseStackNode rootNode = new NonTerminalParseStackNode(start, -1);
 		nodes++;

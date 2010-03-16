@@ -1,5 +1,7 @@
 package gll.stack;
 
+import gll.SGLL;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +68,10 @@ public abstract class ParseStackNode{
 	public void addEdges(List<ParseStackNode> edgesToAdd){
 		for(int i = edgesToAdd.size() - 1; i >= 0; i--){
 			ParseStackNode node = edgesToAdd.get(i);
-			if(!edges.contains(node)) edges.add(node);
+			if(!edges.contains(node)){
+				edges.add(node);
+				SGLL.edges++;
+			}
 		}
 	}
 	
