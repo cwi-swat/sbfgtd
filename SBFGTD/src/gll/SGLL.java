@@ -67,7 +67,6 @@ public class SGLL implements IGLL{
 		}
 		
 		nodeToCheck = nodeToCheck.getCleanCopy();
-		//nodes++;
 		nodeToCheck.setStartLocation(location);
 		possiblySharedNextNodes.add(nodeToCheck);
 		stacksToExpand.add(nodeToCheck);
@@ -166,9 +165,6 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
-	//int nodes = 0;
-	//int edges = 0;
-	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
 		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
@@ -180,13 +176,11 @@ public class SGLL implements IGLL{
 				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
 				if(possiblySharedNode.isSimilar(first)){
 					possiblySharedExpectsEndNodes.get(j).addEdge(stackBeingWorkedOn);
-					//edges++;
 					continue OUTER; // Shared.
 				}
 			}
 			
 			first = first.getCleanCopy();
-			//nodes++;
 			ParseStackNode current = first;
 			ParseStackNode prev;
 			
@@ -197,7 +191,6 @@ public class SGLL implements IGLL{
 			}
 			
 			current.addEdge(stackBeingWorkedOn);
-			//edges++;
 			
 			first.setStartLocation(location);
 			
@@ -241,9 +234,5 @@ public class SGLL implements IGLL{
 			
 			expand();
 		}while(todoList.size() > 0);
-		
-
-		//System.out.println("Nodes: "+nodes);
-		//System.out.println("Edges: "+edges);
 	}
 }
