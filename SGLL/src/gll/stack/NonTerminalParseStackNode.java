@@ -1,12 +1,21 @@
 package gll.stack;
 
+import gll.result.Alternative;
+import gll.result.INode;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
+	
+	private final List<INode> results;
 	
 	public NonTerminalParseStackNode(String nonTerminal, int id){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
+		results = null;
 	}
 	
 	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
@@ -16,6 +25,8 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		
 		this.nexts = nonTerminalParseStackNode.nexts;
 		this.edges = nonTerminalParseStackNode.edges;
+		
+		results = new ArrayList<INode>();
 	}
 	
 	public boolean isTerminal(){
@@ -46,6 +57,14 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
+	public void addResult(INode result){
+		results.add(result);
+	}
+	
+	protected INode getResult(){
+		return new Alternative(results);
+	}
+
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(nonTerminal);

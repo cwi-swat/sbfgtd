@@ -1,5 +1,7 @@
 package gll.stack;
 
+import gll.result.INode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,8 @@ public abstract class ParseStackNode{
 	protected int startLocation;
 	protected int endLocation;
 	
+	private List<INode[]> prefixes;
+	
 	public ParseStackNode(int id){
 		super();
 		
@@ -21,6 +25,9 @@ public abstract class ParseStackNode{
 		edges = null;
 		
 		startLocation = -1;
+		endLocation = -1;
+		
+		prefixes = null;
 	}
 	
 	// General.
@@ -107,4 +114,39 @@ public abstract class ParseStackNode{
 	}
 	
 	public abstract int getLength();
+	
+	// Results
+	public void addPrefix(INode[] prefix){
+		if(prefixes == null) prefixes = new ArrayList<INode[]>(1);
+		
+		prefixes.add(prefix);
+	}
+	
+	public abstract void addResult(INode result);
+	
+	protected abstract INode getResult();
+	
+	public List<INode[]> getResults(){
+		if(prefixes == null){
+			List<INode[]> results = new ArrayList<INode[]>(1);
+			INode[] result = {getResult()};
+			results.add(result);
+			return results;
+		}
+		
+		int nrOfPrefixes = prefixes.size();
+		List<INode[]> results = new ArrayList<INode[]>();
+		INode thisResult = getResult();
+		for(int i = nrOfPrefixes - 1; i >= 0; i--){
+			INode[] prefix = prefixes.get(i);
+			int prefixLength = prefix.length;
+			INode[] result = new INode[prefixLength + 1];
+			System.arraycopy(prefix, 0, result, 0, prefixLength);
+			result[prefixLength] = thisResult;
+			
+			results.add(result);
+		}
+		
+		return results;
+	}
 }
