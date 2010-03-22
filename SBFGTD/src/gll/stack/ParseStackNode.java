@@ -1,7 +1,5 @@
 package gll.stack;
 
-import gll.SGLL;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +10,7 @@ public abstract class ParseStackNode{
 	private final int id;
 	
 	protected int startLocation;
+	protected int endLocation;
 	
 	public ParseStackNode(int id){
 		super();
@@ -70,7 +69,6 @@ public abstract class ParseStackNode{
 			ParseStackNode node = edgesToAdd.get(i);
 			if(!edges.contains(node)){
 				edges.add(node);
-				SGLL.edges++;
 			}
 		}
 	}
@@ -87,12 +85,25 @@ public abstract class ParseStackNode{
 	public void setStartLocation(int startLocation){
 		this.startLocation = startLocation;
 	}
+	
 	public boolean startLocationIsSet(){
 		return (startLocation != -1);
 	}
 	
 	public int getStartLocation(){
 		return startLocation;
+	}
+	
+	public void setEndLocation(int endLocation){
+		this.endLocation = endLocation;
+	}
+	
+	public boolean endLocationIsSet(){
+		return (endLocation != -1);
+	}
+	
+	public int getEndLocation(){
+		return endLocation;
 	}
 	
 	public abstract int getLength();

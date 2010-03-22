@@ -88,6 +88,13 @@ public class SGLL implements IGLL{
 		}else{
 			possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
 			possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
+			
+			if(node.endLocationIsSet()){
+				nodes++;
+				edges += node.getEdges() != null ? node.getEdges().size() : 0;
+				node = node.getCleanCopy();
+				node.setStartLocation(startLocation);
+			}
 		}
 		
 		possiblySharedEdgeNodes.add(node);
@@ -97,6 +104,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void move(ParseStackNode node){
+		node.setEndLocation(location);
+		
+		if(node.isNonTerminal()) System.out.println(node.getMethodName()+" "+node.getId()+" "+node.getStartLocation()+" "+location);
+		
 		if(node.hasEdges()){
 			List<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
