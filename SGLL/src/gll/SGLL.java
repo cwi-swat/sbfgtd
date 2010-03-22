@@ -95,13 +95,13 @@ public class SGLL implements IGLL{
 		}else{
 			possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
 			possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
-			
-			if(node.endLocationIsSet()){
-				node = node.getCleanCopyWithPrefix();
-				node.setStartLocation(startLocation);
-			}
-			node.setEndLocation(location);
 		}
+		
+		if(node.endLocationIsSet()){
+			node = node.getCleanCopyWithPrefix();
+			node.setStartLocation(startLocation);
+		}
+		node.setEndLocation(location);
 		
 		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.add(node);
