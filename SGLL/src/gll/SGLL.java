@@ -71,6 +71,10 @@ public class SGLL implements IGLL{
 			}
 		}
 		
+		if(node.startLocationIsSet()){
+			node = node.getCleanCopy();
+		}
+		
 		node.setStartLocation(location);
 		possiblySharedNextNodes.add(node);
 		stacksToExpand.add(node);
@@ -93,10 +97,10 @@ public class SGLL implements IGLL{
 			possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
 			
 			if(node.endLocationIsSet()){
-				node = node.getCleanCopy();
+				node = node.getCleanCopyWithPrefix();
 				node.setStartLocation(startLocation);
-				node.setEndLocation(location);
 			}
+			node.setEndLocation(location);
 		}
 		
 		possiblySharedEdgeNodes.add(node);
@@ -141,11 +145,6 @@ public class SGLL implements IGLL{
 		String name = edge.getNonTerminalName();
 		
 		int nrOfResults = results.size();
-		if(nrOfResults == 1){
-			edge.addResult(new NonTerminalNode(name, results.get(0)));
-			return;
-		}
-		
 		for(int i = nrOfResults - 1; i >= 0; i--){
 			INode result = new NonTerminalNode(name, results.get(i));
 			edge.addResult(result);
