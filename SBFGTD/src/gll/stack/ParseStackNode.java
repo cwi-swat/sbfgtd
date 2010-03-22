@@ -12,9 +12,8 @@ public abstract class ParseStackNode{
 	private final int id;
 	
 	protected int startLocation;
-	protected int endLocation;
 	
-	private List<INode[]> prefixes;
+	protected List<INode[]> prefixes;
 	
 	public ParseStackNode(int id){
 		super();
@@ -25,7 +24,6 @@ public abstract class ParseStackNode{
 		edges = null;
 		
 		startLocation = -1;
-		endLocation = -1;
 		
 		prefixes = null;
 	}
@@ -47,6 +45,8 @@ public abstract class ParseStackNode{
 	
 	// Sharing.
 	public abstract ParseStackNode getCleanCopy();
+	
+	public abstract ParseStackNode getCleanCopyWithPrefix();
 	
 	public boolean isSimilar(ParseStackNode node){
 		return (node.getId() == getId());
@@ -101,17 +101,11 @@ public abstract class ParseStackNode{
 		return startLocation;
 	}
 	
-	public void setEndLocation(int endLocation){
-		this.endLocation = endLocation;
-	}
+	public abstract void setEndLocation(int endLocation);
 	
-	public boolean endLocationIsSet(){
-		return (endLocation != -1);
-	}
+	public abstract boolean endLocationIsSet();
 	
-	public int getEndLocation(){
-		return endLocation;
-	}
+	public abstract int getEndLocation();
 	
 	public abstract int getLength();
 	

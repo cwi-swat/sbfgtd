@@ -9,13 +9,18 @@ import java.util.List;
 public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
 	
+	private int endLocation;
+	
 	private final List<INode> results;
 	
 	public NonTerminalParseStackNode(String nonTerminal, int id){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
+		
 		results = null;
+		
+		endLocation = -1;
 	}
 	
 	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
@@ -27,6 +32,8 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		this.edges = nonTerminalParseStackNode.edges;
 		
 		results = new ArrayList<INode>();
+		
+		endLocation = -1;
 	}
 	
 	public boolean isTerminal(){
@@ -53,8 +60,26 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return new NonTerminalParseStackNode(this);
 	}
 	
+	public ParseStackNode getCleanCopyWithPrefix(){
+		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(this);
+		ntpsn.prefixes = prefixes;
+		return ntpsn;
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
+	}
+	
+	public void setEndLocation(int endLocation){
+		this.endLocation = endLocation;
+	}
+	
+	public boolean endLocationIsSet(){
+		return (endLocation != -1);
+	}
+	
+	public int getEndLocation(){
+		return endLocation;
 	}
 	
 	public void addResult(INode result){
@@ -71,6 +96,8 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
+		sb.append(',');
+		sb.append(endLocation);
 		sb.append(')');
 		
 		return sb.toString();
