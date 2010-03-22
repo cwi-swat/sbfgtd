@@ -106,8 +106,6 @@ public class SGLL implements IGLL{
 	private void move(ParseStackNode node){
 		node.setEndLocation(location);
 		
-		if(node.isNonTerminal()) System.out.println(node.getMethodName()+" "+node.getId()+" "+node.getStartLocation()+" "+location);
-		
 		if(node.hasEdges()){
 			List<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
