@@ -28,6 +28,8 @@ public class SGLL implements IGLL{
 	
 	private int location;
 	
+	private ParseStackNode root;
+	
 	public SGLL(byte[] input){
 		super();
 		
@@ -40,6 +42,8 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
 		location = 0;
+		
+		root = null;
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){
@@ -136,6 +140,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void addResults(ParseStackNode edge, List<INode[]> results){
+		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
+			root = edge; // Root reached.
+		}
+		
 		String name = edge.getNonTerminalName();
 		
 		int nrOfResults = results.size();
@@ -264,7 +272,7 @@ public class SGLL implements IGLL{
 	int nodes = 0;
 	public static int edges = 0;
 	
-	public void parse(String start){
+	public INode parse(String start){
 		edges = 0;
 		// Initialize.
 		ParseStackNode rootNode = new NonTerminalParseStackNode(start, -1).getCleanCopy();
@@ -282,7 +290,11 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
+		if(location != input.length) System.err.println("Parse Error before: "+location);
+		
 		System.out.println("Nodes "+nodes);
 		System.out.println("Edges: "+edges);
+		
+		return root.getResult();
 	}
 }

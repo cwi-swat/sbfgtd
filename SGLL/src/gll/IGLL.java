@@ -1,5 +1,7 @@
 package gll;
 
+import gll.result.INode;
+
 public interface IGLL{
-	void parse(String start);
+	INode parse(String start);
 }

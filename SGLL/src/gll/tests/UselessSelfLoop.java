@@ -39,7 +39,7 @@ public class UselessSelfLoop extends SGLL{
 	
 	public static void main(String[] args){
 		UselessSelfLoop usl = new UselessSelfLoop("a".getBytes());
-		usl.parse("S");
+		System.out.println(usl.parse("S"));
 		
 		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good");
 	}

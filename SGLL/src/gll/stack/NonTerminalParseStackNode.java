@@ -61,7 +61,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		results.add(result);
 	}
 	
-	protected INode getResult(){
+	public INode getResult(){
 		return new Alternative(results);
 	}
 

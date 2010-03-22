@@ -28,8 +28,8 @@ public class Simple extends SGLL{
 	
 	public static void main(String[] args){
 		Simple s = new Simple("aab".getBytes());
-		s.parse("S");
+		System.out.println(s.parse("S"));
 		
-		System.out.println("parsetree(S(A(aa),b)) <- good");
+		System.out.println("S(A(aa),b) <- good");
 	}
 }

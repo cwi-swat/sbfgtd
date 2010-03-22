@@ -51,8 +51,8 @@ public class MergeAndSplit2 extends SGLL{
 	
 	public static void main(String[] args){
 		MergeAndSplit2 ms2 = new MergeAndSplit2("aaa".getBytes());
-		ms2.parse("S");
+		System.out.println(ms2.parse("S"));
 		
-		System.out.println("parsetree([S(D(C(B(A(a)),aa))),S(D(C(B(A(a)),a)),a)]) <- good");
+		System.out.println("[S(D(C(B(A(a)),aa))),S(D(C(B(A(a)),a)),a)] <- good");
 	}
 }
