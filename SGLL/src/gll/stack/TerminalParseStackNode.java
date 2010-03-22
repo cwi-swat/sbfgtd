@@ -50,8 +50,26 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return new TerminalParseStackNode(this);
 	}
 	
+	public ParseStackNode getCleanCopyWithPrefix(){
+		TerminalParseStackNode tpsn = new TerminalParseStackNode(this);
+		tpsn.prefixes = prefixes;
+		return tpsn;
+	}
+	
 	public int getLength(){
 		return terminal.length;
+	}
+	
+	public void setEndLocation(int endLocation){
+		throw new UnsupportedOperationException();
+	}
+	
+	public boolean endLocationIsSet(){
+		throw new UnsupportedOperationException();
+	}
+	
+	public int getEndLocation(){
+		throw new UnsupportedOperationException();
 	}
 	
 	public void addResult(INode result){
@@ -68,6 +86,8 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
+		sb.append(',');
+		sb.append(startLocation + getLength());
 		sb.append(')');
 		
 		return sb.toString();
