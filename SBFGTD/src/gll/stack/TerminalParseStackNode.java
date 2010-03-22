@@ -1,12 +1,18 @@
 package gll.stack;
 
+import gll.result.INode;
+import gll.result.TerminalNode;
+
 public final class TerminalParseStackNode extends ParseStackNode{
 	private final byte[] terminal;
+	
+	private final TerminalNode result;
 	
 	public TerminalParseStackNode(byte[] terminal, int id){
 		super(id);
 
 		this.terminal = terminal;
+		result = new TerminalNode(terminal);
 	}
 	
 	private TerminalParseStackNode(TerminalParseStackNode terminalParseStackNode){
@@ -16,6 +22,8 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		
 		this.nexts = terminalParseStackNode.nexts;
 		this.edges = terminalParseStackNode.edges;
+		
+		this.result = terminalParseStackNode.result;
 	}
 	
 	public boolean isTerminal(){
@@ -44,6 +52,14 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	
 	public int getLength(){
 		return terminal.length;
+	}
+	
+	public void addResult(INode result){
+		throw new UnsupportedOperationException();
+	}
+	
+	public INode getResult(){
+		return result;
 	}
 	
 	public String toString(){
