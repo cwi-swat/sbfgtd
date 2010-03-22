@@ -34,8 +34,8 @@ public class Simple2 extends SGLL{
 	
 	public static void main(String[] args){
 		Simple2 s2 = new Simple2("ab".getBytes());
-		s2.parse("S");
+		System.out.println(s2.parse("S"));
 		
-		System.out.println("parsetree(S(A(a),B(b))) <- good");
+		System.out.println("S(A(a),B(b)) <- good");
 	}
 }

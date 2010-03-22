@@ -38,8 +38,8 @@ public class MergeAndSplit extends SGLL{
 	
 	public static void main(String[] args){
 		MergeAndSplit ms = new MergeAndSplit("aaaa".getBytes());
-		ms.parse("S");
+		System.out.println(ms.parse("S"));
 		
-		System.out.println("parsetree(S(a,[A(a,B(a)),A(B(a),a)],a)) <- good");
+		System.out.println("S(a,[A(a,B(a)),A(B(a),a)],a) <- good");
 	}
 }

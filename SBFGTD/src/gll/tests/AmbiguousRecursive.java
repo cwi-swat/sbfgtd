@@ -30,8 +30,8 @@ public class AmbiguousRecursive extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousRecursive ar = new AmbiguousRecursive("aaa".getBytes());
-		ar.parse("S");
+		System.out.println(ar.parse("S"));
 		
-		System.out.println("parsetree([S(S(a),S(a),S(a)),S(S(S(a),S(a)),S(a)),S(S(a),S(S(a),S(a)))]) <- good");
+		System.out.println("[S(S(a),S(a),S(a)),S(S(S(a),S(a)),S(a)),S(S(a),S(S(a),S(a)))] <- good");
 	}
 }

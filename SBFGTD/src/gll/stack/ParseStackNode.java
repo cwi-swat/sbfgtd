@@ -124,7 +124,7 @@ public abstract class ParseStackNode{
 	
 	public abstract void addResult(INode result);
 	
-	protected abstract INode getResult();
+	public abstract INode getResult();
 	
 	public List<INode[]> getResults(){
 		if(prefixes == null){

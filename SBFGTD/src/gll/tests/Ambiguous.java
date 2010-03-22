@@ -29,8 +29,8 @@ public class Ambiguous extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous a = new Ambiguous("a".getBytes());
-		a.parse("S");
+		System.out.println(a.parse("S"));
 		
-		System.out.println("parsetree([S(A(a)),S(a)]) <- good");
+		System.out.println("[S(A(a)),S(a)] <- good");
 	}
 }

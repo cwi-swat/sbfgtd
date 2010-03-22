@@ -30,8 +30,8 @@ public class LeftRecursion extends SGLL{
 	
 	public static void main(String[] args){
 		LeftRecursion lr = new LeftRecursion("aaa".getBytes());
-		lr.parse("S");
+		System.out.println(lr.parse("S"));
 		
-		System.out.println("parsetree(S(A(A(A(a),a),a))) <- good");
+		System.out.println("S(A(A(A(a),a),a)) <- good");
 	}
 }
