@@ -1,12 +1,10 @@
 package gll.result;
 
-import java.util.List;
-
 public class NonTerminalNode implements INode{
 	private final String name;
-	private final List<INode> children;
+	private final INode[] children;
 	
-	public NonTerminalNode(String name, List<INode> children){
+	public NonTerminalNode(String name, INode[] children){
 		super();
 		
 		this.name = name;
@@ -16,14 +14,14 @@ public class NonTerminalNode implements INode{
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-		int nrOfChildren = children.size();
+		int nrOfChildren = children.length;
 		
 		sb.append(name);
 		sb.append('(');
-		sb.append(children.get(0));
+		sb.append(children[0]);
 		for(int i = 1; i < nrOfChildren; i++){
 			sb.append(',');
-			sb.append(children.get(i));
+			sb.append(children[i]);
 		}
 		sb.append(')');
 		
