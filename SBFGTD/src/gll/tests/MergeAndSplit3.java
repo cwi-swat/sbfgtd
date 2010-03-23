@@ -18,6 +18,7 @@ public class MergeAndSplit3 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_B3 = new NonTerminalParseStackNode("B", 3);
 	private final static ParseStackNode NONTERMINAL_C4 = new NonTerminalParseStackNode("C", 4);
 	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".getBytes(), 5);
+	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".getBytes(), 6);
 	
 	public MergeAndSplit3(byte[] input){
 		super(input);
@@ -36,7 +37,7 @@ public class MergeAndSplit3 extends SGLL{
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_A1, TERMINAL_a5);
+		expect(NONTERMINAL_A1, TERMINAL_a6);
 		
 		expect(TERMINAL_a5);
 	}
@@ -49,6 +50,6 @@ public class MergeAndSplit3 extends SGLL{
 		MergeAndSplit3 ms3 = new MergeAndSplit3("aaa".getBytes());
 		System.out.println(ms3.parse("S"));
 		
-		System.out.println("[S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))] <- good");
+		System.out.println("[S(A(B(A(a),a),a)),S(C(B(A(B(a),a),a)))] <- good");
 	}
 }
