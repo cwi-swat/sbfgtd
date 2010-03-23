@@ -63,11 +63,12 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	public ParseStackNode getCleanCopyWithPrefix(){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(this);
 		ntpsn.prefixes = prefixes;
+		ntpsn.prefixLengths = prefixLengths;
 		return ntpsn;
 	}
 	
 	public int getLength(){
-		throw new UnsupportedOperationException();
+		return (endLocation - startLocation);
 	}
 	
 	public void setEndLocation(int endLocation){
