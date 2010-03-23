@@ -120,8 +120,6 @@ public class SGLL implements IGLL{
 				edge = updateEdgeNode(edge);
 				addResults(edge, results, resultLengths);
 			}
-		}else if(location == input.length){
-			return; // EOF reached.
 		}else if(node.hasNexts()){
 			List<ParseStackNode> nexts = node.getNexts();
 			for(int i = nexts.size() - 1; i >= 0; i--){
@@ -129,6 +127,8 @@ public class SGLL implements IGLL{
 				next = updateNextNode(next);
 				addPrefixes(next, results, resultLengths);
 			}
+		}else if(location == input.length){ // Do it afterward, so epsilons work.
+			return; // EOF reached.
 		}
 	}
 	
@@ -243,7 +243,7 @@ public class SGLL implements IGLL{
 	
 	private void expandStack(ParseStackNode node){
 		if(node.isTerminal()){
-			if(location + node.getLength() <= input.length) todoList.add(node);
+			if((location + node.getLength() <= input.length) || (node.getLength() == 0)) todoList.add(node);
 			return;
 		}
 		
