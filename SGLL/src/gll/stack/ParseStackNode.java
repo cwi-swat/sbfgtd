@@ -14,6 +14,7 @@ public abstract class ParseStackNode{
 	protected int startLocation;
 	
 	protected List<INode[]> prefixes;
+	protected List<Integer> prefixLengths;
 	
 	public ParseStackNode(int id){
 		super();
@@ -26,6 +27,7 @@ public abstract class ParseStackNode{
 		startLocation = -1;
 		
 		prefixes = null;
+		prefixLengths = null;
 	}
 	
 	// General.
@@ -110,10 +112,14 @@ public abstract class ParseStackNode{
 	public abstract int getLength();
 	
 	// Results
-	public void addPrefix(INode[] prefix){
-		if(prefixes == null) prefixes = new ArrayList<INode[]>(1);
+	public void addPrefix(INode[] prefix, Integer length){
+		if(prefixes == null){
+			prefixes = new ArrayList<INode[]>(1);
+			prefixLengths = new ArrayList<Integer>();
+		}
 		
 		prefixes.add(prefix);
+		prefixLengths.add(length);
 	}
 	
 	public abstract void addResult(INode result);
@@ -142,5 +148,24 @@ public abstract class ParseStackNode{
 		}
 		
 		return results;
+	}
+	
+	public List<Integer> getResultLengths(){
+		int length = (getEndLocation() - startLocation);
+		if(prefixLengths == null){
+			List<Integer> resultLengths = new ArrayList<Integer>(1);
+			Integer result = Integer.valueOf(length);
+			resultLengths.add(result);
+			return resultLengths;
+		}
+		
+		int nrOfPrefixes = prefixLengths.size();
+		List<Integer> resultLengths = new ArrayList<Integer>();
+		int thisResultLength = length;
+		for(int i = nrOfPrefixes - 1; i >= 0; i--){
+			resultLengths.add(Integer.valueOf(prefixLengths.get(i).intValue() + thisResultLength));
+		}
+		
+		return resultLengths;
 	}
 }

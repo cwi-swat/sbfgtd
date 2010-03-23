@@ -51,6 +51,6 @@ public class NotAUselessSelfLoop extends SGLL{
 		NotAUselessSelfLoop nausl = new NotAUselessSelfLoop("aaa".getBytes());
 		System.out.println(nausl.parse("S"));
 		
-		System.out.println("[S(A(C(a),C(a)),A(a)),S(A(a),A(C(a),C(a))),S([B(A(C(a),C(a)),A(a)),B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a))),B(C(A(a),A(a)),C(a))])] <- good");
+		System.out.println("[S(A(C(a),C(a)),A(a)),S([B(A(C(a),C(a)),A(a)),B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a))),B(C(A(a),A(a)),C(a))]),S(A(a),A(C(a),C(a)))] <- good");
 	}
 }
