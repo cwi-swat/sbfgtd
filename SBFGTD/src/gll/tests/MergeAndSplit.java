@@ -17,6 +17,8 @@ public class MergeAndSplit extends SGLL{
 	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".getBytes(), 3);
 	private final static ParseStackNode TERMINAL_a4 = new TerminalParseStackNode("a".getBytes(), 4);
 	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".getBytes(), 5);
+	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".getBytes(), 6);
+	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".getBytes(), 7);
 	
 	public MergeAndSplit(byte[] input){
 		super(input);
@@ -27,13 +29,13 @@ public class MergeAndSplit extends SGLL{
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B1, TERMINAL_a4);
+		expect(NONTERMINAL_B1, TERMINAL_a5);
 		
-		expect(TERMINAL_a5, NONTERMINAL_B2);
+		expect(TERMINAL_a6, NONTERMINAL_B2);
 	}
 	
 	public void B(){
-		expect(TERMINAL_a4);
+		expect(TERMINAL_a7);
 	}
 	
 	public static void main(String[] args){
