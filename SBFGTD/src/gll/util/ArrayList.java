@@ -13,10 +13,10 @@ public class ArrayList<E>{
 		size = 0;
 	}
 	
-	public ArrayList(int size){
+	public ArrayList(int initialSize){
 		super();
 		
-		data = (E[]) new Object[size];
+		data = (E[]) new Object[initialSize];
 		size = 0;
 	}
 	

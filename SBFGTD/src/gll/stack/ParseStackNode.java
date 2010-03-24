@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.result.INode;
 import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public abstract class ParseStackNode{
 	protected ArrayList<ParseStackNode> nexts;
@@ -12,7 +13,7 @@ public abstract class ParseStackNode{
 	protected int startLocation;
 	
 	protected ArrayList<INode[]> prefixes;
-	protected ArrayList<Integer> prefixLengths;
+	protected IntegerList prefixLengths;
 	
 	public ParseStackNode(int id){
 		super();
@@ -110,10 +111,10 @@ public abstract class ParseStackNode{
 	public abstract int getLength();
 	
 	// Results
-	public void addPrefix(INode[] prefix, Integer length){
+	public void addPrefix(INode[] prefix, int length){
 		if(prefixes == null){
 			prefixes = new ArrayList<INode[]>(1);
-			prefixLengths = new ArrayList<Integer>();
+			prefixLengths = new IntegerList(1);
 		}
 		
 		prefixes.add(prefix);
@@ -148,20 +149,19 @@ public abstract class ParseStackNode{
 		return results;
 	}
 	
-	public ArrayList<Integer> getResultLengths(){
+	public IntegerList getResultLengths(){
 		int length = (getEndLocation() - startLocation);
 		if(prefixLengths == null){
-			ArrayList<Integer> resultLengths = new ArrayList<Integer>(1);
-			Integer result = Integer.valueOf(length);
-			resultLengths.add(result);
+			IntegerList resultLengths = new IntegerList(1);
+			resultLengths.add(length);
 			return resultLengths;
 		}
 		
 		int nrOfPrefixes = prefixLengths.size();
-		ArrayList<Integer> resultLengths = new ArrayList<Integer>();
+		IntegerList resultLengths = new IntegerList();
 		int thisResultLength = length;
 		for(int i = nrOfPrefixes - 1; i >= 0; i--){
-			resultLengths.add(Integer.valueOf(prefixLengths.get(i).intValue() + thisResultLength));
+			resultLengths.add(prefixLengths.get(i) + thisResultLength);
 		}
 		
 		return resultLengths;
