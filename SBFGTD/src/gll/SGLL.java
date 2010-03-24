@@ -25,6 +25,7 @@ public class SGLL implements IGLL{
 	private ArrayList<ParseStackNode> possiblySharedNextNodes;
 	private HashMap<Integer, ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
+	private int previousLocation;
 	private int location;
 	
 	private ParseStackNode root;
@@ -40,6 +41,7 @@ public class SGLL implements IGLL{
 		stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
 		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
+		previousLocation = -1;
 		location = 0;
 		
 		root = null;
@@ -169,8 +171,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduce(){
-		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-		possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
+		if(previousLocation != location){ // Epsilon fix.
+			possiblySharedNextNodes = new ArrayList<ParseStackNode>();
+			possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
+		}
 		
 		// Reduce terminals.
 		while(stacksWithTerminalsToReduce.size() > 0){
@@ -202,6 +206,7 @@ public class SGLL implements IGLL{
 			}
 		}
 		
+		previousLocation = location;
 		location = closestNextLocation;
 	}
 	
