@@ -5,10 +5,10 @@ import gll.result.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.util.ArrayList;
+import gll.util.HashMap;
+import gll.util.IntegerList;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SGLL implements IGLL{
 	private final byte[] input;
@@ -23,7 +23,7 @@ public class SGLL implements IGLL{
 	private ArrayList<ParseStackNode> possiblySharedExpects;
 	private ArrayList<ParseStackNode> possiblySharedExpectsEndNodes;
 	private ArrayList<ParseStackNode> possiblySharedNextNodes;
-	private Map<Integer, ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
+	private HashMap<Integer, ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int location;
 	
@@ -110,7 +110,7 @@ public class SGLL implements IGLL{
 	
 	private void move(ParseStackNode node){
 		ArrayList<INode[]> results = node.getResults();
-		ArrayList<Integer> resultLengths = node.getResultLengths();
+		IntegerList resultLengths = node.getResultLengths();
 		
 		if(node.hasEdges()){
 			ArrayList<ParseStackNode> edges = node.getEdges();
@@ -131,13 +131,13 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, ArrayList<Integer> prefixLengths){
+	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, IntegerList prefixLengths){
 		for(int i = prefixes.size() - 1; i >= 0; i--){
 			next.addPrefix(prefixes.get(i), prefixLengths.get(i));
 		}
 	}
 	
-	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, ArrayList<Integer> resultLengths){
+	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, IntegerList resultLengths){
 		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
 			root = edge; // Root reached.
 		}
@@ -146,7 +146,7 @@ public class SGLL implements IGLL{
 		
 		int nrOfResults = results.size();
 		for(int i = nrOfResults - 1; i >= 0; i--){
-			if(edge.getLength() == resultLengths.get(i).intValue()){
+			if(edge.getLength() == resultLengths.get(i)){
 				INode result = new NonTerminalNode(name, results.get(i));
 				edge.addResult(result);
 			}
