@@ -36,6 +36,6 @@ public class LeftRecursionEpsilon extends SGLL{
 		LeftRecursionEpsilon lre = new LeftRecursionEpsilon("a".getBytes());
 		System.out.println(lre.parse("S"));
 		
-		System.out.println("S([A(A(),A(a)),A(A(a),A())]) <- good");
+		System.out.println("S([A(A(),A(a)),A(A(a),A())]) <- good (TODO Add cycle)");
 	}
 }
