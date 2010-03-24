@@ -5,7 +5,7 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
 /*
-S ::= Ae
+S ::= Aepsilon
 A ::= a
 */
 public class Epsilon extends SGLL{
