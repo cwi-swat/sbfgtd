@@ -4,27 +4,26 @@ import gll.result.INode;
 import gll.result.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
+import gll.util.ArrayList;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SGLL implements IGLL{
 	private final byte[] input;
 	
-	private final List<ParseStackNode> todoList;
+	private final ArrayList<ParseStackNode> todoList;
 	
 	// Updatable
-	private final List<ParseStackNode> stacksToExpand;
-	private List<ParseStackNode> stacksWithTerminalsToReduce;
-	private final List<ParseStackNode> stacksWithNonTerminalsToReduce;
-	private List<ParseStackNode[]> lastExpects;
-	private List<ParseStackNode> possiblySharedExpects;
-	private List<ParseStackNode> possiblySharedExpectsEndNodes;
-	private List<ParseStackNode> possiblySharedNextNodes;
-	private Map<Integer, List<ParseStackNode>> possiblySharedEdgeNodesMap;
+	private final ArrayList<ParseStackNode> stacksToExpand;
+	private ArrayList<ParseStackNode> stacksWithTerminalsToReduce;
+	private final ArrayList<ParseStackNode> stacksWithNonTerminalsToReduce;
+	private ArrayList<ParseStackNode[]> lastExpects;
+	private ArrayList<ParseStackNode> possiblySharedExpects;
+	private ArrayList<ParseStackNode> possiblySharedExpectsEndNodes;
+	private ArrayList<ParseStackNode> possiblySharedNextNodes;
+	private Map<Integer, ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int location;
 	
@@ -84,7 +83,7 @@ public class SGLL implements IGLL{
 	private ParseStackNode updateEdgeNode(ParseStackNode node){
 		int startLocation = node.getStartLocation();
 		Integer startIndex = new Integer(startLocation);
-		List<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
+		ArrayList<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
@@ -110,18 +109,18 @@ public class SGLL implements IGLL{
 	}
 	
 	private void move(ParseStackNode node){
-		List<INode[]> results = node.getResults();
-		List<Integer> resultLengths = node.getResultLengths();
+		ArrayList<INode[]> results = node.getResults();
+		ArrayList<Integer> resultLengths = node.getResultLengths();
 		
 		if(node.hasEdges()){
-			List<ParseStackNode> edges = node.getEdges();
+			ArrayList<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
 				ParseStackNode edge = edges.get(i);
 				edge = updateEdgeNode(edge);
 				addResults(edge, results, resultLengths);
 			}
 		}else if(node.hasNexts()){
-			List<ParseStackNode> nexts = node.getNexts();
+			ArrayList<ParseStackNode> nexts = node.getNexts();
 			for(int i = nexts.size() - 1; i >= 0; i--){
 				ParseStackNode next = nexts.get(i);
 				next = updateNextNode(next);
@@ -132,13 +131,13 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void addPrefixes(ParseStackNode next, List<INode[]> prefixes, List<Integer> prefixLengths){
+	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, ArrayList<Integer> prefixLengths){
 		for(int i = prefixes.size() - 1; i >= 0; i--){
 			next.addPrefix(prefixes.get(i), prefixLengths.get(i));
 		}
 	}
 	
-	private void addResults(ParseStackNode edge, List<INode[]> results, List<Integer> resultLengths){
+	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, ArrayList<Integer> resultLengths){
 		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
 			root = edge; // Root reached.
 		}
@@ -171,7 +170,7 @@ public class SGLL implements IGLL{
 	
 	private void reduce(){
 		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-		possiblySharedEdgeNodesMap = new HashMap<Integer, List<ParseStackNode>>();
+		possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
 		
 		// Reduce terminals.
 		while(stacksWithTerminalsToReduce.size() > 0){

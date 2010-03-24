@@ -1,11 +1,11 @@
 package gll.result;
 
-import java.util.List;
+import gll.util.ArrayList;
 
 public class Alternative implements INode{
-	private final List<INode> alternatives;
+	private final ArrayList<INode> alternatives;
 	
-	public Alternative(List<INode> alternatives){
+	public Alternative(ArrayList<INode> alternatives){
 		super();
 		
 		this.alternatives = alternatives;

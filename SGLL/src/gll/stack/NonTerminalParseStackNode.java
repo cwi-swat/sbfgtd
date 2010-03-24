@@ -2,16 +2,14 @@ package gll.stack;
 
 import gll.result.Alternative;
 import gll.result.INode;
-
-import java.util.ArrayList;
-import java.util.List;
+import gll.util.ArrayList;
 
 public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
 	
 	private int endLocation;
 	
-	private final List<INode> results;
+	private final ArrayList<INode> results;
 	
 	public NonTerminalParseStackNode(String nonTerminal, int id){
 		super(id);

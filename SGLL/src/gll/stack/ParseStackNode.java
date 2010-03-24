@@ -1,20 +1,18 @@
 package gll.stack;
 
 import gll.result.INode;
-
-import java.util.ArrayList;
-import java.util.List;
+import gll.util.ArrayList;
 
 public abstract class ParseStackNode{
-	protected List<ParseStackNode> nexts;
-	protected List<ParseStackNode> edges;
+	protected ArrayList<ParseStackNode> nexts;
+	protected ArrayList<ParseStackNode> edges;
 	
 	private final int id;
 	
 	protected int startLocation;
 	
-	protected List<INode[]> prefixes;
-	protected List<Integer> prefixLengths;
+	protected ArrayList<INode[]> prefixes;
+	protected ArrayList<Integer> prefixLengths;
 	
 	public ParseStackNode(int id){
 		super();
@@ -64,7 +62,7 @@ public abstract class ParseStackNode{
 		return (nexts != null);
 	}
 	
-	public List<ParseStackNode> getNexts(){
+	public ArrayList<ParseStackNode> getNexts(){
 		return nexts;
 	}
 	
@@ -73,7 +71,7 @@ public abstract class ParseStackNode{
 		edges.add(edge);
 	}
 	
-	public void addEdges(List<ParseStackNode> edgesToAdd){
+	public void addEdges(ArrayList<ParseStackNode> edgesToAdd){
 		for(int i = edgesToAdd.size() - 1; i >= 0; i--){
 			ParseStackNode node = edgesToAdd.get(i);
 			if(!edges.contains(node)){
@@ -86,7 +84,7 @@ public abstract class ParseStackNode{
 		return (edges != null);
 	}
 	
-	public List<ParseStackNode> getEdges(){
+	public ArrayList<ParseStackNode> getEdges(){
 		return edges;
 	}
 	
@@ -126,16 +124,16 @@ public abstract class ParseStackNode{
 	
 	public abstract INode getResult();
 	
-	public List<INode[]> getResults(){
+	public ArrayList<INode[]> getResults(){
 		if(prefixes == null){
-			List<INode[]> results = new ArrayList<INode[]>(1);
+			ArrayList<INode[]> results = new ArrayList<INode[]>(1);
 			INode[] result = {getResult()};
 			results.add(result);
 			return results;
 		}
 		
 		int nrOfPrefixes = prefixes.size();
-		List<INode[]> results = new ArrayList<INode[]>();
+		ArrayList<INode[]> results = new ArrayList<INode[]>();
 		INode thisResult = getResult();
 		for(int i = nrOfPrefixes - 1; i >= 0; i--){
 			INode[] prefix = prefixes.get(i);
@@ -150,17 +148,17 @@ public abstract class ParseStackNode{
 		return results;
 	}
 	
-	public List<Integer> getResultLengths(){
+	public ArrayList<Integer> getResultLengths(){
 		int length = (getEndLocation() - startLocation);
 		if(prefixLengths == null){
-			List<Integer> resultLengths = new ArrayList<Integer>(1);
+			ArrayList<Integer> resultLengths = new ArrayList<Integer>(1);
 			Integer result = Integer.valueOf(length);
 			resultLengths.add(result);
 			return resultLengths;
 		}
 		
 		int nrOfPrefixes = prefixLengths.size();
-		List<Integer> resultLengths = new ArrayList<Integer>();
+		ArrayList<Integer> resultLengths = new ArrayList<Integer>();
 		int thisResultLength = length;
 		for(int i = nrOfPrefixes - 1; i >= 0; i--){
 			resultLengths.add(Integer.valueOf(prefixLengths.get(i).intValue() + thisResultLength));
