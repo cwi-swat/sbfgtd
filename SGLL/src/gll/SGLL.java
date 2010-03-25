@@ -41,6 +41,9 @@ public class SGLL implements IGLL{
 		stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
 		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
+		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
+		possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
+		
 		previousLocation = -1;
 		location = 0;
 		
