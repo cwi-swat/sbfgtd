@@ -54,5 +54,13 @@ public class RunAll{
 		//System.out.println("UselessSelfLoop:");
 		//UselessSelfLoop.main(args);
 		//System.out.println();
+		
+		System.out.println("Epsilon:");
+		Epsilon.main(args);
+		System.out.println();
+		
+		//System.out.println("LeftRecursionEpsilon:");
+		//LeftRecursionEpsilon.main(args);
+		//System.out.println();
 	}
 }
