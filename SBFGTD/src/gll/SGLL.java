@@ -115,34 +115,34 @@ public class SGLL implements IGLL{
 	
 	private void move(ParseStackNode node){
 		ArrayList<INode[]> results = node.getResults();
-		IntegerList resultLengths = node.getResultLengths();
+		IntegerList resultStartLocations = node.getResultStartLocations();
 		
 		if(node.hasEdges()){
 			ArrayList<ParseStackNode> edges = node.getEdges();
 			for(int i = edges.size() - 1; i >= 0; i--){
 				ParseStackNode edge = edges.get(i);
 				edge = updateEdgeNode(edge);
-				addResults(edge, results, resultLengths);
+				addResults(edge, results, resultStartLocations);
 			}
 		}else if(node.hasNexts()){
 			ArrayList<ParseStackNode> nexts = node.getNexts();
 			for(int i = nexts.size() - 1; i >= 0; i--){
 				ParseStackNode next = nexts.get(i);
 				next = updateNextNode(next);
-				addPrefixes(next, results, resultLengths);
+				addPrefixes(next, results, resultStartLocations);
 			}
 		}else if(location == input.length){ // Do it afterward, so epsilons work.
 			return; // EOF reached.
 		}
 	}
 	
-	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, IntegerList prefixLengths){
+	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
 		for(int i = prefixes.size() - 1; i >= 0; i--){
-			next.addPrefix(prefixes.get(i), prefixLengths.get(i));
+			next.addPrefix(prefixes.get(i), prefixStartLocations.get(i));
 		}
 	}
 	
-	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, IntegerList resultLengths){
+	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, IntegerList resultStartLocations){
 		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
 			root = edge; // Root reached.
 		}
@@ -151,7 +151,7 @@ public class SGLL implements IGLL{
 		
 		int nrOfResults = results.size();
 		for(int i = nrOfResults - 1; i >= 0; i--){
-			if(edge.getLength() == resultLengths.get(i)){
+			if(edge.getStartLocation() == resultStartLocations.get(i)){
 				INode result = new NonTerminalNode(name, results.get(i));
 				edge.addResult(result);
 			}
