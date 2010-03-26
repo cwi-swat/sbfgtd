@@ -130,8 +130,6 @@ public class SGLL implements IGLL{
 				next = updateNextNode(next);
 				addPrefixes(next, results, resultStartLocations);
 			}
-		}else if(location == input.length){ // Do it afterward, so epsilons work.
-			return; // EOF reached.
 		}
 	}
 	
