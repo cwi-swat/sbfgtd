@@ -61,7 +61,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	public ParseStackNode getCleanCopyWithPrefix(){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(this);
 		ntpsn.prefixes = prefixes;
-		ntpsn.prefixLengths = prefixLengths;
+		ntpsn.prefixStartLocations = prefixStartLocations;
 		return ntpsn;
 	}
 	
