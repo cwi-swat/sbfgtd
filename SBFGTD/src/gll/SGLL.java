@@ -5,7 +5,7 @@ import gll.result.NonTerminalNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.util.ArrayList;
-import gll.util.HashMap;
+import gll.util.IntegerHashMap;
 import gll.util.IntegerList;
 
 import java.lang.reflect.Method;
@@ -23,7 +23,7 @@ public class SGLL implements IGLL{
 	private ArrayList<ParseStackNode> possiblySharedExpects;
 	private ArrayList<ParseStackNode> possiblySharedExpectsEndNodes;
 	private ArrayList<ParseStackNode> possiblySharedNextNodes;
-	private HashMap<Integer, ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
+	private IntegerHashMap<ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int previousLocation;
 	private int location;
@@ -42,7 +42,7 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
 		
 		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-		possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
+		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<ParseStackNode>>();
 		
 		previousLocation = -1;
 		location = 0;
@@ -87,8 +87,7 @@ public class SGLL implements IGLL{
 	
 	private ParseStackNode updateEdgeNode(ParseStackNode node){
 		int startLocation = node.getStartLocation();
-		Integer startIndex = new Integer(startLocation);
-		ArrayList<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startIndex);
+		ArrayList<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
@@ -98,7 +97,7 @@ public class SGLL implements IGLL{
 			}
 		}else{
 			possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
-			possiblySharedEdgeNodesMap.put(startIndex, possiblySharedEdgeNodes);
+			possiblySharedEdgeNodesMap.unsafePut(startLocation, possiblySharedEdgeNodes);
 		}
 		
 		if(node.endLocationIsSet()){
@@ -176,7 +175,7 @@ public class SGLL implements IGLL{
 	private void reduce(){
 		if(previousLocation != location){ // Epsilon fix.
 			possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-			possiblySharedEdgeNodesMap = new HashMap<Integer, ArrayList<ParseStackNode>>();
+			possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<ParseStackNode>>();
 		}
 		
 		// Reduce terminals.
