@@ -1,7 +1,7 @@
 package gll.util;
 
-public class HashMap<K, V>{
-	private Entry<K, V>[] entries;
+public class IntegerHashMap<V>{
+	private Entry<V>[] entries;
 
 	private int hashMask;
 	private int bitSize;
@@ -9,14 +9,14 @@ public class HashMap<K, V>{
 	private int threshold;
 	private int load;
 	
-	public HashMap(){
+	public IntegerHashMap(){
 		super();
 		
 		int nrOfEntries = 1 << bitSize;
 		
 		hashMask = nrOfEntries - 1;
 		
-		entries = (Entry<K, V>[]) new Entry[nrOfEntries];
+		entries = (Entry<V>[]) new Entry[nrOfEntries];
 		
 		threshold = nrOfEntries;
 		load = 0;
@@ -26,21 +26,21 @@ public class HashMap<K, V>{
 		int nrOfEntries = 1 << (++bitSize);
 		int newHashMask = nrOfEntries - 1;
 		
-		Entry<K, V>[] oldEntries = entries;
-		Entry<K, V>[] newEntries = (Entry<K, V>[]) new Entry[nrOfEntries];
+		Entry<V>[] oldEntries = entries;
+		Entry<V>[] newEntries = (Entry<V>[]) new Entry[nrOfEntries];
 		
-		Entry<K, V> currentEntryRoot = new Entry<K, V>(null, null, 0, null);
-		Entry<K, V> shiftedEntryRoot = new Entry<K, V>(null, null, 0, null);
+		Entry<V> currentEntryRoot = new Entry<V>(-1, null, null);
+		Entry<V> shiftedEntryRoot = new Entry<V>(-1, null, null);
 		
 		int newLoad = load;
 		int oldSize = oldEntries.length;
 		for(int i = oldSize - 1; i >= 0; i--){
-			Entry<K, V> e = oldEntries[i];
+			Entry<V> e = oldEntries[i];
 			if(e != null){
-				Entry<K, V> lastCurrentEntry = currentEntryRoot;
-				Entry<K, V> lastShiftedEntry = shiftedEntryRoot;
+				Entry<V> lastCurrentEntry = currentEntryRoot;
+				Entry<V> lastShiftedEntry = shiftedEntryRoot;
 				do{
-					int position = e.hash & newHashMask;
+					int position = e.key & newHashMask;
 					
 					if(position == i){
 						lastCurrentEntry.next = e;
@@ -74,17 +74,16 @@ public class HashMap<K, V>{
 		}
 	}
 	
-	public V put(K key, V value){
+	public V put(int key, V value){
 		ensureCapacity();
 		
-		int hash = key.hashCode();
-		int position = hash & hashMask;
+		int position = key & hashMask;
 		
-		Entry<K, V> currentStartEntry = entries[position];
+		Entry<V> currentStartEntry = entries[position];
 		if(currentStartEntry != null){
-			Entry<K, V> entry = currentStartEntry;
+			Entry<V> entry = currentStartEntry;
 			do{
-				if(hash == entry.hash && entry.key.equals(key)){
+				if(entry.key == key){
 					V oldValue = entry.value;
 					entry.value = value;
 					return oldValue;
@@ -92,22 +91,31 @@ public class HashMap<K, V>{
 			}while((entry = entry.next) != null);
 		}
 		
-		entries[position] = new Entry<K, V>(key, value, hash, currentStartEntry);
+		entries[position] = new Entry<V>(key, value, currentStartEntry);
 		load++;
 		
 		return null;
 	}
 	
-	public V remove(K key){
-		int hash = key.hashCode();
-		int position = hash & hashMask;
+	public V unsafePut(int key, V value){
+		ensureCapacity();
 		
-		Entry<K, V> previous = null;
-		Entry<K, V> currentStartEntry = entries[position];
+		int position = key & hashMask;
+		entries[position] = new Entry<V>(key, value, entries[position]);
+		load++;
+		
+		return null;
+	}
+	
+	public V remove(int key){
+		int position = key & hashMask;
+		
+		Entry<V> previous = null;
+		Entry<V> currentStartEntry = entries[position];
 		if(currentStartEntry != null){
-			Entry<K, V> entry = currentStartEntry;
+			Entry<V> entry = currentStartEntry;
 			do{
-				if(hash == entry.hash && entry.key.equals(key)){
+				if(entry.key == key){
 					if(previous == null){
 						entries[position] = entry.next;
 					}else{
@@ -124,13 +132,12 @@ public class HashMap<K, V>{
 		return null;
 	}
 	
-	public V get(K key){
-		int hash = key.hashCode();
-		int position = hash & hashMask;
+	public V get(int key){
+		int position = key & hashMask;
 		
-		Entry<K, V> entry = entries[position];
+		Entry<V> entry = entries[position];
 		while(entry != null){
-			if(hash == entry.hash && key.equals(entry.key)) return entry.value;
+			if(entry.key == key) return entry.value;
 			
 			entry = entry.next;
 		}
@@ -138,18 +145,16 @@ public class HashMap<K, V>{
 		return null;
 	}
 	
-	private static class Entry<K, V>{
-		public final int hash;
-		public final K key;
+	private static class Entry<V>{
+		public final int key;
 		public V value;
-		public Entry<K, V> next;
+		public Entry<V> next;
 		
-		public Entry(K key, V value, int hash, Entry<K, V> next){
+		public Entry(int key, V value, Entry<V> next){
 			super();
 			
 			this.key = key;
 			this.value = value;
-			this.hash = hash;
 			this.next = next;
 		}
 	}
