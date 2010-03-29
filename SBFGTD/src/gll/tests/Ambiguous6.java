@@ -23,9 +23,9 @@ public class Ambiguous6 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_E4 = new NonTerminalParseStackNode("E", 4);
 	private final static ParseStackNode NONTERMINAL_F5 = new NonTerminalParseStackNode("F", 5);
 	private final static ParseStackNode NONTERMINAL_G6 = new NonTerminalParseStackNode("G", 6);
-	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".getBytes(), 7);
+	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".toCharArray(), 7);
 	
-	public Ambiguous6(byte[] input){
+	public Ambiguous6(char[] input){
 		super(input);
 	}
 	
@@ -66,7 +66,7 @@ public class Ambiguous6 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous6 a6 = new Ambiguous6("a".getBytes());
+		Ambiguous6 a6 = new Ambiguous6("a".toCharArray());
 		System.out.println(a6.parse("S"));
 		
 		System.out.println("[S(E(F(G(a)))),S(A(B(C([D(E(F(G(a)))),D(a)]))))] <- good");

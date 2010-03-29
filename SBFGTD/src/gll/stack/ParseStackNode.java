@@ -42,7 +42,7 @@ public abstract class ParseStackNode{
 	
 	public abstract String getMethodName();
 	
-	public abstract byte[] getTerminalData();
+	public abstract char[] getTerminalData();
 	
 	public abstract String getNonTerminalName();
 	
@@ -113,7 +113,7 @@ public abstract class ParseStackNode{
 	public abstract int getLength();
 	
 	// Lists
-	public abstract ParseStackNode getNextListChild(byte[] input, int position);
+	public abstract ParseStackNode getNextListChild(char[] input, int position);
 	
 	// Results
 	public void addPrefix(INode[] prefix, int length){

@@ -63,7 +63,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return methodName;
 	}
 	
-	public byte[] getTerminalData(){
+	public char[] getTerminalData(){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -98,7 +98,10 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return endLocation;
 	}
 	
-	public ParseStackNode getNextListChild(byte[] input, int position){
+	public ParseStackNode getNextListChild(char[] input, int position){
+		char next = input[position];
+		
+		
 		// TODO Implement.
 		return null; // Temp.
 	}

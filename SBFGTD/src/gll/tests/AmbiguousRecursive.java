@@ -14,9 +14,9 @@ public class AmbiguousRecursive extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S2 = new NonTerminalParseStackNode("S", 2);
 	private final static ParseStackNode NONTERMINAL_S3 = new NonTerminalParseStackNode("S", 3);
 	private final static ParseStackNode NONTERMINAL_S4 = new NonTerminalParseStackNode("S", 4);
-	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".getBytes(), 5);
+	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".toCharArray(), 5);
 	
-	public AmbiguousRecursive(byte[] input){
+	public AmbiguousRecursive(char[] input){
 		super(input);
 	}
 	
@@ -29,7 +29,7 @@ public class AmbiguousRecursive extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		AmbiguousRecursive ar = new AmbiguousRecursive("aaa".getBytes());
+		AmbiguousRecursive ar = new AmbiguousRecursive("aaa".toCharArray());
 		System.out.println(ar.parse("S"));
 		
 		System.out.println("[S(S(a),S(S(a),S(a))),S(S(S(a),S(a)),S(a)),S(S(a),S(a),S(a))] <- good");

@@ -14,10 +14,10 @@ public class Ambiguous5 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
-	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".getBytes(), 3);
-	private final static ParseStackNode TERMINAL_aa4 = new TerminalParseStackNode("aa".getBytes(), 4);
+	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".toCharArray(), 3);
+	private final static ParseStackNode TERMINAL_aa4 = new TerminalParseStackNode("aa".toCharArray(), 4);
 	
-	public Ambiguous5(byte[] input){
+	public Ambiguous5(char[] input){
 		super(input);
 	}
 	
@@ -36,7 +36,7 @@ public class Ambiguous5 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous5 a5 = new Ambiguous5("aaa".getBytes());
+		Ambiguous5 a5 = new Ambiguous5("aaa".toCharArray());
 		System.out.println(a5.parse("S"));
 		
 		System.out.println("S([A(B(a),B(aa)),A(B(aa),B(a))]) <- good");

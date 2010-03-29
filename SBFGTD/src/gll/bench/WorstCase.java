@@ -14,9 +14,9 @@ public class WorstCase extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S2 = new NonTerminalParseStackNode("S", 2);
 	private final static ParseStackNode NONTERMINAL_S3 = new NonTerminalParseStackNode("S", 3);
 	private final static ParseStackNode NONTERMINAL_S4 = new NonTerminalParseStackNode("S", 4);
-	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".getBytes(), 5);
+	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".toCharArray(), 5);
 	
-	public WorstCase(byte[] input){
+	public WorstCase(char[] input){
 		super(input);
 	}
 	
@@ -33,79 +33,79 @@ public class WorstCase extends SGLL{
 		wc.parse("S");*/
 		
 		long start = System.currentTimeMillis();
-		WorstCase wc = new WorstCase("aaaaaaaaaa".getBytes());
+		WorstCase wc = new WorstCase("aaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		long end = System.currentTimeMillis();
 		System.out.println("10 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("15 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("20 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("25 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("30 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("35 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("40 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("45 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("50 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("100 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("200 "+(end - start)+"ms");
 		
 		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("300 "+(end - start)+"ms");
 		
 		/*start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
 		wc.parse("S");
 		end = System.currentTimeMillis();
 		System.out.println("500 "+(end - start)+"ms");*/

@@ -13,10 +13,10 @@ B ::= b
 public class Simple2 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
-	private final static ParseStackNode TERMINAL_a2 = new TerminalParseStackNode("a".getBytes(), 2);
-	private final static ParseStackNode TERMINAL_b3 = new TerminalParseStackNode("b".getBytes(), 3);
+	private final static ParseStackNode TERMINAL_a2 = new TerminalParseStackNode("a".toCharArray(), 2);
+	private final static ParseStackNode TERMINAL_b3 = new TerminalParseStackNode("b".toCharArray(), 3);
 	
-	public Simple2(byte[] input){
+	public Simple2(char[] input){
 		super(input);
 	}
 	
@@ -33,7 +33,7 @@ public class Simple2 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Simple2 s2 = new Simple2("ab".getBytes());
+		Simple2 s2 = new Simple2("ab".toCharArray());
 		System.out.println(s2.parse("S"));
 		
 		System.out.println("S(A(a),B(b)) <- good");
