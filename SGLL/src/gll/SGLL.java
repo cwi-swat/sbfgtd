@@ -113,7 +113,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void move(ParseStackNode node){
-		ArrayList<INode[]> results = node.getResults();
+		INode[][] results = node.getResults();
 		IntegerList resultStartLocations = node.getResultStartLocations();
 		
 		if(node.hasEdges()){
@@ -133,23 +133,23 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void addPrefixes(ParseStackNode next, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
-		for(int i = prefixes.size() - 1; i >= 0; i--){
-			next.addPrefix(prefixes.get(i), prefixStartLocations.get(i));
+	private void addPrefixes(ParseStackNode next, INode[][] prefixes, IntegerList prefixStartLocations){
+		for(int i = prefixes.length - 1; i >= 0; i--){
+			next.addPrefix(prefixes[i], prefixStartLocations.get(i));
 		}
 	}
 	
-	private void addResults(ParseStackNode edge, ArrayList<INode[]> results, IntegerList resultStartLocations){
+	private void addResults(ParseStackNode edge, INode[][] results, IntegerList resultStartLocations){
 		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
 			root = edge; // Root reached.
 		}
 		
 		String name = edge.getNonTerminalName();
 		
-		int nrOfResults = results.size();
+		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
 			if(edge.getStartLocation() == resultStartLocations.get(i)){
-				INode result = new NonTerminalNode(name, results.get(i));
+				INode result = new NonTerminalNode(name, results[i]);
 				edge.addResult(result);
 			}
 		}

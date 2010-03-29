@@ -16,22 +16,22 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		
 		this.nonTerminal = nonTerminal;
 		
-		results = null;
-		
 		endLocation = -1;
+		
+		results = null;
 	}
 	
 	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
-		super(nonTerminalParseStackNode.getId());
+		super(nonTerminalParseStackNode.id);
 
 		this.nonTerminal = nonTerminalParseStackNode.nonTerminal;
 		
 		this.nexts = nonTerminalParseStackNode.nexts;
 		this.edges = nonTerminalParseStackNode.edges;
 		
-		results = new ArrayList<INode>();
-		
 		endLocation = -1;
+		
+		results = new ArrayList<INode>();
 	}
 	
 	public boolean isTerminal(){
@@ -40,6 +40,10 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	
 	public boolean isNonTerminal(){
 		return true;
+	}
+	
+	public boolean isList(){
+		return false;
 	}
 	
 	public String getMethodName(){
