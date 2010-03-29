@@ -43,4 +43,8 @@ public class IntegerList{
 	public int size(){
 		return size;
 	}
+	
+	public int[] getBackingArray(){
+		return data;
+	}
 }
