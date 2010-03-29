@@ -14,13 +14,13 @@ public class MergeAndSplit extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
-	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".getBytes(), 3);
-	private final static ParseStackNode TERMINAL_a4 = new TerminalParseStackNode("a".getBytes(), 4);
-	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".getBytes(), 5);
-	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".getBytes(), 6);
-	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".getBytes(), 7);
+	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".toCharArray(), 3);
+	private final static ParseStackNode TERMINAL_a4 = new TerminalParseStackNode("a".toCharArray(), 4);
+	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".toCharArray(), 5);
+	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".toCharArray(), 6);
+	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".toCharArray(), 7);
 	
-	public MergeAndSplit(byte[] input){
+	public MergeAndSplit(char[] input){
 		super(input);
 	}
 	
@@ -39,7 +39,7 @@ public class MergeAndSplit extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit ms = new MergeAndSplit("aaaa".getBytes());
+		MergeAndSplit ms = new MergeAndSplit("aaaa".toCharArray());
 		System.out.println(ms.parse("S"));
 		
 		System.out.println("S(a,[A(a,B(a)),A(B(a),a)],a) <- good");

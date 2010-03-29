@@ -4,11 +4,11 @@ import gll.result.INode;
 import gll.result.TerminalNode;
 
 public final class TerminalParseStackNode extends ParseStackNode{
-	private final byte[] terminal;
+	private final char[] terminal;
 	
 	private final TerminalNode result;
 	
-	public TerminalParseStackNode(byte[] terminal, int id){
+	public TerminalParseStackNode(char[] terminal, int id){
 		super(id);
 
 		this.terminal = terminal;
@@ -42,7 +42,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public byte[] getTerminalData(){
+	public char[] getTerminalData(){
 		return terminal;
 	}
 	
@@ -77,7 +77,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return (startLocation + getLength());
 	}
 	
-	public ParseStackNode getNextListChild(byte[] input, int position){
+	public ParseStackNode getNextListChild(char[] input, int position){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -6,12 +6,11 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.util.ArrayList;
 import gll.util.IntegerHashMap;
-import gll.util.IntegerList;
 
 import java.lang.reflect.Method;
 
 public class SGLL implements IGLL{
-	private final byte[] input;
+	private final char[] input;
 	
 	private final ArrayList<ParseStackNode> todoList;
 	
@@ -30,7 +29,7 @@ public class SGLL implements IGLL{
 	
 	private ParseStackNode root;
 	
-	public SGLL(byte[] input){
+	public SGLL(char[] input){
 		super();
 		
 		this.input = input;
@@ -156,7 +155,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceTerminal(ParseStackNode terminal){
-		byte[] terminalData = terminal.getTerminalData();
+		char[] terminalData = terminal.getTerminalData();
 		int startLocation = terminal.getStartLocation();
 		
 		for(int i = terminalData.length - 1; i >= 0; i--){

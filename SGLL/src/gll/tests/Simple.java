@@ -11,11 +11,11 @@ A ::= aa
 */
 public class Simple extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode TERMINAL_aa1 = new TerminalParseStackNode("aa".getBytes(), 1);
-	private final static ParseStackNode TERMINAL_b2 = new TerminalParseStackNode("b".getBytes(), 2);
+	private final static ParseStackNode TERMINAL_aa1 = new TerminalParseStackNode("aa".toCharArray(), 1);
+	private final static ParseStackNode TERMINAL_b2 = new TerminalParseStackNode("b".toCharArray(), 2);
 	
-	public Simple(byte[] input){
-		super( input);
+	public Simple(char[] input){
+		super(input);
 	}
 	
 	public void S(){
@@ -27,7 +27,7 @@ public class Simple extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Simple s = new Simple("aab".getBytes());
+		Simple s = new Simple("aab".toCharArray());
 		System.out.println(s.parse("S"));
 		
 		System.out.println("S(A(aa),b) <- good");

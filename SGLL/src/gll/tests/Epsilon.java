@@ -10,10 +10,10 @@ A ::= a
 */
 public class Epsilon extends SGLL{
 	private final static NonTerminalParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static TerminalParseStackNode EPSILON_1 = new TerminalParseStackNode("".getBytes(), 1);
-	private final static TerminalParseStackNode NONTERMINAL_a2 = new TerminalParseStackNode("a".getBytes(), 2);
+	private final static TerminalParseStackNode EPSILON_1 = new TerminalParseStackNode("".toCharArray(), 1);
+	private final static TerminalParseStackNode NONTERMINAL_a2 = new TerminalParseStackNode("a".toCharArray(), 2);
 	
-	public Epsilon(byte[] input){
+	public Epsilon(char[] input){
 		super(input);
 	}
 	
@@ -26,7 +26,7 @@ public class Epsilon extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Epsilon e = new Epsilon("a".getBytes());
+		Epsilon e = new Epsilon("a".toCharArray());
 		System.out.println(e.parse("S"));
 		
 		System.out.println("S(A(a),) <- good");

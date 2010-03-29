@@ -13,10 +13,10 @@ public class LeftRecursionEpsilon extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
 	private final static ParseStackNode NONTERMINAL_A2 = new NonTerminalParseStackNode("A", 2);
-	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".getBytes(), 3);
-	private final static ParseStackNode EPSILON_4 = new TerminalParseStackNode("".getBytes(), 4);
+	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".toCharArray(), 3);
+	private final static ParseStackNode EPSILON_4 = new TerminalParseStackNode("".toCharArray(), 4);
 	
-	public LeftRecursionEpsilon(byte[] input){
+	public LeftRecursionEpsilon(char[] input){
 		super(input);
 	}
 	
@@ -33,7 +33,7 @@ public class LeftRecursionEpsilon extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		LeftRecursionEpsilon lre = new LeftRecursionEpsilon("a".getBytes());
+		LeftRecursionEpsilon lre = new LeftRecursionEpsilon("a".toCharArray());
 		System.out.println(lre.parse("S"));
 		
 		System.out.println("S([A(A(),A(a)),A(A(a),A())]) <- good (TODO Add cycle)");

@@ -50,7 +50,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
-	public byte[] getTerminalData(){
+	public char[] getTerminalData(){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -85,7 +85,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return endLocation;
 	}
 	
-	public ParseStackNode getNextListChild(byte[] input, int position){
+	public ParseStackNode getNextListChild(char[] input, int position){
 		throw new UnsupportedOperationException();
 	}
 	

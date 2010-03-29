@@ -12,10 +12,10 @@ A ::= aa | a
 public class Ambiguous3 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
-	private final static ParseStackNode TERMINAL_a2 = new TerminalParseStackNode("a".getBytes(), 2);
-	private final static ParseStackNode TERMINAL_aa3 = new TerminalParseStackNode("aa".getBytes(), 3);
+	private final static ParseStackNode TERMINAL_a2 = new TerminalParseStackNode("a".toCharArray(), 2);
+	private final static ParseStackNode TERMINAL_aa3 = new TerminalParseStackNode("aa".toCharArray(), 3);
 	
-	public Ambiguous3(byte[] input){
+	public Ambiguous3(char[] input){
 		super(input);
 	}
 	
@@ -30,7 +30,7 @@ public class Ambiguous3 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous3 a3 = new Ambiguous3("aaa".getBytes());
+		Ambiguous3 a3 = new Ambiguous3("aaa".toCharArray());
 		System.out.println(a3.parse("S"));
 		
 		System.out.println("[S(A(a),A(aa)),S(A(aa),A(a))] <- good");

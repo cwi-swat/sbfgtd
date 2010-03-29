@@ -1,9 +1,9 @@
 package gll.result;
 
 public class TerminalNode implements INode{
-	private final byte[] content;
+	private final char[] content;
 	
-	public TerminalNode(byte[] content){
+	public TerminalNode(char[] content){
 		super();
 		
 		this.content = content;
