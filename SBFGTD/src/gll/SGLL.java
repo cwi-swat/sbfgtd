@@ -266,7 +266,7 @@ public class SGLL implements IGLL{
 	
 	public INode parse(String start){
 		// Initialize.
-		ParseStackNode rootNode = new NonTerminalParseStackNode(start, -1).getCleanCopy();
+		ParseStackNode rootNode = new NonTerminalParseStackNode(start, START_SYMBOL_ID).getCleanCopy();
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);
 		expand();

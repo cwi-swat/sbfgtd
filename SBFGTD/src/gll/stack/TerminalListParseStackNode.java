@@ -1,11 +1,14 @@
 package gll.stack;
 
+import gll.IGLL;
 import gll.result.Alternative;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-//TODO Add list code.
+// TODO Add list code.
 public class TerminalListParseStackNode extends ParseStackNode{
+	private final static TerminalParseStackNode NO_MATCHING_TERMINAL_FOUND = new TerminalParseStackNode(new char[]{0}, IGLL.TERMINAL_LIST_CHILD_NOT_FOUND_ID);
+	
 	private final String methodName;
 	
 	private final char[][] ranges;
@@ -91,7 +94,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean endLocationIsSet(){
-		return endLocation != -1;
+		return (endLocation != -1);
 	}
 	
 	public int getEndLocation(){
@@ -100,10 +103,20 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	public ParseStackNode getNextListChild(char[] input, int position){
 		char next = input[position];
+		for(int i = ranges.length - 1; i >= 0; i--){
+			char[] range = ranges[i];
+			if(next >= range[0] && next <= range[1]){
+				return new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+			}
+		}
 		
+		for(int i = characters.length - 1; i >= 0; i--){
+			if(next == characters[i]){
+				return new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+			}
+		}
 		
-		// TODO Implement.
-		return null; // Temp.
+		return NO_MATCHING_TERMINAL_FOUND;
 	}
 	
 	public void addResult(INode result){
