@@ -85,6 +85,10 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return endLocation;
 	}
 	
+	public ParseStackNode getNextListChild(byte[] input, int position){
+		throw new UnsupportedOperationException();
+	}
+	
 	public void addResult(INode result){
 		results.add(result);
 	}

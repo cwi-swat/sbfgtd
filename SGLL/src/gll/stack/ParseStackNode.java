@@ -112,6 +112,9 @@ public abstract class ParseStackNode{
 	
 	public abstract int getLength();
 	
+	// Lists
+	public abstract ParseStackNode getNextListChild(byte[] input, int position);
+	
 	// Results
 	public void addPrefix(INode[] prefix, int length){
 		if(prefixes == null){
@@ -150,13 +153,11 @@ public abstract class ParseStackNode{
 		return results;
 	}
 	
-	public IntegerList getResultStartLocations(){
+	public int[] getResultStartLocations(){
 		if(prefixStartLocations == null){
-			IntegerList resultLengths = new IntegerList(1);
-			resultLengths.add(startLocation);
-			return resultLengths;
+			return new int[]{startLocation};
 		}
 		
-		return prefixStartLocations;
+		return prefixStartLocations.getBackingArray();
 	}
 }

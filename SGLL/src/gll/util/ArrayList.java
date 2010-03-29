@@ -28,9 +28,10 @@ public class ArrayList<E>{
 	
 	public void add(E object){
 		int index = size;
-		if(++size == data.length){
+		if(size == data.length){
 			enlarge();
 		}
+		size++;
 		
 		data[index] = object;
 	}
@@ -65,5 +66,9 @@ public class ArrayList<E>{
 	
 	public int size(){
 		return size;
+	}
+	
+	public E[] getBackingArray(){
+		return data;
 	}
 }

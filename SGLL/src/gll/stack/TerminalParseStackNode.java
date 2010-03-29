@@ -77,6 +77,10 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return (startLocation + getLength());
 	}
 	
+	public ParseStackNode getNextListChild(byte[] input, int position){
+		throw new UnsupportedOperationException();
+	}
+	
 	public void addResult(INode result){
 		throw new UnsupportedOperationException();
 	}

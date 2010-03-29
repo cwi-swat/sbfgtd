@@ -89,6 +89,11 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return endLocation;
 	}
 	
+	public ParseStackNode getNextListChild(byte[] input, int position){
+		// TODO Implement.
+		return null; // Temp.
+	}
+	
 	public void addResult(INode result){
 		results.add(result);
 	}
