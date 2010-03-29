@@ -8,14 +8,20 @@ import gll.util.ArrayList;
 public class TerminalListParseStackNode extends ParseStackNode{
 	private final String methodName;
 	
+	private final char[][] ranges;
+	private final char[] characters;
+	
 	private boolean firstRequired;
 	
 	private int endLocation;
 	
 	private final ArrayList<INode> results;
 	
-	public TerminalListParseStackNode(int id, boolean isPlusList){
+	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList){
 		super(id);
+		
+		this.ranges = ranges;
+		this.characters = characters;
 		
 		firstRequired = isPlusList;
 		
@@ -28,6 +34,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
 		super(terminalListParseStackNode.id);
+		
+		ranges = terminalListParseStackNode.ranges;
+		characters = terminalListParseStackNode.characters;
 		
 		firstRequired = terminalListParseStackNode.firstRequired;
 
