@@ -82,7 +82,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean endLocationIsSet(){
-		return endLocation != -1;
+		return (endLocation != -1);
 	}
 	
 	public int getEndLocation(){
