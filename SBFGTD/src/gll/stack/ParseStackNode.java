@@ -8,7 +8,7 @@ public abstract class ParseStackNode{
 	protected ArrayList<ParseStackNode> nexts;
 	protected ArrayList<ParseStackNode> edges;
 	
-	private final int id;
+	protected final int id;
 	
 	protected int startLocation;
 	
@@ -37,6 +37,8 @@ public abstract class ParseStackNode{
 	public abstract boolean isTerminal();
 	
 	public abstract boolean isNonTerminal();
+	
+	public abstract boolean isList();
 	
 	public abstract String getMethodName();
 	
@@ -125,16 +127,15 @@ public abstract class ParseStackNode{
 	
 	public abstract INode getResult();
 	
-	public ArrayList<INode[]> getResults(){
+	public INode[][] getResults(){
 		if(prefixes == null){
-			ArrayList<INode[]> results = new ArrayList<INode[]>(1);
-			INode[] result = {getResult()};
-			results.add(result);
+			INode[][] results = new INode[1][1];
+			results[0][0] = getResult();
 			return results;
 		}
 		
 		int nrOfPrefixes = prefixes.size();
-		ArrayList<INode[]> results = new ArrayList<INode[]>();
+		INode[][] results = new INode[nrOfPrefixes][];
 		INode thisResult = getResult();
 		for(int i = 0; i < nrOfPrefixes; i++){
 			INode[] prefix = prefixes.get(i);
@@ -143,7 +144,7 @@ public abstract class ParseStackNode{
 			System.arraycopy(prefix, 0, result, 0, prefixLength);
 			result[prefixLength] = thisResult;
 			
-			results.add(result);
+			results[i] = result;
 		}
 		
 		return results;

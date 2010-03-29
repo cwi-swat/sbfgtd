@@ -16,7 +16,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	private TerminalParseStackNode(TerminalParseStackNode terminalParseStackNode){
-		super(terminalParseStackNode.getId());
+		super(terminalParseStackNode.id);
 
 		this.terminal = terminalParseStackNode.terminal;
 		
@@ -31,6 +31,10 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean isNonTerminal(){
+		return false;
+	}
+	
+	public boolean isList(){
 		return false;
 	}
 	
