@@ -8,20 +8,14 @@ import gll.util.ArrayList;
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final String methodName;
 	
-	private final char[][] ranges;
-	private final char[] characters;
-	
 	private boolean firstRequired;
 	
 	private int endLocation;
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList){
+	public NonTerminalListParseStackNode(int id, boolean isPlusList){
 		super(id);
-		
-		this.ranges = ranges;
-		this.characters = characters;
 		
 		firstRequired = isPlusList;
 		
@@ -34,9 +28,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
 		super(nonTerminalListParseStackNode.id);
-		
-		ranges = nonTerminalListParseStackNode.ranges;
-		characters = nonTerminalListParseStackNode.characters;
 		
 		firstRequired = nonTerminalListParseStackNode.firstRequired;
 		
