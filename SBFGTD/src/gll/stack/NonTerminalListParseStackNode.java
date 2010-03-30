@@ -10,7 +10,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	private boolean firstRequired;
 	
-	private int endLocation;
+	private boolean visited;
 	
 	private final ArrayList<INode> results;
 	
@@ -21,7 +21,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		methodName = String.valueOf(id);
 		
-		endLocation = -1;
+		visited = false;
 		
 		results = null;
 	}
@@ -33,7 +33,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		methodName = nonTerminalListParseStackNode.methodName;
 		
-		endLocation = -1;
+		visited = false;
 		
 		results = new ArrayList<INode>();
 	}
@@ -74,19 +74,15 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public int getLength(){
-		return (endLocation - startLocation);
+		throw new UnsupportedOperationException();
 	}
 	
-	public void setEndLocation(int endLocation){
-		this.endLocation = endLocation;
+	public void mark(){
+		visited = true;
 	}
 	
-	public boolean endLocationIsSet(){
-		return (endLocation != -1);
-	}
-	
-	public int getEndLocation(){
-		return endLocation;
+	public boolean isMarked(){
+		return visited;
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){

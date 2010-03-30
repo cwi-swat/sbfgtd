@@ -1,9 +1,7 @@
 package gll.stack;
 
 import gll.IGLL;
-import gll.result.Alternative;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 // TODO Add list code.
 public class TerminalListParseStackNode extends ParseStackNode{
@@ -14,11 +12,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
-	private boolean firstRequired;
+	private final boolean firstRequired;
 	
-	private int endLocation;
-	
-	private final ArrayList<INode> results;
+	private INode result;
 	
 	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList){
 		super(id);
@@ -29,10 +25,6 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		firstRequired = isPlusList;
 		
 		methodName = String.valueOf(id);
-		
-		results = null;
-		
-		endLocation = -1;
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
@@ -45,9 +37,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 
 		methodName = terminalListParseStackNode.methodName;
 		
-		endLocation = -1;
-		
-		results = new ArrayList<INode>();
+		result = null;
 	}
 	
 	public boolean isNonTerminal(){
@@ -86,19 +76,15 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public int getLength(){
-		return endLocation - startLocation;
+		return 1;
 	}
 	
-	public void setEndLocation(int endLocation){
-		this.endLocation = endLocation;
+	public void mark(){
+		// Ignore.
 	}
 	
-	public boolean endLocationIsSet(){
-		return (endLocation != -1);
-	}
-	
-	public int getEndLocation(){
-		return endLocation;
+	public boolean isMarked(){
+		return true;
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){
@@ -120,10 +106,10 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public void addResult(INode result){
-		results.add(result);
+		this.result = result;
 	}
 	
 	public INode getResult(){
-		return new Alternative(results); // TODO Check if this is ok.
+		return result;
 	}
 }

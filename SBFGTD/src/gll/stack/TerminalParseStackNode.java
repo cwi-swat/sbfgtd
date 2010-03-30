@@ -65,16 +65,12 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return terminal.length;
 	}
 	
-	public void setEndLocation(int endLocation){
+	public void mark(){
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean endLocationIsSet(){
+	public boolean isMarked(){
 		throw new UnsupportedOperationException();
-	}
-	
-	public int getEndLocation(){
-		return (startLocation + getLength());
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){

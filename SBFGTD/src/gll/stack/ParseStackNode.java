@@ -104,11 +104,9 @@ public abstract class ParseStackNode{
 		return startLocation;
 	}
 	
-	public abstract void setEndLocation(int endLocation);
+	public abstract void mark();
 	
-	public abstract boolean endLocationIsSet();
-	
-	public abstract int getEndLocation();
+	public abstract boolean isMarked();
 	
 	public abstract int getLength();
 	
