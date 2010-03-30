@@ -117,7 +117,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return new ParseStackNode[]{tpsn};
 	}
 	
-	public ParseStackNode[] getNextListChildren(char[] input, int position){
+	public ParseStackNode[] getNextChildren(char[] input, int position){
 		char next = input[position];
 		for(int i = ranges.length - 1; i >= 0; i--){
 			char[] range = ranges[i];

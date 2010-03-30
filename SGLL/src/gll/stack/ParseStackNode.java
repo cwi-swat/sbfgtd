@@ -111,7 +111,7 @@ public abstract class ParseStackNode{
 	public abstract int getLength();
 	
 	// Lists
-	public abstract ParseStackNode[] getNextListChildren(char[] input, int position);
+	public abstract ParseStackNode[] getNextChildren(char[] input, int position);
 	
 	// Results
 	public void addPrefix(INode[] prefix, int length){

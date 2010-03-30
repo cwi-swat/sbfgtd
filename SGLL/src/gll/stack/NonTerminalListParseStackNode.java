@@ -106,7 +106,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getNextListChildren(char[] input, int position){
+	public ParseStackNode[] getNextChildren(char[] input, int position){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
 		if(!firstRequired){
 			ntpsn.addEdge(this); // Plus or star list.
