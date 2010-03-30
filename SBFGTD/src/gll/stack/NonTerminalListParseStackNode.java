@@ -1,21 +1,23 @@
 package gll.stack;
 
-import gll.result.Alternative;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 // TODO Add list code.
 public class NonTerminalListParseStackNode extends ParseStackNode{
+	private final String listChild;
+	
 	private final String methodName;
 	
 	private boolean firstRequired;
 	
 	private boolean marked;
 	
-	private final ArrayList<INode> results;
+	private INode result;
 	
-	public NonTerminalListParseStackNode(int id, boolean isPlusList){
+	public NonTerminalListParseStackNode(int id, String listChild, boolean isPlusList){
 		super(id);
+		
+		this.listChild = listChild;
 		
 		firstRequired = isPlusList;
 		
@@ -23,11 +25,13 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		marked = false;
 		
-		results = null;
+		result = null;
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
 		super(nonTerminalListParseStackNode.id);
+		
+		listChild = nonTerminalListParseStackNode.listChild;
 		
 		firstRequired = nonTerminalListParseStackNode.firstRequired;
 		
@@ -35,7 +39,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		marked = false;
 		
-		results = new ArrayList<INode>();
+		result = null;
 	}
 	
 	public boolean isNonTerminal(){
@@ -86,15 +90,17 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){
+		
+		
 		// TODO Implement.
 		return null; // Temp.
 	}
 	
 	public void addResult(INode result){
-		results.add(result);
+		this.result = result;
 	}
 	
 	public INode getResult(){
-		return new Alternative(results); // TODO Check if this is ok.
+		return result;
 	}
 }
