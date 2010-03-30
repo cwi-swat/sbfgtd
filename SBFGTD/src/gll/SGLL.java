@@ -250,9 +250,26 @@ public class SGLL implements IGLL{
 			return;
 		}
 		
-		callMethod(node.getMethodName());
-		
-		handleExpects(node);
+		if(node.isNonTerminal()){
+			callMethod(node.getMethodName());
+			
+			handleExpects(node);
+		}else{ // List
+			ParseStackNode[] children = node.getNextChildren(input, location);
+			
+			
+			ParseStackNode child = children[0];
+			child.addEdge(node);
+			child.setStartLocation(location);
+			stacksToExpand.add(child);
+			
+			if(children.length == 2){ // First thing of a star list
+				child = children[1];
+				child.addEdge(node);
+				child.setStartLocation(location);
+				stacksToExpand.add(child);
+			}
+		}
 	}
 	
 	private void expand(){

@@ -81,7 +81,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getNextListChildren(char[] input, int position){
+	public ParseStackNode[] getNextChildren(char[] input, int position){
 		throw new UnsupportedOperationException();
 	}
 	
