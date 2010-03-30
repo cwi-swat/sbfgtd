@@ -73,7 +73,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getNextListChild(char[] input, int position){
+	public ParseStackNode[] getNextListChildren(char[] input, int position){
 		throw new UnsupportedOperationException();
 	}
 	
