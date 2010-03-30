@@ -8,6 +8,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	private final static TerminalParseStackNode NO_MATCHING_TERMINAL_FOUND = new TerminalParseStackNode(new char[]{0}, IGLL.LIST_CHILD_NOT_FOUND_ID);
 	
+	private final String nodeName;
 	private final String methodName;
 	
 	private final char[][] ranges;
@@ -27,7 +28,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		firstRequired = isPlusList;
 		
-		methodName = String.valueOf(id);
+		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
+		methodName = "List".concat(String.valueOf(id));
 		
 		marked = false;
 		
@@ -41,7 +43,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		characters = terminalListParseStackNode.characters;
 		
 		firstRequired = terminalListParseStackNode.firstRequired;
-
+		
+		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
 		
 		marked = false;
@@ -56,7 +59,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		characters = terminalListParseStackNode.characters;
 		
 		this.firstRequired = firstRequired;
-
+		
+		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
 		
 		marked = false;
@@ -84,8 +88,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNonTerminalName(){
-		throw new UnsupportedOperationException();
+	public String getNodeName(){
+		return nodeName;
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -113,22 +117,24 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	private ParseStackNode[] createNode(char next){
 		TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, (id | IGLL.LIST_CHILD_FLAG));
-		tpsn.addEdge((!firstRequired) ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
+		tpsn.addNext((!firstRequired) ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
 		return new ParseStackNode[]{tpsn};
 	}
 	
 	public ParseStackNode[] getNextChildren(char[] input, int position){
-		char next = input[position];
-		for(int i = ranges.length - 1; i >= 0; i--){
-			char[] range = ranges[i];
-			if(next >= range[0] && next <= range[1]){
-				return createNode(next);
+		if(input.length > position){
+			char next = input[position];
+			for(int i = ranges.length - 1; i >= 0; i--){
+				char[] range = ranges[i];
+				if(next >= range[0] && next <= range[1]){
+					return createNode(next);
+				}
 			}
-		}
-		
-		for(int i = characters.length - 1; i >= 0; i--){
-			if(next == characters[i]){
-				return createNode(next);
+			
+			for(int i = characters.length - 1; i >= 0; i--){
+				if(next == characters[i]){
+					return createNode(next);
+				}
 			}
 		}
 		

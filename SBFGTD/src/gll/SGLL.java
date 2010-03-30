@@ -122,7 +122,8 @@ public class SGLL implements IGLL{
 				edge = updateEdgeNode(edge);
 				addResults(edge, results, resultStartLocations);
 			}
-		}else if(node.hasNexts()){
+		}
+		if(node.hasNexts()){
 			ArrayList<ParseStackNode> nexts = node.getNexts();
 			for(int i = nexts.size() - 1; i >= 0; i--){
 				ParseStackNode next = nexts.get(i);
@@ -143,7 +144,7 @@ public class SGLL implements IGLL{
 			root = edge; // Root reached.
 		}
 		
-		String name = edge.getNonTerminalName();
+		String name = edge.getNodeName();
 		
 		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
@@ -263,7 +264,7 @@ public class SGLL implements IGLL{
 			child.setStartLocation(location);
 			stacksToExpand.add(child);
 			
-			if(children.length == 2){ // First thing of a star list
+			if(children.length == 2){ // First 'thing' of a star list
 				child = children[1];
 				child.addEdge(node);
 				child.setStartLocation(location);

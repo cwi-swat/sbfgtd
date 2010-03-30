@@ -54,7 +54,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNonTerminalName(){
+	public String getNodeName(){
 		return nonTerminal;
 	}
 	

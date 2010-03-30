@@ -44,7 +44,7 @@ public abstract class ParseStackNode{
 	
 	public abstract char[] getTerminalData();
 	
-	public abstract String getNonTerminalName();
+	public abstract String getNodeName();
 	
 	// Sharing.
 	public abstract ParseStackNode getCleanCopy();
