@@ -7,7 +7,7 @@ import gll.util.ArrayList;
 public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
 	
-	private boolean visited;
+	private boolean marked;
 	
 	private final ArrayList<INode> results;
 	
@@ -16,7 +16,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		
 		this.nonTerminal = nonTerminal;
 		
-		visited = false;
+		marked = false;
 		
 		results = null;
 	}
@@ -29,7 +29,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		this.nexts = nonTerminalParseStackNode.nexts;
 		this.edges = nonTerminalParseStackNode.edges;
 		
-		visited = false;
+		marked = false;
 		
 		results = new ArrayList<INode>();
 	}
@@ -74,11 +74,11 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public void mark(){
-		visited = true;
+		marked = true;
 	}
 	
 	public boolean isMarked(){
-		return visited;
+		return marked;
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){

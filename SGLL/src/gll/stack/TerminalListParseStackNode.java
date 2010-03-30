@@ -3,7 +3,6 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.INode;
 
-// TODO Add list code.
 public class TerminalListParseStackNode extends ParseStackNode{
 	private final static TerminalParseStackNode NO_MATCHING_TERMINAL_FOUND = new TerminalParseStackNode(new char[]{0}, IGLL.TERMINAL_LIST_CHILD_NOT_FOUND_ID);
 	
@@ -13,6 +12,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	private final char[] characters;
 	
 	private final boolean firstRequired;
+	
+	private boolean marked;
 	
 	private INode result;
 	
@@ -25,6 +26,10 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		firstRequired = isPlusList;
 		
 		methodName = String.valueOf(id);
+		
+		marked = false;
+		
+		result = null;
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
@@ -36,6 +41,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		firstRequired = terminalListParseStackNode.firstRequired;
 
 		methodName = terminalListParseStackNode.methodName;
+		
+		marked = false;
 		
 		result = null;
 	}
@@ -76,15 +83,15 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public int getLength(){
-		return 1;
+		throw new UnsupportedOperationException();
 	}
 	
 	public void mark(){
-		// Ignore.
+		marked = true;
 	}
 	
 	public boolean isMarked(){
-		return true;
+		return marked;
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){
@@ -92,13 +99,17 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		for(int i = ranges.length - 1; i >= 0; i--){
 			char[] range = ranges[i];
 			if(next >= range[0] && next <= range[1]){
-				return new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+				TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+				tpsn.addEdge(this);
+				return tpsn;
 			}
 		}
 		
 		for(int i = characters.length - 1; i >= 0; i--){
 			if(next == characters[i]){
-				return new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+				TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, IGLL.TERMINAL_LIST_CHILD_ID);
+				tpsn.addEdge(this);
+				return tpsn;
 			}
 		}
 		
