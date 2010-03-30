@@ -46,7 +46,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		return terminal;
 	}
 	
-	public String getNonTerminalName(){
+	public String getNodeName(){
 		throw new UnsupportedOperationException();
 	}
 	

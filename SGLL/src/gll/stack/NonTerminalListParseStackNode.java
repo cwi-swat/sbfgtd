@@ -8,7 +8,8 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
 	private final String listChild;
-	
+
+	private final String nodeName;
 	private final String methodName;
 	
 	private boolean firstRequired;
@@ -23,8 +24,9 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		this.listChild = listChild;
 		
 		firstRequired = isPlusList;
-		
-		methodName = String.valueOf(id);
+
+		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
+		methodName = "List".concat(String.valueOf(id));
 		
 		marked = false;
 		
@@ -37,7 +39,8 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		listChild = nonTerminalListParseStackNode.listChild;
 		
 		firstRequired = nonTerminalListParseStackNode.firstRequired;
-		
+
+		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
 		
 		marked = false;
@@ -52,6 +55,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		this.firstRequired = firstRequired;
 		
+		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
 		
 		marked = false;
@@ -79,7 +83,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNonTerminalName(){
+	public String getNodeName(){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -109,11 +113,11 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	public ParseStackNode[] getNextChildren(char[] input, int position){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
 		if(!firstRequired){
-			ntpsn.addEdge(this); // Plus or star list.
+			ntpsn.addNext(this); // Plus or star list.
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		ntpsn.addEdge(new NonTerminalListParseStackNode(this, false)); // Plus or star list.
+		ntpsn.addNext(new NonTerminalListParseStackNode(this, false)); // Plus or star list.
 		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG)};
 	}
 	
