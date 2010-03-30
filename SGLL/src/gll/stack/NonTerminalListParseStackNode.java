@@ -1,9 +1,12 @@
 package gll.stack;
 
+import gll.IGLL;
 import gll.result.INode;
 
 // TODO Add list code.
 public class NonTerminalListParseStackNode extends ParseStackNode{
+	private final static char[] EMPTY = new char[]{};
+	
 	private final String listChild;
 	
 	private final String methodName;
@@ -34,6 +37,20 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		listChild = nonTerminalListParseStackNode.listChild;
 		
 		firstRequired = nonTerminalListParseStackNode.firstRequired;
+		
+		methodName = nonTerminalListParseStackNode.methodName;
+		
+		marked = false;
+		
+		result = null;
+	}
+	
+	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode, boolean firstRequired){
+		super(nonTerminalListParseStackNode.id);
+		
+		listChild = nonTerminalListParseStackNode.listChild;
+		
+		this.firstRequired = firstRequired;
 		
 		methodName = nonTerminalListParseStackNode.methodName;
 		
@@ -89,11 +106,15 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode getNextListChild(char[] input, int position){
+	public ParseStackNode[] getNextListChildren(char[] input, int position){
+		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
+		if(!firstRequired){
+			ntpsn.addEdge(this); // Plus or star list.
+			return new ParseStackNode[]{ntpsn};
+		}
 		
-		
-		// TODO Implement.
-		return null; // Temp.
+		ntpsn.addEdge(new NonTerminalListParseStackNode(this, false)); // Plus or star list.
+		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG)};
 	}
 	
 	public void addResult(INode result){

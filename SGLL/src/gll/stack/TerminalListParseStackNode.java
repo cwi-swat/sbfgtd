@@ -4,6 +4,8 @@ import gll.IGLL;
 import gll.result.INode;
 
 public class TerminalListParseStackNode extends ParseStackNode{
+	private final static char[] EMPTY = new char[]{};
+	
 	private final static TerminalParseStackNode NO_MATCHING_TERMINAL_FOUND = new TerminalParseStackNode(new char[]{0}, IGLL.LIST_CHILD_NOT_FOUND_ID);
 	
 	private final String methodName;
@@ -109,13 +111,13 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	private ParseStackNode createNode(char next){
+	private ParseStackNode[] createNode(char next){
 		TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, (id | IGLL.LIST_CHILD_FLAG));
 		tpsn.addEdge((!firstRequired) ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
-		return tpsn;
+		return new ParseStackNode[]{tpsn};
 	}
 	
-	public ParseStackNode getNextListChild(char[] input, int position){
+	public ParseStackNode[] getNextListChildren(char[] input, int position){
 		char next = input[position];
 		for(int i = ranges.length - 1; i >= 0; i--){
 			char[] range = ranges[i];
@@ -130,7 +132,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 			}
 		}
 		
-		return ((!firstRequired) ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(new char[]{}, id | IGLL.LIST_CHILD_FLAG)); // Plus or star list.
+		return new ParseStackNode[]{((!firstRequired) ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
 	}
 	
 	public void addResult(INode result){
