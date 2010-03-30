@@ -7,7 +7,7 @@ import gll.util.ArrayList;
 public final class NonTerminalParseStackNode extends ParseStackNode{
 	private final String nonTerminal;
 	
-	private int endLocation;
+	private boolean visited;
 	
 	private final ArrayList<INode> results;
 	
@@ -16,7 +16,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		
 		this.nonTerminal = nonTerminal;
 		
-		endLocation = -1;
+		visited = false;
 		
 		results = null;
 	}
@@ -29,7 +29,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		this.nexts = nonTerminalParseStackNode.nexts;
 		this.edges = nonTerminalParseStackNode.edges;
 		
-		endLocation = -1;
+		visited = false;
 		
 		results = new ArrayList<INode>();
 	}
@@ -70,19 +70,15 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public int getLength(){
-		return (endLocation - startLocation);
+		throw new UnsupportedOperationException();
 	}
 	
-	public void setEndLocation(int endLocation){
-		this.endLocation = endLocation;
+	public void mark(){
+		visited = true;
 	}
 	
-	public boolean endLocationIsSet(){
-		return (endLocation != -1);
-	}
-	
-	public int getEndLocation(){
-		return endLocation;
+	public boolean isMarked(){
+		return visited;
 	}
 	
 	public ParseStackNode getNextListChild(char[] input, int position){
@@ -104,7 +100,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		sb.append('(');
 		sb.append(startLocation);
 		sb.append(',');
-		sb.append(endLocation);
+		sb.append('?');
 		sb.append(')');
 		
 		return sb.toString();
