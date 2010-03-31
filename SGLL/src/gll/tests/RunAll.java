@@ -62,5 +62,13 @@ public class RunAll{
 		//System.out.println("LeftRecursionEpsilon:");
 		//LeftRecursionEpsilon.main(args);
 		//System.out.println();
+		
+		System.out.println("TerminalPlusList:");
+		TerminalPlusList.main(args);
+		System.out.println();
+		
+		System.out.println("TerminalStarList:");
+		TerminalStarList.main(args);
+		System.out.println();
 	}
 }

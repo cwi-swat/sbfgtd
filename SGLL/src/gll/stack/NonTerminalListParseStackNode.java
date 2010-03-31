@@ -13,7 +13,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final String nodeName;
 	private final String methodName;
 	
-	private boolean firstRequired;
+	private boolean cantBeEmpty;
 	
 	private boolean marked;
 	
@@ -24,7 +24,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		this.listChild = listChild;
 		
-		firstRequired = isPlusList;
+		cantBeEmpty = isPlusList;
 
 		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
 		methodName = "List".concat(String.valueOf(id));
@@ -32,9 +32,10 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		marked = false;
 		
 		result = null;
-		
-		addNext((!firstRequired) ? this : new NonTerminalListParseStackNode(this, false));
+
+		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
+		addNext(cantBeEmpty ? this : new NonTerminalListParseStackNode(this, true));
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -42,7 +43,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		listChild = nonTerminalListParseStackNode.listChild;
 		
-		firstRequired = nonTerminalListParseStackNode.firstRequired;
+		cantBeEmpty = nonTerminalListParseStackNode.cantBeEmpty;
 
 		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
@@ -60,7 +61,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		listChild = nonTerminalListParseStackNode.listChild;
 		
-		this.firstRequired = firstRequired;
+		this.cantBeEmpty = firstRequired;
 		
 		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
@@ -122,7 +123,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	public ParseStackNode[] getNextChildren(char[] input, int position){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
-		if(!firstRequired){
+		if(cantBeEmpty){
 			return new ParseStackNode[]{ntpsn};
 		}
 		
