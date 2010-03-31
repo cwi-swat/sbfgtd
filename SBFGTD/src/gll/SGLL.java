@@ -258,7 +258,6 @@ public class SGLL implements IGLL{
 		}else{ // List
 			ParseStackNode[] children = node.getNextChildren(input, location);
 			
-			
 			ParseStackNode child = children[0];
 			child.addEdge(node);
 			child.setStartLocation(location);
