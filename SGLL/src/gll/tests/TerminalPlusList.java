@@ -25,8 +25,8 @@ public class TerminalPlusList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		TerminalPlusList tl = new TerminalPlusList("abc".toCharArray());
-		System.out.println(tl.parse("S"));
+		TerminalPlusList tpl = new TerminalPlusList("abc".toCharArray());
+		System.out.println(tpl.parse("S"));
 		
 		System.out.println("S(List0(a),List0(b),List0(c)) <- good");
 	}

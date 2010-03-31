@@ -25,8 +25,8 @@ public class TerminalStarList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		TerminalStarList tl = new TerminalStarList("abc".toCharArray());
-		System.out.println(tl.parse("S"));
+		TerminalStarList tsl = new TerminalStarList("abc".toCharArray());
+		System.out.println(tsl.parse("S"));
 		
 		System.out.println("S(List0(a),List0(b),List0(c)) <- good");
 	}
