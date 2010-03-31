@@ -34,15 +34,13 @@ public abstract class ParseStackNode{
 		return id;
 	}
 	
-	public abstract boolean isTerminal();
-	
-	public abstract boolean isNonTerminal();
+	public abstract boolean isReducable();
 	
 	public abstract boolean isList();
 	
 	public abstract String getMethodName();
 	
-	public abstract char[] getTerminalData();
+	public abstract boolean reduce(char[] input, int location);
 	
 	public abstract String getNodeName();
 	
@@ -91,7 +89,7 @@ public abstract class ParseStackNode{
 		return edges;
 	}
 	
-	// Location
+	// Location.
 	public void setStartLocation(int startLocation){
 		this.startLocation = startLocation;
 	}
@@ -110,10 +108,10 @@ public abstract class ParseStackNode{
 	
 	public abstract int getLength();
 	
-	// Lists
-	public abstract ParseStackNode[] getNextChildren(char[] input, int position);
+	// Lists.
+	public abstract ParseStackNode[] getListChildren();
 	
-	// Results
+	// Results.
 	public void addPrefix(INode[] prefix, int length){
 		if(prefixes == null){
 			prefixes = new ArrayList<INode[]>(1);

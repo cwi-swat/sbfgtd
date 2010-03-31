@@ -156,12 +156,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceTerminal(ParseStackNode terminal){
-		char[] terminalData = terminal.getTerminalData();
-		int startLocation = terminal.getStartLocation();
-		
-		for(int i = terminalData.length - 1; i >= 0; i--){
-			if(terminalData[i] != input[startLocation + i]) return; // Did not match.
-		}
+		if(!terminal.reduce(input, location)) return;
 		
 		move(terminal);
 	}
@@ -206,10 +201,8 @@ public class SGLL implements IGLL{
 			}
 		}
 		
-		if(closestNextLocation != Integer.MAX_VALUE){
-			previousLocation = location;
-			location = closestNextLocation;
-		}
+		previousLocation = location;
+		location = closestNextLocation;
 	}
 	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
@@ -248,27 +241,27 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expandStack(ParseStackNode node){
-		if(node.isTerminal()){
+		if(node.isReducable()){
 			if((location + node.getLength()) <= input.length) todoList.add(node);
 			return;
 		}
 		
-		if(node.isNonTerminal()){
+		if(!node.isList()){
 			callMethod(node.getMethodName());
 			
 			handleExpects(node);
 		}else{ // List
-			ParseStackNode[] children = node.getNextChildren(input, location);
+			ParseStackNode[] listChildren = node.getListChildren();
 			
-			ParseStackNode child = children[0];
-			child.addEdge(node);
+			ParseStackNode child = listChildren[0];
 			child.setStartLocation(location);
+			child.addEdge(node);
 			stacksToExpand.add(child);
 			
-			if(children.length == 2){ // First 'thing' of a star list
-				child = children[1];
-				child.addEdge(node);
+			if(listChildren.length > 1){ // Star list.
+				child = listChildren[1];
 				child.setStartLocation(location);
+				child.addEdge(node);
 				stacksToExpand.add(child);
 			}
 		}
@@ -298,7 +291,7 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
-		if(root == null) throw new RuntimeException("Parse Error before: "+location);
+		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
 		
 		return root.getResult();
 	}
