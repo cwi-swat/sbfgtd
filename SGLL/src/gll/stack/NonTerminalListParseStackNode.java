@@ -4,16 +4,15 @@ import gll.IGLL;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-// TODO Add list code.
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
 	private final String listChild;
+	
+	private final boolean isPlusList;
 
 	private final String nodeName;
 	private final String methodName;
-	
-	private boolean cantBeEmpty;
 	
 	private boolean marked;
 	
@@ -24,7 +23,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		this.listChild = listChild;
 		
-		cantBeEmpty = isPlusList;
+		this.isPlusList = isPlusList;
 
 		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
 		methodName = "List".concat(String.valueOf(id));
@@ -35,7 +34,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 
 		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
-		addNext(cantBeEmpty ? this : new NonTerminalListParseStackNode(this, true));
+		addNext(this);
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -43,7 +42,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		listChild = nonTerminalListParseStackNode.listChild;
 		
-		cantBeEmpty = nonTerminalListParseStackNode.cantBeEmpty;
+		isPlusList = nonTerminalListParseStackNode.isPlusList;
 
 		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
@@ -56,29 +55,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		result = null;
 	}
 	
-	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode, boolean firstRequired){
-		super(nonTerminalListParseStackNode.id);
-		
-		listChild = nonTerminalListParseStackNode.listChild;
-		
-		this.cantBeEmpty = firstRequired;
-		
-		nodeName = nonTerminalListParseStackNode.nodeName;
-		methodName = nonTerminalListParseStackNode.methodName;
-		
-		nexts = nonTerminalListParseStackNode.nexts;
-		edges = nonTerminalListParseStackNode.edges;
-		
-		marked = false;
-		
-		result = null;
-	}
-	
-	public boolean isNonTerminal(){
-		return false;
-	}
-	
-	public boolean isTerminal(){
+	public boolean isReducable(){
 		return false;
 	}
 	
@@ -90,7 +67,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return methodName;
 	}
 	
-	public char[] getTerminalData(){
+	public boolean reduce(char[] input, int location){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -121,9 +98,10 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getNextChildren(char[] input, int position){
+	public ParseStackNode[] getListChildren(){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
-		if(cantBeEmpty){
+		ntpsn.addNext(ntpsn); // Self 'next' loop.
+		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};
 		}
 		

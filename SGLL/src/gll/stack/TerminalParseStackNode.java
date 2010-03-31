@@ -26,12 +26,8 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		result = terminalParseStackNode.result;
 	}
 	
-	public boolean isTerminal(){
+	public boolean isReducable(){
 		return true;
-	}
-	
-	public boolean isNonTerminal(){
-		return false;
 	}
 	
 	public boolean isList(){
@@ -42,8 +38,11 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public char[] getTerminalData(){
-		return terminal;
+	public boolean reduce(char[] input, int location){
+		for(int i = terminal.length - 1; i >= 0; i--){
+			if(terminal[i] != input[startLocation + i]) return false; // Did not match.
+		}
+		return true;
 	}
 	
 	public String getNodeName(){
@@ -73,7 +72,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getNextChildren(char[] input, int position){
+	public ParseStackNode[] getListChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

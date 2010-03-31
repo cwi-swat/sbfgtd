@@ -7,29 +7,27 @@ import gll.util.ArrayList;
 public class TerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
-	private final static TerminalParseStackNode NO_MATCHING_TERMINAL_FOUND = new TerminalParseStackNode(new char[]{0}, IGLL.LIST_CHILD_NOT_FOUND_ID);
-	
-	private final String nodeName;
+	private final String productionName;
 	private final String methodName;
 	
 	private final char[][] ranges;
 	private final char[] characters;
 	
-	private final boolean cantBeEmpty;
+	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private INode result;
 	
-	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList){
+	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList, String productionName){
 		super(id);
 		
 		this.ranges = ranges;
 		this.characters = characters;
 		
-		cantBeEmpty = isPlusList;
+		this.isPlusList = isPlusList;
 		
-		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
+		this.productionName = productionName;
 		methodName = "List".concat(String.valueOf(id));
 		
 		marked = false;
@@ -38,7 +36,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
-		addNext(cantBeEmpty ? this : new TerminalListParseStackNode(this, true)); // Plus or star list.
+		addNext(this); // Plus or star list.
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
@@ -47,9 +45,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		ranges = terminalListParseStackNode.ranges;
 		characters = terminalListParseStackNode.characters;
 		
-		cantBeEmpty = terminalListParseStackNode.cantBeEmpty;
+		isPlusList = terminalListParseStackNode.isPlusList;
 		
-		nodeName = terminalListParseStackNode.nodeName;
+		productionName = terminalListParseStackNode.productionName;
 		methodName = terminalListParseStackNode.methodName;
 		
 		nexts = terminalListParseStackNode.nexts;
@@ -60,30 +58,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		result = null;
 	}
 	
-	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode, boolean firstRequired){
-		super(terminalListParseStackNode.id);
-		
-		ranges = terminalListParseStackNode.ranges;
-		characters = terminalListParseStackNode.characters;
-		
-		this.cantBeEmpty = firstRequired;
-		
-		nodeName = terminalListParseStackNode.nodeName;
-		methodName = terminalListParseStackNode.methodName;
-		
-		nexts = terminalListParseStackNode.nexts;
-		edges = terminalListParseStackNode.edges;
-		
-		marked = false;
-		
-		result = null;
-	}
-	
-	public boolean isNonTerminal(){
-		return false;
-	}
-	
-	public boolean isTerminal(){
+	public boolean isReducable(){
 		return false;
 	}
 	
@@ -95,12 +70,12 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return methodName;
 	}
 	
-	public char[] getTerminalData(){
+	public boolean reduce(char[] input, int location){
 		throw new UnsupportedOperationException();
 	}
 	
 	public String getNodeName(){
-		return nodeName;
+		return productionName;
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -108,10 +83,10 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		TerminalListParseStackNode ntpsn = new TerminalListParseStackNode(this);
-		ntpsn.prefixes = prefixes;
-		ntpsn.prefixStartLocations = prefixStartLocations;
-		return ntpsn;
+		TerminalListParseStackNode tpsn = new TerminalListParseStackNode(this);
+		tpsn.prefixes = prefixes;
+		tpsn.prefixStartLocations = prefixStartLocations;
+		return tpsn;
 	}
 	
 	public int getLength(){
@@ -126,30 +101,14 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	private ParseStackNode[] createNode(char next, int position){
-		TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, (id | IGLL.LIST_CHILD_FLAG));
-		tpsn.setStartLocation(position);
-		return new ParseStackNode[]{tpsn};
-	}
-	
-	public ParseStackNode[] getNextChildren(char[] input, int position){
-		if(input.length > position){
-			char next = input[position];
-			for(int i = ranges.length - 1; i >= 0; i--){
-				char[] range = ranges[i];
-				if(next >= range[0] && next <= range[1]){
-					return createNode(next, position);
-				}
-			}
-			
-			for(int i = characters.length - 1; i >= 0; i--){
-				if(next == characters[i]){
-					return createNode(next, position);
-				}
-			}
+	public ParseStackNode[] getListChildren(){
+		TerminalListNodeParseStackNode ntpsn = new TerminalListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, productionName);
+		ntpsn.addNext(ntpsn); // Self 'next' loop.
+		if(isPlusList){
+			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{(cantBeEmpty ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
+		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG)};
 	}
 	
 	public void addResult(INode result){

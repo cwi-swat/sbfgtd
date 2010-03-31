@@ -44,12 +44,8 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		results = new ArrayList<INode>();
 	}
 	
-	public boolean isTerminal(){
+	public boolean isReducable(){
 		return false;
-	}
-	
-	public boolean isNonTerminal(){
-		return true;
 	}
 	
 	public boolean isList(){
@@ -60,7 +56,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
-	public char[] getTerminalData(){
+	public boolean reduce(char[] input, int location){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -91,7 +87,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getNextChildren(char[] input, int position){
+	public ParseStackNode[] getListChildren(){
 		throw new UnsupportedOperationException();
 	}
 	
