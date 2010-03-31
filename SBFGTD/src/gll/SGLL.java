@@ -247,7 +247,7 @@ public class SGLL implements IGLL{
 	
 	private void expandStack(ParseStackNode node){
 		if(node.isTerminal()){
-			if((location + node.getLength() <= input.length) || (node.getLength() == 0)) todoList.add(node);
+			if((location + node.getLength()) <= input.length) todoList.add(node);
 			return;
 		}
 		

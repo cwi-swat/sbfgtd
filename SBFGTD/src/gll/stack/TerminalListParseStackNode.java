@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.INode;
+import gll.util.ArrayList;
 
 public class TerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
@@ -36,6 +37,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		result = null;
 		
 		addNext(firstRequired ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
+		edges = new ArrayList<ParseStackNode>();
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
