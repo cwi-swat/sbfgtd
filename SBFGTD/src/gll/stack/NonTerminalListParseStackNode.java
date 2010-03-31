@@ -34,7 +34,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 
 		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
-		addNext(this);
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -99,7 +98,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getListChildren(){
-		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
+		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};

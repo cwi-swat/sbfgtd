@@ -26,7 +26,7 @@ public class NonTerminalStarList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		NonTerminalStarList nrsl = new NonTerminalStarList("a".toCharArray());
+		NonTerminalStarList nrsl = new NonTerminalStarList("aaa".toCharArray());
 		System.out.println(nrsl.parse("S"));
 		
 		System.out.println("S(List0(A(a),A(a),A(a))) <- good");
