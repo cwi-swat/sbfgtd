@@ -206,8 +206,10 @@ public class SGLL implements IGLL{
 			}
 		}
 		
-		previousLocation = location;
-		location = closestNextLocation;
+		if(closestNextLocation != Integer.MAX_VALUE){
+			previousLocation = location;
+			location = closestNextLocation;
+		}
 	}
 	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
@@ -296,7 +298,7 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
-		if(location != input.length) System.err.println("Parse Error before: "+location);
+		if(root == null) System.err.println("Parse Error before: "+location);
 		
 		return root.getResult();
 	}

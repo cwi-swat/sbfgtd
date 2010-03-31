@@ -15,7 +15,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
-	private final boolean firstRequired;
+	private final boolean cantBeEmpty;
 	
 	private boolean marked;
 	
@@ -27,7 +27,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		this.ranges = ranges;
 		this.characters = characters;
 		
-		firstRequired = isPlusList;
+		cantBeEmpty = isPlusList;
 		
 		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
 		methodName = "List".concat(String.valueOf(id));
@@ -36,8 +36,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		result = null;
 		
-		addNext(firstRequired ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
+		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
+		addNext(cantBeEmpty ? this : new TerminalListParseStackNode(this, true)); // Plus or star list.
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
@@ -46,7 +47,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		ranges = terminalListParseStackNode.ranges;
 		characters = terminalListParseStackNode.characters;
 		
-		firstRequired = terminalListParseStackNode.firstRequired;
+		cantBeEmpty = terminalListParseStackNode.cantBeEmpty;
 		
 		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
@@ -65,7 +66,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		ranges = terminalListParseStackNode.ranges;
 		characters = terminalListParseStackNode.characters;
 		
-		this.firstRequired = firstRequired;
+		this.cantBeEmpty = firstRequired;
 		
 		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
@@ -148,7 +149,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 			}
 		}
 		
-		return new ParseStackNode[]{(firstRequired ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
+		return new ParseStackNode[]{(cantBeEmpty ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
 	}
 	
 	public void addResult(INode result){
