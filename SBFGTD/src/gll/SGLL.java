@@ -298,7 +298,7 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
-		if(root == null) System.err.println("Parse Error before: "+location);
+		if(root == null) throw new RuntimeException("Parse Error before: "+location);
 		
 		return root.getResult();
 	}

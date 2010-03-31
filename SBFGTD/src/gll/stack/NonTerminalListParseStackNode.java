@@ -95,7 +95,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public String getNodeName(){
-		throw new UnsupportedOperationException();
+		return nodeName;
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -122,7 +122,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getNextChildren(char[] input, int position){
-		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
+		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
 		if(cantBeEmpty){
 			return new ParseStackNode[]{ntpsn};
 		}

@@ -70,5 +70,13 @@ public class RunAll{
 		System.out.println("TerminalStarList:");
 		TerminalStarList.main(args);
 		System.out.println();
+		
+		System.out.println("NonTerminalPlusList:");
+		NonTerminalPlusList.main(args);
+		System.out.println();
+		
+		System.out.println("NonTerminalStarList:");
+		NonTerminalStarList.main(args);
+		System.out.println();
 	}
 }
