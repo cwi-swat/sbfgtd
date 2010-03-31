@@ -33,9 +33,6 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		marked = false;
 		
 		result = null;
-		
-		nexts = new ArrayList<ParseStackNode>();
-		edges = new ArrayList<ParseStackNode>();
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
