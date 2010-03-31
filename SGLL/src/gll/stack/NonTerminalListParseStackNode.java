@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.INode;
+import gll.util.ArrayList;
 
 // TODO Add list code.
 public class NonTerminalListParseStackNode extends ParseStackNode{
@@ -33,6 +34,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		result = null;
 		
 		addNext((!firstRequired) ? this : new NonTerminalListParseStackNode(this, false));
+		edges = new ArrayList<ParseStackNode>();
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
