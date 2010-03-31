@@ -34,6 +34,8 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		marked = false;
 		
 		result = null;
+		
+		addNext(firstRequired ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
@@ -46,6 +48,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
+		
+		nexts = terminalListParseStackNode.nexts;
+		edges = terminalListParseStackNode.edges;
 		
 		marked = false;
 		
@@ -62,6 +67,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		nodeName = terminalListParseStackNode.nodeName;
 		methodName = terminalListParseStackNode.methodName;
+		
+		nexts = terminalListParseStackNode.nexts;
+		edges = terminalListParseStackNode.edges;
 		
 		marked = false;
 		
@@ -115,9 +123,9 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	private ParseStackNode[] createNode(char next){
+	private ParseStackNode[] createNode(char next, int position){
 		TerminalParseStackNode tpsn = new TerminalParseStackNode(new char[]{next}, (id | IGLL.LIST_CHILD_FLAG));
-		tpsn.addNext((!firstRequired) ? this : new TerminalListParseStackNode(this, false)); // Plus or star list.
+		tpsn.setStartLocation(position);
 		return new ParseStackNode[]{tpsn};
 	}
 	
@@ -127,18 +135,18 @@ public class TerminalListParseStackNode extends ParseStackNode{
 			for(int i = ranges.length - 1; i >= 0; i--){
 				char[] range = ranges[i];
 				if(next >= range[0] && next <= range[1]){
-					return createNode(next);
+					return createNode(next, position);
 				}
 			}
 			
 			for(int i = characters.length - 1; i >= 0; i--){
 				if(next == characters[i]){
-					return createNode(next);
+					return createNode(next, position);
 				}
 			}
 		}
 		
-		return new ParseStackNode[]{((!firstRequired) ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
+		return new ParseStackNode[]{(firstRequired ? NO_MATCHING_TERMINAL_FOUND : new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG))}; // Plus or star list.
 	}
 	
 	public void addResult(INode result){

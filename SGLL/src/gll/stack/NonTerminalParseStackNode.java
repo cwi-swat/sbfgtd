@@ -24,10 +24,10 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
 		super(nonTerminalParseStackNode.id);
 
-		this.nonTerminal = nonTerminalParseStackNode.nonTerminal;
+		nonTerminal = nonTerminalParseStackNode.nonTerminal;
 		
-		this.nexts = nonTerminalParseStackNode.nexts;
-		this.edges = nonTerminalParseStackNode.edges;
+		nexts = nonTerminalParseStackNode.nexts;
+		edges = nonTerminalParseStackNode.edges;
 		
 		marked = false;
 		

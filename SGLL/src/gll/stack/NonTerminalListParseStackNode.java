@@ -31,6 +31,8 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		marked = false;
 		
 		result = null;
+		
+		addNext((!firstRequired) ? this : new NonTerminalListParseStackNode(this, false));
 	}
 	
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -42,6 +44,9 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 
 		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
+		
+		nexts = nonTerminalListParseStackNode.nexts;
+		edges = nonTerminalListParseStackNode.edges;
 		
 		marked = false;
 		
@@ -57,6 +62,9 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		nodeName = nonTerminalListParseStackNode.nodeName;
 		methodName = nonTerminalListParseStackNode.methodName;
+		
+		nexts = nonTerminalListParseStackNode.nexts;
+		edges = nonTerminalListParseStackNode.edges;
 		
 		marked = false;
 		
@@ -113,11 +121,9 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	public ParseStackNode[] getNextChildren(char[] input, int position){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG));
 		if(!firstRequired){
-			ntpsn.addNext(this); // Plus or star list.
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		ntpsn.addNext(new NonTerminalListParseStackNode(this, false)); // Plus or star list.
 		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG)};
 	}
 	

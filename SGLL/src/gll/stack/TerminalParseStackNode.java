@@ -18,12 +18,12 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	private TerminalParseStackNode(TerminalParseStackNode terminalParseStackNode){
 		super(terminalParseStackNode.id);
 
-		this.terminal = terminalParseStackNode.terminal;
+		terminal = terminalParseStackNode.terminal;
 		
-		this.nexts = terminalParseStackNode.nexts;
-		this.edges = terminalParseStackNode.edges;
+		nexts = terminalParseStackNode.nexts;
+		edges = terminalParseStackNode.edges;
 		
-		this.result = terminalParseStackNode.result;
+		result = terminalParseStackNode.result;
 	}
 	
 	public boolean isTerminal(){
