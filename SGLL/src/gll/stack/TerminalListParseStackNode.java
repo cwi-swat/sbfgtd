@@ -36,7 +36,6 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		
 		nexts = new ArrayList<ParseStackNode>();
 		edges = new ArrayList<ParseStackNode>();
-		addNext(this); // Plus or star list.
 	}
 	
 	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
