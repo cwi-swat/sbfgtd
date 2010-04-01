@@ -9,7 +9,7 @@ import gll.stack.TerminalParseStackNode;
 S ::= [a-z]*
 */
 public class TerminalStarList extends SGLL{
-	private final static ParseStackNode TERMINAL_LIST0 = new TerminalListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, false, "[a-z]");
+	private final static ParseStackNode TERMINAL_LIST0 = new TerminalListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", false);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode("a".toCharArray(), 1);
 	
 	public TerminalStarList(char[] input){
@@ -28,6 +28,6 @@ public class TerminalStarList extends SGLL{
 		TerminalStarList tsl = new TerminalStarList("abc".toCharArray());
 		System.out.println(tsl.parse("S"));
 		
-		System.out.println("S(List0(List0(a),List0(b),List0(c))) <- good");
+		System.out.println("S([a-z]*([a-z](a),[a-z](b),[a-z](c))) <- good");
 	}
 }

@@ -60,7 +60,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		return false;
 	}
 	
-	public boolean reduce(char[] input, int location){
+	public boolean reduce(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	

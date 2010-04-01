@@ -2,7 +2,6 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 public class TerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
@@ -19,15 +18,16 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	private INode result;
 	
-	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, boolean isPlusList, String productionName){
+	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, String productionName, boolean isPlusList){
 		super(id);
 		
 		this.ranges = ranges;
 		this.characters = characters;
 		
+		this.productionName = productionName;
+		
 		this.isPlusList = isPlusList;
 		
-		this.productionName = productionName;
 		methodName = "List".concat(String.valueOf(id));
 		
 		marked = false;
@@ -66,12 +66,12 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		return methodName;
 	}
 	
-	public boolean reduce(char[] input, int location){
+	public boolean reduce(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	
 	public String getNodeName(){
-		return productionName;
+		return productionName + (isPlusList ? '+' : '*'); // Meh
 	}
 	
 	public ParseStackNode getCleanCopy(){
