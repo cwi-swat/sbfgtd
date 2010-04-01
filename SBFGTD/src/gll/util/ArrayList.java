@@ -68,7 +68,7 @@ public class ArrayList<E>{
 		return size;
 	}
 	
-	public E[] getBackingArray(){
+	public Object[] getBackingArray(){
 		return data;
 	}
 }
