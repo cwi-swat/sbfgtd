@@ -56,6 +56,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
+	// Sharing disabled, since it breaks stuff.
 	public boolean isSimilar(ParseStackNode node){
 		return false;
 	}

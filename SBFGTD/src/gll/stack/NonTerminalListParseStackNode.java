@@ -4,7 +4,6 @@ import gll.IGLL;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-// Fix ambiguities and sharing.
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
