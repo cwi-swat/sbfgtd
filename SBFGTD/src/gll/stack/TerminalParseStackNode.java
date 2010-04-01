@@ -1,18 +1,18 @@
 package gll.stack;
 
 import gll.result.INode;
-import gll.result.TerminalNode;
+import gll.result.TextNode;
 
 public final class TerminalParseStackNode extends ParseStackNode{
 	private final char[] terminal;
 	
-	private final TerminalNode result;
+	private final TextNode result;
 	
 	public TerminalParseStackNode(char[] terminal, int id){
 		super(id);
 
 		this.terminal = terminal;
-		result = new TerminalNode(terminal);
+		result = new TextNode(terminal);
 	}
 	
 	private TerminalParseStackNode(TerminalParseStackNode terminalParseStackNode){
