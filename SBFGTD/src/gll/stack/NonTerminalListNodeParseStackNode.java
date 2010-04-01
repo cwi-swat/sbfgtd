@@ -21,7 +21,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		results = null;
 	}
 	
-	public NonTerminalListNodeParseStackNode(String nonTerminal, int id, ArrayList<INode> results){
+	protected NonTerminalListNodeParseStackNode(String nonTerminal, int id, ArrayList<INode> results){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;

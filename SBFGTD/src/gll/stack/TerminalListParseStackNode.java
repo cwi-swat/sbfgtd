@@ -35,7 +35,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		result = null;
 	}
 	
-	public TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
+	private TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
 		super(terminalListParseStackNode.id);
 		
 		ranges = terminalListParseStackNode.ranges;
