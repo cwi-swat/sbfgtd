@@ -10,7 +10,7 @@ S ::= aAa
 A ::= Ba | aB
 B ::= a
 */
-public class MergeAndSplit extends SGLL{
+public class MergeAndSplit1 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
@@ -20,7 +20,7 @@ public class MergeAndSplit extends SGLL{
 	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".toCharArray(), 6);
 	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".toCharArray(), 7);
 	
-	public MergeAndSplit(char[] input){
+	public MergeAndSplit1(char[] input){
 		super(input);
 	}
 	
@@ -39,7 +39,7 @@ public class MergeAndSplit extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit ms = new MergeAndSplit("aaaa".toCharArray());
+		MergeAndSplit1 ms = new MergeAndSplit1("aaaa".toCharArray());
 		System.out.println(ms.parse("S"));
 		
 		System.out.println("S(a,[A(a,B(a)),A(B(a),a)],a) <- good");
