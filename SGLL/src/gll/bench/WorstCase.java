@@ -29,15 +29,13 @@ public class WorstCase extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		/*WorstCase wc = new WorstCase("aaa".getBytes());
-		wc.parse("S");*/
-		
 		// Warmup.
 		for(int i = 9999; i >= 0; i--){
 			WorstCase wc = new WorstCase("aaaaaaaaaa".toCharArray());
 			wc.parse("S");
 		}
 		
+		// The benchmarks.
 		long start = System.currentTimeMillis();
 		WorstCase wc = new WorstCase("aaaaaaaaaa".toCharArray());
 		wc.parse("S");
