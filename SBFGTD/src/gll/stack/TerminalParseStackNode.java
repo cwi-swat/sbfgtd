@@ -38,7 +38,7 @@ public final class TerminalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input, int location){
+	public boolean reduce(char[] input){
 		for(int i = terminal.length - 1; i >= 0; i--){
 			if(terminal[i] != input[startLocation + i]) return false; // Did not match.
 		}

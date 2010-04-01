@@ -4,28 +4,27 @@ import gll.IGLL;
 import gll.result.INode;
 import gll.util.ArrayList;
 
+// Fix ambiguities and sharing.
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
-	private final String listChild;
+	private final String productionName;
 	
 	private final boolean isPlusList;
-
-	private final String nodeName;
+	
 	private final String methodName;
 	
 	private boolean marked;
 	
 	private INode result;
 	
-	public NonTerminalListParseStackNode(int id, String listChild, boolean isPlusList){
+	public NonTerminalListParseStackNode(int id, String productionName, boolean isPlusList){
 		super(id);
 		
-		this.listChild = listChild;
+		this.productionName = productionName;
 		
 		this.isPlusList = isPlusList;
-
-		nodeName = "List".concat(String.valueOf(id)); // TODO Here till I find something better.
+		
 		methodName = "List".concat(String.valueOf(id));
 		
 		marked = false;
@@ -36,11 +35,10 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
 		super(nonTerminalListParseStackNode.id);
 		
-		listChild = nonTerminalListParseStackNode.listChild;
+		productionName = nonTerminalListParseStackNode.productionName;
 		
 		isPlusList = nonTerminalListParseStackNode.isPlusList;
-
-		nodeName = nonTerminalListParseStackNode.nodeName;
+		
 		methodName = nonTerminalListParseStackNode.methodName;
 		
 		nexts = nonTerminalListParseStackNode.nexts;
@@ -63,12 +61,12 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return methodName;
 	}
 	
-	public boolean reduce(char[] input, int location){
+	public boolean reduce(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	
 	public String getNodeName(){
-		return nodeName;
+		return productionName + (isPlusList ? '+' : '*');
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -95,7 +93,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getListChildren(){
-		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(listChild, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
+		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(productionName, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};

@@ -48,20 +48,30 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 		return false;
 	}
 	
-	public boolean reduce(char[] input, int location){
-		if(input.length > location){
-			char next = input[location];
+	private INode createResult(char character){
+		int productionNameLength = productionName.length();
+		char[] resultText = new char[productionNameLength + 3];
+		productionName.getChars(0, productionNameLength, resultText, 0);
+		resultText[productionNameLength] = '(';
+		resultText[productionNameLength + 1] = character;
+		resultText[productionNameLength + 2] = ')';
+		return new TerminalNode(resultText);
+	}
+	
+	public boolean reduce(char[] input){
+		if(input.length > startLocation){
+			char next = input[startLocation];
 			for(int i = ranges.length - 1; i >= 0; i--){
 				char[] range = ranges[i];
 				if(next >= range[0] && next <= range[1]){
-					result = new TerminalNode(new char[]{next});
+					result = createResult(next);
 					return true;
 				}
 			}
 			
 			for(int i = characters.length - 1; i >= 0; i--){
 				if(next == characters[i]){
-					result = new TerminalNode(new char[]{next});
+					result = createResult(next);
 					return true;
 				}
 			}

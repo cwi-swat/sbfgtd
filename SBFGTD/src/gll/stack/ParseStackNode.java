@@ -40,7 +40,7 @@ public abstract class ParseStackNode{
 	
 	public abstract String getMethodName();
 	
-	public abstract boolean reduce(char[] input, int location);
+	public abstract boolean reduce(char[] input);
 	
 	public abstract String getNodeName();
 	

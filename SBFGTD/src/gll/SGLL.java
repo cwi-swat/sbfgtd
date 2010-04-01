@@ -156,7 +156,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceTerminal(ParseStackNode terminal){
-		if(!terminal.reduce(input, location)) return;
+		if(!terminal.reduce(input)) return;
 		
 		move(terminal);
 	}
