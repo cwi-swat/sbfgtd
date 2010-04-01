@@ -31,7 +31,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		result = null;
 	}
 	
-	public NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
+	private NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
 		super(nonTerminalListParseStackNode.id);
 		
 		productionName = nonTerminalListParseStackNode.productionName;

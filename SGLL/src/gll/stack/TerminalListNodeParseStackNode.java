@@ -20,7 +20,7 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 		this.productionName = productionName;
 	}
 	
-	public TerminalListNodeParseStackNode(TerminalListNodeParseStackNode terminalListNodeParseStackNode){
+	private TerminalListNodeParseStackNode(TerminalListNodeParseStackNode terminalListNodeParseStackNode){
 		super(terminalListNodeParseStackNode.id);
 
 		ranges = terminalListNodeParseStackNode.ranges;
