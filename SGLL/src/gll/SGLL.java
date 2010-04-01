@@ -1,7 +1,7 @@
 package gll;
 
 import gll.result.INode;
-import gll.result.NonTerminalNode;
+import gll.result.ContainerNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.util.ArrayList;
@@ -149,7 +149,7 @@ public class SGLL implements IGLL{
 		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
 			if(edge.getStartLocation() == resultStartLocations[i]){
-				INode result = new NonTerminalNode(name, results[i]);
+				INode result = new ContainerNode(name, results[i]);
 				edge.addResult(result);
 			}
 		}

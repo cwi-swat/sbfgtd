@@ -1,10 +1,10 @@
 package gll.result;
 
-public class NonTerminalNode implements INode{
+public class ContainerNode implements INode{
 	private final String name;
 	private final INode[] children;
 	
-	public NonTerminalNode(String name, INode[] children){
+	public ContainerNode(String name, INode[] children){
 		super();
 		
 		this.name = name;

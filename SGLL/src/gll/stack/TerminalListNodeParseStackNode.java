@@ -1,7 +1,7 @@
 package gll.stack;
 
 import gll.result.INode;
-import gll.result.TerminalNode;
+import gll.result.TextNode;
 
 public class TerminalListNodeParseStackNode extends ParseStackNode{
 	private final char[][] ranges;
@@ -55,7 +55,7 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 		resultText[productionNameLength] = '(';
 		resultText[productionNameLength + 1] = character;
 		resultText[productionNameLength + 2] = ')';
-		return new TerminalNode(resultText);
+		return new TextNode(resultText);
 	}
 	
 	public boolean reduce(char[] input){
