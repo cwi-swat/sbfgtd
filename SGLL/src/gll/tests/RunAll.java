@@ -4,14 +4,14 @@ public class RunAll{
 	
 	public static void main(String[] args){
 		System.out.println("Simple:");
-		Simple.main(args);
+		Simple1.main(args);
 		System.out.println();
 		System.out.println("Simple2:");
 		Simple2.main(args);
 		System.out.println();
 
 		System.out.println("Ambiguous:");
-		Ambiguous.main(args);
+		Ambiguous1.main(args);
 		System.out.println();
 		System.out.println("Ambiguous2:");
 		Ambiguous2.main(args);
@@ -38,7 +38,7 @@ public class RunAll{
 		System.out.println();
 		
 		System.out.println("MergeAndSplit:");
-		MergeAndSplit.main(args);
+		MergeAndSplit1.main(args);
 		System.out.println();
 		System.out.println("MergeAndSplit2:");
 		MergeAndSplit2.main(args);
