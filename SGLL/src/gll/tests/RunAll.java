@@ -3,7 +3,7 @@ package gll.tests;
 public class RunAll{
 	
 	public static void main(String[] args){
-		System.out.println("Simple:");
+		System.out.println("Simple1:");
 		Simple1.main(args);
 		System.out.println();
 		System.out.println("Simple2:");
@@ -14,7 +14,7 @@ public class RunAll{
 		CharRange.main(args);
 		System.out.println();
 
-		System.out.println("Ambiguous:");
+		System.out.println("Ambiguous1:");
 		Ambiguous1.main(args);
 		System.out.println();
 		System.out.println("Ambiguous2:");
@@ -41,7 +41,7 @@ public class RunAll{
 		LeftRecursion.main(args);
 		System.out.println();
 		
-		System.out.println("MergeAndSplit:");
+		System.out.println("MergeAndSplit1:");
 		MergeAndSplit1.main(args);
 		System.out.println();
 		System.out.println("MergeAndSplit2:");
@@ -79,8 +79,11 @@ public class RunAll{
 		System.out.println("NonTerminalStarList:");
 		NonTerminalStarList.main(args);
 		System.out.println();
-		System.out.println("AmbiguousNonTerminalPlusList:");
-		AmbiguousNonTerminalPlusList.main(args);
+		System.out.println("AmbiguousNonTerminalPlusList1:");
+		AmbiguousNonTerminalPlusList1.main(args);
+		System.out.println();
+		System.out.println("AmbiguousNonTerminalPlusList2:");
+		AmbiguousNonTerminalPlusList2.main(args);
 		System.out.println();
 	}
 }

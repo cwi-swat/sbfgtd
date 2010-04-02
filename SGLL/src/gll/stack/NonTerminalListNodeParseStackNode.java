@@ -9,12 +9,16 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 	
 	private boolean marked;
 	
+	private final int sequenceNumber;
+	
 	private final ArrayList<INode> results;
 	
 	protected NonTerminalListNodeParseStackNode(String nonTerminal, int id){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
+		
+		sequenceNumber = 0;
 		
 		results = new ArrayList<INode>();
 	}
@@ -23,6 +27,8 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		super(nonTerminalListNodeParseStackNode.id);
 
 		nonTerminal = nonTerminalListNodeParseStackNode.nonTerminal;
+		
+		sequenceNumber = nonTerminalListNodeParseStackNode.sequenceNumber + 1; // Hacky, but it will work.
 		
 		nexts = nonTerminalListNodeParseStackNode.nexts;
 		edges = nonTerminalListNodeParseStackNode.edges;
@@ -42,9 +48,9 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
-	// Sharing disabled, since it breaks stuff.
+	// NOTE: Dirty hack to get sharing working again.
 	public boolean isSimilar(ParseStackNode node){
-		return false;
+		return super.isSimilar(node) && sequenceNumber == (((NonTerminalListNodeParseStackNode) node).sequenceNumber + 1);
 	}
 	
 	public boolean reduce(char[] input){
@@ -60,7 +66,10 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		throw new UnsupportedOperationException();
+		NonTerminalListNodeParseStackNode ntlnpsn = new NonTerminalListNodeParseStackNode(this);
+		ntlnpsn.prefixes = prefixes;
+		ntlnpsn.prefixStartLocations = prefixStartLocations;
+		return ntlnpsn;
 	}
 	
 	public int getLength(){
