@@ -16,19 +16,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		
 		this.nonTerminal = nonTerminal;
 		
-		marked = false;
-		
 		results = null;
-	}
-	
-	public NonTerminalParseStackNode(String nonTerminal, int id, ArrayList<INode> results){
-		super(id);
-		
-		this.nonTerminal = nonTerminal;
-		
-		marked = false;
-		
-		this.results = results;
 	}
 	
 	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){

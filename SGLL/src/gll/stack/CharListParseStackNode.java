@@ -29,10 +29,6 @@ public class CharListParseStackNode extends ParseStackNode{
 		this.isPlusList = isPlusList;
 		
 		methodName = "List".concat(String.valueOf(id));
-		
-		marked = false;
-		
-		result = null;
 	}
 	
 	private CharListParseStackNode(CharListParseStackNode terminalListParseStackNode){
@@ -48,10 +44,6 @@ public class CharListParseStackNode extends ParseStackNode{
 		
 		nexts = terminalListParseStackNode.nexts;
 		edges = terminalListParseStackNode.edges;
-		
-		marked = false;
-		
-		result = null;
 	}
 	
 	public boolean isReducable(){

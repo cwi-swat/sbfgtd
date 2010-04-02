@@ -45,8 +45,6 @@ public class SGLL implements IGLL{
 		
 		previousLocation = -1;
 		location = 0;
-		
-		root = null;
 	}
 	
 	public void expect(ParseStackNode... symbolsToExpect){

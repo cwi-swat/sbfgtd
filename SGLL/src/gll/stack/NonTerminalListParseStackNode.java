@@ -2,7 +2,6 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
@@ -25,10 +24,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		this.isPlusList = isPlusList;
 		
 		methodName = "List".concat(String.valueOf(id));
-		
-		marked = false;
-		
-		result = null;
 	}
 	
 	private NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -42,10 +37,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		nexts = nonTerminalListParseStackNode.nexts;
 		edges = nonTerminalListParseStackNode.edges;
-		
-		marked = false;
-		
-		result = null;
 	}
 	
 	public boolean isReducable(){
@@ -92,7 +83,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getListChildren(){
-		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(productionName, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
+		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(productionName, (id | IGLL.LIST_CHILD_FLAG));
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};

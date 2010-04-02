@@ -20,13 +20,7 @@ public abstract class ParseStackNode{
 		
 		this.id = id;
 		
-		nexts = null;
-		edges = null;
-		
 		startLocation = -1;
-		
-		prefixes = null;
-		prefixStartLocations = null;
 	}
 	
 	// General.
