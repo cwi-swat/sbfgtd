@@ -3,7 +3,7 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.INode;
 
-public class TerminalListParseStackNode extends ParseStackNode{
+public class CharListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
 	private final String productionName;
@@ -18,7 +18,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	private INode result;
 	
-	public TerminalListParseStackNode(int id, char[][] ranges, char[] characters, String productionName, boolean isPlusList){
+	public CharListParseStackNode(int id, char[][] ranges, char[] characters, String productionName, boolean isPlusList){
 		super(id);
 		
 		this.ranges = ranges;
@@ -35,7 +35,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 		result = null;
 	}
 	
-	private TerminalListParseStackNode(TerminalListParseStackNode terminalListParseStackNode){
+	private CharListParseStackNode(CharListParseStackNode terminalListParseStackNode){
 		super(terminalListParseStackNode.id);
 		
 		ranges = terminalListParseStackNode.ranges;
@@ -75,11 +75,11 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getCleanCopy(){
-		return new TerminalListParseStackNode(this);
+		return new CharListParseStackNode(this);
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		TerminalListParseStackNode tpsn = new TerminalListParseStackNode(this);
+		CharListParseStackNode tpsn = new CharListParseStackNode(this);
 		tpsn.prefixes = prefixes;
 		tpsn.prefixStartLocations = prefixStartLocations;
 		return tpsn;
@@ -98,7 +98,7 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getListChildren(){
-		TerminalListNodeParseStackNode ntpsn = new TerminalListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, productionName);
+		CharListNodeParseStackNode ntpsn = new CharListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, productionName);
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};
@@ -113,5 +113,18 @@ public class TerminalListParseStackNode extends ParseStackNode{
 	
 	public INode getResult(){
 		return result;
+	}
+
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(productionName);
+		sb.append(getId());
+		sb.append('(');
+		sb.append(startLocation);
+		sb.append(',');
+		sb.append('?');
+		sb.append(')');
+		
+		return sb.toString();
 	}
 }
