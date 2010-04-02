@@ -2,14 +2,14 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalListParseStackNode;
+import gll.stack.CharListParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
 /*
 S ::= [a-z]*
 */
 public class TerminalStarList extends SGLL{
-	private final static ParseStackNode TERMINAL_LIST0 = new TerminalListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", false);
+	private final static ParseStackNode TERMINAL_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", false);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode("a".toCharArray(), 1);
 	
 	public TerminalStarList(char[] input){

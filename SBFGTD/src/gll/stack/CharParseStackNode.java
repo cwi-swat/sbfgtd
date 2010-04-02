@@ -3,33 +3,33 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public class TerminalListNodeParseStackNode extends ParseStackNode{
+public class CharParseStackNode extends ParseStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
 	private final String productionName;
 	
-	private INode result;
+	private TextNode result;
 	
-	public TerminalListNodeParseStackNode(int id, char[][] ranges, char[] characters, String productionName){
+	public CharParseStackNode(char[][] ranges, char[] characters, int id, String productionName){
 		super(id);
-		
+
 		this.ranges = ranges;
 		this.characters = characters;
 		
 		this.productionName = productionName;
 	}
 	
-	private TerminalListNodeParseStackNode(TerminalListNodeParseStackNode terminalListNodeParseStackNode){
-		super(terminalListNodeParseStackNode.id);
-
-		ranges = terminalListNodeParseStackNode.ranges;
-		characters = terminalListNodeParseStackNode.characters;
+	private CharParseStackNode(CharParseStackNode charParseStackNode){
+		super(charParseStackNode.id);
 		
-		productionName = terminalListNodeParseStackNode.productionName;
+		ranges = charParseStackNode.ranges;
+		characters = charParseStackNode.characters;
 		
-		nexts = terminalListNodeParseStackNode.nexts;
-		edges = terminalListNodeParseStackNode.edges;
+		productionName = charParseStackNode.productionName;
+		
+		nexts = charParseStackNode.nexts;
+		edges = charParseStackNode.edges;
 	}
 	
 	public boolean isReducable(){
@@ -41,14 +41,10 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	public String getMethodName(){
-		return productionName;
+		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isSimilar(ParseStackNode node){
-		return false;
-	}
-	
-	private INode createResult(char character){
+	private TextNode createResult(char character){
 		int productionNameLength = productionName.length();
 		char[] resultText = new char[productionNameLength + 3];
 		productionName.getChars(0, productionNameLength, resultText, 0);
@@ -81,15 +77,18 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	public String getNodeName(){
-		return productionName;
+		throw new UnsupportedOperationException();
 	}
 	
 	public ParseStackNode getCleanCopy(){
-		return new TerminalListNodeParseStackNode(this);
+		return new CharParseStackNode(this);
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		throw new UnsupportedOperationException();
+		CharParseStackNode cpsn = new CharParseStackNode(this);
+		cpsn.prefixes = prefixes;
+		cpsn.prefixStartLocations = prefixStartLocations;
+		return cpsn;
 	}
 	
 	public int getLength(){
@@ -115,7 +114,7 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 	public INode getResult(){
 		return result;
 	}
-
+	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(productionName);
@@ -123,7 +122,7 @@ public class TerminalListNodeParseStackNode extends ParseStackNode{
 		sb.append('(');
 		sb.append(startLocation);
 		sb.append(',');
-		sb.append(startLocation + 1);
+		sb.append(startLocation + getLength());
 		sb.append(')');
 		
 		return sb.toString();
