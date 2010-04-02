@@ -1,7 +1,9 @@
 package gll.stack;
 
 import gll.IGLL;
+import gll.result.Alternative;
 import gll.result.INode;
+import gll.util.ArrayList;
 
 public class NonTerminalListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
@@ -14,7 +16,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	private boolean marked;
 	
-	private INode result;
+	private ArrayList<INode> results;
 	
 	public NonTerminalListParseStackNode(int id, String productionName, boolean isPlusList){
 		super(id);
@@ -37,6 +39,8 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		nexts = nonTerminalListParseStackNode.nexts;
 		edges = nonTerminalListParseStackNode.edges;
+		
+		results = new ArrayList<INode>();
 	}
 	
 	public boolean isReducable(){
@@ -93,11 +97,11 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public void addResult(INode result){
-		this.result = result;
+		results.add(result);
 	}
 	
 	public INode getResult(){
-		return result;
+		return new Alternative(results);
 	}
 
 	public String toString(){

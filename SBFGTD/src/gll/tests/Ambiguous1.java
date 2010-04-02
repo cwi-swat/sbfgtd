@@ -28,8 +28,8 @@ public class Ambiguous1 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Ambiguous1 a = new Ambiguous1("a".toCharArray());
-		System.out.println(a.parse("S"));
+		Ambiguous1 a1 = new Ambiguous1("a".toCharArray());
+		System.out.println(a1.parse("S"));
 		
 		System.out.println("[S(A(a)),S(a)] <- good");
 	}

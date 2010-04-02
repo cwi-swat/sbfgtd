@@ -27,8 +27,8 @@ public class Simple1 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		Simple1 s = new Simple1("aab".toCharArray());
-		System.out.println(s.parse("S"));
+		Simple1 s1 = new Simple1("aab".toCharArray());
+		System.out.println(s1.parse("S"));
 		
 		System.out.println("S(A(aa),b) <- good");
 	}
