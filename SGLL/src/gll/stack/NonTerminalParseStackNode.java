@@ -27,8 +27,6 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		nexts = nonTerminalParseStackNode.nexts;
 		edges = nonTerminalParseStackNode.edges;
 		
-		marked = false;
-		
 		results = new ArrayList<INode>();
 	}
 	
