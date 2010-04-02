@@ -11,24 +11,12 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalListNodeParseStackNode(String nonTerminal, int id){
+	protected NonTerminalListNodeParseStackNode(String nonTerminal, int id){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
 		
-		marked = false;
-		
-		results = null;
-	}
-	
-	protected NonTerminalListNodeParseStackNode(String nonTerminal, int id, ArrayList<INode> results){
-		super(id);
-		
-		this.nonTerminal = nonTerminal;
-		
-		marked = false;
-		
-		this.results = results;
+		results = new ArrayList<INode>();
 	}
 	
 	private NonTerminalListNodeParseStackNode(NonTerminalListNodeParseStackNode nonTerminalListNodeParseStackNode){
@@ -38,8 +26,6 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		
 		nexts = nonTerminalListNodeParseStackNode.nexts;
 		edges = nonTerminalListNodeParseStackNode.edges;
-		
-		marked = false;
 		
 		results = new ArrayList<INode>();
 	}
