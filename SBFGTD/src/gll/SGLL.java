@@ -181,8 +181,6 @@ public class SGLL implements IGLL{
 		while(stacksWithNonTerminalsToReduce.size() > 0){
 			ParseStackNode nonTerminal = stacksWithNonTerminalsToReduce.remove(stacksWithNonTerminalsToReduce.size() - 1);
 			reduceNonTerminal(nonTerminal);
-
-			System.out.println(nonTerminal.getResult()+" "+(nonTerminal.hasEdges() ? nonTerminal.getEdges().size() : 0)+" "+stacksWithNonTerminalsToReduce.size());
 		}
 	}
 	
