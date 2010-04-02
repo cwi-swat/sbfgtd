@@ -6,13 +6,13 @@ import gll.stack.CharListParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
 /*
-S ::= [a-z]*
+S ::= [a-z]+
 */
-public class TerminalStarList extends SGLL{
-	private final static ParseStackNode TERMINAL_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", false);
+public class CharPlusList extends SGLL{
+	private final static ParseStackNode TERMINAL_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", true);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode("a".toCharArray(), 1);
 	
-	public TerminalStarList(char[] input){
+	public CharPlusList(char[] input){
 		super(input);
 	}
 	
@@ -25,9 +25,9 @@ public class TerminalStarList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		TerminalStarList tsl = new TerminalStarList("abc".toCharArray());
-		System.out.println(tsl.parse("S"));
+		CharPlusList cpl = new CharPlusList("abc".toCharArray());
+		System.out.println(cpl.parse("S"));
 		
-		System.out.println("S([a-z]*([a-z](a),[a-z](b),[a-z](c))) <- good");
+		System.out.println("S([a-z]+([a-z](a),[a-z](b),[a-z](c))) <- good");
 	}
 }

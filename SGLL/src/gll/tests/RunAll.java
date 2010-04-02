@@ -64,11 +64,11 @@ public class RunAll{
 		//System.out.println();
 		
 		System.out.println("TerminalPlusList:");
-		TerminalPlusList.main(args);
+		CharPlusList.main(args);
 		System.out.println();
 		
 		System.out.println("TerminalStarList:");
-		TerminalStarList.main(args);
+		CharStarList.main(args);
 		System.out.println();
 		
 		System.out.println("NonTerminalPlusList:");
