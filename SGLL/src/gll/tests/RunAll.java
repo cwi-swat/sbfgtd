@@ -10,6 +10,10 @@ public class RunAll{
 		Simple2.main(args);
 		System.out.println();
 
+		System.out.println("CharRange:");
+		CharRange.main(args);
+		System.out.println();
+
 		System.out.println("Ambiguous:");
 		Ambiguous1.main(args);
 		System.out.println();
@@ -66,17 +70,17 @@ public class RunAll{
 		System.out.println("TerminalPlusList:");
 		CharPlusList.main(args);
 		System.out.println();
-		
 		System.out.println("TerminalStarList:");
 		CharStarList.main(args);
 		System.out.println();
-		
 		System.out.println("NonTerminalPlusList:");
 		NonTerminalPlusList.main(args);
 		System.out.println();
-		
 		System.out.println("NonTerminalStarList:");
 		NonTerminalStarList.main(args);
+		System.out.println();
+		System.out.println("AmbiguousNonTerminalPlusList:");
+		AmbiguousNonTerminalPlusList.main(args);
 		System.out.println();
 	}
 }
