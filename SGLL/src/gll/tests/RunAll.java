@@ -85,5 +85,8 @@ public class RunAll{
 		System.out.println("AmbiguousNonTerminalPlusList2:");
 		AmbiguousNonTerminalPlusList2.main(args);
 		System.out.println();
+		System.out.println("AmbiguousNestedPlusList:");
+		AmbiguousNestedPlusList.main(args);
+		System.out.println();
 	}
 }
