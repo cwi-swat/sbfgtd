@@ -41,11 +41,7 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	public String getMethodName(){
-		return productionName;
-	}
-	
-	public boolean isSimilar(ParseStackNode node){
-		return false;
+		throw new UnsupportedOperationException();
 	}
 	
 	private TextNode createResult(char character){
