@@ -93,7 +93,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, id | IGLL.LIST_CHILD_FLAG)};
+		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, -1)};
 	}
 	
 	public void addResult(INode result){
