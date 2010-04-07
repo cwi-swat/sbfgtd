@@ -6,7 +6,6 @@ import gll.stack.NonTerminalParseStackNode;
 import gll.stack.OptionalParseStackNode;
 import gll.stack.ParseStackNode;
 
-// TODO Fix: this is broken.
 /*
 S ::= a(A?) | aA
 A ::= a
@@ -16,16 +15,17 @@ public class Optional3 extends SGLL{
 	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
 	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode(new char[]{'a'}, 2);
 	private final static ParseStackNode NONTERMINAL_A3 = new NonTerminalParseStackNode("A", 3);
-	private final static ParseStackNode OPTIONAL_4 = new OptionalParseStackNode(4, NONTERMINAL_A3, "A?");
+	private final static ParseStackNode NONTERMINAL_A4 = new NonTerminalParseStackNode("A", 4);
+	private final static ParseStackNode OPTIONAL_5 = new OptionalParseStackNode(5, NONTERMINAL_A3, "A?");
 	
 	public Optional3(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(LITERAL_a0, OPTIONAL_4);
+		expect(LITERAL_a0, OPTIONAL_5);
 		
-		expect(LITERAL_a1, NONTERMINAL_A3);
+		expect(LITERAL_a1, NONTERMINAL_A4);
 	}
 	
 	public void A(){
