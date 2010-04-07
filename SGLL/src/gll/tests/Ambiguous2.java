@@ -13,9 +13,9 @@ B ::= b
 public class Ambiguous2 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
-	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode("b".toCharArray(), 2);
-	private final static ParseStackNode LITERALL_ab3 = new LiteralParseStackNode("ab".toCharArray(), 3);
-	private final static ParseStackNode LITERAL_bab4 = new LiteralParseStackNode("bab".toCharArray(), 4);
+	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode(new char[]{'b'}, 2);
+	private final static ParseStackNode LITERALL_ab3 = new LiteralParseStackNode(new char[]{'a','b'}, 3);
+	private final static ParseStackNode LITERAL_bab4 = new LiteralParseStackNode(new char[]{'b','a','b'}, 4);
 	
 	public Ambiguous2(char[] input){
 		super(input);

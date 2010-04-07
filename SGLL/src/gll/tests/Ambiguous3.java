@@ -12,8 +12,8 @@ A ::= aa | a
 public class Ambiguous3 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
-	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode("a".toCharArray(), 2);
-	private final static ParseStackNode LITERAL_aa3 = new LiteralParseStackNode("aa".toCharArray(), 3);
+	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode(new char[]{'a'}, 2);
+	private final static ParseStackNode LITERAL_aa3 = new LiteralParseStackNode(new char[]{'a','a'}, 3);
 	
 	public Ambiguous3(char[] input){
 		super(input);

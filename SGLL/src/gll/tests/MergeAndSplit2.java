@@ -19,10 +19,10 @@ public class MergeAndSplit2 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
 	private final static ParseStackNode NONTERMINAL_D4 = new NonTerminalParseStackNode("D", 4);
 	private final static ParseStackNode NONTERMINAL_D5 = new NonTerminalParseStackNode("D", 5);
-	private final static ParseStackNode LITERAL_a6 = new LiteralParseStackNode("a".toCharArray(), 6);
-	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode("a".toCharArray(), 7);
-	private final static ParseStackNode LITERAL_a8 = new LiteralParseStackNode("a".toCharArray(), 8);
-	private final static ParseStackNode LITERAL_aa9 = new LiteralParseStackNode("aa".toCharArray(), 9);
+	private final static ParseStackNode LITERAL_a6 = new LiteralParseStackNode(new char[]{'a'}, 6);
+	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode(new char[]{'a'}, 7);
+	private final static ParseStackNode LITERAL_a8 = new LiteralParseStackNode(new char[]{'a'}, 8);
+	private final static ParseStackNode LITERAL_aa9 = new LiteralParseStackNode(new char[]{'a','a'}, 9);
 	
 	public MergeAndSplit2(char[] input){
 		super(input);

@@ -13,7 +13,7 @@ B ::= A | a
 public class UselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
-	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode("a".toCharArray(), 2);
+	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode(new char[]{'a'}, 2);
 	
 	public UselessSelfLoop(char[] input){
 		super(input);
