@@ -203,7 +203,7 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
-	private boolean gotShared(ParseStackNode node, ParseStackNode stack){
+	private boolean share(ParseStackNode node, ParseStackNode stack){
 		for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
 			ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
 			if(possiblySharedNode.isSimilar(node)){
@@ -221,7 +221,7 @@ public class SGLL implements IGLL{
 			// Handle sharing (and loops).
 			ParseStackNode first = expectedNodes[0];
 			
-			if(!gotShared(first, stackBeingWorkedOn)){
+			if(!share(first, stackBeingWorkedOn)){
 				first = first.getCleanCopy();
 				ParseStackNode current = first;
 				ParseStackNode prev;
@@ -257,7 +257,7 @@ public class SGLL implements IGLL{
 			ParseStackNode[] listChildren = node.getChildren();
 			
 			ParseStackNode child = listChildren[0];
-			if(!gotShared(child, node)){
+			if(!share(child, node)){
 				child.setStartLocation(location);
 				child.addEdge(node);
 				
@@ -268,7 +268,7 @@ public class SGLL implements IGLL{
 			
 			if(listChildren.length > 1){ // 'Star' list.
 				child = listChildren[1];
-				if(!gotShared(child, node)){
+				if(!share(child, node)){
 					child.setStartLocation(location);
 					child.addEdge(node);
 					
