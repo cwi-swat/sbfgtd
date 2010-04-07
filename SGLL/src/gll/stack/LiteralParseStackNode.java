@@ -4,26 +4,26 @@ import gll.result.INode;
 import gll.result.TextNode;
 
 public final class LiteralParseStackNode extends ParseStackNode{
-	private final char[] terminal;
+	private final char[] literal;
 	
 	private final TextNode result;
 	
-	public LiteralParseStackNode(char[] terminal, int id){
+	public LiteralParseStackNode(char[] literal, int id){
 		super(id);
 
-		this.terminal = terminal;
-		result = new TextNode(terminal);
+		this.literal = literal;
+		result = new TextNode(literal);
 	}
 	
-	private LiteralParseStackNode(LiteralParseStackNode terminalParseStackNode){
-		super(terminalParseStackNode.id);
+	private LiteralParseStackNode(LiteralParseStackNode literalParseStackNode){
+		super(literalParseStackNode.id);
 
-		terminal = terminalParseStackNode.terminal;
+		literal = literalParseStackNode.literal;
 		
-		nexts = terminalParseStackNode.nexts;
-		edges = terminalParseStackNode.edges;
+		nexts = literalParseStackNode.nexts;
+		edges = literalParseStackNode.edges;
 		
-		result = terminalParseStackNode.result;
+		result = literalParseStackNode.result;
 	}
 	
 	public boolean isReducable(){
@@ -39,8 +39,8 @@ public final class LiteralParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean reduce(char[] input){
-		for(int i = terminal.length - 1; i >= 0; i--){
-			if(terminal[i] != input[startLocation + i]) return false; // Did not match.
+		for(int i = literal.length - 1; i >= 0; i--){
+			if(literal[i] != input[startLocation + i]) return false; // Did not match.
 		}
 		return true;
 	}
@@ -54,14 +54,14 @@ public final class LiteralParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		LiteralParseStackNode tpsn = new LiteralParseStackNode(this);
-		tpsn.prefixes = prefixes;
-		tpsn.prefixStartLocations = prefixStartLocations;
-		return tpsn;
+		LiteralParseStackNode lpsn = new LiteralParseStackNode(this);
+		lpsn.prefixes = prefixes;
+		lpsn.prefixStartLocations = prefixStartLocations;
+		return lpsn;
 	}
 	
 	public int getLength(){
-		return terminal.length;
+		return literal.length;
 	}
 	
 	public void mark(){
@@ -86,7 +86,7 @@ public final class LiteralParseStackNode extends ParseStackNode{
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(new String(terminal));
+		sb.append(new String(literal));
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);

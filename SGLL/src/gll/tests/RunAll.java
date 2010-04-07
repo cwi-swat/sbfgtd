@@ -13,6 +13,9 @@ public class RunAll{
 		System.out.println("CharRange:");
 		CharRange.main(args);
 		System.out.println();
+		System.out.println("CILiteralTest:");
+		CILiteralTest.main(args);
+		System.out.println();
 
 		System.out.println("Ambiguous1:");
 		Ambiguous1.main(args);
