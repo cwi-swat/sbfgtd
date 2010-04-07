@@ -15,7 +15,6 @@ public class OptionalParseStackNode extends ParseStackNode{
 		super(id);
 		
 		this.optional = optional;
-		optional.addEdge(this);
 		
 		this.production = production;
 	}
@@ -65,7 +64,9 @@ public class OptionalParseStackNode extends ParseStackNode{
 	
 	public ParseStackNode[] getChildren(){
 		ParseStackNode[] children = new ParseStackNode[2];
-		children[0] = optional.getCleanCopy();
+		ParseStackNode copy = optional.getCleanCopy();
+		copy.addEdge(this);
+		children[0] = copy;
 		children[1] = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
 		return children;
 	}
