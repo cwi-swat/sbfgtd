@@ -6,8 +6,8 @@ import gll.stack.NonTerminalListParseStackNode;
 import gll.stack.ParseStackNode;
 
 public class AmbiguousNestedPlusList extends SGLL{
-	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", true);
-	private final static ParseStackNode TERMINAL_LIST1 = new CharListParseStackNode(1, new char[][]{}, new char[]{'a'}, "[a]", true);
+	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A+", true);
+	private final static ParseStackNode TERMINAL_LIST1 = new CharListParseStackNode(1, new char[][]{}, new char[]{'a'}, "[a]", "[a]+", true);
 	
 	public AmbiguousNestedPlusList(char[] input){
 		super(input);

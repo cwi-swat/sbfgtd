@@ -10,7 +10,7 @@ S ::= A+
 A ::= a
 */
 public class NonTerminalStarList extends SGLL{
-	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", false);
+	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A*", false);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode(new char[]{'a'}, 1);
 	
 	public NonTerminalStarList(char[] input){

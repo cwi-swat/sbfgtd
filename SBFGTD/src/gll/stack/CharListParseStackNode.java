@@ -6,29 +6,28 @@ import gll.result.INode;
 public class CharListParseStackNode extends ParseStackNode{
 	private final static char[] EMPTY = new char[]{};
 	
-	private final String productionName;
-	private final String methodName;
+	private final String production;
 	
 	private final char[][] ranges;
 	private final char[] characters;
 	
+	private final String child;
 	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private INode result;
 	
-	public CharListParseStackNode(int id, char[][] ranges, char[] characters, String productionName, boolean isPlusList){
+	public CharListParseStackNode(int id, char[][] ranges, char[] characters, String child, String production, boolean isPlusList){
 		super(id);
 		
 		this.ranges = ranges;
 		this.characters = characters;
 		
-		this.productionName = productionName;
+		this.production = production;
 		
+		this.child = child;
 		this.isPlusList = isPlusList;
-		
-		methodName = "List".concat(String.valueOf(id));
 	}
 	
 	private CharListParseStackNode(CharListParseStackNode terminalListParseStackNode){
@@ -37,10 +36,10 @@ public class CharListParseStackNode extends ParseStackNode{
 		ranges = terminalListParseStackNode.ranges;
 		characters = terminalListParseStackNode.characters;
 		
+		child = terminalListParseStackNode.child;
 		isPlusList = terminalListParseStackNode.isPlusList;
 		
-		productionName = terminalListParseStackNode.productionName;
-		methodName = terminalListParseStackNode.methodName;
+		production = terminalListParseStackNode.production;
 		
 		nexts = terminalListParseStackNode.nexts;
 		edges = terminalListParseStackNode.edges;
@@ -55,7 +54,7 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	public String getMethodName(){
-		return methodName;
+		throw new UnsupportedOperationException();
 	}
 	
 	public boolean reduce(char[] input){
@@ -63,7 +62,7 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	public String getNodeName(){
-		return productionName + (isPlusList ? '+' : '*'); // Meh
+		return production;
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -90,7 +89,7 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getListChildren(){
-		CharListNodeParseStackNode ntpsn = new CharListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, productionName);
+		CharListNodeParseStackNode ntpsn = new CharListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, child);
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};
@@ -109,7 +108,7 @@ public class CharListParseStackNode extends ParseStackNode{
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(productionName);
+		sb.append(production);
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
