@@ -203,38 +203,43 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
+	private boolean gotShared(ParseStackNode node, ParseStackNode stack){
+		for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
+			ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
+			if(possiblySharedNode.isSimilar(node)){
+				possiblySharedExpectsEndNodes.get(j).addEdge(stack);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
-		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
+		for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
 			ParseStackNode first = expectedNodes[0];
 			
-			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
-				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
-				if(possiblySharedNode.isSimilar(first)){
-					possiblySharedExpectsEndNodes.get(j).addEdge(stackBeingWorkedOn);
-					continue OUTER; // Shared.
+			if(!gotShared(first, stackBeingWorkedOn)){
+				first = first.getCleanCopy();
+				ParseStackNode current = first;
+				ParseStackNode prev;
+				
+				for(int k = 1; k < expectedNodes.length; k++){
+					prev = current;
+					current = expectedNodes[k].getCleanCopy();
+					prev.addNext(current);
 				}
+				
+				current.addEdge(stackBeingWorkedOn);
+				
+				first.setStartLocation(location);
+				
+				stacksToExpand.add(first);
+				possiblySharedExpects.add(first);
+				possiblySharedExpectsEndNodes.add(current);
 			}
-			
-			first = first.getCleanCopy();
-			ParseStackNode current = first;
-			ParseStackNode prev;
-			
-			for(int k = 1; k < expectedNodes.length; k++){
-				prev = current;
-				current = expectedNodes[k].getCleanCopy();
-				prev.addNext(current);
-			}
-			
-			current.addEdge(stackBeingWorkedOn);
-			
-			first.setStartLocation(location);
-			
-			stacksToExpand.add(first);
-			possiblySharedExpects.add(first);
-			possiblySharedExpectsEndNodes.add(current);
 		}
 	}
 	
@@ -249,18 +254,26 @@ public class SGLL implements IGLL{
 			
 			handleExpects(node);
 		}else{ // List
-			ParseStackNode[] listChildren = node.getListChildren();
+			ParseStackNode[] listChildren = node.getChildren();
 			
 			ParseStackNode child = listChildren[0];
-			child.setStartLocation(location);
-			child.addEdge(node);
-			stacksToExpand.add(child);
-			
-			if(listChildren.length > 1){ // Star list.
-				child = listChildren[1];
+			if(!gotShared(child, node)){
 				child.setStartLocation(location);
 				child.addEdge(node);
 				stacksToExpand.add(child);
+				possiblySharedExpects.add(child);
+				possiblySharedExpectsEndNodes.add(child);
+			}
+			
+			if(listChildren.length > 1){ // Star list.
+				child = listChildren[1];
+				if(!gotShared(child, node)){
+					child.setStartLocation(location);
+					child.addEdge(node);
+					stacksToExpand.add(child);
+					possiblySharedExpects.add(child);
+					possiblySharedExpectsEndNodes.add(child);
+				}
 			}
 		}
 	}

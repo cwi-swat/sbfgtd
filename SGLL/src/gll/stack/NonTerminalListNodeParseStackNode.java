@@ -24,14 +24,11 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	private NonTerminalListNodeParseStackNode(NonTerminalListNodeParseStackNode nonTerminalListNodeParseStackNode){
-		super(nonTerminalListNodeParseStackNode.id);
+		super(nonTerminalListNodeParseStackNode);
 
 		nonTerminal = nonTerminalListNodeParseStackNode.nonTerminal;
 		
 		isFirst = false; // Hacky, but it will work.
-		
-		nexts = nonTerminalListNodeParseStackNode.nexts;
-		edges = nonTerminalListNodeParseStackNode.edges;
 		
 		results = new ArrayList<INode>();
 	}
@@ -84,7 +81,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

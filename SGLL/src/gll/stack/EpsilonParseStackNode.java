@@ -13,10 +13,7 @@ public class EpsilonParseStackNode extends ParseStackNode{
 	}
 	
 	private EpsilonParseStackNode(EpsilonParseStackNode terminalParseStackNode){
-		super(terminalParseStackNode.id);
-		
-		nexts = terminalParseStackNode.nexts;
-		edges = terminalParseStackNode.edges;
+		super(terminalParseStackNode);
 		
 		result = terminalParseStackNode.result;
 	}
@@ -64,7 +61,7 @@ public class EpsilonParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	
