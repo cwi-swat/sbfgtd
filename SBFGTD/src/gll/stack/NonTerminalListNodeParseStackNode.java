@@ -9,7 +9,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 	
 	private boolean marked;
 	
-	private final int sequenceNumber;
+	private final boolean isFirst;
 	
 	private final ArrayList<INode> results;
 	
@@ -18,7 +18,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		
 		this.nonTerminal = nonTerminal;
 		
-		sequenceNumber = 0;
+		isFirst = true;
 		
 		results = new ArrayList<INode>();
 	}
@@ -28,7 +28,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 
 		nonTerminal = nonTerminalListNodeParseStackNode.nonTerminal;
 		
-		sequenceNumber = nonTerminalListNodeParseStackNode.sequenceNumber + 1; // Hacky, but it will work.
+		isFirst = false; // Hacky, but it will work.
 		
 		nexts = nonTerminalListNodeParseStackNode.nexts;
 		edges = nonTerminalListNodeParseStackNode.edges;
@@ -48,9 +48,9 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
-	// NOTE: Dirty hack to get sharing working again.
+	// NOTE: Hack to get sharing working for lists.
 	public boolean isSimilar(ParseStackNode node){
-		return super.isSimilar(node) && sequenceNumber == (((NonTerminalListNodeParseStackNode) node).sequenceNumber + 1);
+		return (super.isSimilar(node) && !isFirst);
 	}
 	
 	public boolean reduce(char[] input){
