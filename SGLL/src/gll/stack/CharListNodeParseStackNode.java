@@ -7,17 +7,17 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
-	private final String productionName;
+	private final String production;
 	
 	private INode result;
 	
-	public CharListNodeParseStackNode(int id, char[][] ranges, char[] characters, String productionName){
+	public CharListNodeParseStackNode(int id, char[][] ranges, char[] characters, String production){
 		super(id);
 		
 		this.ranges = ranges;
 		this.characters = characters;
 		
-		this.productionName = productionName;
+		this.production = production;
 	}
 	
 	private CharListNodeParseStackNode(CharListNodeParseStackNode terminalListNodeParseStackNode){
@@ -26,7 +26,7 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 		ranges = terminalListNodeParseStackNode.ranges;
 		characters = terminalListNodeParseStackNode.characters;
 		
-		productionName = terminalListNodeParseStackNode.productionName;
+		production = terminalListNodeParseStackNode.production;
 		
 		nexts = terminalListNodeParseStackNode.nexts;
 		edges = terminalListNodeParseStackNode.edges;
@@ -45,9 +45,9 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	private TextNode createResult(char character){
-		int productionNameLength = productionName.length();
+		int productionNameLength = production.length();
 		char[] resultText = new char[productionNameLength + 3];
-		productionName.getChars(0, productionNameLength, resultText, 0);
+		production.getChars(0, productionNameLength, resultText, 0);
 		resultText[productionNameLength] = '(';
 		resultText[productionNameLength + 1] = character;
 		resultText[productionNameLength + 2] = ')';
@@ -77,7 +77,7 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	public String getNodeName(){
-		return productionName;
+		return production;
 	}
 	
 	public ParseStackNode getCleanCopy(){
@@ -114,7 +114,7 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(productionName);
+		sb.append(production);
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);

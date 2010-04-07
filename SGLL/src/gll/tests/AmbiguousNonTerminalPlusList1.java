@@ -6,7 +6,7 @@ import gll.stack.ParseStackNode;
 import gll.stack.TerminalParseStackNode;
 
 public class AmbiguousNonTerminalPlusList1 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", true);
+	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A+", true);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode(new char[]{'a'}, 1);
 	private final static ParseStackNode TERMINAL_a2 = new TerminalParseStackNode(new char[]{'a'}, 2);
 	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode(new char[]{'a'}, 3);

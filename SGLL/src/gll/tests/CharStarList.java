@@ -9,7 +9,7 @@ import gll.stack.TerminalParseStackNode;
 S ::= [a-z]*
 */
 public class CharStarList extends SGLL{
-	private final static ParseStackNode TERMINAL_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", false);
+	private final static ParseStackNode TERMINAL_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]*", false);
 	private final static ParseStackNode TERMINAL_a1 = new TerminalParseStackNode("a".toCharArray(), 1);
 	
 	public CharStarList(char[] input){
