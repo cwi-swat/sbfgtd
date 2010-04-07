@@ -10,7 +10,7 @@ S ::= [a-z]+
 */
 public class CharPlusList extends SGLL{
 	private final static ParseStackNode CHAR_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]+", true);
-	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode("a".toCharArray(), 1);
+	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
 	
 	public CharPlusList(char[] input){
 		super(input);

@@ -23,7 +23,7 @@ public class Ambiguous6 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_E4 = new NonTerminalParseStackNode("E", 4);
 	private final static ParseStackNode NONTERMINAL_F5 = new NonTerminalParseStackNode("F", 5);
 	private final static ParseStackNode NONTERMINAL_G6 = new NonTerminalParseStackNode("G", 6);
-	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode("a".toCharArray(), 7);
+	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode(new char[]{'a'}, 7);
 	
 	public Ambiguous6(char[] input){
 		super(input);

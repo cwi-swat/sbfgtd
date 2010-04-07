@@ -14,7 +14,7 @@ public class LeftRecursionEpsilon extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
 	private final static ParseStackNode NONTERMINAL_A2 = new NonTerminalParseStackNode("A", 2);
-	private final static ParseStackNode LITERAL_a3 = new LiteralParseStackNode("a".toCharArray(), 3);
+	private final static ParseStackNode LITERAL_a3 = new LiteralParseStackNode(new char[]{'a'}, 3);
 	private final static ParseStackNode EPSILON_4 = new EpsilonParseStackNode(4);
 	
 	public LeftRecursionEpsilon(char[] input){

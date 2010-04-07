@@ -98,5 +98,8 @@ public class RunAll{
 		System.out.println("Optional2:");
 		Optional2.main(args);
 		System.out.println();
+		System.out.println("Optional3:");
+		Optional3.main(args);
+		System.out.println();
 	}
 }

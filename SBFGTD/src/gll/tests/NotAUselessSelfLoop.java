@@ -17,7 +17,7 @@ public class NotAUselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
 	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
 	private final static ParseStackNode NONTERMINAL_C4 = new NonTerminalParseStackNode("C", 4);
-	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode("a".toCharArray(), 5);
+	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode(new char[]{'a'}, 5);
 	
 	public NotAUselessSelfLoop(char[] input){
 		super(input);

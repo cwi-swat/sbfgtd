@@ -11,8 +11,8 @@ A ::= aa
 */
 public class Simple1 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode LITERAL_aa1 = new LiteralParseStackNode("aa".toCharArray(), 1);
-	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode("b".toCharArray(), 2);
+	private final static ParseStackNode LITERAL_aa1 = new LiteralParseStackNode(new char[]{'a','a'}, 1);
+	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode(new char[]{'b'}, 2);
 	
 	public Simple1(char[] input){
 		super(input);

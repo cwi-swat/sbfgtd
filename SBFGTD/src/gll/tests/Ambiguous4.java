@@ -15,8 +15,8 @@ public class Ambiguous4 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
 	private final static ParseStackNode NONTERMINAL_B3 = new NonTerminalParseStackNode("B", 3);
-	private final static ParseStackNode LITERAL_b4 = new LiteralParseStackNode("b".toCharArray(), 4);
-	private final static ParseStackNode LITERAL_bb5 = new LiteralParseStackNode("bb".toCharArray(), 5);
+	private final static ParseStackNode LITERAL_b4 = new LiteralParseStackNode(new char[]{'b'}, 4);
+	private final static ParseStackNode LITERAL_bb5 = new LiteralParseStackNode(new char[]{'b','b'}, 5);
 	
 	public Ambiguous4(char[] input){
 		super(input);

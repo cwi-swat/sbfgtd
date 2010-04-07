@@ -14,7 +14,7 @@ public class AmbiguousRecursive extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S2 = new NonTerminalParseStackNode("S", 2);
 	private final static ParseStackNode NONTERMINAL_S3 = new NonTerminalParseStackNode("S", 3);
 	private final static ParseStackNode NONTERMINAL_S4 = new NonTerminalParseStackNode("S", 4);
-	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode("a".toCharArray(), 5);
+	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode(new char[]{'a'}, 5);
 	
 	public AmbiguousRecursive(char[] input){
 		super(input);
