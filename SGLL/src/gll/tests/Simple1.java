@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= Ab
@@ -11,19 +11,19 @@ A ::= aa
 */
 public class Simple1 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode TERMINAL_aa1 = new TerminalParseStackNode("aa".toCharArray(), 1);
-	private final static ParseStackNode TERMINAL_b2 = new TerminalParseStackNode("b".toCharArray(), 2);
+	private final static ParseStackNode LITERAL_aa1 = new LiteralParseStackNode("aa".toCharArray(), 1);
+	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode("b".toCharArray(), 2);
 	
 	public Simple1(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0, TERMINAL_b2);
+		expect(NONTERMINAL_A0, LITERAL_b2);
 	}
 	
 	public void A(){
-		expect(TERMINAL_aa1);
+		expect(LITERAL_aa1);
 	}
 	
 	public static void main(String[] args){

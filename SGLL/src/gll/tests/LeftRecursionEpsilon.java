@@ -1,9 +1,10 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.stack.EpsilonParseStackNode;
+import gll.stack.LiteralParseStackNode;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
 
 /*
 S ::= A
@@ -13,8 +14,8 @@ public class LeftRecursionEpsilon extends SGLL{
 	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
 	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
 	private final static ParseStackNode NONTERMINAL_A2 = new NonTerminalParseStackNode("A", 2);
-	private final static ParseStackNode TERMINAL_a3 = new TerminalParseStackNode("a".toCharArray(), 3);
-	private final static ParseStackNode EPSILON_4 = new TerminalParseStackNode("".toCharArray(), 4);
+	private final static ParseStackNode LITERAL_a3 = new LiteralParseStackNode("a".toCharArray(), 3);
+	private final static ParseStackNode EPSILON_4 = new EpsilonParseStackNode(4);
 	
 	public LeftRecursionEpsilon(char[] input){
 		super(input);
@@ -27,7 +28,7 @@ public class LeftRecursionEpsilon extends SGLL{
 	public void A(){
 		expect(NONTERMINAL_A1, NONTERMINAL_A2);
 		
-		expect(TERMINAL_a3);
+		expect(LITERAL_a3);
 		
 		expect(EPSILON_4);
 	}

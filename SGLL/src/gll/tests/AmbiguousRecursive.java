@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= SSS | SS | a
@@ -14,7 +14,7 @@ public class AmbiguousRecursive extends SGLL{
 	private final static ParseStackNode NONTERMINAL_S2 = new NonTerminalParseStackNode("S", 2);
 	private final static ParseStackNode NONTERMINAL_S3 = new NonTerminalParseStackNode("S", 3);
 	private final static ParseStackNode NONTERMINAL_S4 = new NonTerminalParseStackNode("S", 4);
-	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".toCharArray(), 5);
+	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode("a".toCharArray(), 5);
 	
 	public AmbiguousRecursive(char[] input){
 		super(input);
@@ -25,7 +25,7 @@ public class AmbiguousRecursive extends SGLL{
 		
 		expect(NONTERMINAL_S3, NONTERMINAL_S4);
 		
-		expect(TERMINAL_a5);
+		expect(LITERAL_a5);
 	}
 	
 	public static void main(String[] args){

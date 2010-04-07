@@ -5,6 +5,8 @@ import gll.util.ArrayList;
 import gll.util.IntegerList;
 
 public abstract class ParseStackNode{
+	protected final static int STAR_LIST_EPSILON_ID = -1;
+	
 	protected ArrayList<ParseStackNode> nexts;
 	protected ArrayList<ParseStackNode> edges;
 	

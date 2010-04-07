@@ -4,8 +4,6 @@ import gll.IGLL;
 import gll.result.INode;
 
 public class CharListParseStackNode extends ParseStackNode{
-	private final static char[] EMPTY = new char[]{};
-	
 	private final String production;
 	
 	private final char[][] ranges;
@@ -95,7 +93,7 @@ public class CharListParseStackNode extends ParseStackNode{
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, -1)};
+		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(STAR_LIST_EPSILON_ID)};
 	}
 	
 	public void addResult(INode result){

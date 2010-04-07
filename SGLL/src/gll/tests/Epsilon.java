@@ -1,17 +1,19 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.stack.EpsilonParseStackNode;
+import gll.stack.LiteralParseStackNode;
 import gll.stack.NonTerminalParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.ParseStackNode;
 
 /*
 S ::= Aepsilon
 A ::= a
 */
 public class Epsilon extends SGLL{
-	private final static NonTerminalParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static TerminalParseStackNode EPSILON_1 = new TerminalParseStackNode("".toCharArray(), 1);
-	private final static TerminalParseStackNode NONTERMINAL_a2 = new TerminalParseStackNode("a".toCharArray(), 2);
+	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
+	private final static ParseStackNode EPSILON_1 = new EpsilonParseStackNode(1);
+	private final static ParseStackNode NONTERMINAL_a2 = new LiteralParseStackNode("a".toCharArray(), 2);
 	
 	public Epsilon(char[] input){
 		super(input);

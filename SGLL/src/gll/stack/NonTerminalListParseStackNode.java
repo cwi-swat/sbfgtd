@@ -6,8 +6,6 @@ import gll.result.INode;
 import gll.util.ArrayList;
 
 public class NonTerminalListParseStackNode extends ParseStackNode{
-	private final static char[] EMPTY = new char[]{};
-	
 	private final String production;
 
 	private final String child;
@@ -90,7 +88,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new TerminalParseStackNode(EMPTY, -1)};
+		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(STAR_LIST_EPSILON_ID)};
 	}
 	
 	public void addResult(INode result){

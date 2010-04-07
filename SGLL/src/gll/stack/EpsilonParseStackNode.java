@@ -3,22 +3,17 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public final class TerminalParseStackNode extends ParseStackNode{
-	private final char[] terminal;
-	
+public class EpsilonParseStackNode extends ParseStackNode{
 	private final TextNode result;
 	
-	public TerminalParseStackNode(char[] terminal, int id){
+	public EpsilonParseStackNode(int id){
 		super(id);
-
-		this.terminal = terminal;
-		result = new TextNode(terminal);
+		
+		result = new TextNode(new char[]{});
 	}
 	
-	private TerminalParseStackNode(TerminalParseStackNode terminalParseStackNode){
+	private EpsilonParseStackNode(EpsilonParseStackNode terminalParseStackNode){
 		super(terminalParseStackNode.id);
-
-		terminal = terminalParseStackNode.terminal;
 		
 		nexts = terminalParseStackNode.nexts;
 		edges = terminalParseStackNode.edges;
@@ -39,9 +34,6 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public boolean reduce(char[] input){
-		for(int i = terminal.length - 1; i >= 0; i--){
-			if(terminal[i] != input[startLocation + i]) return false; // Did not match.
-		}
 		return true;
 	}
 	
@@ -50,18 +42,18 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode getCleanCopy(){
-		return new TerminalParseStackNode(this);
+		return new EpsilonParseStackNode(this);
 	}
 	
 	public ParseStackNode getCleanCopyWithPrefix(){
-		TerminalParseStackNode tpsn = new TerminalParseStackNode(this);
-		tpsn.prefixes = prefixes;
-		tpsn.prefixStartLocations = prefixStartLocations;
-		return tpsn;
+		EpsilonParseStackNode epsn = new EpsilonParseStackNode(this);
+		epsn.prefixes = prefixes;
+		epsn.prefixStartLocations = prefixStartLocations;
+		return epsn;
 	}
 	
 	public int getLength(){
-		return terminal.length;
+		return 0;
 	}
 	
 	public void mark(){
@@ -86,12 +78,8 @@ public final class TerminalParseStackNode extends ParseStackNode{
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(new String(terminal));
-		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
-		sb.append(',');
-		sb.append(startLocation + getLength());
 		sb.append(')');
 		
 		return sb.toString();

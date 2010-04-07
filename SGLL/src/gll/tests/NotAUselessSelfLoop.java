@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= AA | B
@@ -17,7 +17,7 @@ public class NotAUselessSelfLoop extends SGLL{
 	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
 	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
 	private final static ParseStackNode NONTERMINAL_C4 = new NonTerminalParseStackNode("C", 4);
-	private final static ParseStackNode TERMINAL_a5 = new TerminalParseStackNode("a".toCharArray(), 5);
+	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode("a".toCharArray(), 5);
 	
 	public NotAUselessSelfLoop(char[] input){
 		super(input);
@@ -32,7 +32,7 @@ public class NotAUselessSelfLoop extends SGLL{
 	public void A(){
 		expect(NONTERMINAL_C3, NONTERMINAL_C4);
 		
-		expect(TERMINAL_a5);
+		expect(LITERAL_a5);
 	}
 	
 	public void B(){
@@ -44,7 +44,7 @@ public class NotAUselessSelfLoop extends SGLL{
 	public void C(){
 		expect(NONTERMINAL_A0, NONTERMINAL_A1);
 		
-		expect(TERMINAL_a5);
+		expect(LITERAL_a5);
 	}
 	
 	public static void main(String[] args){
