@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= D | Da
@@ -19,9 +19,10 @@ public class MergeAndSplit2 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
 	private final static ParseStackNode NONTERMINAL_D4 = new NonTerminalParseStackNode("D", 4);
 	private final static ParseStackNode NONTERMINAL_D5 = new NonTerminalParseStackNode("D", 5);
-	private final static ParseStackNode TERMINAL_a6 = new TerminalParseStackNode("a".toCharArray(), 6);
-	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".toCharArray(), 7);
-	private final static ParseStackNode TERMINAL_aa8 = new TerminalParseStackNode("aa".toCharArray(), 8);
+	private final static ParseStackNode LITERAL_a6 = new LiteralParseStackNode("a".toCharArray(), 6);
+	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode("a".toCharArray(), 7);
+	private final static ParseStackNode LITERAL_a8 = new LiteralParseStackNode("a".toCharArray(), 8);
+	private final static ParseStackNode LITERAL_aa9 = new LiteralParseStackNode("aa".toCharArray(), 9);
 	
 	public MergeAndSplit2(char[] input){
 		super(input);
@@ -29,11 +30,11 @@ public class MergeAndSplit2 extends SGLL{
 	
 	public void S(){
 		expect(NONTERMINAL_D4);
-		expect(NONTERMINAL_D5, TERMINAL_a6);
+		expect(NONTERMINAL_D5, LITERAL_a6);
 	}
 	
 	public void A(){
-		expect(TERMINAL_a7);
+		expect(LITERAL_a7);
 	}
 	
 	public void B(){
@@ -41,9 +42,9 @@ public class MergeAndSplit2 extends SGLL{
 	}
 	
 	public void C(){
-		expect(NONTERMINAL_B1, TERMINAL_a6);
+		expect(NONTERMINAL_B1, LITERAL_a8);
 		
-		expect(NONTERMINAL_B2, TERMINAL_aa8);
+		expect(NONTERMINAL_B2, LITERAL_aa9);
 	}
 	
 	public void D(){

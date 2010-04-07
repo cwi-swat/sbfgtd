@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalListParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= A+
@@ -11,7 +11,7 @@ A ::= a
 */
 public class NonTerminalPlusList extends SGLL{
 	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A+", true);
-	private final static ParseStackNode TERMINAL_A1 = new TerminalParseStackNode(new char[]{'a'}, 1);
+	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
 	
 	public NonTerminalPlusList(char[] input){
 		super(input);
@@ -22,7 +22,7 @@ public class NonTerminalPlusList extends SGLL{
 	}
 	
 	public void A(){
-		expect(TERMINAL_A1);
+		expect(LITERAL_a1);
 	}
 	
 	public static void main(String[] args){

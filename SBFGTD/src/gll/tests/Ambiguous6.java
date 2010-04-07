@@ -3,7 +3,7 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.NonTerminalParseStackNode;
 import gll.stack.ParseStackNode;
-import gll.stack.TerminalParseStackNode;
+import gll.stack.LiteralParseStackNode;
 
 /*
 S ::= A | E
@@ -23,7 +23,7 @@ public class Ambiguous6 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_E4 = new NonTerminalParseStackNode("E", 4);
 	private final static ParseStackNode NONTERMINAL_F5 = new NonTerminalParseStackNode("F", 5);
 	private final static ParseStackNode NONTERMINAL_G6 = new NonTerminalParseStackNode("G", 6);
-	private final static ParseStackNode TERMINAL_a7 = new TerminalParseStackNode("a".toCharArray(), 7);
+	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode("a".toCharArray(), 7);
 	
 	public Ambiguous6(char[] input){
 		super(input);
@@ -50,7 +50,7 @@ public class Ambiguous6 extends SGLL{
 	public void D(){
 		expect(NONTERMINAL_E4);
 		
-		expect(TERMINAL_a7);
+		expect(LITERAL_a7);
 	}
 	
 	public void E(){
@@ -62,7 +62,7 @@ public class Ambiguous6 extends SGLL{
 	}
 	
 	public void G(){
-		expect(TERMINAL_a7);
+		expect(LITERAL_a7);
 	}
 	
 	public static void main(String[] args){
