@@ -5,10 +5,13 @@ import gll.stack.LiteralParseStackNode;
 import gll.stack.OptionalParseStackNode;
 import gll.stack.ParseStackNode;
 
+/*
+S ::= a(a?)
+*/
 public class Optional2 extends SGLL{
 	private final static ParseStackNode LITERAL_a0 = new LiteralParseStackNode(new char[]{'a'}, 0);
 	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
-	private final static ParseStackNode OPTIONAL_2 = new OptionalParseStackNode(1, LITERAL_a1, "a?");
+	private final static ParseStackNode OPTIONAL_2 = new OptionalParseStackNode(2, LITERAL_a1, "a?");
 	
 	public Optional2(char[] input){
 		super(input);
