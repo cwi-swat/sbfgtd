@@ -8,7 +8,7 @@ import gll.stack.ParseStackNode;
 
 // TODO Fix: this is broken.
 /*
-S ::= a(A?)
+S ::= a(A?) | aA
 A ::= a
 */
 public class Optional3 extends SGLL{

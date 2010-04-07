@@ -260,16 +260,18 @@ public class SGLL implements IGLL{
 			if(!gotShared(child, node)){
 				child.setStartLocation(location);
 				child.addEdge(node);
+				
 				stacksToExpand.add(child);
 				possiblySharedExpects.add(child);
 				possiblySharedExpectsEndNodes.add(child);
 			}
 			
-			if(listChildren.length > 1){ // Star list.
+			if(listChildren.length > 1){ // 'Star' list.
 				child = listChildren[1];
 				if(!gotShared(child, node)){
 					child.setStartLocation(location);
 					child.addEdge(node);
+					
 					stacksToExpand.add(child);
 					possiblySharedExpects.add(child);
 					possiblySharedExpectsEndNodes.add(child);
