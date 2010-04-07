@@ -4,6 +4,9 @@ import gll.SGLL;
 import gll.stack.CharParseStackNode;
 import gll.stack.ParseStackNode;
 
+/*
+S ::= [a-z]
+*/
 public class CharRange extends SGLL{
 	private final static ParseStackNode CHAR_a0 = new CharParseStackNode(new char[][]{{'a','z'}}, new char[]{}, 0, "[a-z]");
 	

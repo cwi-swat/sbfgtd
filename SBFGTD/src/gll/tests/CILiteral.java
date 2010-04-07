@@ -4,6 +4,9 @@ import gll.SGLL;
 import gll.stack.ContextInsensitiveLiteralParseStackNode;
 import gll.stack.ParseStackNode;
 
+/*
+S ::= a
+*/
 public class CILiteral extends SGLL{
 	private final static ParseStackNode LITERAL_a0 = new ContextInsensitiveLiteralParseStackNode(new char[][]{{'A','a'}}, 0);
 	

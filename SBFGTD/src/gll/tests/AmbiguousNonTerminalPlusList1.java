@@ -5,6 +5,10 @@ import gll.stack.NonTerminalListParseStackNode;
 import gll.stack.ParseStackNode;
 import gll.stack.LiteralParseStackNode;
 
+/*
+S ::= aA+ | A+a
+A ::= a
+*/
 public class AmbiguousNonTerminalPlusList1 extends SGLL{
 	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A+", true);
 	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
