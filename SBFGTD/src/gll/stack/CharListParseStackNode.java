@@ -29,7 +29,7 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	private CharListParseStackNode(CharListParseStackNode terminalListParseStackNode){
-		super(terminalListParseStackNode.id);
+		super(terminalListParseStackNode);
 		
 		ranges = terminalListParseStackNode.ranges;
 		characters = terminalListParseStackNode.characters;
@@ -38,9 +38,6 @@ public class CharListParseStackNode extends ParseStackNode{
 		isPlusList = terminalListParseStackNode.isPlusList;
 		
 		production = terminalListParseStackNode.production;
-		
-		nexts = terminalListParseStackNode.nexts;
-		edges = terminalListParseStackNode.edges;
 	}
 	
 	public boolean isReducable(){
@@ -86,14 +83,14 @@ public class CharListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		CharListNodeParseStackNode ntpsn = new CharListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, child);
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(STAR_LIST_EPSILON_ID)};
+		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID)};
 	}
 	
 	public void addResult(INode result){

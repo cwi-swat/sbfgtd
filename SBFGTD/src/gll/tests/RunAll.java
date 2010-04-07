@@ -14,7 +14,7 @@ public class RunAll{
 		CharRange.main(args);
 		System.out.println();
 		System.out.println("CILiteralTest:");
-		CILiteralTest.main(args);
+		CILiteral.main(args);
 		System.out.println();
 
 		System.out.println("Ambiguous1:");
@@ -90,6 +90,13 @@ public class RunAll{
 		System.out.println();
 		System.out.println("AmbiguousNestedPlusList:");
 		AmbiguousNestedPlusList.main(args);
+		System.out.println();
+		
+		System.out.println("Optional1:");
+		Optional1.main(args);
+		System.out.println();
+		System.out.println("Optional2:");
+		Optional2.main(args);
 		System.out.println();
 	}
 }

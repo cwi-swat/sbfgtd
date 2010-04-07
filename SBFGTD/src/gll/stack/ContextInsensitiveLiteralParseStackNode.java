@@ -15,12 +15,9 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 	}
 	
 	private ContextInsensitiveLiteralParseStackNode(ContextInsensitiveLiteralParseStackNode contextInsensitiveLiteralParseStackNode){
-		super(contextInsensitiveLiteralParseStackNode.id);
+		super(contextInsensitiveLiteralParseStackNode);
 
 		ciLiteral = contextInsensitiveLiteralParseStackNode.ciLiteral;
-		
-		nexts = contextInsensitiveLiteralParseStackNode.nexts;
-		edges = contextInsensitiveLiteralParseStackNode.edges;
 		
 		result = null;
 	}
@@ -83,7 +80,7 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

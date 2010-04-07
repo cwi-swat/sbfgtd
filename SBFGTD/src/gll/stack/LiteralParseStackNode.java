@@ -16,12 +16,9 @@ public final class LiteralParseStackNode extends ParseStackNode{
 	}
 	
 	private LiteralParseStackNode(LiteralParseStackNode literalParseStackNode){
-		super(literalParseStackNode.id);
+		super(literalParseStackNode);
 
 		literal = literalParseStackNode.literal;
-		
-		nexts = literalParseStackNode.nexts;
-		edges = literalParseStackNode.edges;
 		
 		result = literalParseStackNode.result;
 	}
@@ -72,7 +69,7 @@ public final class LiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -21,15 +21,12 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 	}
 	
 	private CharListNodeParseStackNode(CharListNodeParseStackNode terminalListNodeParseStackNode){
-		super(terminalListNodeParseStackNode.id);
+		super(terminalListNodeParseStackNode);
 
 		ranges = terminalListNodeParseStackNode.ranges;
 		characters = terminalListNodeParseStackNode.characters;
 		
 		production = terminalListNodeParseStackNode.production;
-		
-		nexts = terminalListNodeParseStackNode.nexts;
-		edges = terminalListNodeParseStackNode.edges;
 	}
 	
 	public boolean isReducable(){
@@ -100,7 +97,7 @@ public class CharListNodeParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

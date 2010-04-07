@@ -5,7 +5,7 @@ import gll.util.ArrayList;
 import gll.util.IntegerList;
 
 public abstract class ParseStackNode{
-	protected final static int STAR_LIST_EPSILON_ID = -1;
+	protected final static int DEFAULT_LIST_EPSILON_ID = -1;
 	
 	protected ArrayList<ParseStackNode> nexts;
 	protected ArrayList<ParseStackNode> edges;
@@ -23,6 +23,15 @@ public abstract class ParseStackNode{
 		this.id = id;
 		
 		startLocation = -1;
+	}
+	
+	public ParseStackNode(ParseStackNode parseStackNode){
+		super();
+		
+		id = parseStackNode.id;
+		
+		nexts = parseStackNode.nexts;
+		edges = parseStackNode.edges;
 	}
 	
 	// General.
@@ -107,7 +116,7 @@ public abstract class ParseStackNode{
 	public abstract int getLength();
 	
 	// Lists.
-	public abstract ParseStackNode[] getListChildren();
+	public abstract ParseStackNode[] getChildren();
 	
 	// Results.
 	public void addPrefix(INode[] prefix, int length){

@@ -4,10 +4,10 @@ import gll.SGLL;
 import gll.stack.ContextInsensitiveLiteralParseStackNode;
 import gll.stack.ParseStackNode;
 
-public class CILiteralTest extends SGLL{
+public class CILiteral extends SGLL{
 	private final static ParseStackNode LITERAL_a0 = new ContextInsensitiveLiteralParseStackNode(new char[][]{{'A','a'}}, 0);
 	
-	public CILiteralTest(char[] input){
+	public CILiteral(char[] input){
 		super(input);
 	}
 	
@@ -16,8 +16,8 @@ public class CILiteralTest extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		CILiteralTest cilt = new CILiteralTest("a".toCharArray());
-		System.out.println(cilt.parse("S"));
+		CILiteral cil = new CILiteral("a".toCharArray());
+		System.out.println(cil.parse("S"));
 		
 		System.out.println("S(a) <- good");
 	}

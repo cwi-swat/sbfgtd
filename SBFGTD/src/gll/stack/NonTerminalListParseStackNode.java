@@ -25,15 +25,12 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	private NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
-		super(nonTerminalListParseStackNode.id);
+		super(nonTerminalListParseStackNode);
 		
 		production = nonTerminalListParseStackNode.production;
 
 		child = nonTerminalListParseStackNode.child;
 		isPlusList = nonTerminalListParseStackNode.isPlusList;
-		
-		nexts = nonTerminalListParseStackNode.nexts;
-		edges = nonTerminalListParseStackNode.edges;
 		
 		results = new ArrayList<INode>();
 	}
@@ -81,14 +78,14 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getListChildren(){
+	public ParseStackNode[] getChildren(){
 		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
 		ntpsn.addNext(ntpsn); // Self 'next' loop.
 		if(isPlusList){
 			return new ParseStackNode[]{ntpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(STAR_LIST_EPSILON_ID)};
+		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID)};
 	}
 	
 	public void addResult(INode result){
