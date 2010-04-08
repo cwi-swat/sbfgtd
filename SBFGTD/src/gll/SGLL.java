@@ -21,6 +21,7 @@ public class SGLL implements IGLL{
 	private ArrayList<ParseStackNode[]> lastExpects;
 	private ArrayList<ParseStackNode> possiblySharedExpects;
 	private ArrayList<ParseStackNode> possiblySharedExpectsEndNodes;
+	private ArrayList<ParseStackNode> possiblySharedListNodes;
 	private ArrayList<ParseStackNode> possiblySharedNextNodes;
 	private IntegerHashMap<ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
 	
@@ -203,44 +204,50 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
-	private boolean share(ParseStackNode node, ParseStackNode stack){
-		for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
-			ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
-			if(possiblySharedNode.isSimilar(node)){
-				possiblySharedExpectsEndNodes.get(j).addEdge(stack);
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private void handleExpects(ParseStackNode stackBeingWorkedOn){
-		for(int i = lastExpects.size() - 1; i >= 0; i--){
+		OUTER : for(int i = lastExpects.size() - 1; i >= 0; i--){
 			ParseStackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
 			ParseStackNode first = expectedNodes[0];
 			
-			if(!share(first, stackBeingWorkedOn)){
-				first = first.getCleanCopy();
-				ParseStackNode current = first;
-				ParseStackNode prev;
-				
-				for(int k = 1; k < expectedNodes.length; k++){
-					prev = current;
-					current = expectedNodes[k].getCleanCopy();
-					prev.addNext(current);
+			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
+				ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
+				if(possiblySharedNode.isSimilar(first)){
+					possiblySharedExpectsEndNodes.get(j).addEdge(stackBeingWorkedOn);
+					continue OUTER;
 				}
-				
-				current.addEdge(stackBeingWorkedOn);
-				
-				first.setStartLocation(location);
-				
-				stacksToExpand.add(first);
-				possiblySharedExpects.add(first);
-				possiblySharedExpectsEndNodes.add(current);
+			}
+			
+			first = first.getCleanCopy();
+			ParseStackNode current = first;
+			ParseStackNode prev;
+			
+			for(int k = 1; k < expectedNodes.length; k++){
+				prev = current;
+				current = expectedNodes[k].getCleanCopy();
+				prev.addNext(current);
+			}
+			
+			current.addEdge(stackBeingWorkedOn);
+			
+			first.setStartLocation(location);
+			
+			stacksToExpand.add(first);
+			possiblySharedExpects.add(first);
+			possiblySharedExpectsEndNodes.add(current);
+		}
+	}
+	
+	private boolean shareListNode(ParseStackNode node, ParseStackNode stack){
+		for(int j = possiblySharedListNodes.size() - 1; j >= 0; j--){
+			ParseStackNode possiblySharedNode = possiblySharedListNodes.get(j);
+			if(possiblySharedNode.isSimilar(node)){
+				possiblySharedNode.addEdge(stack);
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	private void expandStack(ParseStackNode node){
@@ -257,24 +264,22 @@ public class SGLL implements IGLL{
 			ParseStackNode[] listChildren = node.getChildren();
 			
 			ParseStackNode child = listChildren[0];
-			if(!share(child, node)){
+			if(!shareListNode(child, node)){
 				child.setStartLocation(location);
 				child.addEdge(node);
 				
 				stacksToExpand.add(child);
-				possiblySharedExpects.add(child);
-				possiblySharedExpectsEndNodes.add(child);
+				possiblySharedListNodes.add(child);
 			}
 			
 			if(listChildren.length > 1){ // Star list or optional.
 				child = listChildren[1];
-				if(!share(child, node)){
+				if(!shareListNode(child, node)){
 					child.setStartLocation(location);
 					child.addEdge(node);
 					
 					stacksToExpand.add(child);
-					possiblySharedExpects.add(child);
-					possiblySharedExpectsEndNodes.add(child);
+					possiblySharedListNodes.add(child);
 				}
 			}
 		}
@@ -283,6 +288,7 @@ public class SGLL implements IGLL{
 	private void expand(){
 		possiblySharedExpects = new ArrayList<ParseStackNode>();
 		possiblySharedExpectsEndNodes = new ArrayList<ParseStackNode>();
+		possiblySharedListNodes = new ArrayList<ParseStackNode>();
 		while(stacksToExpand.size() > 0){
 			lastExpects = new ArrayList<ParseStackNode[]>();
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
