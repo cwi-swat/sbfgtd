@@ -114,23 +114,11 @@ public class SGLL implements IGLL{
 		INode[][] results = node.getResults();
 		int[] resultStartLocations = node.getResultStartLocations();
 		
-		ArrayList<ParseStackNode> edges;
-		ParseStackNode next;
-		
 		// Ugly, because branch prediction fails misserably (you lose +/- 6% performance if you 'tidy' this up).
-		if(node.isListNode()){
-			if((edges = node.getEdges()) != null){
-				for(int i = edges.size() - 1; i >= 0; i--){
-					ParseStackNode edge = edges.get(i);
-					edge = updateEdgeNode(edge);
-					addResults(edge, results, resultStartLocations);
-				}
-			}
-			if((next = node.getNext()) != null){
-				next = updateNextNode(next);
-				addPrefixes(next, results, resultStartLocations);
-			}
-		}else{
+		if(!node.isListNode()){
+			ArrayList<ParseStackNode> edges;
+			ParseStackNode next;
+			
 			if((edges = node.getEdges()) != null){
 				for(int i = edges.size() - 1; i >= 0; i--){
 					ParseStackNode edge = edges.get(i);
@@ -141,8 +129,17 @@ public class SGLL implements IGLL{
 				next = updateNextNode(next);
 				addPrefixes(next, results, resultStartLocations);
 			}
+		}else{
+			ArrayList<ParseStackNode> edges = node.getEdges();
+			for(int i = edges.size() - 1; i >= 0; i--){
+				ParseStackNode edge = edges.get(i);
+				edge = updateEdgeNode(edge);
+				addResults(edge, results, resultStartLocations);
+			}
+			
+			ParseStackNode next = updateNextNode(node.getNext());
+			addPrefixes(next, results, resultStartLocations);
 		}
-		
 	}
 	
 	private void addPrefixes(ParseStackNode next, INode[][] prefixes, int[] prefixStartLocations){
