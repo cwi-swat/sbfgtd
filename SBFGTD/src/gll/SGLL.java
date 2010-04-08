@@ -114,22 +114,35 @@ public class SGLL implements IGLL{
 		INode[][] results = node.getResults();
 		int[] resultStartLocations = node.getResultStartLocations();
 		
-		if(node.hasEdges()){
-			ArrayList<ParseStackNode> edges = node.getEdges();
-			for(int i = edges.size() - 1; i >= 0; i--){
-				ParseStackNode edge = edges.get(i);
-				edge = updateEdgeNode(edge);
-				addResults(edge, results, resultStartLocations);
+		ArrayList<ParseStackNode> edges;
+		ParseStackNode next;
+		
+		// Ugly, because branch prediction fails misserably (you lose +/- 6% performance if you 'tidy' this up).
+		if(node.isListNode()){
+			if((edges = node.getEdges()) != null){
+				for(int i = edges.size() - 1; i >= 0; i--){
+					ParseStackNode edge = edges.get(i);
+					edge = updateEdgeNode(edge);
+					addResults(edge, results, resultStartLocations);
+				}
 			}
-		}
-		if(node.hasNexts()){
-			ArrayList<ParseStackNode> nexts = node.getNexts();
-			for(int i = nexts.size() - 1; i >= 0; i--){
-				ParseStackNode next = nexts.get(i);
+			if((next = node.getNext()) != null){
+				next = updateNextNode(next);
+				addPrefixes(next, results, resultStartLocations);
+			}
+		}else{
+			if((edges = node.getEdges()) != null){
+				for(int i = edges.size() - 1; i >= 0; i--){
+					ParseStackNode edge = edges.get(i);
+					edge = updateEdgeNode(edge);
+					addResults(edge, results, resultStartLocations);
+				}
+			}else if((next = node.getNext()) != null){
 				next = updateNextNode(next);
 				addPrefixes(next, results, resultStartLocations);
 			}
 		}
+		
 	}
 	
 	private void addPrefixes(ParseStackNode next, INode[][] prefixes, int[] prefixStartLocations){
@@ -139,7 +152,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void addResults(ParseStackNode edge, INode[][] results, int[] resultStartLocations){
-		if(location == input.length && !edge.hasEdges() && !edge.hasNexts()){
+		if(location == input.length && !edge.hasEdges() && !edge.hasNext()){
 			root = edge; // Root reached.
 		}
 		

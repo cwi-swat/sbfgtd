@@ -35,6 +35,10 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return false;
 	}
 	
+	public boolean isListNode(){
+		return false;
+	}
+	
 	public String getMethodName(){
 		return nonTerminal;
 	}

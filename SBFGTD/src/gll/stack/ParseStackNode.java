@@ -7,7 +7,7 @@ import gll.util.IntegerList;
 public abstract class ParseStackNode{
 	protected final static int DEFAULT_LIST_EPSILON_ID = -1;
 	
-	protected ArrayList<ParseStackNode> nexts;
+	protected ParseStackNode next;
 	protected ArrayList<ParseStackNode> edges;
 	
 	protected final int id;
@@ -30,7 +30,7 @@ public abstract class ParseStackNode{
 		
 		id = parseStackNode.id;
 		
-		nexts = parseStackNode.nexts;
+		next = parseStackNode.next;
 		edges = parseStackNode.edges;
 	}
 	
@@ -42,6 +42,8 @@ public abstract class ParseStackNode{
 	public abstract boolean isReducable();
 	
 	public abstract boolean isList();
+	
+	public abstract boolean isListNode();
 	
 	public abstract String getMethodName();
 	
@@ -60,16 +62,15 @@ public abstract class ParseStackNode{
 	
 	// Linking.
 	public void addNext(ParseStackNode next){
-		if(nexts == null) nexts = new ArrayList<ParseStackNode>();
-		nexts.add(next);
+		this.next = next;
 	}
 	
-	public boolean hasNexts(){
-		return (nexts != null);
+	public boolean hasNext(){
+		return (next != null);
 	}
 	
-	public ArrayList<ParseStackNode> getNexts(){
-		return nexts;
+	public ParseStackNode getNext(){
+		return next;
 	}
 	
 	public void addEdge(ParseStackNode edge){
