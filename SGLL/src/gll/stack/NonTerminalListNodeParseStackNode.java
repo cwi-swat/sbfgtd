@@ -20,7 +20,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		
 		isFirst = true;
 		
-		results = new ArrayList<INode>();
+		results = new ArrayList<INode>(1);
 	}
 	
 	private NonTerminalListNodeParseStackNode(NonTerminalListNodeParseStackNode nonTerminalListNodeParseStackNode){
@@ -30,7 +30,7 @@ public class NonTerminalListNodeParseStackNode extends ParseStackNode{
 		
 		isFirst = false; // Hacky, but it will work.
 		
-		results = new ArrayList<INode>();
+		results = new ArrayList<INode>(1);
 	}
 	
 	public boolean isReducable(){

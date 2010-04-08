@@ -300,7 +300,7 @@ public class SGLL implements IGLL{
 		possiblySharedExpectsEndNodes = new ArrayList<ParseStackNode>();
 		possiblySharedListNodes = new ArrayList<ParseStackNode>();
 		while(stacksToExpand.size() > 0){
-			lastExpects = new ArrayList<ParseStackNode[]>();
+			lastExpects = new ArrayList<ParseStackNode[]>(1);
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
 		}
 	}
