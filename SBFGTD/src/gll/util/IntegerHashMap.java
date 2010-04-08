@@ -1,6 +1,8 @@
 package gll.util;
 
 public class IntegerHashMap<V>{
+	private final static int DEFAULT_BIT_SIZE = 2;
+	
 	private Entry<V>[] entries;
 
 	private int hashMask;
@@ -12,7 +14,7 @@ public class IntegerHashMap<V>{
 	public IntegerHashMap(){
 		super();
 		
-		int nrOfEntries = 1 << bitSize;
+		int nrOfEntries = 1 << (bitSize = DEFAULT_BIT_SIZE);
 		
 		hashMask = nrOfEntries - 1;
 		

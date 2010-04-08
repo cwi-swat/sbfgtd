@@ -24,7 +24,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 
 		nonTerminal = nonTerminalParseStackNode.nonTerminal;
 		
-		results = new ArrayList<INode>();
+		results = new ArrayList<INode>(1);
 	}
 	
 	public boolean isReducable(){

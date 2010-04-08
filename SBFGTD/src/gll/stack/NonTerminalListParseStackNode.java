@@ -32,7 +32,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		child = nonTerminalListParseStackNode.child;
 		isPlusList = nonTerminalListParseStackNode.isPlusList;
 		
-		results = new ArrayList<INode>();
+		results = new ArrayList<INode>(1);
 	}
 	
 	public boolean isReducable(){

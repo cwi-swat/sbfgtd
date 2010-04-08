@@ -74,7 +74,7 @@ public abstract class ParseStackNode{
 	}
 	
 	public void addEdge(ParseStackNode edge){
-		if(edges == null) edges = new ArrayList<ParseStackNode>();
+		if(edges == null) edges = new ArrayList<ParseStackNode>(1);
 		edges.add(edge);
 	}
 	
