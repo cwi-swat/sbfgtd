@@ -48,6 +48,10 @@ public class CharListParseStackNode extends ParseStackNode{
 		return true;
 	}
 	
+	public boolean isListNode(){
+		return false;
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
