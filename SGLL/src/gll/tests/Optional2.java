@@ -14,7 +14,7 @@ public class Optional2 extends SGLL{
 	private final static ParseStackNode LITERAL_a0 = new LiteralParseStackNode(new char[]{'a'}, 0);
 	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
 	private final static ParseStackNode NON_TERMINAL_O2 = new NonTerminalParseStackNode("O", 2);
-	private final static ParseStackNode OPTIONAL_3 = new OptionalParseStackNode(2, NON_TERMINAL_O2, "O?");
+	private final static ParseStackNode OPTIONAL_3 = new OptionalParseStackNode(3, NON_TERMINAL_O2, "O?");
 	
 	public Optional2(char[] input){
 		super(input);
