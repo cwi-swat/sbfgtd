@@ -11,14 +11,6 @@ public class Alternative implements INode{
 		this.alternatives = alternatives;
 	}
 	
-	public int items(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public INode[] getItems(){
-		return alternatives.get(0).getItems(); // TODO Fix flattening for ambiguous stuff.
-	}
-	
 	public String toString(){
 		if(alternatives.size() == 1) return alternatives.get(0).toString();
 		
