@@ -43,10 +43,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return true;
 	}
 	
-	public boolean isListNode(){
-		return false;
-	}
-	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
@@ -83,13 +79,26 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getChildren(){
-		NonTerminalListNodeParseStackNode ntpsn = new NonTerminalListNodeParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
-		ntpsn.addNext(ntpsn); // Self 'next' loop.
+		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
+		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
+		NonTerminalListParseStackNode ntlpsn = new NonTerminalListParseStackNode((id | IGLL.LIST_CHILD_FLAG), child, production, true);
+		
+		ntpsn.addEdge(this);
+		ntlpsn.addNext(ntpsn);
+		ntpsn.addEdge(ntlpsn);
+		ntcpsn.addEdge(ntlpsn);
+
+		ntlpsn.setStartLocation(startLocation);
+		ntcpsn.setStartLocation(startLocation);
+		
 		if(isPlusList){
-			return new ParseStackNode[]{ntpsn};
+			return new ParseStackNode[]{ntcpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID)};
+		EpsilonParseStackNode epsn = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
+		epsn.addEdge(this);
+		
+		return new ParseStackNode[]{ntcpsn, epsn};
 	}
 	
 	public void addResult(INode result){

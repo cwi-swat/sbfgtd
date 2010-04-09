@@ -35,10 +35,6 @@ public class OptionalParseStackNode extends ParseStackNode{
 		return true;
 	}
 	
-	public boolean isListNode(){
-		return false;
-	}
-	
 	public void mark(){
 		marked = true;
 	}
