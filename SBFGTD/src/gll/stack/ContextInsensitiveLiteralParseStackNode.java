@@ -30,10 +30,6 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 		return false;
 	}
 	
-	public boolean isListNode(){
-		return false;
-	}
-	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}

@@ -48,10 +48,6 @@ public class CharListParseStackNode extends ParseStackNode{
 		return true;
 	}
 	
-	public boolean isListNode(){
-		return false;
-	}
-	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
@@ -88,13 +84,26 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getChildren(){
-		CharListNodeParseStackNode ntpsn = new CharListNodeParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, child);
-		ntpsn.addNext(ntpsn); // Self 'next' loop.
+		CharParseStackNode cpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), production);
+		CharParseStackNode ccpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), production);
+		CharListParseStackNode clpsn = new CharListParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, child, production, true);
+
+		cpsn.addEdge(this);
+		clpsn.addNext(cpsn);
+		cpsn.addEdge(clpsn);
+		ccpsn.addEdge(clpsn);
+
+		clpsn.setStartLocation(startLocation);
+		ccpsn.setStartLocation(startLocation);
+		
 		if(isPlusList){
-			return new ParseStackNode[]{ntpsn};
+			return new ParseStackNode[]{ccpsn};
 		}
 		
-		return new ParseStackNode[]{ntpsn, new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID)};
+		EpsilonParseStackNode epsn = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
+		epsn.addEdge(this);
+		
+		return new ParseStackNode[]{ccpsn, epsn};
 	}
 	
 	public void addResult(INode result){

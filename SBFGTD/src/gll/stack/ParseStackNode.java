@@ -43,8 +43,6 @@ public abstract class ParseStackNode{
 	
 	public abstract boolean isList();
 	
-	public abstract boolean isListNode();
-	
 	public abstract String getMethodName();
 	
 	public abstract boolean reduce(char[] input);
