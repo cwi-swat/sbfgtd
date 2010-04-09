@@ -100,6 +100,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		ntlpsn.addNext(ntpsn);
 		ntpsn.addEdge(ntlpsn);
 		ntcpsn.addEdge(ntlpsn);
+		ntcpsn.addEdge(this);
 
 		ntlpsn.setStartLocation(startLocation);
 		ntcpsn.setStartLocation(startLocation);

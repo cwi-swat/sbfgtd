@@ -92,6 +92,7 @@ public class CharListParseStackNode extends ParseStackNode{
 		clpsn.addNext(cpsn);
 		cpsn.addEdge(clpsn);
 		ccpsn.addEdge(clpsn);
+		ccpsn.addEdge(this);
 
 		clpsn.setStartLocation(startLocation);
 		ccpsn.setStartLocation(startLocation);
