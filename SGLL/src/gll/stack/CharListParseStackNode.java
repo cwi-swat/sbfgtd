@@ -84,9 +84,9 @@ public class CharListParseStackNode extends ParseStackNode{
 	}
 	
 	public ParseStackNode[] getChildren(){
-		CharParseStackNode cpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), child);
+		CharParseStackNode cpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_NEXT_FLAG), child);
 		CharParseStackNode ccpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), child);
-		CharListParseStackNode clpsn = new CharListParseStackNode((id | IGLL.LIST_CHILD_FLAG), ranges, characters, child, production, true);
+		CharListParseStackNode clpsn = new CharListParseStackNode((id | IGLL.LIST_LIST_FLAG), ranges, characters, child, production, true);
 
 		cpsn.addEdge(this);
 		clpsn.addNext(cpsn);
