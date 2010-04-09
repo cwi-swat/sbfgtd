@@ -70,10 +70,10 @@ public class RunAll{
 		//LeftRecursionEpsilon.main(args);
 		//System.out.println();
 		
-		System.out.println("TerminalPlusList:");
+		System.out.println("CharPlusList:");
 		CharPlusList.main(args);
 		System.out.println();
-		System.out.println("TerminalStarList:");
+		System.out.println("CharStarList:");
 		CharStarList.main(args);
 		System.out.println();
 		System.out.println("NonTerminalPlusList:");
