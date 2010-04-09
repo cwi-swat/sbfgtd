@@ -91,14 +91,6 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public void addEdge(ParseStackNode edge){
-		super.addEdge(edge);
-	}
-	
-	public void addEdges(ArrayList<ParseStackNode> edgesToAdd){
-		super.addEdges(edgesToAdd);
-	}
-	
 	public ParseStackNode[] getChildren(){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_NEXT_FLAG), new ArrayList<INode>(1));
 		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>(1));
