@@ -13,7 +13,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	private boolean marked;
 	
-	private ArrayList<INode> results;
+	private final ArrayList<INode> results;
 	
 	public NonTerminalListParseStackNode(int id, String child, String production, boolean isPlusList){
 		super(id);
@@ -22,6 +22,19 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		
 		this.child = child;
 		this.isPlusList = isPlusList;
+		
+		this.results = null;
+	}
+	
+	public NonTerminalListParseStackNode(int id, String child, String production, boolean isPlusList, ArrayList<INode> results){
+		super(id);
+		
+		this.production = production;
+		
+		this.child = child;
+		this.isPlusList = isPlusList;
+		
+		this.results = results;
 	}
 	
 	private NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
@@ -78,10 +91,18 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
+	public void addEdge(ParseStackNode edge){
+		super.addEdge(edge);
+	}
+	
+	public void addEdges(ArrayList<ParseStackNode> edgesToAdd){
+		super.addEdges(edgesToAdd);
+	}
+	
 	public ParseStackNode[] getChildren(){
-		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
-		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
-		NonTerminalListParseStackNode ntlpsn = new NonTerminalListParseStackNode((id | IGLL.LIST_CHILD_FLAG), child, production, true);
+		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_NEXT_FLAG), new ArrayList<INode>(1));
+		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>(1));
+		NonTerminalListParseStackNode ntlpsn = new NonTerminalListParseStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
 		
 		ntpsn.addEdge(this);
 		ntlpsn.addNext(ntpsn);
