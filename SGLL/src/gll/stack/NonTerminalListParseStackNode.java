@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.Alternative;
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.util.ArrayList;
 
@@ -116,7 +117,17 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	}
 	
 	public void addResult(INode result){
-		results.add(result);
+		if(result.items() == 1){
+			results.add(result);
+		}else{
+			INode[] items = result.getItems();
+			INode[] childItems = items[0].getItems();
+			int nrOfChildren = childItems.length;
+			INode[] children = new INode[nrOfChildren + 1];
+			System.arraycopy(childItems, 0, children, 0, nrOfChildren);
+			children[nrOfChildren] = items[1];
+			results.add(new ContainerNode(getNodeName(), children));
+		}
 	}
 	
 	public INode getResult(){
