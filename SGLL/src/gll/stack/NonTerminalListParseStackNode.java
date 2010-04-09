@@ -80,7 +80,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	public ParseStackNode[] getChildren(){
 		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
-		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG));
+		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>());
 		NonTerminalListParseStackNode ntlpsn = new NonTerminalListParseStackNode((id | IGLL.LIST_CHILD_FLAG), child, production, true);
 		
 		ntpsn.addEdge(this);
