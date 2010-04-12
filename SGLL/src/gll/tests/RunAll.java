@@ -70,6 +70,16 @@ public class RunAll{
 		//LeftRecursionEpsilon.main(args);
 		//System.out.println();
 		
+		System.out.println("Optional1:");
+		Optional1.main(args);
+		System.out.println();
+		System.out.println("Optional2:");
+		Optional2.main(args);
+		System.out.println();
+		System.out.println("Optional3:");
+		Optional3.main(args);
+		System.out.println();
+		
 		System.out.println("CharPlusList:");
 		CharPlusList.main(args);
 		System.out.println();
@@ -92,14 +102,11 @@ public class RunAll{
 		AmbiguousNestedPlusList.main(args);
 		System.out.println();
 		
-		System.out.println("Optional1:");
-		Optional1.main(args);
+		System.out.println("SeparatedPlusList:");
+		SeparatedPlusList.main(args);
 		System.out.println();
-		System.out.println("Optional2:");
-		Optional2.main(args);
-		System.out.println();
-		System.out.println("Optional3:");
-		Optional3.main(args);
+		System.out.println("SeparatedStarList:");
+		SeparatedStarList.main(args);
 		System.out.println();
 	}
 }
