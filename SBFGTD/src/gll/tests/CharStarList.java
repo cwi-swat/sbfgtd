@@ -1,27 +1,23 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.stack.CharStackNode;
+import gll.stack.ListStackNode;
 import gll.stack.StackNode;
-import gll.stack.CharListStackNode;
-import gll.stack.LiteralStackNode;
 
 /*
 S ::= [a-z]*
 */
 public class CharStarList extends SGLL{
-	private final static StackNode CHAR_LIST0 = new CharListStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]*", false);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
+	private final static StackNode CHAR0 = new CharStackNode(new char[][]{{'a', 'z'}}, new char[]{}, 0, "[a-z]");
+	private final static StackNode LIST1 = new ListStackNode(1, CHAR0, "[a-z]*", false);
 	
 	public CharStarList(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(CHAR_LIST0);
-	}
-	
-	public void List0(){
-		expect(LITERAL_a1);
+		expect(LIST1);
 	}
 	
 	public static void main(String[] args){

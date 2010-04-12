@@ -1,7 +1,8 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalListStackNode;
+import gll.stack.ListStackNode;
+import gll.stack.NonTerminalStackNode;
 import gll.stack.StackNode;
 import gll.stack.LiteralStackNode;
 
@@ -10,19 +11,20 @@ S ::= A+
 A ::= a
 */
 public class NonTerminalStarList extends SGLL{
-	private final static StackNode NONTERMINAL_LIST0 = new NonTerminalListStackNode(0, "A", "A*", false);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A*", false);
+	private final static StackNode LITERAL_a2 = new LiteralStackNode(new char[]{'a'}, 2);
 	
 	public NonTerminalStarList(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_LIST0);
+		expect(LIST1);
 	}
 	
 	public void A(){
-		expect(LITERAL_a1);
+		expect(LITERAL_a2);
 	}
 	
 	public static void main(String[] args){

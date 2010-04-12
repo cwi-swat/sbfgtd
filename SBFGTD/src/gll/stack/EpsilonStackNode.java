@@ -12,10 +12,10 @@ public class EpsilonStackNode extends StackNode{
 		result = new TextNode(new char[]{});
 	}
 	
-	private EpsilonStackNode(EpsilonStackNode terminalParseStackNode){
-		super(terminalParseStackNode);
+	private EpsilonStackNode(EpsilonStackNode epsilonParseStackNode){
+		super(epsilonParseStackNode);
 		
-		result = terminalParseStackNode.result;
+		result = epsilonParseStackNode.result;
 	}
 	
 	public boolean isReducable(){
