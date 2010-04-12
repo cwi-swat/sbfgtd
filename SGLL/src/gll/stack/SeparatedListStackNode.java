@@ -1,10 +1,9 @@
 package gll.stack;
 
+import gll.IGLL;
 import gll.result.Alternative;
 import gll.result.INode;
 import gll.util.ArrayList;
-
-// TODO NOTE: Under construction.
 
 public class SeparatedListStackNode extends StackNode{
 	private final String production;
@@ -97,8 +96,35 @@ public class SeparatedListStackNode extends StackNode{
 	}
 	
 	public StackNode[] getChildren(){
-		// TODO Implement
-		return null;
+		StackNode psn = child.getCleanCopy();
+		StackNode cpsn = child.getCleanCopy();
+		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
+		
+		StackNode from = lpsn;
+		for(int i = 0; i < separators.length; i++){
+			StackNode to = separators[i];
+			from.addNext(to);
+			from = to;
+		}
+		from.addNext(psn);
+		psn.addEdge(lpsn);
+		psn.addEdge(this);
+		
+		cpsn.addEdge(lpsn);
+		cpsn.addEdge(this);
+		
+		psn.setStartLocation(-1); // Reset.
+		lpsn.setStartLocation(startLocation);
+		cpsn.setStartLocation(startLocation);
+		
+		if(isPlusList){
+			return new StackNode[]{cpsn};
+		}
+		
+		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
+		epsn.addEdge(this);
+		
+		return new StackNode[]{cpsn, epsn};
 	}
 	
 	public void addResult(INode result){

@@ -67,6 +67,8 @@ public class OptionalStackNode extends StackNode{
 		StackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		copy.addEdge(this);
 		epsn.addEdge(this);
+		
+		copy.setStartLocation(-1); // Reset.
 
 		StackNode[] children = new StackNode[2];
 		children[0] = copy;

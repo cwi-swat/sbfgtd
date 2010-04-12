@@ -96,12 +96,14 @@ public class ListStackNode extends StackNode{
 		StackNode cpsn = child.getCleanCopy();
 		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
 		
-		psn.addEdge(this);
 		lpsn.addNext(psn);
 		psn.addEdge(lpsn);
+		psn.addEdge(this);
+		
 		cpsn.addEdge(lpsn);
 		cpsn.addEdge(this);
-
+		
+		psn.setStartLocation(-1);
 		lpsn.setStartLocation(startLocation);
 		cpsn.setStartLocation(startLocation);
 		
