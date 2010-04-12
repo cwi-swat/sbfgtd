@@ -9,12 +9,12 @@ import gll.stack.LiteralStackNode;
 S ::= SSS | SS | a
 */
 public class AmbiguousRecursive extends SGLL{
-	private final static StackNode NONTERMINAL_S0 = new NonTerminalStackNode("S", 0);
-	private final static StackNode NONTERMINAL_S1 = new NonTerminalStackNode("S", 1);
-	private final static StackNode NONTERMINAL_S2 = new NonTerminalStackNode("S", 2);
-	private final static StackNode NONTERMINAL_S3 = new NonTerminalStackNode("S", 3);
-	private final static StackNode NONTERMINAL_S4 = new NonTerminalStackNode("S", 4);
-	private final static StackNode LITERAL_a5 = new LiteralStackNode(new char[]{'a'}, 5);
+	private final static StackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, "S");
+	private final static StackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, "S");
+	private final static StackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, "S");
+	private final static StackNode NONTERMINAL_S3 = new NonTerminalStackNode(3, "S");
+	private final static StackNode NONTERMINAL_S4 = new NonTerminalStackNode(4, "S");
+	private final static StackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
 	
 	public AmbiguousRecursive(char[] input){
 		super(input);

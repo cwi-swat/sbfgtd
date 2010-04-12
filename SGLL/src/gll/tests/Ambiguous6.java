@@ -16,14 +16,14 @@ F ::= G
 G ::= a
 */
 public class Ambiguous6 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
-	private final static StackNode NONTERMINAL_C2 = new NonTerminalStackNode("C", 2);
-	private final static StackNode NONTERMINAL_D3 = new NonTerminalStackNode("D", 3);
-	private final static StackNode NONTERMINAL_E4 = new NonTerminalStackNode("E", 4);
-	private final static StackNode NONTERMINAL_F5 = new NonTerminalStackNode("F", 5);
-	private final static StackNode NONTERMINAL_G6 = new NonTerminalStackNode("G", 6);
-	private final static StackNode LITERAL_a7 = new LiteralStackNode(new char[]{'a'}, 7);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static StackNode NONTERMINAL_C2 = new NonTerminalStackNode(2, "C");
+	private final static StackNode NONTERMINAL_D3 = new NonTerminalStackNode(3, "D");
+	private final static StackNode NONTERMINAL_E4 = new NonTerminalStackNode(4, "E");
+	private final static StackNode NONTERMINAL_F5 = new NonTerminalStackNode(5, "F");
+	private final static StackNode NONTERMINAL_G6 = new NonTerminalStackNode(6, "G");
+	private final static StackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
 	
 	public Ambiguous6(char[] input){
 		super(input);

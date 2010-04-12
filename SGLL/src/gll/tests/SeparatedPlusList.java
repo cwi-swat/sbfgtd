@@ -7,10 +7,10 @@ import gll.stack.SeparatedListStackNode;
 import gll.stack.StackNode;
 
 public class SeparatedPlusList extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode LITERAL_b1 = new LiteralStackNode(new char[]{'b'}, 1);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode LITERAL_b1 = new LiteralStackNode(1, new char[]{'b'});
 	private final static StackNode LIST2 = new SeparatedListStackNode(2, NONTERMINAL_A0, new StackNode[]{LITERAL_b1}, "(Ab)+", true);
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(new char[]{'a'}, 3);
+	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
 	
 	public SeparatedPlusList(char[] input){
 		super(input);

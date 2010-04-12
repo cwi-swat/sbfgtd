@@ -8,7 +8,7 @@ public class ContextInsensitiveLiteralStackNode extends StackNode{
 	
 	private TextNode result;
 	
-	public ContextInsensitiveLiteralStackNode(char[] ciLiteral, int id){
+	public ContextInsensitiveLiteralStackNode(int id, char[] ciLiteral){
 		super(id);
 		
 		int nrOfCharacters = ciLiteral.length;

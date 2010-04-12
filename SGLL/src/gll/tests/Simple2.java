@@ -11,10 +11,10 @@ A ::= a
 B ::= b
 */
 public class Simple2 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(new char[]{'a'}, 2);
-	private final static StackNode LITERAL_b3 = new LiteralStackNode(new char[]{'b'}, 3);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static StackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static StackNode LITERAL_b3 = new LiteralStackNode(3, new char[]{'b'});
 	
 	public Simple2(char[] input){
 		super(input);

@@ -8,7 +8,7 @@ public final class LiteralStackNode extends StackNode{
 	
 	private final TextNode result;
 	
-	public LiteralStackNode(char[] literal, int id){
+	public LiteralStackNode(int id, char[] literal){
 		super(id);
 
 		this.literal = literal;

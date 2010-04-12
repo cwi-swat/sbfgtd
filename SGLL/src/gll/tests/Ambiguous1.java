@@ -10,8 +10,8 @@ S ::= A | a
 A ::= a
 */
 public class Ambiguous1 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(2, new char[]{'a'});
 	
 	public Ambiguous1(char[] input){
 		super(input);

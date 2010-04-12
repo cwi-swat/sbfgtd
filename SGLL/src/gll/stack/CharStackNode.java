@@ -11,7 +11,7 @@ public class CharStackNode extends StackNode{
 	
 	private TextNode result;
 	
-	public CharStackNode(char[][] ranges, char[] characters, int id, String productionName){
+	public CharStackNode(int id, char[][] ranges, char[] characters, String productionName){
 		super(id);
 
 		this.ranges = ranges;

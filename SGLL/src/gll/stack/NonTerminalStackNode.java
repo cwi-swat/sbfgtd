@@ -11,7 +11,7 @@ public final class NonTerminalStackNode extends StackNode{
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalStackNode(String nonTerminal, int id){
+	public NonTerminalStackNode(int id, String nonTerminal){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
