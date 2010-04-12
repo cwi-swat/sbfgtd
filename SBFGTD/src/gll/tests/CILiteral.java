@@ -5,10 +5,10 @@ import gll.stack.ContextInsensitiveLiteralParseStackNode;
 import gll.stack.ParseStackNode;
 
 /*
-S ::= a | A
+S ::= ci(bla)
 */
 public class CILiteral extends SGLL{
-	private final static ParseStackNode LITERAL_a0 = new ContextInsensitiveLiteralParseStackNode(new char[]{'a'}, 0);
+	private final static ParseStackNode LITERAL_a0 = new ContextInsensitiveLiteralParseStackNode(new char[]{'b','l','a'}, 0);
 	
 	public CILiteral(char[] input){
 		super(input);
@@ -19,9 +19,9 @@ public class CILiteral extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		CILiteral cil = new CILiteral("A".toCharArray());
+		CILiteral cil = new CILiteral("Bla".toCharArray());
 		System.out.println(cil.parse("S"));
 		
-		System.out.println("S(A) <- good");
+		System.out.println("S(Bla) <- good");
 	}
 }
