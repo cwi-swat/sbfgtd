@@ -2,8 +2,8 @@ package gll;
 
 import gll.result.INode;
 import gll.result.ContainerNode;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
 import gll.util.ArrayList;
 import gll.util.IntegerHashMap;
 
@@ -12,42 +12,42 @@ import java.lang.reflect.Method;
 public class SGLL implements IGLL{
 	private final char[] input;
 	
-	private final ArrayList<ParseStackNode> todoList;
+	private final ArrayList<StackNode> todoList;
 	
 	// Updatable
-	private final ArrayList<ParseStackNode> stacksToExpand;
-	private ArrayList<ParseStackNode> stacksWithTerminalsToReduce;
-	private final ArrayList<ParseStackNode> stacksWithNonTerminalsToReduce;
-	private ArrayList<ParseStackNode[]> lastExpects;
-	private ArrayList<ParseStackNode> possiblySharedExpects;
-	private ArrayList<ParseStackNode> possiblySharedExpectsEndNodes;
-	private ArrayList<ParseStackNode> possiblySharedNextNodes;
-	private IntegerHashMap<ArrayList<ParseStackNode>> possiblySharedEdgeNodesMap;
+	private final ArrayList<StackNode> stacksToExpand;
+	private ArrayList<StackNode> stacksWithTerminalsToReduce;
+	private final ArrayList<StackNode> stacksWithNonTerminalsToReduce;
+	private ArrayList<StackNode[]> lastExpects;
+	private ArrayList<StackNode> possiblySharedExpects;
+	private ArrayList<StackNode> possiblySharedExpectsEndNodes;
+	private ArrayList<StackNode> possiblySharedNextNodes;
+	private IntegerHashMap<ArrayList<StackNode>> possiblySharedEdgeNodesMap;
 	
 	private int previousLocation;
 	private int location;
 	
-	private ParseStackNode root;
+	private StackNode root;
 	
 	public SGLL(char[] input){
 		super();
 		
 		this.input = input;
 		
-		todoList = new ArrayList<ParseStackNode>();
+		todoList = new ArrayList<StackNode>();
 		
-		stacksToExpand = new ArrayList<ParseStackNode>();
-		stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
-		stacksWithNonTerminalsToReduce = new ArrayList<ParseStackNode>();
+		stacksToExpand = new ArrayList<StackNode>();
+		stacksWithTerminalsToReduce = new ArrayList<StackNode>();
+		stacksWithNonTerminalsToReduce = new ArrayList<StackNode>();
 		
-		possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<ParseStackNode>>();
+		possiblySharedNextNodes = new ArrayList<StackNode>();
+		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<StackNode>>();
 		
 		previousLocation = -1;
 		location = 0;
 	}
 	
-	public void expect(ParseStackNode... symbolsToExpect){
+	public void expect(StackNode... symbolsToExpect){
 		lastExpects.add(symbolsToExpect);
 	}
 	
@@ -61,9 +61,9 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private ParseStackNode updateNextNode(ParseStackNode node){
+	private StackNode updateNextNode(StackNode node){
 		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
-			ParseStackNode possibleAlternative = possiblySharedNextNodes.get(i);
+			StackNode possibleAlternative = possiblySharedNextNodes.get(i);
 			if(possibleAlternative.isSimilar(node)){
 				if(node.hasEdges()){
 					possibleAlternative.addEdges(node.getEdges());
@@ -82,18 +82,18 @@ public class SGLL implements IGLL{
 		return node;
 	}
 	
-	private ParseStackNode updateEdgeNode(ParseStackNode node){
+	private StackNode updateEdgeNode(StackNode node){
 		int startLocation = node.getStartLocation();
-		ArrayList<ParseStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
+		ArrayList<StackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
-				ParseStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
+				StackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
 					return possibleAlternative;
 				}
 			}
 		}else{
-			possiblySharedEdgeNodes = new ArrayList<ParseStackNode>();
+			possiblySharedEdgeNodes = new ArrayList<StackNode>();
 			possiblySharedEdgeNodesMap.unsafePut(startLocation, possiblySharedEdgeNodes);
 		}
 		
@@ -109,15 +109,15 @@ public class SGLL implements IGLL{
 		return node;
 	}
 	
-	private void move(ParseStackNode node){
+	private void move(StackNode node){
 		INode[][] results = node.getResults();
 		int[] resultStartLocations = node.getResultStartLocations();
 		
-		ArrayList<ParseStackNode> edges;
-		ParseStackNode next;
+		ArrayList<StackNode> edges;
+		StackNode next;
 		if((edges = node.getEdges()) != null){
 			for(int i = edges.size() - 1; i >= 0; i--){
-				ParseStackNode edge = edges.get(i);
+				StackNode edge = edges.get(i);
 				edge = updateEdgeNode(edge);
 				addResults(edge, results, resultStartLocations);
 			}
@@ -127,13 +127,13 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void addPrefixes(ParseStackNode next, INode[][] prefixes, int[] prefixStartLocations){
+	private void addPrefixes(StackNode next, INode[][] prefixes, int[] prefixStartLocations){
 		for(int i = prefixes.length - 1; i >= 0; i--){
 			next.addPrefix(prefixes[i], prefixStartLocations[i]);
 		}
 	}
 	
-	private void addResults(ParseStackNode edge, INode[][] results, int[] resultStartLocations){
+	private void addResults(StackNode edge, INode[][] results, int[] resultStartLocations){
 		if(location == input.length && !edge.hasEdges() && !edge.hasNext()){
 			root = edge; // Root reached.
 		}
@@ -149,25 +149,25 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void reduceTerminal(ParseStackNode terminal){
+	private void reduceTerminal(StackNode terminal){
 		if(!terminal.reduce(input)) return;
 		
 		move(terminal);
 	}
 	
-	private void reduceNonTerminal(ParseStackNode nonTerminal){
+	private void reduceNonTerminal(StackNode nonTerminal){
 		move(nonTerminal);
 	}
 	
 	private void reduce(){
 		if(previousLocation != location){ // Epsilon fix.
-			possiblySharedNextNodes = new ArrayList<ParseStackNode>();
-			possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<ParseStackNode>>();
+			possiblySharedNextNodes = new ArrayList<StackNode>();
+			possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<StackNode>>();
 		}
 		
 		// Reduce terminals.
 		while(stacksWithTerminalsToReduce.size() > 0){
-			ParseStackNode terminal = stacksWithTerminalsToReduce.remove(stacksWithTerminalsToReduce.size() - 1);
+			StackNode terminal = stacksWithTerminalsToReduce.remove(stacksWithTerminalsToReduce.size() - 1);
 			reduceTerminal(terminal);
 
 			todoList.remove(terminal);
@@ -175,7 +175,7 @@ public class SGLL implements IGLL{
 		
 		// Reduce non-terminals.
 		while(stacksWithNonTerminalsToReduce.size() > 0){
-			ParseStackNode nonTerminal = stacksWithNonTerminalsToReduce.remove(stacksWithNonTerminalsToReduce.size() - 1);
+			StackNode nonTerminal = stacksWithNonTerminalsToReduce.remove(stacksWithNonTerminalsToReduce.size() - 1);
 			reduceNonTerminal(nonTerminal);
 		}
 	}
@@ -184,10 +184,10 @@ public class SGLL implements IGLL{
 		// Find the stacks that will progress the least.
 		int closestNextLocation = Integer.MAX_VALUE;
 		for(int i = todoList.size() - 1; i >= 0; i--){
-			ParseStackNode node = todoList.get(i);
+			StackNode node = todoList.get(i);
 			int nextLocation = node.getStartLocation() + node.getLength();
 			if(nextLocation < closestNextLocation){
-				stacksWithTerminalsToReduce = new ArrayList<ParseStackNode>();
+				stacksWithTerminalsToReduce = new ArrayList<StackNode>();
 				stacksWithTerminalsToReduce.add(node);
 				closestNextLocation = nextLocation;
 			}else if(nextLocation == closestNextLocation){
@@ -199,9 +199,9 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
-	private boolean shareNode(ParseStackNode node, ParseStackNode stack){
+	private boolean shareNode(StackNode node, StackNode stack){
 		for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
-			ParseStackNode possiblySharedNode = possiblySharedExpects.get(j);
+			StackNode possiblySharedNode = possiblySharedExpects.get(j);
 			if(possiblySharedNode.isSimilar(node)){
 				possiblySharedExpectsEndNodes.get(j).addEdge(stack);
 				return true;
@@ -210,17 +210,17 @@ public class SGLL implements IGLL{
 		return false;
 	}
 	
-	private void handleExpects(ParseStackNode stackBeingWorkedOn){
+	private void handleExpects(StackNode stackBeingWorkedOn){
 		for(int i = lastExpects.size() - 1; i >= 0; i--){
-			ParseStackNode[] expectedNodes = lastExpects.get(i);
+			StackNode[] expectedNodes = lastExpects.get(i);
 			
 			// Handle sharing (and loops).
-			ParseStackNode first = expectedNodes[0];
+			StackNode first = expectedNodes[0];
 			
 			if(!shareNode(first, stackBeingWorkedOn)){
 				first = first.getCleanCopy();
-				ParseStackNode current = first;
-				ParseStackNode prev;
+				StackNode current = first;
+				StackNode prev;
 				
 				for(int k = 1; k < expectedNodes.length; k++){
 					prev = current;
@@ -239,7 +239,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void expandStack(ParseStackNode node){
+	private void expandStack(StackNode node){
 		if(node.isReducable()){
 			if((location + node.getLength()) <= input.length) todoList.add(node);
 			return;
@@ -250,9 +250,9 @@ public class SGLL implements IGLL{
 			
 			handleExpects(node);
 		}else{ // List
-			ParseStackNode[] listChildren = node.getChildren();
+			StackNode[] listChildren = node.getChildren();
 			
-			ParseStackNode child = listChildren[0];
+			StackNode child = listChildren[0];
 			if(!shareNode(child, node)){
 				child.setStartLocation(location);
 				
@@ -275,17 +275,17 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expand(){
-		possiblySharedExpects = new ArrayList<ParseStackNode>();
-		possiblySharedExpectsEndNodes = new ArrayList<ParseStackNode>();
+		possiblySharedExpects = new ArrayList<StackNode>();
+		possiblySharedExpectsEndNodes = new ArrayList<StackNode>();
 		while(stacksToExpand.size() > 0){
-			lastExpects = new ArrayList<ParseStackNode[]>(1);
+			lastExpects = new ArrayList<StackNode[]>(1);
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
 		}
 	}
 	
 	public INode parse(String start){
 		// Initialize.
-		ParseStackNode rootNode = new NonTerminalParseStackNode(start, START_SYMBOL_ID).getCleanCopy();
+		StackNode rootNode = new NonTerminalStackNode(start, START_SYMBOL_ID).getCleanCopy();
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);
 		expand();

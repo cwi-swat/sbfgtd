@@ -5,7 +5,7 @@ import gll.result.Alternative;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-public class NonTerminalListParseStackNode extends ParseStackNode{
+public class NonTerminalListStackNode extends StackNode{
 	private final String production;
 
 	private final String child;
@@ -15,7 +15,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalListParseStackNode(int id, String child, String production, boolean isPlusList){
+	public NonTerminalListStackNode(int id, String child, String production, boolean isPlusList){
 		super(id);
 		
 		this.production = production;
@@ -26,7 +26,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		this.results = null;
 	}
 	
-	public NonTerminalListParseStackNode(int id, String child, String production, boolean isPlusList, ArrayList<INode> results){
+	public NonTerminalListStackNode(int id, String child, String production, boolean isPlusList, ArrayList<INode> results){
 		super(id);
 		
 		this.production = production;
@@ -37,7 +37,7 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		this.results = results;
 	}
 	
-	private NonTerminalListParseStackNode(NonTerminalListParseStackNode nonTerminalListParseStackNode){
+	private NonTerminalListStackNode(NonTerminalListStackNode nonTerminalListParseStackNode){
 		super(nonTerminalListParseStackNode);
 		
 		production = nonTerminalListParseStackNode.production;
@@ -68,12 +68,12 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return production;
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new NonTerminalListParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new NonTerminalListStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		NonTerminalListParseStackNode ntpsn = new NonTerminalListParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		NonTerminalListStackNode ntpsn = new NonTerminalListStackNode(this);
 		ntpsn.prefixes = prefixes;
 		ntpsn.prefixStartLocations = prefixStartLocations;
 		return ntpsn;
@@ -91,10 +91,10 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getChildren(){
-		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_NEXT_FLAG), new ArrayList<INode>(1));
-		NonTerminalParseStackNode ntcpsn = new NonTerminalParseStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>(1));
-		NonTerminalListParseStackNode ntlpsn = new NonTerminalListParseStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
+	public StackNode[] getChildren(){
+		NonTerminalStackNode ntpsn = new NonTerminalStackNode(child, (id | IGLL.LIST_NEXT_FLAG), new ArrayList<INode>(1));
+		NonTerminalStackNode ntcpsn = new NonTerminalStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>(1));
+		NonTerminalListStackNode ntlpsn = new NonTerminalListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
 		
 		ntpsn.addEdge(this);
 		ntlpsn.addNext(ntpsn);
@@ -106,13 +106,13 @@ public class NonTerminalListParseStackNode extends ParseStackNode{
 		ntcpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new ParseStackNode[]{ntcpsn};
+			return new StackNode[]{ntcpsn};
 		}
 		
-		EpsilonParseStackNode epsn = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
+		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		
-		return new ParseStackNode[]{ntcpsn, epsn};
+		return new StackNode[]{ntcpsn, epsn};
 	}
 	
 	public void addResult(INode result){

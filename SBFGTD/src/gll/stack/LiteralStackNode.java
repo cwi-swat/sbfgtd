@@ -3,19 +3,19 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public final class LiteralParseStackNode extends ParseStackNode{
+public final class LiteralStackNode extends StackNode{
 	private final char[] literal;
 	
 	private final TextNode result;
 	
-	public LiteralParseStackNode(char[] literal, int id){
+	public LiteralStackNode(char[] literal, int id){
 		super(id);
 
 		this.literal = literal;
 		result = new TextNode(literal);
 	}
 	
-	private LiteralParseStackNode(LiteralParseStackNode literalParseStackNode){
+	private LiteralStackNode(LiteralStackNode literalParseStackNode){
 		super(literalParseStackNode);
 
 		literal = literalParseStackNode.literal;
@@ -46,12 +46,12 @@ public final class LiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new LiteralParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new LiteralStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		LiteralParseStackNode lpsn = new LiteralParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		LiteralStackNode lpsn = new LiteralStackNode(this);
 		lpsn.prefixes = prefixes;
 		lpsn.prefixStartLocations = prefixStartLocations;
 		return lpsn;
@@ -69,7 +69,7 @@ public final class LiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getChildren(){
+	public StackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

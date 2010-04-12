@@ -1,17 +1,17 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalListParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalListStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= A+
 A ::= a
 */
 public class NonTerminalStarList extends SGLL{
-	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A*", false);
-	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
+	private final static StackNode NONTERMINAL_LIST0 = new NonTerminalListStackNode(0, "A", "A*", false);
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
 	
 	public NonTerminalStarList(char[] input){
 		super(input);

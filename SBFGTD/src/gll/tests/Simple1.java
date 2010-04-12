@@ -1,18 +1,18 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= Ab
 A ::= aa
 */
 public class Simple1 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode LITERAL_aa1 = new LiteralParseStackNode(new char[]{'a','a'}, 1);
-	private final static ParseStackNode LITERAL_b2 = new LiteralParseStackNode(new char[]{'b'}, 2);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode LITERAL_aa1 = new LiteralStackNode(new char[]{'a','a'}, 1);
+	private final static StackNode LITERAL_b2 = new LiteralStackNode(new char[]{'b'}, 2);
 	
 	public Simple1(char[] input){
 		super(input);

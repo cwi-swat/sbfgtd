@@ -1,20 +1,20 @@
 package gll.bench;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= SSS | SS | a
 */
 public class WorstCase extends SGLL{
-	private final static ParseStackNode NONTERMINAL_S0 = new NonTerminalParseStackNode("S", 0);
-	private final static ParseStackNode NONTERMINAL_S1 = new NonTerminalParseStackNode("S", 1);
-	private final static ParseStackNode NONTERMINAL_S2 = new NonTerminalParseStackNode("S", 2);
-	private final static ParseStackNode NONTERMINAL_S3 = new NonTerminalParseStackNode("S", 3);
-	private final static ParseStackNode NONTERMINAL_S4 = new NonTerminalParseStackNode("S", 4);
-	private final static ParseStackNode TERMINAL_a5 = new LiteralParseStackNode("a".toCharArray(), 5);
+	private final static StackNode NONTERMINAL_S0 = new NonTerminalStackNode("S", 0);
+	private final static StackNode NONTERMINAL_S1 = new NonTerminalStackNode("S", 1);
+	private final static StackNode NONTERMINAL_S2 = new NonTerminalStackNode("S", 2);
+	private final static StackNode NONTERMINAL_S3 = new NonTerminalStackNode("S", 3);
+	private final static StackNode NONTERMINAL_S4 = new NonTerminalStackNode("S", 4);
+	private final static StackNode TERMINAL_a5 = new LiteralStackNode("a".toCharArray(), 5);
 	
 	public WorstCase(char[] input){
 		super(input);

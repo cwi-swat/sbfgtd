@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public class CharParseStackNode extends ParseStackNode{
+public class CharStackNode extends StackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
@@ -11,7 +11,7 @@ public class CharParseStackNode extends ParseStackNode{
 	
 	private TextNode result;
 	
-	public CharParseStackNode(char[][] ranges, char[] characters, int id, String productionName){
+	public CharStackNode(char[][] ranges, char[] characters, int id, String productionName){
 		super(id);
 
 		this.ranges = ranges;
@@ -20,7 +20,7 @@ public class CharParseStackNode extends ParseStackNode{
 		this.productionName = productionName;
 	}
 	
-	private CharParseStackNode(CharParseStackNode charParseStackNode){
+	private CharStackNode(CharStackNode charParseStackNode){
 		super(charParseStackNode);
 		
 		ranges = charParseStackNode.ranges;
@@ -77,12 +77,12 @@ public class CharParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new CharParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new CharStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		CharParseStackNode cpsn = new CharParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		CharStackNode cpsn = new CharStackNode(this);
 		cpsn.prefixes = prefixes;
 		cpsn.prefixStartLocations = prefixStartLocations;
 		return cpsn;
@@ -100,7 +100,7 @@ public class CharParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getChildren(){
+	public StackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -1,16 +1,16 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.ParseStackNode;
-import gll.stack.CharListParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.StackNode;
+import gll.stack.CharListStackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= [a-z]*
 */
 public class CharStarList extends SGLL{
-	private final static ParseStackNode CHAR_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]*", false);
-	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
+	private final static StackNode CHAR_LIST0 = new CharListStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]*", false);
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
 	
 	public CharStarList(char[] input){
 		super(input);

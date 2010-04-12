@@ -3,16 +3,16 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public class EpsilonParseStackNode extends ParseStackNode{
+public class EpsilonStackNode extends StackNode{
 	private final TextNode result;
 	
-	public EpsilonParseStackNode(int id){
+	public EpsilonStackNode(int id){
 		super(id);
 		
 		result = new TextNode(new char[]{});
 	}
 	
-	private EpsilonParseStackNode(EpsilonParseStackNode terminalParseStackNode){
+	private EpsilonStackNode(EpsilonStackNode terminalParseStackNode){
 		super(terminalParseStackNode);
 		
 		result = terminalParseStackNode.result;
@@ -38,12 +38,12 @@ public class EpsilonParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new EpsilonParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new EpsilonStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		EpsilonParseStackNode epsn = new EpsilonParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		EpsilonStackNode epsn = new EpsilonStackNode(this);
 		epsn.prefixes = prefixes;
 		epsn.prefixStartLocations = prefixStartLocations;
 		return epsn;
@@ -61,7 +61,7 @@ public class EpsilonParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getChildren(){
+	public StackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

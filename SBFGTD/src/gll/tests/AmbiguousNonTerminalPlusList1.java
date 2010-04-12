@@ -1,19 +1,19 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalListParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalListStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= aA+ | A+a
 A ::= a
 */
 public class AmbiguousNonTerminalPlusList1 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_LIST0 = new NonTerminalListParseStackNode(0, "A", "A+", true);
-	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
-	private final static ParseStackNode LITERAL_a2 = new LiteralParseStackNode(new char[]{'a'}, 2);
-	private final static ParseStackNode LITERAL_a3 = new LiteralParseStackNode(new char[]{'a'}, 3);
+	private final static StackNode NONTERMINAL_LIST0 = new NonTerminalListStackNode(0, "A", "A+", true);
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
+	private final static StackNode LITERAL_a2 = new LiteralStackNode(new char[]{'a'}, 2);
+	private final static StackNode LITERAL_a3 = new LiteralStackNode(new char[]{'a'}, 3);
 	
 	public AmbiguousNonTerminalPlusList1(char[] input){
 		super(input);

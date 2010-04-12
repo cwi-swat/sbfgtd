@@ -1,9 +1,9 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= AA | B
@@ -12,12 +12,12 @@ B ::= AA | CC
 C ::= AA | a
 */
 public class NotAUselessSelfLoop extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
-	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
-	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
-	private final static ParseStackNode NONTERMINAL_C4 = new NonTerminalParseStackNode("C", 4);
-	private final static ParseStackNode LITERAL_a5 = new LiteralParseStackNode(new char[]{'a'}, 5);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode("A", 1);
+	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode("B", 2);
+	private final static StackNode NONTERMINAL_C3 = new NonTerminalStackNode("C", 3);
+	private final static StackNode NONTERMINAL_C4 = new NonTerminalStackNode("C", 4);
+	private final static StackNode LITERAL_a5 = new LiteralStackNode(new char[]{'a'}, 5);
 	
 	public NotAUselessSelfLoop(char[] input){
 		super(input);

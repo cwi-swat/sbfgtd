@@ -1,14 +1,14 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.ContextInsensitiveLiteralParseStackNode;
-import gll.stack.ParseStackNode;
+import gll.stack.ContextInsensitiveLiteralStackNode;
+import gll.stack.StackNode;
 
 /*
 S ::= ci(bla)
 */
 public class CILiteral extends SGLL{
-	private final static ParseStackNode LITERAL_a0 = new ContextInsensitiveLiteralParseStackNode(new char[]{'b','l','a'}, 0);
+	private final static StackNode LITERAL_a0 = new ContextInsensitiveLiteralStackNode(new char[]{'b','l','a'}, 0);
 	
 	public CILiteral(char[] input){
 		super(input);

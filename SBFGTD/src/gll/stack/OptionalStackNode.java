@@ -2,8 +2,8 @@ package gll.stack;
 
 import gll.result.INode;
 
-public class OptionalParseStackNode extends ParseStackNode{
-	private final ParseStackNode optional;
+public class OptionalStackNode extends StackNode{
+	private final StackNode optional;
 	
 	private final String production;
 	
@@ -11,7 +11,7 @@ public class OptionalParseStackNode extends ParseStackNode{
 	
 	private INode result;
 	
-	public OptionalParseStackNode(int id, ParseStackNode optional, String production){
+	public OptionalStackNode(int id, StackNode optional, String production){
 		super(id);
 		
 		this.optional = optional;
@@ -19,7 +19,7 @@ public class OptionalParseStackNode extends ParseStackNode{
 		this.production = production;
 	}
 	
-	private OptionalParseStackNode(OptionalParseStackNode optionalParseStackNode){
+	private OptionalStackNode(OptionalStackNode optionalParseStackNode){
 		super(optionalParseStackNode);
 		
 		optional = optionalParseStackNode.optional;
@@ -51,24 +51,24 @@ public class OptionalParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new OptionalParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new OptionalStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		OptionalParseStackNode opsn = new OptionalParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		OptionalStackNode opsn = new OptionalStackNode(this);
 		opsn.prefixes = prefixes;
 		opsn.prefixStartLocations = prefixStartLocations;
 		return opsn;
 	}
 	
-	public ParseStackNode[] getChildren(){
-		ParseStackNode copy = optional.getCleanCopy();
-		ParseStackNode epsn = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
+	public StackNode[] getChildren(){
+		StackNode copy = optional.getCleanCopy();
+		StackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		copy.addEdge(this);
 		epsn.addEdge(this);
 
-		ParseStackNode[] children = new ParseStackNode[2];
+		StackNode[] children = new StackNode[2];
 		children[0] = copy;
 		children[1] = epsn;
 		return children;

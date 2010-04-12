@@ -1,9 +1,9 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= A | E
@@ -16,14 +16,14 @@ F ::= G
 G ::= a
 */
 public class Ambiguous6 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
-	private final static ParseStackNode NONTERMINAL_C2 = new NonTerminalParseStackNode("C", 2);
-	private final static ParseStackNode NONTERMINAL_D3 = new NonTerminalParseStackNode("D", 3);
-	private final static ParseStackNode NONTERMINAL_E4 = new NonTerminalParseStackNode("E", 4);
-	private final static ParseStackNode NONTERMINAL_F5 = new NonTerminalParseStackNode("F", 5);
-	private final static ParseStackNode NONTERMINAL_G6 = new NonTerminalParseStackNode("G", 6);
-	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode(new char[]{'a'}, 7);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
+	private final static StackNode NONTERMINAL_C2 = new NonTerminalStackNode("C", 2);
+	private final static StackNode NONTERMINAL_D3 = new NonTerminalStackNode("D", 3);
+	private final static StackNode NONTERMINAL_E4 = new NonTerminalStackNode("E", 4);
+	private final static StackNode NONTERMINAL_F5 = new NonTerminalStackNode("F", 5);
+	private final static StackNode NONTERMINAL_G6 = new NonTerminalStackNode("G", 6);
+	private final static StackNode LITERAL_a7 = new LiteralStackNode(new char[]{'a'}, 7);
 	
 	public Ambiguous6(char[] input){
 		super(input);
