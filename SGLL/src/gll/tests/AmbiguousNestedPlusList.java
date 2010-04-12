@@ -1,8 +1,9 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.CharListStackNode;
-import gll.stack.NonTerminalListStackNode;
+import gll.stack.CharStackNode;
+import gll.stack.ListStackNode;
+import gll.stack.NonTerminalStackNode;
 import gll.stack.StackNode;
 
 /*
@@ -10,19 +11,21 @@ S ::= A+
 A ::= [a]+
 */
 public class AmbiguousNestedPlusList extends SGLL{
-	private final static StackNode NONTERMINAL_LIST0 = new NonTerminalListStackNode(0, "A", "A+", true);
-	private final static StackNode CHAR_LIST1 = new CharListStackNode(1, new char[][]{}, new char[]{'a'}, "[a]", "[a]+", true);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
+	private final static StackNode CHAR2 = new CharStackNode(new char[][]{}, new char[]{'a'}, 2, "[a]");
+	private final static StackNode CHAR_LIST3 = new ListStackNode(3, CHAR2, "[a]+", true);
 	
 	public AmbiguousNestedPlusList(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_LIST0);
+		expect(LIST1);
 	}
 	
 	public void A(){
-		expect(CHAR_LIST1);
+		expect(CHAR_LIST3);
 	}
 	
 	public static void main(String[] args){

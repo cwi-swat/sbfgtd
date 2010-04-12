@@ -5,17 +5,17 @@ import gll.result.Alternative;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-public class NonTerminalListStackNode extends StackNode{
+public class ListStackNode extends StackNode{
 	private final String production;
 
-	private final String child;
+	private final StackNode child;
 	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalListStackNode(int id, String child, String production, boolean isPlusList){
+	public ListStackNode(int id, StackNode child, String production, boolean isPlusList){
 		super(id);
 		
 		this.production = production;
@@ -26,7 +26,7 @@ public class NonTerminalListStackNode extends StackNode{
 		this.results = null;
 	}
 	
-	public NonTerminalListStackNode(int id, String child, String production, boolean isPlusList, ArrayList<INode> results){
+	public ListStackNode(int id, StackNode child, String production, boolean isPlusList, ArrayList<INode> results){
 		super(id);
 		
 		this.production = production;
@@ -37,13 +37,13 @@ public class NonTerminalListStackNode extends StackNode{
 		this.results = results;
 	}
 	
-	private NonTerminalListStackNode(NonTerminalListStackNode nonTerminalListParseStackNode){
-		super(nonTerminalListParseStackNode);
+	private ListStackNode(ListStackNode listParseStackNode){
+		super(listParseStackNode);
 		
-		production = nonTerminalListParseStackNode.production;
+		production = listParseStackNode.production;
 
-		child = nonTerminalListParseStackNode.child;
-		isPlusList = nonTerminalListParseStackNode.isPlusList;
+		child = listParseStackNode.child;
+		isPlusList = listParseStackNode.isPlusList;
 		
 		results = new ArrayList<INode>(1);
 	}
@@ -69,14 +69,14 @@ public class NonTerminalListStackNode extends StackNode{
 	}
 	
 	public StackNode getCleanCopy(){
-		return new NonTerminalListStackNode(this);
+		return new ListStackNode(this);
 	}
 	
 	public StackNode getCleanCopyWithPrefix(){
-		NonTerminalListStackNode ntpsn = new NonTerminalListStackNode(this);
-		ntpsn.prefixes = prefixes;
-		ntpsn.prefixStartLocations = prefixStartLocations;
-		return ntpsn;
+		ListStackNode lpsn = new ListStackNode(this);
+		lpsn.prefixes = prefixes;
+		lpsn.prefixStartLocations = prefixStartLocations;
+		return lpsn;
 	}
 	
 	public int getLength(){
@@ -92,27 +92,27 @@ public class NonTerminalListStackNode extends StackNode{
 	}
 	
 	public StackNode[] getChildren(){
-		NonTerminalStackNode ntpsn = new NonTerminalStackNode(child, (id | IGLL.LIST_NEXT_FLAG), new ArrayList<INode>(1));
-		NonTerminalStackNode ntcpsn = new NonTerminalStackNode(child, (id | IGLL.LIST_CHILD_FLAG), new ArrayList<INode>(1));
-		NonTerminalListStackNode ntlpsn = new NonTerminalListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
+		StackNode psn = child.getCleanCopy();
+		StackNode cpsn = child.getCleanCopy();
+		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
 		
-		ntpsn.addEdge(this);
-		ntlpsn.addNext(ntpsn);
-		ntpsn.addEdge(ntlpsn);
-		ntcpsn.addEdge(ntlpsn);
-		ntcpsn.addEdge(this);
+		psn.addEdge(this);
+		lpsn.addNext(psn);
+		psn.addEdge(lpsn);
+		cpsn.addEdge(lpsn);
+		cpsn.addEdge(this);
 
-		ntlpsn.setStartLocation(startLocation);
-		ntcpsn.setStartLocation(startLocation);
+		lpsn.setStartLocation(startLocation);
+		cpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new StackNode[]{ntcpsn};
+			return new StackNode[]{cpsn};
 		}
 		
 		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		
-		return new StackNode[]{ntcpsn, epsn};
+		return new StackNode[]{cpsn, epsn};
 	}
 	
 	public void addResult(INode result){

@@ -1,7 +1,8 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalListStackNode;
+import gll.stack.ListStackNode;
+import gll.stack.NonTerminalStackNode;
 import gll.stack.StackNode;
 import gll.stack.LiteralStackNode;
 
@@ -10,23 +11,26 @@ S ::= aA+ | A+a
 A ::= a
 */
 public class AmbiguousNonTerminalPlusList1 extends SGLL{
-	private final static StackNode NONTERMINAL_LIST0 = new NonTerminalListStackNode(0, "A", "A+", true);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(new char[]{'a'}, 2);
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(new char[]{'a'}, 3);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode("A", 1);
+	private final static StackNode LIST2 = new ListStackNode(2, NONTERMINAL_A0, "A+", true);
+	private final static StackNode LIST3 = new ListStackNode(3, NONTERMINAL_A1, "A+", true);
+	private final static StackNode LITERAL_a4 = new LiteralStackNode(new char[]{'a'}, 4);
+	private final static StackNode LITERAL_a5 = new LiteralStackNode(new char[]{'a'}, 5);
+	private final static StackNode LITERAL_a6 = new LiteralStackNode(new char[]{'a'}, 6);
 	
 	public AmbiguousNonTerminalPlusList1(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(LITERAL_a1, NONTERMINAL_LIST0);
+		expect(LITERAL_a4, LIST2);
 		
-		expect(NONTERMINAL_LIST0, LITERAL_a2);
+		expect(LIST3, LITERAL_a5);
 	}
 	
 	public void A(){
-		expect(LITERAL_a3);
+		expect(LITERAL_a6);
 	}
 	
 	public static void main(String[] args){

@@ -9,15 +9,15 @@ import gll.util.ArrayList;
 public class SeparatedListStackNode extends StackNode{
 	private final String production;
 
-	private final String child;
-	private final String[] separators;
+	private final StackNode child;
+	private final StackNode[] separators;
 	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private final ArrayList<INode> results;
 	
-	public SeparatedListStackNode(int id, String child, String[] separators, String production, boolean isPlusList){
+	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String production, boolean isPlusList){
 		super(id);
 		
 		this.production = production;
@@ -29,7 +29,7 @@ public class SeparatedListStackNode extends StackNode{
 		this.results = null;
 	}
 	
-	public SeparatedListStackNode(int id, String child, String[] separators, String production, boolean isPlusList, ArrayList<INode> results){
+	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String production, boolean isPlusList, ArrayList<INode> results){
 		super(id);
 		
 		this.production = production;
@@ -78,10 +78,10 @@ public class SeparatedListStackNode extends StackNode{
 	}
 	
 	public StackNode getCleanCopyWithPrefix(){
-		SeparatedListStackNode snlpsn = new SeparatedListStackNode(this);
-		snlpsn.prefixes = prefixes;
-		snlpsn.prefixStartLocations = prefixStartLocations;
-		return snlpsn;
+		SeparatedListStackNode slpsn = new SeparatedListStackNode(this);
+		slpsn.prefixes = prefixes;
+		slpsn.prefixStartLocations = prefixStartLocations;
+		return slpsn;
 	}
 	
 	public int getLength(){
