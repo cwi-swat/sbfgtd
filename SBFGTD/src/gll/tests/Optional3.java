@@ -11,12 +11,12 @@ S ::= a(A?) | aA
 A ::= a
 */
 public class Optional3 extends SGLL{
-	private final static StackNode LITERAL_a0 = new LiteralStackNode(new char[]{'a'}, 0);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(new char[]{'a'}, 2);
-	private final static StackNode NONTERMINAL_A3 = new NonTerminalStackNode("A", 3);
-	private final static StackNode NONTERMINAL_A4 = new NonTerminalStackNode("A", 4);
-	private final static StackNode NON_TERMINAL_O5 = new NonTerminalStackNode("O", 5);
+	private final static StackNode LITERAL_a0 = new LiteralStackNode(0, new char[]{'a'});
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(1, new char[]{'a'});
+	private final static StackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static StackNode NONTERMINAL_A3 = new NonTerminalStackNode(3, "A");
+	private final static StackNode NONTERMINAL_A4 = new NonTerminalStackNode(4, "A");
+	private final static StackNode NON_TERMINAL_O5 = new NonTerminalStackNode(5, "O");
 	private final static StackNode OPTIONAL_6 = new OptionalStackNode(6, NON_TERMINAL_O5, "O?");
 	
 	public Optional3(char[] input){

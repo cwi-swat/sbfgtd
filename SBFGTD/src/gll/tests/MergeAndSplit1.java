@@ -11,14 +11,14 @@ A ::= Ba | aB
 B ::= a
 */
 public class MergeAndSplit1 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
-	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode("B", 2);
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(new char[]{'a'}, 3);
-	private final static StackNode LITERAL_a4 = new LiteralStackNode(new char[]{'a'}, 4);
-	private final static StackNode LITERAL_a5 = new LiteralStackNode(new char[]{'a'}, 5);
-	private final static StackNode LITERAL_a6 = new LiteralStackNode(new char[]{'a'}, 6);
-	private final static StackNode LITERAL_a7 = new LiteralStackNode(new char[]{'a'}, 7);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
+	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static StackNode LITERAL_a4 = new LiteralStackNode(4, new char[]{'a'});
+	private final static StackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
+	private final static StackNode LITERAL_a6 = new LiteralStackNode(6, new char[]{'a'});
+	private final static StackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
 	
 	public MergeAndSplit1(char[] input){
 		super(input);

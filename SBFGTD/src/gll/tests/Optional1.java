@@ -11,9 +11,9 @@ S ::= aO?
 O ::= a
 */
 public class Optional1 extends SGLL{
-	private final static StackNode LITERAL_a0 = new LiteralStackNode(new char[]{'a'}, 0);
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
-	private final static StackNode NON_TERMINAL_O2 = new NonTerminalStackNode("O", 2);
+	private final static StackNode LITERAL_a0 = new LiteralStackNode(0, new char[]{'a'});
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(1, new char[]{'a'});
+	private final static StackNode NON_TERMINAL_O2 = new NonTerminalStackNode(2, "O");
 	private final static StackNode OPTIONAL_3 = new OptionalStackNode(3, NON_TERMINAL_O2, "O?");
 	
 	public Optional1(char[] input){

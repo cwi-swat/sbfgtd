@@ -11,11 +11,11 @@ A ::= B
 B ::= b
 */
 public class Ambiguous2 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
-	private final static StackNode LITERAL_b2 = new LiteralStackNode(new char[]{'b'}, 2);
-	private final static StackNode LITERALL_ab3 = new LiteralStackNode(new char[]{'a','b'}, 3);
-	private final static StackNode LITERAL_bab4 = new LiteralStackNode(new char[]{'b','a','b'}, 4);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static StackNode LITERAL_b2 = new LiteralStackNode(2, new char[]{'b'});
+	private final static StackNode LITERALL_ab3 = new LiteralStackNode(3, new char[]{'a','b'});
+	private final static StackNode LITERAL_bab4 = new LiteralStackNode(4, new char[]{'b','a','b'});
 	
 	public Ambiguous2(char[] input){
 		super(input);

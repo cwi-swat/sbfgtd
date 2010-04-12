@@ -8,7 +8,7 @@ import gll.stack.StackNode;
 S ::= ci(bla)
 */
 public class CILiteral extends SGLL{
-	private final static StackNode LITERAL_a0 = new ContextInsensitiveLiteralStackNode(new char[]{'b','l','a'}, 0);
+	private final static StackNode LITERAL_a0 = new ContextInsensitiveLiteralStackNode(0, new char[]{'b','l','a'});
 	
 	public CILiteral(char[] input){
 		super(input);

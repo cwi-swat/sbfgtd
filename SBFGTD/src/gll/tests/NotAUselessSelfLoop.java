@@ -12,12 +12,12 @@ B ::= AA | CC
 C ::= AA | a
 */
 public class NotAUselessSelfLoop extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
-	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode("A", 1);
-	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode("B", 2);
-	private final static StackNode NONTERMINAL_C3 = new NonTerminalStackNode("C", 3);
-	private final static StackNode NONTERMINAL_C4 = new NonTerminalStackNode("C", 4);
-	private final static StackNode LITERAL_a5 = new LiteralStackNode(new char[]{'a'}, 5);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
+	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
+	private final static StackNode NONTERMINAL_C3 = new NonTerminalStackNode(3, "C");
+	private final static StackNode NONTERMINAL_C4 = new NonTerminalStackNode(4, "C");
+	private final static StackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
 	
 	public NotAUselessSelfLoop(char[] input){
 		super(input);
