@@ -98,23 +98,23 @@ public class SeparatedListStackNode extends StackNode{
 	public StackNode[] getChildren(){
 		StackNode psn = child.getCleanCopy();
 		StackNode cpsn = child.getCleanCopy();
-		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
+		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, production, true, new ArrayList<INode>(1));
 		
-		StackNode from = lpsn;
+		StackNode from = slpsn;
 		for(int i = 0; i < separators.length; i++){
 			StackNode to = separators[i];
 			from.addNext(to);
 			from = to;
 		}
 		from.addNext(psn);
-		psn.addEdge(lpsn);
+		psn.addEdge(slpsn);
 		psn.addEdge(this);
 		
-		cpsn.addEdge(lpsn);
+		cpsn.addEdge(slpsn);
 		cpsn.addEdge(this);
 		
 		psn.setStartLocation(-1); // Reset.
-		lpsn.setStartLocation(startLocation);
+		slpsn.setStartLocation(startLocation);
 		cpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
