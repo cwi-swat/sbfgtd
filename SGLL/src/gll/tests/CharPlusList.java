@@ -1,14 +1,14 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.CharListParseStackNode;
-import gll.stack.ParseStackNode;
+import gll.stack.CharListStackNode;
+import gll.stack.StackNode;
 
 /*
 S ::= [a-z]+
 */
 public class CharPlusList extends SGLL{
-	private final static ParseStackNode CHAR_LIST0 = new CharListParseStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]+", true);
+	private final static StackNode CHAR_LIST0 = new CharListStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]", "[a-z]+", true);
 	
 	public CharPlusList(char[] input){
 		super(input);

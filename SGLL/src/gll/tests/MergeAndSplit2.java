@@ -1,9 +1,9 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= D | Da
@@ -13,16 +13,16 @@ B ::= A
 A ::= a
 */
 public class MergeAndSplit2 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode NONTERMINAL_B1 = new NonTerminalParseStackNode("B", 1);
-	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
-	private final static ParseStackNode NONTERMINAL_C3 = new NonTerminalParseStackNode("C", 3);
-	private final static ParseStackNode NONTERMINAL_D4 = new NonTerminalParseStackNode("D", 4);
-	private final static ParseStackNode NONTERMINAL_D5 = new NonTerminalParseStackNode("D", 5);
-	private final static ParseStackNode LITERAL_a6 = new LiteralParseStackNode(new char[]{'a'}, 6);
-	private final static ParseStackNode LITERAL_a7 = new LiteralParseStackNode(new char[]{'a'}, 7);
-	private final static ParseStackNode LITERAL_a8 = new LiteralParseStackNode(new char[]{'a'}, 8);
-	private final static ParseStackNode LITERAL_aa9 = new LiteralParseStackNode(new char[]{'a','a'}, 9);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode("B", 1);
+	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode("B", 2);
+	private final static StackNode NONTERMINAL_C3 = new NonTerminalStackNode("C", 3);
+	private final static StackNode NONTERMINAL_D4 = new NonTerminalStackNode("D", 4);
+	private final static StackNode NONTERMINAL_D5 = new NonTerminalStackNode("D", 5);
+	private final static StackNode LITERAL_a6 = new LiteralStackNode(new char[]{'a'}, 6);
+	private final static StackNode LITERAL_a7 = new LiteralStackNode(new char[]{'a'}, 7);
+	private final static StackNode LITERAL_a8 = new LiteralStackNode(new char[]{'a'}, 8);
+	private final static StackNode LITERAL_aa9 = new LiteralStackNode(new char[]{'a','a'}, 9);
 	
 	public MergeAndSplit2(char[] input){
 		super(input);

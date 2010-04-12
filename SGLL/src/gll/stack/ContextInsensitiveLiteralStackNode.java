@@ -3,12 +3,12 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.TextNode;
 
-public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
+public class ContextInsensitiveLiteralStackNode extends StackNode{
 	private final char[][] ciLiteral;
 	
 	private TextNode result;
 	
-	public ContextInsensitiveLiteralParseStackNode(char[] ciLiteral, int id){
+	public ContextInsensitiveLiteralStackNode(char[] ciLiteral, int id){
 		super(id);
 		
 		int nrOfCharacters = ciLiteral.length;
@@ -26,7 +26,7 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 		}
 	}
 	
-	private ContextInsensitiveLiteralParseStackNode(ContextInsensitiveLiteralParseStackNode contextInsensitiveLiteralParseStackNode){
+	private ContextInsensitiveLiteralStackNode(ContextInsensitiveLiteralStackNode contextInsensitiveLiteralParseStackNode){
 		super(contextInsensitiveLiteralParseStackNode);
 
 		ciLiteral = contextInsensitiveLiteralParseStackNode.ciLiteral;
@@ -69,12 +69,12 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new ContextInsensitiveLiteralParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new ContextInsensitiveLiteralStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		ContextInsensitiveLiteralParseStackNode cilpsn = new ContextInsensitiveLiteralParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		ContextInsensitiveLiteralStackNode cilpsn = new ContextInsensitiveLiteralStackNode(this);
 		cilpsn.prefixes = prefixes;
 		cilpsn.prefixStartLocations = prefixStartLocations;
 		return cilpsn;
@@ -92,7 +92,7 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public ParseStackNode[] getChildren(){
+	public StackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

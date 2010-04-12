@@ -1,17 +1,17 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= A | a
 A ::= a
 */
 public class Ambiguous1 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode LITERAL_a1 = new LiteralParseStackNode(new char[]{'a'}, 1);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode LITERAL_a1 = new LiteralStackNode(new char[]{'a'}, 1);
 	
 	public Ambiguous1(char[] input){
 		super(input);

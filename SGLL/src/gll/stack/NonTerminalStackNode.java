@@ -4,14 +4,14 @@ import gll.result.Alternative;
 import gll.result.INode;
 import gll.util.ArrayList;
 
-public final class NonTerminalParseStackNode extends ParseStackNode{
+public final class NonTerminalStackNode extends StackNode{
 	private final String nonTerminal;
 	
 	private boolean marked;
 	
 	private final ArrayList<INode> results;
 	
-	public NonTerminalParseStackNode(String nonTerminal, int id){
+	public NonTerminalStackNode(String nonTerminal, int id){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
@@ -19,7 +19,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		results = null;
 	}
 	
-	public NonTerminalParseStackNode(String nonTerminal, int id, ArrayList<INode> results){
+	public NonTerminalStackNode(String nonTerminal, int id, ArrayList<INode> results){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
@@ -27,7 +27,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		this.results = results;
 	}
 	
-	private NonTerminalParseStackNode(NonTerminalParseStackNode nonTerminalParseStackNode){
+	private NonTerminalStackNode(NonTerminalStackNode nonTerminalParseStackNode){
 		super(nonTerminalParseStackNode);
 
 		nonTerminal = nonTerminalParseStackNode.nonTerminal;
@@ -55,12 +55,12 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return nonTerminal;
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new NonTerminalParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new NonTerminalStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		NonTerminalParseStackNode ntpsn = new NonTerminalParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		NonTerminalStackNode ntpsn = new NonTerminalStackNode(this);
 		ntpsn.prefixes = prefixes;
 		ntpsn.prefixStartLocations = prefixStartLocations;
 		return ntpsn;
@@ -78,7 +78,7 @@ public final class NonTerminalParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getChildren(){
+	public StackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

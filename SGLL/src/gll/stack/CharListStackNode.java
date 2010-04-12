@@ -3,7 +3,7 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.INode;
 
-public class CharListParseStackNode extends ParseStackNode{
+public class CharListStackNode extends StackNode{
 	private final String production;
 	
 	private final char[][] ranges;
@@ -16,7 +16,7 @@ public class CharListParseStackNode extends ParseStackNode{
 	
 	private INode result;
 	
-	public CharListParseStackNode(int id, char[][] ranges, char[] characters, String child, String production, boolean isPlusList){
+	public CharListStackNode(int id, char[][] ranges, char[] characters, String child, String production, boolean isPlusList){
 		super(id);
 		
 		this.ranges = ranges;
@@ -28,7 +28,7 @@ public class CharListParseStackNode extends ParseStackNode{
 		this.isPlusList = isPlusList;
 	}
 	
-	private CharListParseStackNode(CharListParseStackNode terminalListParseStackNode){
+	private CharListStackNode(CharListStackNode terminalListParseStackNode){
 		super(terminalListParseStackNode);
 		
 		ranges = terminalListParseStackNode.ranges;
@@ -60,12 +60,12 @@ public class CharListParseStackNode extends ParseStackNode{
 		return production;
 	}
 	
-	public ParseStackNode getCleanCopy(){
-		return new CharListParseStackNode(this);
+	public StackNode getCleanCopy(){
+		return new CharListStackNode(this);
 	}
 	
-	public ParseStackNode getCleanCopyWithPrefix(){
-		CharListParseStackNode tpsn = new CharListParseStackNode(this);
+	public StackNode getCleanCopyWithPrefix(){
+		CharListStackNode tpsn = new CharListStackNode(this);
 		tpsn.prefixes = prefixes;
 		tpsn.prefixStartLocations = prefixStartLocations;
 		return tpsn;
@@ -83,10 +83,10 @@ public class CharListParseStackNode extends ParseStackNode{
 		return marked;
 	}
 	
-	public ParseStackNode[] getChildren(){
-		CharParseStackNode cpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_NEXT_FLAG), child);
-		CharParseStackNode ccpsn = new CharParseStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), child);
-		CharListParseStackNode clpsn = new CharListParseStackNode((id | IGLL.LIST_LIST_FLAG), ranges, characters, child, production, true);
+	public StackNode[] getChildren(){
+		CharStackNode cpsn = new CharStackNode(ranges, characters, (id | IGLL.LIST_NEXT_FLAG), child);
+		CharStackNode ccpsn = new CharStackNode(ranges, characters, (id | IGLL.LIST_CHILD_FLAG), child);
+		CharListStackNode clpsn = new CharListStackNode((id | IGLL.LIST_LIST_FLAG), ranges, characters, child, production, true);
 
 		cpsn.addEdge(this);
 		clpsn.addNext(cpsn);
@@ -98,13 +98,13 @@ public class CharListParseStackNode extends ParseStackNode{
 		ccpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new ParseStackNode[]{ccpsn};
+			return new StackNode[]{ccpsn};
 		}
 		
-		EpsilonParseStackNode epsn = new EpsilonParseStackNode(DEFAULT_LIST_EPSILON_ID);
+		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		
-		return new ParseStackNode[]{ccpsn, epsn};
+		return new StackNode[]{ccpsn, epsn};
 	}
 	
 	public void addResult(INode result){

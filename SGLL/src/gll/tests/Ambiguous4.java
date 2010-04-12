@@ -1,9 +1,9 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
-import gll.stack.LiteralParseStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
+import gll.stack.LiteralStackNode;
 
 /*
 S ::= AA
@@ -11,12 +11,12 @@ A ::= BB
 B ::= bb | b
 */
 public class Ambiguous4 extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
-	private final static ParseStackNode NONTERMINAL_B2 = new NonTerminalParseStackNode("B", 2);
-	private final static ParseStackNode NONTERMINAL_B3 = new NonTerminalParseStackNode("B", 3);
-	private final static ParseStackNode LITERAL_b4 = new LiteralParseStackNode(new char[]{'b'}, 4);
-	private final static ParseStackNode LITERAL_bb5 = new LiteralParseStackNode(new char[]{'b','b'}, 5);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode("A", 1);
+	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode("B", 2);
+	private final static StackNode NONTERMINAL_B3 = new NonTerminalStackNode("B", 3);
+	private final static StackNode LITERAL_b4 = new LiteralStackNode(new char[]{'b'}, 4);
+	private final static StackNode LITERAL_bb5 = new LiteralStackNode(new char[]{'b','b'}, 5);
 	
 	public Ambiguous4(char[] input){
 		super(input);

@@ -1,21 +1,21 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.stack.EpsilonParseStackNode;
-import gll.stack.LiteralParseStackNode;
-import gll.stack.NonTerminalParseStackNode;
-import gll.stack.ParseStackNode;
+import gll.stack.EpsilonStackNode;
+import gll.stack.LiteralStackNode;
+import gll.stack.NonTerminalStackNode;
+import gll.stack.StackNode;
 
 /*
 S ::= A
 A ::= AA | epsilon | a
 */
 public class LeftRecursionEpsilon extends SGLL{
-	private final static ParseStackNode NONTERMINAL_A0 = new NonTerminalParseStackNode("A", 0);
-	private final static ParseStackNode NONTERMINAL_A1 = new NonTerminalParseStackNode("A", 1);
-	private final static ParseStackNode NONTERMINAL_A2 = new NonTerminalParseStackNode("A", 2);
-	private final static ParseStackNode LITERAL_a3 = new LiteralParseStackNode(new char[]{'a'}, 3);
-	private final static ParseStackNode EPSILON_4 = new EpsilonParseStackNode(4);
+	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode("A", 0);
+	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode("A", 1);
+	private final static StackNode NONTERMINAL_A2 = new NonTerminalStackNode("A", 2);
+	private final static StackNode LITERAL_a3 = new LiteralStackNode(new char[]{'a'}, 3);
+	private final static StackNode EPSILON_4 = new EpsilonStackNode(4);
 	
 	public LeftRecursionEpsilon(char[] input){
 		super(input);
