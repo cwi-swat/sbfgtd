@@ -8,10 +8,22 @@ public class ContextInsensitiveLiteralParseStackNode extends ParseStackNode{
 	
 	private TextNode result;
 	
-	public ContextInsensitiveLiteralParseStackNode(char[][] ciLiteral, int id){
+	public ContextInsensitiveLiteralParseStackNode(char[] ciLiteral, int id){
 		super(id);
-
-		this.ciLiteral = ciLiteral;
+		
+		int nrOfCharacters = ciLiteral.length;
+		this.ciLiteral = new char[nrOfCharacters][];
+		for(int i = nrOfCharacters - 1; i >= 0; i--){
+			char character = ciLiteral[i];
+			int type = Character.getType(character);
+			if(type == Character.LOWERCASE_LETTER){
+				this.ciLiteral[i] = new char[]{character, Character.toUpperCase(character)};
+			}else if(type == Character.UPPERCASE_LETTER){
+				this.ciLiteral[i] = new char[]{character, Character.toLowerCase(character)};
+			}else{
+				this.ciLiteral[i] = new char[]{character};
+			}
+		}
 	}
 	
 	private ContextInsensitiveLiteralParseStackNode(ContextInsensitiveLiteralParseStackNode contextInsensitiveLiteralParseStackNode){
