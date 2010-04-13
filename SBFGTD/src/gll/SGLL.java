@@ -1,7 +1,6 @@
 package gll;
 
 import gll.result.INode;
-import gll.result.ContainerNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.StackNode;
 import gll.util.ArrayList;
