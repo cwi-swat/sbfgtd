@@ -4,7 +4,7 @@ import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public class ListStackNode extends StackNode{
+public final class ListStackNode extends StackNode{
 	private final String nodeName;
 
 	private final StackNode child;
