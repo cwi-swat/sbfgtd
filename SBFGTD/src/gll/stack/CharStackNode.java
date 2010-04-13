@@ -1,23 +1,23 @@
 package gll.stack;
 
+import gll.result.CharNode;
 import gll.result.INode;
-import gll.result.TextNode;
 
 public class CharStackNode extends StackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
-	private final String productionName;
+	private final String production;
 	
-	private TextNode result;
+	private INode result;
 	
-	public CharStackNode(int id, char[][] ranges, char[] characters, String productionName){
+	public CharStackNode(int id, String production, char[][] ranges, char[] characters){
 		super(id);
+		
+		this.production = production;
 
 		this.ranges = ranges;
 		this.characters = characters;
-		
-		this.productionName = productionName;
 	}
 	
 	private CharStackNode(CharStackNode charParseStackNode){
@@ -26,7 +26,7 @@ public class CharStackNode extends StackNode{
 		ranges = charParseStackNode.ranges;
 		characters = charParseStackNode.characters;
 		
-		productionName = charParseStackNode.productionName;
+		production = charParseStackNode.production;
 	}
 	
 	public boolean isReducable(){
@@ -41,30 +41,20 @@ public class CharStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	private TextNode createResult(char character){
-		int productionNameLength = productionName.length();
-		char[] resultText = new char[productionNameLength + 3];
-		productionName.getChars(0, productionNameLength, resultText, 0);
-		resultText[productionNameLength] = '(';
-		resultText[productionNameLength + 1] = character;
-		resultText[productionNameLength + 2] = ')';
-		return new TextNode(resultText);
-	}
-	
 	public boolean reduce(char[] input){
 		if(input.length > startLocation){
 			char next = input[startLocation];
 			for(int i = ranges.length - 1; i >= 0; i--){
 				char[] range = ranges[i];
 				if(next >= range[0] && next <= range[1]){
-					result = createResult(next);
+					result = new CharNode(production, next);
 					return true;
 				}
 			}
 			
 			for(int i = characters.length - 1; i >= 0; i--){
 				if(next == characters[i]){
-					result = createResult(next);
+					result = new CharNode(production, next);
 					return true;
 				}
 			}
@@ -114,7 +104,7 @@ public class CharStackNode extends StackNode{
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(productionName);
+		sb.append(production);
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
