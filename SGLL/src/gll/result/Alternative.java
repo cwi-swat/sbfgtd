@@ -11,6 +11,10 @@ public class Alternative implements INode{
 		this.alternatives = alternatives;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String toString(){
 		if(alternatives.size() == 1) return alternatives.get(0).toString();
 		
