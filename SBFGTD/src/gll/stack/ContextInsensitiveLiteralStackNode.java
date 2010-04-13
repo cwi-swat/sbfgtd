@@ -1,12 +1,12 @@
 package gll.stack;
 
 import gll.result.INode;
-import gll.result.TextNode;
+import gll.result.LiteralNode;
 
 public class ContextInsensitiveLiteralStackNode extends StackNode{
 	private final char[][] ciLiteral;
 	
-	private TextNode result;
+	private LiteralNode result;
 	
 	public ContextInsensitiveLiteralStackNode(int id, char[] ciLiteral){
 		super(id);
@@ -61,7 +61,7 @@ public class ContextInsensitiveLiteralStackNode extends StackNode{
 			return false; // Did not match.
 		}
 		
-		result = new TextNode(resultLiteral);
+		result = new LiteralNode(resultLiteral);
 		return true;
 	}
 	
