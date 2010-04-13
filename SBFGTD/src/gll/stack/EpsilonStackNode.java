@@ -1,21 +1,17 @@
 package gll.stack;
 
+import gll.result.EpsilonNode;
 import gll.result.INode;
-import gll.result.TextNode;
 
 public class EpsilonStackNode extends StackNode{
-	private final TextNode result;
+	private final static EpsilonNode result = new EpsilonNode();
 	
 	public EpsilonStackNode(int id){
 		super(id);
-		
-		result = new TextNode(new char[]{});
 	}
 	
 	private EpsilonStackNode(EpsilonStackNode epsilonParseStackNode){
 		super(epsilonParseStackNode);
-		
-		result = epsilonParseStackNode.result;
 	}
 	
 	public boolean isReducable(){

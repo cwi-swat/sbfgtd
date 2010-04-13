@@ -11,6 +11,10 @@ public class CharNode implements INode{
 		this.character = character;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);

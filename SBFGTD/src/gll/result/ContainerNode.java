@@ -11,6 +11,10 @@ public class ContainerNode implements INode{
 		this.children = children;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		

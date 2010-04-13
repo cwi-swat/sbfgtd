@@ -9,6 +9,10 @@ public class TextNode implements INode{
 		this.content = content;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String toString(){
 		return new String(content);
 	}
