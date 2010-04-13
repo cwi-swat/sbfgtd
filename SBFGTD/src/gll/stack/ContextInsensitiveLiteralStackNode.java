@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.LiteralNode;
 
-public class ContextInsensitiveLiteralStackNode extends StackNode{
+public final class ContextInsensitiveLiteralStackNode extends StackNode{
 	private final char[][] ciLiteral;
 	
 	private LiteralNode result;

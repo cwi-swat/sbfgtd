@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.EpsilonNode;
 import gll.result.INode;
 
-public class EpsilonStackNode extends StackNode{
+public final class EpsilonStackNode extends StackNode{
 	private final static EpsilonNode result = new EpsilonNode();
 	
 	public EpsilonStackNode(int id){

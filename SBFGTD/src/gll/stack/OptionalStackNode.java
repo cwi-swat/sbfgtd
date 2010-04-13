@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public class OptionalStackNode extends StackNode{
+public final class OptionalStackNode extends StackNode{
 	private final StackNode optional;
 	
 	private final String nodeName;

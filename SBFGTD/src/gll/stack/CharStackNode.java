@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.CharNode;
 import gll.result.INode;
 
-public class CharStackNode extends StackNode{
+public final class CharStackNode extends StackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
