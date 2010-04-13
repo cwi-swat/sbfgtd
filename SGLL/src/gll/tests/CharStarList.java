@@ -9,7 +9,7 @@ import gll.stack.StackNode;
 S ::= [a-z]*
 */
 public class CharStarList extends SGLL{
-	private final static StackNode CHAR0 = new CharStackNode(0, new char[][]{{'a', 'z'}}, new char[]{}, "[a-z]");
+	private final static StackNode CHAR0 = new CharStackNode(0, "[a-z]", new char[][]{{'a', 'z'}}, new char[]{});
 	private final static StackNode LIST1 = new ListStackNode(1, CHAR0, "[a-z]*", false);
 	
 	public CharStarList(char[] input){

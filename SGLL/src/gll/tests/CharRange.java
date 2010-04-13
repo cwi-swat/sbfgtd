@@ -8,7 +8,7 @@ import gll.stack.StackNode;
 S ::= [a-z]
 */
 public class CharRange extends SGLL{
-	private final static StackNode CHAR_a0 = new CharStackNode(0, new char[][]{{'a','z'}}, new char[]{}, "[a-z]");
+	private final static StackNode CHAR_a0 = new CharStackNode(0, "[a-z]", new char[][]{{'a','z'}}, new char[]{});
 	
 	public CharRange(char[] input){
 		super(input);
