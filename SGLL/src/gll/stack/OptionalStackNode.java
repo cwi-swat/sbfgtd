@@ -1,22 +1,23 @@
 package gll.stack;
 
+import gll.result.ContainerNode;
 import gll.result.INode;
 
 public class OptionalStackNode extends StackNode{
 	private final StackNode optional;
 	
-	private final String production;
+	private final String nodeName;
 	
 	private boolean marked;
 	
 	private INode result;
 	
-	public OptionalStackNode(int id, StackNode optional, String production){
+	public OptionalStackNode(int id, StackNode optional, String nodeName){
 		super(id);
 		
 		this.optional = optional;
 		
-		this.production = production;
+		this.nodeName = nodeName;
 	}
 	
 	private OptionalStackNode(OptionalStackNode optionalParseStackNode){
@@ -24,7 +25,7 @@ public class OptionalStackNode extends StackNode{
 		
 		optional = optionalParseStackNode.optional;
 		
-		production = optionalParseStackNode.production;
+		nodeName = optionalParseStackNode.nodeName;
 	}
 	
 	public boolean isReducable(){
@@ -80,12 +81,8 @@ public class OptionalStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNodeName(){
-		return production;
-	}
-	
-	public void addResult(INode result){
-		this.result = result;
+	public void addResult(INode[] children){
+		this.result = new ContainerNode(nodeName, children);
 	}
 	
 	public INode getResult(){

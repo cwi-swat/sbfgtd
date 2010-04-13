@@ -42,10 +42,6 @@ public final class LiteralStackNode extends StackNode{
 		return true;
 	}
 	
-	public String getNodeName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public StackNode getCleanCopy(){
 		return new LiteralStackNode(this);
 	}
@@ -73,7 +69,7 @@ public final class LiteralStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode result){
+	public void addResult(INode[] children){
 		throw new UnsupportedOperationException();
 	}
 	

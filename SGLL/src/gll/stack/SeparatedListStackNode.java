@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.Alternative;
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.util.ArrayList;
 
@@ -68,10 +69,6 @@ public class SeparatedListStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNodeName(){
-		return nodeName;
-	}
-	
 	public StackNode getCleanCopy(){
 		return new SeparatedListStackNode(this);
 	}
@@ -127,8 +124,8 @@ public class SeparatedListStackNode extends StackNode{
 		return new StackNode[]{cpsn, epsn};
 	}
 	
-	public void addResult(INode result){
-		results.add(result);
+	public void addResult(INode[] children){
+		results.add(new ContainerNode(nodeName, children));
 	}
 	
 	public INode getResult(){

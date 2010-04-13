@@ -65,10 +65,6 @@ public class ContextInsensitiveLiteralStackNode extends StackNode{
 		return true;
 	}
 	
-	public String getNodeName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public StackNode getCleanCopy(){
 		return new ContextInsensitiveLiteralStackNode(this);
 	}
@@ -96,7 +92,7 @@ public class ContextInsensitiveLiteralStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode result){
+	public void addResult(INode[] children){
 		throw new UnsupportedOperationException();
 	}
 	

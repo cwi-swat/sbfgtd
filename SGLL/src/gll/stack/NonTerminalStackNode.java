@@ -1,6 +1,7 @@
 package gll.stack;
 
 import gll.result.Alternative;
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.util.ArrayList;
 
@@ -43,10 +44,6 @@ public final class NonTerminalStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String getNodeName(){
-		return nonTerminal;
-	}
-	
 	public StackNode getCleanCopy(){
 		return new NonTerminalStackNode(this);
 	}
@@ -74,8 +71,8 @@ public final class NonTerminalStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode result){
-		results.add(result);
+	public void addResult(INode[] children){
+		results.add(new ContainerNode(nonTerminal, children));
 	}
 	
 	public INode getResult(){
