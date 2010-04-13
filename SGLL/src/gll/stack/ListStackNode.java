@@ -1,10 +1,8 @@
 package gll.stack;
 
 import gll.IGLL;
-import gll.result.Alternative;
 import gll.result.ContainerNode;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 public class ListStackNode extends StackNode{
 	private final String nodeName;
@@ -14,7 +12,7 @@ public class ListStackNode extends StackNode{
 	
 	private boolean marked;
 	
-	private final ArrayList<INode> results;
+	private final INode result;
 	
 	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList){
 		super(id);
@@ -24,10 +22,10 @@ public class ListStackNode extends StackNode{
 		this.child = child;
 		this.isPlusList = isPlusList;
 		
-		this.results = null;
+		this.result = null;
 	}
 	
-	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList, ArrayList<INode> results){
+	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList, INode result){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -35,7 +33,7 @@ public class ListStackNode extends StackNode{
 		this.child = child;
 		this.isPlusList = isPlusList;
 		
-		this.results = results;
+		this.result = result;
 	}
 	
 	private ListStackNode(ListStackNode listParseStackNode){
@@ -46,7 +44,7 @@ public class ListStackNode extends StackNode{
 		child = listParseStackNode.child;
 		isPlusList = listParseStackNode.isPlusList;
 		
-		results = new ArrayList<INode>(1);
+		result = new ContainerNode(nodeName);
 	}
 	
 	public boolean isReducable(){
@@ -91,7 +89,7 @@ public class ListStackNode extends StackNode{
 	public StackNode[] getChildren(){
 		StackNode psn = child.getCleanCopy();
 		StackNode cpsn = child.getCleanCopy();
-		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, nodeName, true, new ArrayList<INode>(1));
+		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, nodeName, true, new ContainerNode(nodeName));
 		
 		lpsn.addNext(psn);
 		psn.addEdge(lpsn);
@@ -115,11 +113,11 @@ public class ListStackNode extends StackNode{
 	}
 	
 	public void addResult(INode[] children){
-		results.add(new ContainerNode(nodeName, children));
+		result.addAlternative(children);
 	}
 	
 	public INode getResult(){
-		return new Alternative(results);
+		return result;
 	}
 
 	public String toString(){

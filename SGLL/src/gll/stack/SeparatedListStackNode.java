@@ -1,10 +1,8 @@
 package gll.stack;
 
 import gll.IGLL;
-import gll.result.Alternative;
 import gll.result.ContainerNode;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 public class SeparatedListStackNode extends StackNode{
 	private final String nodeName;
@@ -15,7 +13,7 @@ public class SeparatedListStackNode extends StackNode{
 	
 	private boolean marked;
 	
-	private final ArrayList<INode> results;
+	private final INode result;
 	
 	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList){
 		super(id);
@@ -26,10 +24,10 @@ public class SeparatedListStackNode extends StackNode{
 		this.separators = separators;
 		this.isPlusList = isPlusList;
 		
-		this.results = null;
+		this.result = null;
 	}
 	
-	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList, ArrayList<INode> results){
+	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList, INode result){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -38,7 +36,7 @@ public class SeparatedListStackNode extends StackNode{
 		this.separators = separators;
 		this.isPlusList = isPlusList;
 		
-		this.results = results;
+		this.result = result;
 	}
 	
 	public SeparatedListStackNode(SeparatedListStackNode separatedListStackNode){
@@ -50,7 +48,7 @@ public class SeparatedListStackNode extends StackNode{
 		separators = separatedListStackNode.separators;
 		isPlusList = separatedListStackNode.isPlusList;
 		
-		results = new ArrayList<INode>(1);
+		result = new ContainerNode(nodeName);
 	}
 	
 	public boolean isReducable(){
@@ -95,7 +93,7 @@ public class SeparatedListStackNode extends StackNode{
 	public StackNode[] getChildren(){
 		StackNode psn = child.getCleanCopy();
 		StackNode cpsn = child.getCleanCopy();
-		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ArrayList<INode>(1));
+		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ContainerNode(nodeName));
 		
 		StackNode from = slpsn;
 		for(int i = 0; i < separators.length; i++){
@@ -125,11 +123,11 @@ public class SeparatedListStackNode extends StackNode{
 	}
 	
 	public void addResult(INode[] children){
-		results.add(new ContainerNode(nodeName, children));
+		result.addAlternative(children);
 	}
 	
 	public INode getResult(){
-		return new Alternative(results);
+		return result;
 	}
 
 	public String toString(){

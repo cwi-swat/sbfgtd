@@ -28,90 +28,70 @@ public class WorstCase extends SGLL{
 		expect(TERMINAL_a5);
 	}
 	
+	private final static int ITERATIONS = 5;
+	
+	private static void runTest(char[] input){
+		long total = 0;
+		long lowest = Long.MAX_VALUE;
+		for(int i = ITERATIONS - 1; i >= 0; i--){
+			long start = System.currentTimeMillis();
+			WorstCase wc = new WorstCase(input);
+			wc.parse("S");
+			long end = System.currentTimeMillis();
+			
+			long time = end - start;
+			total += time;
+			lowest = (time < lowest) ? time : lowest;
+		}
+		System.out.println(input.length+": avg="+(total / ITERATIONS)+"ms, lowest="+lowest+"ms");
+	}
+	
 	public static void main(String[] args){
 		// Warmup.
+		char[] input = "aaaaaaaaaa".toCharArray();
 		for(int i = 9999; i >= 0; i--){
-			WorstCase wc = new WorstCase("aaaaaaaaaa".toCharArray());
+			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
 		}
 		
 		// The benchmarks.
-		long start = System.currentTimeMillis();
-		WorstCase wc = new WorstCase("aaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		long end = System.currentTimeMillis();
-		System.out.println("10 "+(end - start)+"ms");
+		input = "aaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("15 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("20 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("25 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("30 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("35 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("40 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("45 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("50 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("100 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("200 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("300 "+(end - start)+"ms");
+		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);
 		
-		/*start = System.currentTimeMillis();
-		wc = new WorstCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray());
-		wc.parse("S");
-		end = System.currentTimeMillis();
-		System.out.println("500 "+(end - start)+"ms");*/
+		/*input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
+		runTest(input);*/
 	}
 }

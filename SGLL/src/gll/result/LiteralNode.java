@@ -9,6 +9,10 @@ public class LiteralNode implements INode{
 		this.content = content;
 	}
 	
+	public void addAlternative(INode[] children){
+		throw new UnsupportedOperationException();
+	}
+	
 	public boolean isEpsilon(){
 		return false;
 	}
