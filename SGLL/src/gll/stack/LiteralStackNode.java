@@ -1,18 +1,18 @@
 package gll.stack;
 
 import gll.result.INode;
-import gll.result.TextNode;
+import gll.result.LiteralNode;
 
 public final class LiteralStackNode extends StackNode{
 	private final char[] literal;
 	
-	private final TextNode result;
+	private final LiteralNode result;
 	
 	public LiteralStackNode(int id, char[] literal){
 		super(id);
 
 		this.literal = literal;
-		result = new TextNode(literal);
+		result = new LiteralNode(literal);
 	}
 	
 	private LiteralStackNode(LiteralStackNode literalParseStackNode){

@@ -1,9 +1,9 @@
 package gll.result;
 
-public class TextNode implements INode{
+public class LiteralNode implements INode{
 	private final char[] content;
 	
-	public TextNode(char[] content){
+	public LiteralNode(char[] content){
 		super();
 		
 		this.content = content;
