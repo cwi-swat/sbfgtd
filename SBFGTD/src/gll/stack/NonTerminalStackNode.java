@@ -1,23 +1,21 @@
 package gll.stack;
 
-import gll.result.Alternative;
 import gll.result.ContainerNode;
 import gll.result.INode;
-import gll.util.ArrayList;
 
 public final class NonTerminalStackNode extends StackNode{
 	private final String nonTerminal;
 	
 	private boolean marked;
 	
-	private final ArrayList<INode> results;
+	private final INode result;
 	
 	public NonTerminalStackNode(int id, String nonTerminal){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
 		
-		results = null;
+		result = null;
 	}
 	
 	private NonTerminalStackNode(NonTerminalStackNode nonTerminalParseStackNode){
@@ -25,7 +23,7 @@ public final class NonTerminalStackNode extends StackNode{
 
 		nonTerminal = nonTerminalParseStackNode.nonTerminal;
 		
-		results = new ArrayList<INode>(1);
+		result = new ContainerNode(nonTerminal);
 	}
 	
 	public boolean isReducable(){
@@ -72,11 +70,11 @@ public final class NonTerminalStackNode extends StackNode{
 	}
 	
 	public void addResult(INode[] children){
-		results.add(new ContainerNode(nonTerminal, children));
+		result.addAlternative(children);
 	}
 	
 	public INode getResult(){
-		return new Alternative(results);
+		return result;
 	}
 
 	public String toString(){

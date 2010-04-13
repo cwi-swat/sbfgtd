@@ -1,23 +1,32 @@
 package gll.result;
 
+import gll.util.ArrayList;
+
 public class ContainerNode implements INode{
 	private final String name;
-	private final INode[] children;
+	private INode[] firstAlternative;
+	private ArrayList<INode[]> alternatives;
 	
-	public ContainerNode(String name, INode[] children){
+	public ContainerNode(String name){
 		super();
 		
 		this.name = name;
-		this.children = children;
+	}
+	
+	public void addAlternative(INode[] children){
+		if(firstAlternative == null){
+			firstAlternative = children;
+		}else{
+			if(alternatives == null) alternatives = new ArrayList<INode[]>(1);
+			alternatives.add(children);
+		}
 	}
 	
 	public boolean isEpsilon(){
 		return false;
 	}
 	
-	public String toString(){
-		StringBuilder sb = new StringBuilder();
-		
+	private void printAlternative(INode[] children, StringBuilder sb){
 		int nrOfChildren = children.length;
 		
 		sb.append(name);
@@ -28,6 +37,24 @@ public class ContainerNode implements INode{
 			sb.append(children[i]);
 		}
 		sb.append(')');
+	}
+	
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		
+		if(alternatives == null){
+			printAlternative(firstAlternative, sb);
+		}else{
+			sb.append('[');
+			for(int i = alternatives.size() - 1; i >= 1; i--){
+				printAlternative(alternatives.get(i), sb);
+				sb.append(',');
+			}
+			printAlternative(alternatives.get(0), sb);
+			sb.append(',');
+			printAlternative(firstAlternative, sb);
+			sb.append(']');
+		}
 		
 		return sb.toString();
 	}

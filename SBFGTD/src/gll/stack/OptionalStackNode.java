@@ -10,7 +10,7 @@ public class OptionalStackNode extends StackNode{
 	
 	private boolean marked;
 	
-	private INode result;
+	private final INode result;
 	
 	public OptionalStackNode(int id, StackNode optional, String nodeName){
 		super(id);
@@ -18,6 +18,8 @@ public class OptionalStackNode extends StackNode{
 		this.optional = optional;
 		
 		this.nodeName = nodeName;
+		
+		this.result = null;
 	}
 	
 	private OptionalStackNode(OptionalStackNode optionalParseStackNode){
@@ -26,6 +28,8 @@ public class OptionalStackNode extends StackNode{
 		optional = optionalParseStackNode.optional;
 		
 		nodeName = optionalParseStackNode.nodeName;
+		
+		result = new ContainerNode(nodeName);
 	}
 	
 	public boolean isReducable(){
@@ -82,7 +86,7 @@ public class OptionalStackNode extends StackNode{
 	}
 	
 	public void addResult(INode[] children){
-		this.result = new ContainerNode(nodeName, children);
+		result.addAlternative(children);
 	}
 	
 	public INode getResult(){

@@ -7,6 +7,10 @@ public class EpsilonNode implements INode{
 		super();
 	}
 	
+	public void addAlternative(INode[] children){
+		throw new UnsupportedOperationException();
+	}
+	
 	public boolean isEpsilon(){
 		return true;
 	}
