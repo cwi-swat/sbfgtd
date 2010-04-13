@@ -6,7 +6,7 @@ import gll.result.INode;
 import gll.util.ArrayList;
 
 public class ListStackNode extends StackNode{
-	private final String production;
+	private final String nodeName;
 
 	private final StackNode child;
 	private final boolean isPlusList;
@@ -15,10 +15,10 @@ public class ListStackNode extends StackNode{
 	
 	private final ArrayList<INode> results;
 	
-	public ListStackNode(int id, StackNode child, String production, boolean isPlusList){
+	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList){
 		super(id);
 		
-		this.production = production;
+		this.nodeName = nodeName;
 		
 		this.child = child;
 		this.isPlusList = isPlusList;
@@ -26,10 +26,10 @@ public class ListStackNode extends StackNode{
 		this.results = null;
 	}
 	
-	public ListStackNode(int id, StackNode child, String production, boolean isPlusList, ArrayList<INode> results){
+	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList, ArrayList<INode> results){
 		super(id);
 		
-		this.production = production;
+		this.nodeName = nodeName;
 		
 		this.child = child;
 		this.isPlusList = isPlusList;
@@ -40,7 +40,7 @@ public class ListStackNode extends StackNode{
 	private ListStackNode(ListStackNode listParseStackNode){
 		super(listParseStackNode);
 		
-		production = listParseStackNode.production;
+		nodeName = listParseStackNode.nodeName;
 
 		child = listParseStackNode.child;
 		isPlusList = listParseStackNode.isPlusList;
@@ -65,7 +65,7 @@ public class ListStackNode extends StackNode{
 	}
 	
 	public String getNodeName(){
-		return production;
+		return nodeName;
 	}
 	
 	public StackNode getCleanCopy(){
@@ -94,7 +94,7 @@ public class ListStackNode extends StackNode{
 	public StackNode[] getChildren(){
 		StackNode psn = child.getCleanCopy();
 		StackNode cpsn = child.getCleanCopy();
-		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, production, true, new ArrayList<INode>(1));
+		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, nodeName, true, new ArrayList<INode>(1));
 		
 		lpsn.addNext(psn);
 		psn.addEdge(lpsn);
@@ -127,7 +127,7 @@ public class ListStackNode extends StackNode{
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(production);
+		sb.append(nodeName);
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);

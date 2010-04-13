@@ -6,7 +6,7 @@ import gll.result.INode;
 import gll.util.ArrayList;
 
 public class SeparatedListStackNode extends StackNode{
-	private final String production;
+	private final String nodeName;
 
 	private final StackNode child;
 	private final StackNode[] separators;
@@ -16,10 +16,10 @@ public class SeparatedListStackNode extends StackNode{
 	
 	private final ArrayList<INode> results;
 	
-	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String production, boolean isPlusList){
+	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList){
 		super(id);
 		
-		this.production = production;
+		this.nodeName = nodeName;
 		
 		this.child = child;
 		this.separators = separators;
@@ -28,10 +28,10 @@ public class SeparatedListStackNode extends StackNode{
 		this.results = null;
 	}
 	
-	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String production, boolean isPlusList, ArrayList<INode> results){
+	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList, ArrayList<INode> results){
 		super(id);
 		
-		this.production = production;
+		this.nodeName = nodeName;
 		
 		this.child = child;
 		this.separators = separators;
@@ -43,7 +43,7 @@ public class SeparatedListStackNode extends StackNode{
 	public SeparatedListStackNode(SeparatedListStackNode separatedListStackNode){
 		super(separatedListStackNode);
 		
-		production = separatedListStackNode.production;
+		nodeName = separatedListStackNode.nodeName;
 
 		child = separatedListStackNode.child;
 		separators = separatedListStackNode.separators;
@@ -69,7 +69,7 @@ public class SeparatedListStackNode extends StackNode{
 	}
 	
 	public String getNodeName(){
-		return production;
+		return nodeName;
 	}
 	
 	public StackNode getCleanCopy(){
@@ -98,7 +98,7 @@ public class SeparatedListStackNode extends StackNode{
 	public StackNode[] getChildren(){
 		StackNode psn = child.getCleanCopy();
 		StackNode cpsn = child.getCleanCopy();
-		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, production, true, new ArrayList<INode>(1));
+		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ArrayList<INode>(1));
 		
 		StackNode from = slpsn;
 		for(int i = 0; i < separators.length; i++){
@@ -137,7 +137,7 @@ public class SeparatedListStackNode extends StackNode{
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append(production);
+		sb.append(nodeName);
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
