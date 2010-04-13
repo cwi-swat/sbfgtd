@@ -47,8 +47,6 @@ public abstract class StackNode{
 	
 	public abstract boolean reduce(char[] input);
 	
-	public abstract String getNodeName();
-	
 	// Sharing.
 	public abstract StackNode getCleanCopy();
 	
@@ -128,7 +126,7 @@ public abstract class StackNode{
 		prefixStartLocations.add(length);
 	}
 	
-	public abstract void addResult(INode result);
+	public abstract void addResult(INode[] children);
 	
 	public abstract INode getResult();
 	

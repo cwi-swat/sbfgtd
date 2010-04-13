@@ -138,13 +138,10 @@ public class SGLL implements IGLL{
 			root = edge; // Root reached.
 		}
 		
-		String name = edge.getNodeName();
-		
 		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
 			if(edge.getStartLocation() == resultStartLocations[i]){
-				INode result = new ContainerNode(name, results[i]);
-				edge.addResult(result);
+				edge.addResult(results[i]);
 			}
 		}
 	}

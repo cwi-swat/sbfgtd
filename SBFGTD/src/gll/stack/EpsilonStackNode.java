@@ -30,10 +30,6 @@ public class EpsilonStackNode extends StackNode{
 		return true;
 	}
 	
-	public String getNodeName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public StackNode getCleanCopy(){
 		return new EpsilonStackNode(this);
 	}
@@ -61,7 +57,7 @@ public class EpsilonStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode result){
+	public void addResult(INode[] children){
 		throw new UnsupportedOperationException();
 	}
 	
