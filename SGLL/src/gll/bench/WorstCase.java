@@ -30,6 +30,14 @@ public class WorstCase extends SGLL{
 	
 	private final static int ITERATIONS = 5;
 	
+	private static char[] createInput(int size){
+		char[] input = new char[size];
+		for(int i = size - 1; i >= 0; i--){
+			input[i] = 'a';
+		}
+		return input;
+	}
+	
 	private static void runTest(char[] input){
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
@@ -48,50 +56,26 @@ public class WorstCase extends SGLL{
 	
 	public static void main(String[] args){
 		// Warmup.
-		char[] input = "aaaaaaaaaa".toCharArray();
+		char[] input = createInput(5);
 		for(int i = 9999; i >= 0; i--){
 			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
 		}
 		
 		// The benchmarks.
-		input = "aaaaaaaaaa".toCharArray();
-		runTest(input);
+		for(int i = 5; i < 50; i += 5){
+			input = createInput(i);
+			runTest(input);
+		}
 		
-		input = "aaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
+		for(int i = 50; i <= 300; i += 50){
+			input = createInput(i);
+			runTest(input);
+		}
 		
-		input = "aaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);
-		
-		/*input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".toCharArray();
-		runTest(input);*/
+		/*for(int i = 50; i <= 500; i += 50){
+			input = createInput(i);
+			runTest(input);
+		}*/
 	}
 }
