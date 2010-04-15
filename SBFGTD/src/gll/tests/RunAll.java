@@ -57,7 +57,6 @@ public class RunAll{
 		System.out.println("NotAUselessSelfLoop:");
 		NotAUselessSelfLoop.main(args);
 		System.out.println();
-		
 		//System.out.println("UselessSelfLoop:");
 		//UselessSelfLoop.main(args);
 		//System.out.println();
@@ -65,9 +64,8 @@ public class RunAll{
 		System.out.println("Epsilon:");
 		Epsilon.main(args);
 		System.out.println();
-		
-		//System.out.println("LeftRecursionEpsilon:");
-		//LeftRecursionEpsilon.main(args);
+		//System.out.println("CycleEpsilon:");
+		//CycleEpsilon.main(args);
 		//System.out.println();
 		
 		System.out.println("Optional1:");
