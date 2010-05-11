@@ -279,6 +279,20 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	protected boolean isInLookAhead(char[][] ranges, char[] characters){
+		char next = input[location];
+		for(int i = ranges.length - 1; i >= 0; i--){
+			char[] range = ranges[i];
+			if(next >= range[0] && next <= range[1]) return true;
+		}
+		
+		for(int i = characters.length - 1; i >= 0; i--){
+			if(next == characters[i]) return true;
+		}
+		
+		return false;
+	}
+	
 	public INode parse(String start){
 		// Initialize.
 		StackNode rootNode = new NonTerminalStackNode(START_SYMBOL_ID, start).getCleanCopy();
