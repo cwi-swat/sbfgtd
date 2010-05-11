@@ -269,8 +269,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expand(){
-		possiblySharedExpects = new ArrayList<StackNode>();
-		possiblySharedExpectsEndNodes = new ArrayList<StackNode>();
+		if(previousLocation != location){
+			possiblySharedExpects = new ArrayList<StackNode>();
+			possiblySharedExpectsEndNodes = new ArrayList<StackNode>();
+		}
 		while(stacksToExpand.size() > 0){
 			lastExpects = new ArrayList<StackNode[]>(1);
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
