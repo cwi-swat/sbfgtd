@@ -73,7 +73,8 @@ public final class OptionalStackNode extends StackNode{
 		copy.addEdge(this);
 		epsn.addEdge(this);
 		
-		copy.setStartLocation(-1); // Reset.
+		copy.setStartLocation(startLocation);
+		epsn.setStartLocation(startLocation);
 
 		StackNode[] children = new StackNode[2];
 		children[0] = copy;

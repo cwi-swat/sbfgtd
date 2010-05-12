@@ -68,14 +68,9 @@ public class WorstCase extends SGLL{
 			runTest(input);
 		}
 		
-		for(int i = 50; i <= 300; i += 50){
+		for(int i = 50; i <= 500; i += 50){
 			input = createInput(i);
 			runTest(input);
 		}
-		
-		/*for(int i = 50; i <= 500; i += 50){
-			input = createInput(i);
-			runTest(input);
-		}*/
 	}
 }
