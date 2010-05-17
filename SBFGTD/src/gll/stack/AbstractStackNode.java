@@ -4,11 +4,11 @@ import gll.result.INode;
 import gll.util.ArrayList;
 import gll.util.IntegerList;
 
-public abstract class StackNode{
+public abstract class AbstractStackNode{
 	protected final static int DEFAULT_LIST_EPSILON_ID = -1;
 	
-	protected StackNode next;
-	protected ArrayList<StackNode> edges;
+	protected AbstractStackNode next;
+	protected ArrayList<AbstractStackNode> edges;
 	
 	protected final int id;
 	
@@ -17,7 +17,7 @@ public abstract class StackNode{
 	protected ArrayList<INode[]> prefixes;
 	protected IntegerList prefixStartLocations;
 	
-	public StackNode(int id){
+	public AbstractStackNode(int id){
 		super();
 		
 		this.id = id;
@@ -25,7 +25,7 @@ public abstract class StackNode{
 		startLocation = -1;
 	}
 	
-	public StackNode(StackNode parseStackNode){
+	public AbstractStackNode(AbstractStackNode parseStackNode){
 		super();
 		
 		id = parseStackNode.id;
@@ -48,16 +48,16 @@ public abstract class StackNode{
 	public abstract boolean reduce(char[] input);
 	
 	// Sharing.
-	public abstract StackNode getCleanCopy();
+	public abstract AbstractStackNode getCleanCopy();
 	
-	public abstract StackNode getCleanCopyWithPrefix();
+	public abstract AbstractStackNode getCleanCopyWithPrefix();
 	
-	public boolean isSimilar(StackNode node){
+	public boolean isSimilar(AbstractStackNode node){
 		return (node.getId() == getId());
 	}
 	
 	// Linking.
-	public void addNext(StackNode next){
+	public void addNext(AbstractStackNode next){
 		this.next = next;
 	}
 	
@@ -65,21 +65,21 @@ public abstract class StackNode{
 		return (next != null);
 	}
 	
-	public StackNode getNext(){
+	public AbstractStackNode getNext(){
 		return next;
 	}
 	
-	public void addEdge(StackNode edge){
-		if(edges == null) edges = new ArrayList<StackNode>(1);
+	public void addEdge(AbstractStackNode edge){
+		if(edges == null) edges = new ArrayList<AbstractStackNode>(1);
 		edges.add(edge);
 	}
 	
-	public void addEdges(ArrayList<StackNode> edgesToAdd){
+	public void addEdges(ArrayList<AbstractStackNode> edgesToAdd){
 		if(edges != edgesToAdd){
 			OUTER : for(int i = edgesToAdd.size() - 1; i >= 0; i--){
-				StackNode node = edgesToAdd.get(i);
+				AbstractStackNode node = edgesToAdd.get(i);
 				for(int j = edges.size() - 1; j >= 0; j--){
-					StackNode edge = edges.get(j);
+					AbstractStackNode edge = edges.get(j);
 					if(edge == node || (edge.getId() == node.getId() && edge.getStartLocation() == node.getStartLocation())){
 						break OUTER;
 					}
@@ -93,7 +93,7 @@ public abstract class StackNode{
 		return (edges != null);
 	}
 	
-	public ArrayList<StackNode> getEdges(){
+	public ArrayList<AbstractStackNode> getEdges(){
 		return edges;
 	}
 	
@@ -117,7 +117,7 @@ public abstract class StackNode{
 	public abstract int getLength();
 	
 	// Lists.
-	public abstract StackNode[] getChildren();
+	public abstract AbstractStackNode[] getChildren();
 	
 	// Results.
 	public void addPrefix(INode[] prefix, int length){

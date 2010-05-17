@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.LiteralNode;
 
-public final class LiteralStackNode extends StackNode{
+public final class LiteralStackNode extends AbstractStackNode{
 	private final char[] literal;
 	
 	private final LiteralNode result;
@@ -42,11 +42,11 @@ public final class LiteralStackNode extends StackNode{
 		return true;
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new LiteralStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		LiteralStackNode lpsn = new LiteralStackNode(this);
 		lpsn.prefixes = prefixes;
 		lpsn.prefixStartLocations = prefixStartLocations;
@@ -65,7 +65,7 @@ public final class LiteralStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode[] getChildren(){
+	public AbstractStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

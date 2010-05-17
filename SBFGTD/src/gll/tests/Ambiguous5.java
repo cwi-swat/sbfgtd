@@ -2,7 +2,7 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 
 /*
@@ -11,11 +11,11 @@ A ::= BB
 B ::= aa | a
 */
 public class Ambiguous5 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static StackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
-	private final static StackNode LITERAL_aa4 = new LiteralStackNode(4, new char[]{'a','a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_aa4 = new LiteralStackNode(4, new char[]{'a','a'});
 	
 	public Ambiguous5(char[] input){
 		super(input);

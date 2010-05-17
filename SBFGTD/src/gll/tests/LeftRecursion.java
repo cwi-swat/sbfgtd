@@ -2,7 +2,7 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 
 /*
@@ -10,10 +10,10 @@ S ::= A
 A ::= Aa | a
 */
 public class LeftRecursion extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
 	
 	public LeftRecursion(char[] input){
 		super(input);

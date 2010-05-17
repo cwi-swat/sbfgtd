@@ -4,18 +4,18 @@ import gll.SGLL;
 import gll.stack.EpsilonStackNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 /*
 S ::= A
 A ::= AA | epsilon | a
 */
 public class CycleEpsilon extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
-	private final static StackNode NONTERMINAL_A2 = new NonTerminalStackNode(2, "A");
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
-	private final static StackNode EPSILON_4 = new EpsilonStackNode(4);
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
+	private final static AbstractStackNode NONTERMINAL_A2 = new NonTerminalStackNode(2, "A");
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static AbstractStackNode EPSILON_4 = new EpsilonStackNode(4);
 	
 	public CycleEpsilon(char[] input){
 		super(input);

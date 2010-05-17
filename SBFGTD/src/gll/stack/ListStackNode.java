@@ -4,17 +4,17 @@ import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public final class ListStackNode extends StackNode{
+public final class ListStackNode extends AbstractStackNode{
 	private final String nodeName;
 
-	private final StackNode child;
+	private final AbstractStackNode child;
 	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private final INode result;
 	
-	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList){
+	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -25,7 +25,7 @@ public final class ListStackNode extends StackNode{
 		this.result = null;
 	}
 	
-	public ListStackNode(int id, StackNode child, String nodeName, boolean isPlusList, INode result){
+	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList, INode result){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -63,11 +63,11 @@ public final class ListStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new ListStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		ListStackNode lpsn = new ListStackNode(this);
 		lpsn.prefixes = prefixes;
 		lpsn.prefixStartLocations = prefixStartLocations;
@@ -86,9 +86,9 @@ public final class ListStackNode extends StackNode{
 		return marked;
 	}
 	
-	public StackNode[] getChildren(){
-		StackNode psn = child.getCleanCopy();
-		StackNode cpsn = child.getCleanCopy();
+	public AbstractStackNode[] getChildren(){
+		AbstractStackNode psn = child.getCleanCopy();
+		AbstractStackNode cpsn = child.getCleanCopy();
 		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, nodeName, true, new ContainerNode(nodeName));
 		
 		lpsn.addNext(psn);
@@ -103,14 +103,14 @@ public final class ListStackNode extends StackNode{
 		cpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new StackNode[]{cpsn};
+			return new AbstractStackNode[]{cpsn};
 		}
 		
 		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		epsn.setStartLocation(startLocation);
 		
-		return new StackNode[]{cpsn, epsn};
+		return new AbstractStackNode[]{cpsn, epsn};
 	}
 	
 	public void addResult(INode[] children){

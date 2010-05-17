@@ -2,7 +2,7 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 
 /*
@@ -10,9 +10,9 @@ S ::= Ab
 A ::= aa
 */
 public class Simple1 extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode LITERAL_aa1 = new LiteralStackNode(1, new char[]{'a','a'});
-	private final static StackNode LITERAL_b2 = new LiteralStackNode(2, new char[]{'b'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode LITERAL_aa1 = new LiteralStackNode(1, new char[]{'a','a'});
+	private final static AbstractStackNode LITERAL_b2 = new LiteralStackNode(2, new char[]{'b'});
 	
 	public Simple1(char[] input){
 		super(input);
