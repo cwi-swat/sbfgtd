@@ -2,13 +2,13 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.CharStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 /*
 S ::= [a-z]
 */
 public class CharRange extends SGLL{
-	private final static StackNode CHAR_a0 = new CharStackNode(0, "[a-z]", new char[][]{{'a','z'}}, new char[]{});
+	private final static AbstractStackNode CHAR_a0 = new CharStackNode(0, "[a-z]", new char[][]{{'a','z'}}, new char[]{});
 	
 	public CharRange(char[] input){
 		super(input);

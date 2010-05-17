@@ -4,18 +4,18 @@ import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public final class SeparatedListStackNode extends StackNode{
+public final class SeparatedListStackNode extends AbstractStackNode{
 	private final String nodeName;
 
-	private final StackNode child;
-	private final StackNode[] separators;
+	private final AbstractStackNode child;
+	private final AbstractStackNode[] separators;
 	private final boolean isPlusList;
 	
 	private boolean marked;
 	
 	private final INode result;
 	
-	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList){
+	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -27,7 +27,7 @@ public final class SeparatedListStackNode extends StackNode{
 		this.result = null;
 	}
 	
-	public SeparatedListStackNode(int id, StackNode child, StackNode[] separators, String nodeName, boolean isPlusList, INode result){
+	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList, INode result){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -67,11 +67,11 @@ public final class SeparatedListStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new SeparatedListStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		SeparatedListStackNode slpsn = new SeparatedListStackNode(this);
 		slpsn.prefixes = prefixes;
 		slpsn.prefixStartLocations = prefixStartLocations;
@@ -90,14 +90,14 @@ public final class SeparatedListStackNode extends StackNode{
 		return marked;
 	}
 	
-	public StackNode[] getChildren(){
-		StackNode psn = child.getCleanCopy();
-		StackNode cpsn = child.getCleanCopy();
+	public AbstractStackNode[] getChildren(){
+		AbstractStackNode psn = child.getCleanCopy();
+		AbstractStackNode cpsn = child.getCleanCopy();
 		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ContainerNode(nodeName));
 		
-		StackNode from = slpsn;
+		AbstractStackNode from = slpsn;
 		for(int i = 0; i < separators.length; i++){
-			StackNode to = separators[i];
+			AbstractStackNode to = separators[i];
 			from.addNext(to);
 			from = to;
 		}
@@ -113,14 +113,14 @@ public final class SeparatedListStackNode extends StackNode{
 		cpsn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new StackNode[]{cpsn};
+			return new AbstractStackNode[]{cpsn};
 		}
 		
 		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		epsn.setStartLocation(startLocation);
 		
-		return new StackNode[]{cpsn, epsn};
+		return new AbstractStackNode[]{cpsn, epsn};
 	}
 	
 	public void addResult(INode[] children){

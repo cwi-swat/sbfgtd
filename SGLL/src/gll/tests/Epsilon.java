@@ -4,16 +4,16 @@ import gll.SGLL;
 import gll.stack.EpsilonStackNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 /*
 S ::= Aepsilon
 A ::= a
 */
 public class Epsilon extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode EPSILON_1 = new EpsilonStackNode(1);
-	private final static StackNode NONTERMINAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode EPSILON_1 = new EpsilonStackNode(1);
+	private final static AbstractStackNode NONTERMINAL_a2 = new LiteralStackNode(2, new char[]{'a'});
 	
 	public Epsilon(char[] input){
 		super(input);

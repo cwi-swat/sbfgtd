@@ -4,13 +4,13 @@ import gll.SGLL;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.SeparatedListStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 public class SeparatedStarList extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode LITERAL_b1 = new LiteralStackNode(1, new char[]{'b'});
-	private final static StackNode LIST2 = new SeparatedListStackNode(2, NONTERMINAL_A0, new StackNode[]{LITERAL_b1}, "(Ab)*", false);
-	private final static StackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode LITERAL_b1 = new LiteralStackNode(1, new char[]{'b'});
+	private final static AbstractStackNode LIST2 = new SeparatedListStackNode(2, NONTERMINAL_A0, new AbstractStackNode[]{LITERAL_b1}, "(Ab)*", false);
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
 	
 	public SeparatedStarList(char[] input){
 		super(input);

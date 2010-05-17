@@ -3,14 +3,14 @@ package gll.tests;
 import gll.SGLL;
 import gll.stack.CharStackNode;
 import gll.stack.ListStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 /*
 S ::= [a-z]*
 */
 public class CharStarList extends SGLL{
-	private final static StackNode CHAR0 = new CharStackNode(0, "[a-z]", new char[][]{{'a', 'z'}}, new char[]{});
-	private final static StackNode LIST1 = new ListStackNode(1, CHAR0, "[a-z]*", false);
+	private final static AbstractStackNode CHAR0 = new CharStackNode(0, "[a-z]", new char[][]{{'a', 'z'}}, new char[]{});
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, CHAR0, "[a-z]*", false);
 	
 	public CharStarList(char[] input){
 		super(input);

@@ -2,7 +2,7 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 
 /*
@@ -11,9 +11,9 @@ A ::= B | a
 B ::= A | a
 */
 public class UselessSelfLoop extends SGLL{
-	private final static StackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static StackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
+	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
 	
 	public UselessSelfLoop(char[] input){
 		super(input);

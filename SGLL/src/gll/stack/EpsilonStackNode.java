@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.EpsilonNode;
 import gll.result.INode;
 
-public final class EpsilonStackNode extends StackNode{
+public final class EpsilonStackNode extends AbstractStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
 	
 	public EpsilonStackNode(int id){
@@ -30,11 +30,11 @@ public final class EpsilonStackNode extends StackNode{
 		return true;
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new EpsilonStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		EpsilonStackNode epsn = new EpsilonStackNode(this);
 		epsn.prefixes = prefixes;
 		epsn.prefixStartLocations = prefixStartLocations;
@@ -53,7 +53,7 @@ public final class EpsilonStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode[] getChildren(){
+	public AbstractStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	

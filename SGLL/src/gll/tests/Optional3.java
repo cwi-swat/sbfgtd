@@ -4,20 +4,20 @@ import gll.SGLL;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.OptionalStackNode;
-import gll.stack.StackNode;
+import gll.stack.AbstractStackNode;
 
 /*
 S ::= a(A?) | aA
 A ::= a
 */
 public class Optional3 extends SGLL{
-	private final static StackNode LITERAL_a0 = new LiteralStackNode(0, new char[]{'a'});
-	private final static StackNode LITERAL_a1 = new LiteralStackNode(1, new char[]{'a'});
-	private final static StackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
-	private final static StackNode NONTERMINAL_A3 = new NonTerminalStackNode(3, "A");
-	private final static StackNode NONTERMINAL_A4 = new NonTerminalStackNode(4, "A");
-	private final static StackNode NON_TERMINAL_O5 = new NonTerminalStackNode(5, "O");
-	private final static StackNode OPTIONAL_6 = new OptionalStackNode(6, NON_TERMINAL_O5, "O?");
+	private final static AbstractStackNode LITERAL_a0 = new LiteralStackNode(0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a1 = new LiteralStackNode(1, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A3 = new NonTerminalStackNode(3, "A");
+	private final static AbstractStackNode NONTERMINAL_A4 = new NonTerminalStackNode(4, "A");
+	private final static AbstractStackNode NON_TERMINAL_O5 = new NonTerminalStackNode(5, "O");
+	private final static AbstractStackNode OPTIONAL_6 = new OptionalStackNode(6, NON_TERMINAL_O5, "O?");
 	
 	public Optional3(char[] input){
 		super(input);

@@ -3,8 +3,8 @@ package gll.stack;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public final class OptionalStackNode extends StackNode{
-	private final StackNode optional;
+public final class OptionalStackNode extends AbstractStackNode{
+	private final AbstractStackNode optional;
 	
 	private final String nodeName;
 	
@@ -12,7 +12,7 @@ public final class OptionalStackNode extends StackNode{
 	
 	private final INode result;
 	
-	public OptionalStackNode(int id, StackNode optional, String nodeName){
+	public OptionalStackNode(int id, AbstractStackNode optional, String nodeName){
 		super(id);
 		
 		this.optional = optional;
@@ -56,27 +56,27 @@ public final class OptionalStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new OptionalStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		OptionalStackNode opsn = new OptionalStackNode(this);
 		opsn.prefixes = prefixes;
 		opsn.prefixStartLocations = prefixStartLocations;
 		return opsn;
 	}
 	
-	public StackNode[] getChildren(){
-		StackNode copy = optional.getCleanCopy();
-		StackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
+	public AbstractStackNode[] getChildren(){
+		AbstractStackNode copy = optional.getCleanCopy();
+		AbstractStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		copy.addEdge(this);
 		epsn.addEdge(this);
 		
 		copy.setStartLocation(startLocation);
 		epsn.setStartLocation(startLocation);
 
-		StackNode[] children = new StackNode[2];
+		AbstractStackNode[] children = new AbstractStackNode[2];
 		children[0] = copy;
 		children[1] = epsn;
 		return children;

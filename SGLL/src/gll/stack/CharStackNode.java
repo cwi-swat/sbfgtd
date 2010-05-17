@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.CharNode;
 import gll.result.INode;
 
-public final class CharStackNode extends StackNode{
+public final class CharStackNode extends AbstractStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
@@ -61,11 +61,11 @@ public final class CharStackNode extends StackNode{
 		return false;
 	}
 	
-	public StackNode getCleanCopy(){
+	public AbstractStackNode getCleanCopy(){
 		return new CharStackNode(this);
 	}
 	
-	public StackNode getCleanCopyWithPrefix(){
+	public AbstractStackNode getCleanCopyWithPrefix(){
 		CharStackNode cpsn = new CharStackNode(this);
 		cpsn.prefixes = prefixes;
 		cpsn.prefixStartLocations = prefixStartLocations;
@@ -84,7 +84,7 @@ public final class CharStackNode extends StackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public StackNode[] getChildren(){
+	public AbstractStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
 	}
 	
