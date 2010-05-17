@@ -49,3 +49,58 @@ input chars	| Average Time	| Lowest Time
 400			| 98294 ms		| 97223 ms
 450			| 149635 ms		| 148385 ms
 500			| ? ms			| ? ms
+
+----------------------------------------------------------------------
+
+CNF version:
+
+S ::= SS2 | SS | "a"
+S2 ::= SS
+
+Recognizer (emulated binarization):
+------------------------------------------
+input chars	| Average Time	| Lowest Time
+------------------------------------------
+5			| 0 ms			| 0 ms
+10			| 0 ms			| 0 ms
+15			| 0 ms			| 0 ms
+20			| 0 ms			| 0 ms
+25			| 0 ms			| 0 ms
+30			| 0 ms			| 0 ms
+35			| 0 ms			| 0 ms
+40			| 0 ms			| 0	ms
+45			| 0 ms			| 0 ms
+50			| 10 ms			| 0 ms
+100			| 40 ms			| 0 ms
+150			| 160 ms		| 150 ms
+200			| 400 ms		| 400 ms
+250			| 831 ms		| 801 ms
+300			| 1482 ms		| 1452 ms
+350			| 2443 ms		| 2404 ms
+400			| 3725 ms		| 3705 ms
+450			| 5387 ms		| 5357 ms
+500			| 7520 ms		| 7510 ms
+
+Parser (emulated binarization):
+------------------------------------------
+input chars	| Average Time	| Lowest Time
+------------------------------------------
+5			| 0 ms			| 0 ms
+10			| 0 ms			| 0 ms
+15			| 0 ms			| 0 ms
+20			| 0 ms			| 0 ms
+25			| 0 ms			| 0 ms
+30			| 0 ms			| 0 ms
+35			| 0 ms			| 0 ms
+40			| 10 ms			| 0	ms
+45			| 10 ms			| 0 ms
+50			| 20 ms			| 0 ms
+100			| 190 ms		| 151 ms
+150			| 821 ms		| 801 ms
+200			| 2243 ms		| 2203 ms
+250			| 5219 ms		| 5107 ms
+300			| 10254 ms		| 10113 ms
+350			| 20280 ms		| 19178 ms
+400			| 32385 ms		| 30897 ms
+450			| 49852 ms		| 48825 ms
+500			| 77076 ms		| 72302 ms
