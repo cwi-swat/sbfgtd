@@ -28,7 +28,7 @@ public class WorstCase extends SGLL{
 		expect(TERMINAL_a5);
 	}
 	
-	private final static int ITERATIONS = 5;
+	private final static int ITERATIONS = 1;
 	
 	private static char[] createInput(int size){
 		char[] input = new char[size];
@@ -68,9 +68,9 @@ public class WorstCase extends SGLL{
 			runTest(input);
 		}
 		
-		for(int i = 50; i <= 500; i += 50){
-			input = createInput(i);
+		//for(int i = 50; i <= 500; i += 50){
+			input = createInput(500);
 			runTest(input);
-		}
+		//}
 	}
 }
