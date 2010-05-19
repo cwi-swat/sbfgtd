@@ -104,3 +104,25 @@ input chars	| Average Time	| Lowest Time
 400			| 32385 ms		| 30897 ms
 450			| 49852 ms		| 48825 ms
 500			| 77076 ms		| 72302 ms
+
+
+
+
+
+
+--------------------------------------------------------
+
+Parser (S ::= SSSS | SSS | SS | "a")
+
+5: avg=0ms, lowest=0ms
+10: avg=0ms, lowest=0ms
+15: avg=10ms, lowest=0ms
+20: avg=0ms, lowest=0ms
+25: avg=20ms, lowest=0ms
+30: avg=40ms, lowest=0ms
+35: avg=70ms, lowest=50ms
+40: avg=120ms, lowest=100ms
+45: avg=160ms, lowest=150ms
+50: avg=260ms, lowest=200ms
+100: avg=8264ms, lowest=7662ms
+150: avg=52374ms, lowest=52221ms
