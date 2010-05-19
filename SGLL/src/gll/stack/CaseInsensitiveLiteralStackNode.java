@@ -3,12 +3,12 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.LiteralNode;
 
-public final class ContextInsensitiveLiteralStackNode extends AbstractStackNode{
+public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode{
 	private final char[][] ciLiteral;
 	
 	private LiteralNode result;
 	
-	public ContextInsensitiveLiteralStackNode(int id, char[] ciLiteral){
+	public CaseInsensitiveLiteralStackNode(int id, char[] ciLiteral){
 		super(id);
 		
 		int nrOfCharacters = ciLiteral.length;
@@ -26,7 +26,7 @@ public final class ContextInsensitiveLiteralStackNode extends AbstractStackNode{
 		}
 	}
 	
-	private ContextInsensitiveLiteralStackNode(ContextInsensitiveLiteralStackNode contextInsensitiveLiteralParseStackNode){
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode contextInsensitiveLiteralParseStackNode){
 		super(contextInsensitiveLiteralParseStackNode);
 
 		ciLiteral = contextInsensitiveLiteralParseStackNode.ciLiteral;
@@ -66,11 +66,11 @@ public final class ContextInsensitiveLiteralStackNode extends AbstractStackNode{
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new ContextInsensitiveLiteralStackNode(this);
+		return new CaseInsensitiveLiteralStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		ContextInsensitiveLiteralStackNode cilpsn = new ContextInsensitiveLiteralStackNode(this);
+		CaseInsensitiveLiteralStackNode cilpsn = new CaseInsensitiveLiteralStackNode(this);
 		cilpsn.prefixes = prefixes;
 		cilpsn.prefixStartLocations = prefixStartLocations;
 		return cilpsn;

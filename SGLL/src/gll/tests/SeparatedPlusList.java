@@ -6,6 +6,12 @@ import gll.stack.NonTerminalStackNode;
 import gll.stack.SeparatedListStackNode;
 import gll.stack.AbstractStackNode;
 
+/*
+S ::= sep(A, b)+
+A ::= a
+
+sep(X, Y) means, a list of X separated by Y's.
+*/
 public class SeparatedPlusList extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
 	private final static AbstractStackNode LITERAL_b1 = new LiteralStackNode(1, new char[]{'b'});
