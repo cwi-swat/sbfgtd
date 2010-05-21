@@ -120,7 +120,8 @@ public class SGLL implements IGLL{
 				edge = updateEdgeNode(edge);
 				addResults(edge, results, resultStartLocations);
 			}
-		}else if((next = node.getNext()) != null){
+		}
+		if((next = node.getNext()) != null){
 			next = updateNextNode(next);
 			addPrefixes(next, results, resultStartLocations);
 		}
