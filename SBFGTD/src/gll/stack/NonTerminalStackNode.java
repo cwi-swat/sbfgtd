@@ -34,6 +34,10 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return false;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String getMethodName(){
 		return nonTerminal;
 	}
