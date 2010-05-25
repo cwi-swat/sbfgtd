@@ -37,6 +37,10 @@ public final class CharStackNode extends AbstractStackNode{
 		return false;
 	}
 	
+	public boolean isEpsilon(){
+		return false;
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
