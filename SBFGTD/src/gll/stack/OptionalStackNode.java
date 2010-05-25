@@ -75,11 +75,8 @@ public final class OptionalStackNode extends AbstractStackNode{
 		
 		copy.setStartLocation(startLocation);
 		epsn.setStartLocation(startLocation);
-
-		AbstractStackNode[] children = new AbstractStackNode[2];
-		children[0] = copy;
-		children[1] = epsn;
-		return children;
+		
+		return new AbstractStackNode[]{copy, epsn};
 	}
 	
 	public String getMethodName(){
