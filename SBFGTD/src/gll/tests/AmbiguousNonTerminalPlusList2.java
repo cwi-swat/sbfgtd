@@ -33,6 +33,6 @@ public class AmbiguousNonTerminalPlusList2 extends SGLL{
 		AmbiguousNonTerminalPlusList2 nrpl2 = new AmbiguousNonTerminalPlusList2("aaa".toCharArray());
 		System.out.println(nrpl2.parse("S"));
 		
-		System.out.println("S([A+(A+(A(a)),A(aa)),A+([A+(A(aa)),A+(A+(A(a)),A(a))],A(a))]) <- good");
+		System.out.println("S([A+(A(a),[A+(A(aa)),A+(A(a),A+(A(a)))]),A+(A(aa),A+(A(a)))]) <- good");
 	}
 }

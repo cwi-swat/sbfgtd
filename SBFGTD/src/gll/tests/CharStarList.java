@@ -24,6 +24,6 @@ public class CharStarList extends SGLL{
 		CharStarList csl = new CharStarList("abc".toCharArray());
 		System.out.println(csl.parse("S"));
 		
-		System.out.println("S([a-z]*([a-z]*([a-z]*([a-z](a)),[a-z](b)),[a-z](c))) <- good");
+		System.out.println("S([a-z]*([a-z](a),[a-z]*([a-z](b),[a-z]*([a-z](c))))) <- good");
 	}
 }

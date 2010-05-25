@@ -15,12 +15,12 @@ public class SGLL implements IGLL{
 	
 	// Updatable
 	private final ArrayList<AbstractStackNode> stacksToExpand;
-	private ArrayList<AbstractStackNode> stacksWithTerminalsToReduce;
+	private final ArrayList<AbstractStackNode> stacksWithTerminalsToReduce;
 	private final ArrayList<AbstractStackNode> stacksWithNonTerminalsToReduce;
-	private ArrayList<AbstractStackNode[]> lastExpects;
-	private ArrayList<AbstractStackNode> possiblySharedExpects;
-	private ArrayList<AbstractStackNode> possiblySharedExpectsEndNodes;
-	private ArrayList<AbstractStackNode> possiblySharedNextNodes;
+	private final ArrayList<AbstractStackNode[]> lastExpects;
+	private final ArrayList<AbstractStackNode> possiblySharedExpects;
+	private final ArrayList<AbstractStackNode> possiblySharedExpectsEndNodes;
+	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	private IntegerHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
 	private int previousLocation;
@@ -38,6 +38,10 @@ public class SGLL implements IGLL{
 		stacksToExpand = new ArrayList<AbstractStackNode>();
 		stacksWithTerminalsToReduce = new ArrayList<AbstractStackNode>();
 		stacksWithNonTerminalsToReduce = new ArrayList<AbstractStackNode>();
+		
+		lastExpects = new ArrayList<AbstractStackNode[]>();
+		possiblySharedExpects = new ArrayList<AbstractStackNode>();
+		possiblySharedExpectsEndNodes = new ArrayList<AbstractStackNode>();
 		
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
 		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<AbstractStackNode>>();
@@ -158,8 +162,8 @@ public class SGLL implements IGLL{
 	
 	private void reduce(){
 		if(previousLocation != location){ // Epsilon fix.
-			possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
-			possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<AbstractStackNode>>();
+			possiblySharedNextNodes.clear();
+			possiblySharedEdgeNodesMap.clear();
 		}
 		
 		// Reduce terminals.
@@ -184,7 +188,7 @@ public class SGLL implements IGLL{
 			AbstractStackNode node = todoList.get(i);
 			int nextLocation = node.getStartLocation() + node.getLength();
 			if(nextLocation < closestNextLocation){
-				stacksWithTerminalsToReduce = new ArrayList<AbstractStackNode>();
+				stacksWithTerminalsToReduce.clear();
 				stacksWithTerminalsToReduce.add(node);
 				closestNextLocation = nextLocation;
 			}else if(nextLocation == closestNextLocation){
@@ -267,11 +271,11 @@ public class SGLL implements IGLL{
 	
 	private void expand(){
 		if(previousLocation != location){
-			possiblySharedExpects = new ArrayList<AbstractStackNode>();
-			possiblySharedExpectsEndNodes = new ArrayList<AbstractStackNode>();
+			possiblySharedExpects.clear();
+			possiblySharedExpectsEndNodes.clear();
 		}
 		while(stacksToExpand.size() > 0){
-			lastExpects = new ArrayList<AbstractStackNode[]>(1);
+			lastExpects.clear(1);
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
 		}
 	}
