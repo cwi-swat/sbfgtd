@@ -13,7 +13,9 @@ B ::= A | a
 public class UselessSelfLoop extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
 	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A2 = new NonTerminalStackNode(2, "A");
+	private final static AbstractStackNode NONTERMINAL_B3 = new NonTerminalStackNode(3, "B");
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(4, new char[]{'a'});
 	
 	public UselessSelfLoop(char[] input){
 		super(input);
@@ -26,13 +28,13 @@ public class UselessSelfLoop extends SGLL{
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B1);
+		expect(NONTERMINAL_B3);
 		
 		expect(LITERAL_a2);
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_A0);
+		expect(NONTERMINAL_A2);
 		
 		expect(LITERAL_a2);
 	}
@@ -41,6 +43,6 @@ public class UselessSelfLoop extends SGLL{
 		UselessSelfLoop usl = new UselessSelfLoop("a".toCharArray());
 		System.out.println(usl.parse("S"));
 		
-		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good");
+		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good (TODO Add cycle)");
 	}
 }

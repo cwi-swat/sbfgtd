@@ -117,7 +117,6 @@ public class SGLL implements IGLL{
 		int[] resultStartLocations = node.getResultStartLocations();
 		
 		ArrayList<AbstractStackNode> edges;
-		AbstractStackNode next;
 		if((edges = node.getEdges()) != null){
 			for(int i = edges.size() - 1; i >= 0; i--){
 				AbstractStackNode edge = edges.get(i);
@@ -125,6 +124,7 @@ public class SGLL implements IGLL{
 				addResults(edge, results, resultStartLocations);
 			}
 		}
+		AbstractStackNode next;
 		if((next = node.getNext()) != null){
 			next = updateNextNode(next);
 			addPrefixes(next, results, resultStartLocations);

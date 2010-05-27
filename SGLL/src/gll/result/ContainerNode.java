@@ -26,6 +26,7 @@ public class ContainerNode implements INode{
 		return false;
 	}
 	
+	// Fix the toString stuff.
 	private void printAlternative(INode[] children, StringBuilder sb){
 		int nrOfChildren = children.length;
 		
