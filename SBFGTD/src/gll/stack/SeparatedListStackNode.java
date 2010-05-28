@@ -100,7 +100,7 @@ public final class SeparatedListStackNode extends AbstractStackNode{
 		
 		AbstractStackNode from = psn;
 		for(int i = 0; i < separators.length; i++){
-			AbstractStackNode to = separators[i];
+			AbstractStackNode to = separators[i].getCleanCopy();
 			from.addNext(to);
 			from = to;
 		}
