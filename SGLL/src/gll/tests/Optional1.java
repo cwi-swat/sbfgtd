@@ -30,7 +30,8 @@ public class Optional1 extends SGLL{
 	
 	public static void main(String[] args){
 		Optional1 o1 = new Optional1("aa".toCharArray());
-		System.out.println(o1.parse("S"));
+		o1.parse("S");
+		System.out.println(o1.getStringResult());
 		System.out.println("S(a,O?(O(a))) <- good");
 	}
 }

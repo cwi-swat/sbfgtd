@@ -67,7 +67,8 @@ public class Ambiguous6 extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous6 a6 = new Ambiguous6("a".toCharArray());
-		System.out.println(a6.parse("S"));
+		a6.parse("S");
+		System.out.println(a6.getStringResult());
 		
 		System.out.println("[S(E(F(G(a)))),S(A(B(C([D(E(F(G(a)))),D(a)]))))] <- good");
 	}

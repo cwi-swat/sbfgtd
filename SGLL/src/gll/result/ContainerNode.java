@@ -1,5 +1,8 @@
 package gll.result;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import gll.util.ArrayList;
 
 public class ContainerNode implements INode{
@@ -26,7 +29,46 @@ public class ContainerNode implements INode{
 		return false;
 	}
 	
-	// Fix the toString stuff.
+	private void printAlternative(INode[] children, Writer out, ArrayList<INode> stack) throws IOException{
+		int nrOfChildren = children.length;
+		
+		out.write(name);
+		out.write('(');
+		children[0].print(out, stack);
+		for(int i = 1; i < nrOfChildren; i++){
+			out.write(',');
+			children[i].print(out, stack);
+		}
+		out.write(')');
+	}
+	
+	public void print(Writer out, ArrayList<INode> stack) throws IOException{
+		if(stack.contains(this)){ // TODO Add depth stuff.
+			out.write("cycle(");
+			out.write(name);
+			out.write(")");
+			return;
+		}
+		
+		if(alternatives == null){
+			printAlternative(firstAlternative, out, stack);
+		}else{
+			stack.add(this); // Push
+			
+			out.write('[');
+			for(int i = alternatives.size() - 1; i >= 1; i--){
+				printAlternative(alternatives.get(i), out, stack);
+				out.write(',');
+			}
+			printAlternative(alternatives.get(0), out, stack);
+			out.write(',');
+			printAlternative(firstAlternative, out, stack);
+			out.write(']');
+			
+			stack.remove(stack.size() - 1); // Pop
+		}
+	}
+	
 	private void printAlternative(INode[] children, StringBuilder sb){
 		int nrOfChildren = children.length;
 		

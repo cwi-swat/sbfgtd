@@ -22,7 +22,8 @@ public class CharPlusList extends SGLL{
 	
 	public static void main(String[] args){
 		CharPlusList cpl = new CharPlusList("abc".toCharArray());
-		System.out.println(cpl.parse("S"));
+		cpl.parse("S");
+		System.out.println(cpl.getStringResult());
 		
 		System.out.println("S([a-z]+([a-z](a),[a-z]+([a-z](b),[a-z]+([a-z](c))))) <- good");
 	}

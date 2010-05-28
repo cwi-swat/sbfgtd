@@ -38,7 +38,8 @@ public class Ambiguous4 extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous4 a4 = new Ambiguous4("bbbbbb".toCharArray());
-		System.out.println(a4.parse("S"));
+		a4.parse("S");
+		System.out.println(a4.getStringResult());
 		
 		System.out.println("[S([A(B(b),B(bb)),A(B(bb),B(b))],[A(B(b),B(bb)),A(B(bb),B(b))]),S(A(B(b),B(b)),A(B(bb),B(bb))),S(A(B(bb),B(bb)),A(B(b),B(b)))] <- good");
 	}

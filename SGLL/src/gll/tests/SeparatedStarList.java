@@ -31,8 +31,9 @@ public class SeparatedStarList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		SeparatedStarList nrpl = new SeparatedStarList("ababa".toCharArray());
-		System.out.println(nrpl.parse("S"));
+		SeparatedStarList nrsl = new SeparatedStarList("ababa".toCharArray());
+		nrsl.parse("S");
+		System.out.println(nrsl.getStringResult());
 		
 		System.out.println("S((Ab)*((Ab)*((Ab)*(A(a)),b,A(a)),b,A(a))) <- good");
 	}

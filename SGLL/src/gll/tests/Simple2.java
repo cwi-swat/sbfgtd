@@ -34,7 +34,8 @@ public class Simple2 extends SGLL{
 	
 	public static void main(String[] args){
 		Simple2 s2 = new Simple2("ab".toCharArray());
-		System.out.println(s2.parse("S"));
+		s2.parse("S");
+		System.out.println(s2.getStringResult());
 		
 		System.out.println("S(A(a),B(b)) <- good");
 	}

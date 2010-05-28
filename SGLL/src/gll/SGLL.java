@@ -1,11 +1,13 @@
 package gll;
 
 import gll.result.INode;
-import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
+import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.IntegerHashMap;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 
 public class SGLL implements IGLL{
@@ -293,6 +295,18 @@ public class SGLL implements IGLL{
 		}
 		
 		return false;
+	}
+	
+	protected String getStringResult(){
+		INode result = root.getResult();
+		
+		StringWriter out = new StringWriter();
+		try{
+			result.print(out, new ArrayList<INode>());
+		}catch(IOException ioex){
+			// Ignore; never happens.
+		}
+		return out.toString();
 	}
 	
 	public INode parse(String start){

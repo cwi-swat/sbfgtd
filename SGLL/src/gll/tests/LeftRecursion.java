@@ -31,7 +31,8 @@ public class LeftRecursion extends SGLL{
 	
 	public static void main(String[] args){
 		LeftRecursion lr = new LeftRecursion("aaa".toCharArray());
-		System.out.println(lr.parse("S"));
+		lr.parse("S");
+		System.out.println(lr.getStringResult());
 		
 		System.out.println("S(A(A(A(a),a),a)) <- good");
 	}

@@ -20,7 +20,8 @@ public class CharRange extends SGLL{
 	
 	public static void main(String[] args){
 		CharRange cr = new CharRange("a".toCharArray());
-		System.out.println(cr.parse("S"));
+		cr.parse("S");
+		System.out.println(cr.getStringResult());
 		
 		System.out.println("S([a-z](a)) <- good");
 	}

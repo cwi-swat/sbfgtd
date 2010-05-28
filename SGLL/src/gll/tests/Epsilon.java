@@ -29,7 +29,8 @@ public class Epsilon extends SGLL{
 	
 	public static void main(String[] args){
 		Epsilon e = new Epsilon("a".toCharArray());
-		System.out.println(e.parse("S"));
+		e.parse("S");
+		System.out.println(e.getStringResult());
 		
 		System.out.println("S(A(a),) <- good");
 	}
