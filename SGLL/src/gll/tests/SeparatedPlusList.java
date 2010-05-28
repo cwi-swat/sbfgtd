@@ -35,6 +35,6 @@ public class SeparatedPlusList extends SGLL{
 		nrpl.parse("S");
 		System.out.println(nrpl.getStringResult());
 		
-		System.out.println("S((Ab)+((Ab)+((Ab)+(A(a)),b,A(a)),b,A(a))) <- good");
+		System.out.println("S((Ab)+(A(a),b,(Ab)+(A(a),b,(Ab)+(A(a))))) <- good");
 	}
 }

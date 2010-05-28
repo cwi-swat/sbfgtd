@@ -96,35 +96,30 @@ public final class SeparatedListStackNode extends AbstractStackNode{
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode psn = child.getCleanCopy();
-		AbstractStackNode cpsn = child.getCleanCopy();
 		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ContainerNode(nodeName));
 		
-		AbstractStackNode from = slpsn;
+		AbstractStackNode from = psn;
 		for(int i = 0; i < separators.length; i++){
 			AbstractStackNode to = separators[i];
 			from.addNext(to);
 			from = to;
 		}
-		from.addNext(psn);
-		psn.addEdge(slpsn);
+		from.addNext(slpsn);
+		
 		psn.addEdge(this);
+		slpsn.addEdge(this);
 		
-		cpsn.addEdge(slpsn);
-		cpsn.addEdge(this);
-		
-		psn.setStartLocation(-1); // Reset.
-		slpsn.setStartLocation(startLocation);
-		cpsn.setStartLocation(startLocation);
+		psn.setStartLocation(startLocation);
 		
 		if(isPlusList){
-			return new AbstractStackNode[]{cpsn};
+			return new AbstractStackNode[]{psn};
 		}
 		
 		EpsilonStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
 		epsn.addEdge(this);
 		epsn.setStartLocation(startLocation);
 		
-		return new AbstractStackNode[]{cpsn, epsn};
+		return new AbstractStackNode[]{psn, epsn};
 	}
 	
 	public void addResult(INode[] children){
