@@ -1,9 +1,10 @@
 package gll.result;
 
+import gll.util.ArrayList;
+import gll.util.Stack;
+
 import java.io.IOException;
 import java.io.Writer;
-
-import gll.util.ArrayList;
 
 public class ContainerNode implements INode{
 	private final String name;
@@ -29,7 +30,7 @@ public class ContainerNode implements INode{
 		return false;
 	}
 	
-	private void printAlternative(INode[] children, Writer out, ArrayList<INode> stack) throws IOException{
+	private void printAlternative(INode[] children, Writer out, Stack<INode> stack) throws IOException{
 		int nrOfChildren = children.length;
 		
 		out.write(name);
@@ -42,8 +43,8 @@ public class ContainerNode implements INode{
 		out.write(')');
 	}
 	
-	public void print(Writer out, ArrayList<INode> stack) throws IOException{
-		if(stack.contains(this)){ // TODO Add depth stuff.
+	public void print(Writer out, Stack<INode> stack) throws IOException{
+		if(stack.contains(this)){
 			out.write("cycle(");
 			out.write(name);
 			out.write(")");
@@ -53,7 +54,7 @@ public class ContainerNode implements INode{
 		if(alternatives == null){
 			printAlternative(firstAlternative, out, stack);
 		}else{
-			stack.add(this); // Push
+			stack.push(this); // Push
 			
 			out.write('[');
 			for(int i = alternatives.size() - 1; i >= 1; i--){
@@ -65,7 +66,7 @@ public class ContainerNode implements INode{
 			printAlternative(firstAlternative, out, stack);
 			out.write(']');
 			
-			stack.remove(stack.size() - 1); // Pop
+			stack.purge(); // Pop
 		}
 	}
 	

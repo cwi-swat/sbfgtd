@@ -1,6 +1,6 @@
 package gll.result;
 
-import gll.util.ArrayList;
+import gll.util.Stack;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -10,6 +10,5 @@ public interface INode{
 	
 	boolean isEpsilon();
 	
-	// TODO Use a real stack.
-	void print(Writer out, ArrayList<INode> stack) throws IOException;
+	void print(Writer out, Stack<INode> stack) throws IOException;
 }
