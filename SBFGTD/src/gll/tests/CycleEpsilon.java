@@ -35,8 +35,9 @@ public class CycleEpsilon extends SGLL{
 	
 	public static void main(String[] args){
 		CycleEpsilon ce = new CycleEpsilon("a".toCharArray());
-		System.out.println(ce.parse("S"));
+		ce.parse("S");
+		System.out.println(ce.getStringResult());
 		
-		System.out.println("S([A(A(),A(a)),A(A(a),A())]) <- good (TODO Add cycle)");
+		System.out.println("S([A([A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],[A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)]),A(a)],A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],[A([A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)],A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)]),A(a)]) <- good");
 	}
 }

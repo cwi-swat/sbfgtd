@@ -57,16 +57,16 @@ public class RunAll{
 		System.out.println("NotAUselessSelfLoop:");
 		NotAUselessSelfLoop.main(args);
 		System.out.println();
-		//System.out.println("UselessSelfLoop:");
-		//UselessSelfLoop.main(args);
-		//System.out.println();
+		System.out.println("UselessSelfLoop:");
+		UselessSelfLoop.main(args);
+		System.out.println();
 		
 		System.out.println("Epsilon:");
 		Epsilon.main(args);
 		System.out.println();
-		//System.out.println("CycleEpsilon:");
-		//CycleEpsilon.main(args);
-		//System.out.println();
+		System.out.println("CycleEpsilon:");
+		CycleEpsilon.main(args);
+		System.out.println();
 		
 		System.out.println("Optional1:");
 		Optional1.main(args);

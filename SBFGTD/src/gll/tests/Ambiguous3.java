@@ -31,7 +31,8 @@ public class Ambiguous3 extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous3 a3 = new Ambiguous3("aaa".toCharArray());
-		System.out.println(a3.parse("S"));
+		a3.parse("S");
+		System.out.println(a3.getStringResult());
 		
 		System.out.println("[S(A(a),A(aa)),S(A(aa),A(a))] <- good");
 	}

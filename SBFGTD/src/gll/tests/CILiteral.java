@@ -22,7 +22,8 @@ public class CILiteral extends SGLL{
 	
 	public static void main(String[] args){
 		CILiteral cil = new CILiteral("Bla".toCharArray());
-		System.out.println(cil.parse("S"));
+		cil.parse("S");
+		System.out.println(cil.getStringResult());
 		
 		System.out.println("S(Bla) <- good");
 	}

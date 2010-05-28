@@ -30,7 +30,8 @@ public class AmbiguousNestedPlusList extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousNestedPlusList anpl = new AmbiguousNestedPlusList("aa".toCharArray());
-		System.out.println(anpl.parse("S"));
+		anpl.parse("S");
+		System.out.println(anpl.getStringResult());
 		
 		System.out.println("S([A+(A([a]+([a](a),[a]+([a](a))))),A+(A([a]+([a](a))),A+(A([a]+([a](a)))))]) <- good");
 	}

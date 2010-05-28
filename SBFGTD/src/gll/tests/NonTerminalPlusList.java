@@ -29,7 +29,8 @@ public class NonTerminalPlusList extends SGLL{
 	
 	public static void main(String[] args){
 		NonTerminalPlusList nrpl = new NonTerminalPlusList("aaa".toCharArray());
-		System.out.println(nrpl.parse("S"));
+		nrpl.parse("S");
+		System.out.println(nrpl.getStringResult());
 		
 		System.out.println("S(A+(A(a),A+(A(a),A+(A(a))))) <- good");
 	}

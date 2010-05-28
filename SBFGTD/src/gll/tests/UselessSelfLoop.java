@@ -41,8 +41,9 @@ public class UselessSelfLoop extends SGLL{
 	
 	public static void main(String[] args){
 		UselessSelfLoop usl = new UselessSelfLoop("a".toCharArray());
-		System.out.println(usl.parse("S"));
+		usl.parse("S");
+		System.out.println(usl.getStringResult());
 		
-		System.out.println("[S([A(B(a)),A(a)]),S([B(A(a)),B(a)])] <- good (TODO Add cycle)");
+		System.out.println("[S([B([A([B(cycle(A)),B(a)]),A(a)]),B(a)]),S([A([B([A(cycle(B)),A(a)]),B(a)]),A(a)])] <- good");
 	}
 }

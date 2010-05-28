@@ -1,5 +1,10 @@
 package gll.result;
 
+import gll.util.ArrayList;
+
+import java.io.IOException;
+import java.io.Writer;
+
 public class CharNode implements INode{
 	private final String production;
 	private final char character;
@@ -17,6 +22,13 @@ public class CharNode implements INode{
 	
 	public boolean isEpsilon(){
 		return false;
+	}
+	
+	public void print(Writer out, ArrayList<INode> stack) throws IOException{
+		out.write(production);
+		out.write('(');
+		out.write(character);
+		out.write(')');
 	}
 	
 	public String toString(){
