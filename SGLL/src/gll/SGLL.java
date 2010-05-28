@@ -204,11 +204,13 @@ public class SGLL implements IGLL{
 	}
 	
 	private boolean shareNode(AbstractStackNode node, AbstractStackNode stack){
-		for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
-			AbstractStackNode possiblySharedNode = possiblySharedExpects.get(j);
-			if(possiblySharedNode.isSimilar(node)){
-				possiblySharedExpectsEndNodes.get(j).addEdge(stack);
-				return true;
+		if(!node.isEpsilon()){
+			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
+				AbstractStackNode possiblySharedNode = possiblySharedExpects.get(j);
+				if(possiblySharedNode.isSimilar(node)){
+					possiblySharedExpectsEndNodes.get(j).addEdge(stack);
+					return true;
+				}
 			}
 		}
 		return false;
@@ -221,7 +223,7 @@ public class SGLL implements IGLL{
 			AbstractStackNode first = expectedNodes[0];
 			
 			// Handle sharing (and loops).
-			if((numberOfNodes == 1 && first.isEpsilon()) || !shareNode(first, stackBeingWorkedOn)){
+			if(!shareNode(first, stackBeingWorkedOn)){
 				AbstractStackNode last = expectedNodes[numberOfNodes - 1].getCleanCopy();
 				AbstractStackNode next = last;
 				
