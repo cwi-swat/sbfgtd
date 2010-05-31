@@ -22,6 +22,10 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		return true;
 	}
 	
+	public boolean isClean(){
+		return true;
+	}
+	
 	public AbstractStackNode getCleanCopy(){
 		return new EpsilonStackNode(this);
 	}
@@ -35,14 +39,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 	
 	public int getLength(){
 		return 0;
-	}
-	
-	public void mark(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean isMarked(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){

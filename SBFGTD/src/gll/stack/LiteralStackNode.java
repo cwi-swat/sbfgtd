@@ -34,6 +34,10 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		return true;
 	}
 	
+	public boolean isClean(){
+		return true;
+	}
+	
 	public AbstractStackNode getCleanCopy(){
 		return new LiteralStackNode(this);
 	}
@@ -47,14 +51,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 	
 	public int getLength(){
 		return literal.length;
-	}
-	
-	public void mark(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean isMarked(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){
