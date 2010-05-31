@@ -1,6 +1,6 @@
 package gll.result;
 
-import gll.util.Stack;
+import gll.util.IndexedStack;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +24,7 @@ public class CharNode implements INode{
 		return false;
 	}
 	
-	public void print(Writer out, Stack<INode> stack) throws IOException{
+	public void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException{
 		out.write(production);
 		out.write('(');
 		out.write(character);
