@@ -44,6 +44,6 @@ public class UselessSelfLoop extends SGLL{
 		usl.parse("S");
 		System.out.println(usl.getStringResult());
 		
-		System.out.println("[S([B([A([B(cycle(A)),B(a)]),A(a)]),B(a)]),S([A([B([A(cycle(B)),A(a)]),B(a)]),A(a)])] <- good");
+		System.out.println("[S([B([A([B(cycle(A,2)),B(a)]),A(a)]),B(a)]),S([A([B([A(cycle(B,2)),A(a)]),B(a)]),A(a)])] <- good");
 	}
 }
