@@ -265,11 +265,8 @@ public class SGLL implements IGLL{
 			
 			if(listChildren.length > 1){ // Star list or optional.
 				child = listChildren[1];
-				//if(!shareNode(child, node)){ This is always epsilon.
+				// This is always epsilon; so shouldn't be shared.
 				stacksToExpand.add(child);
-				possiblySharedExpects.add(child);
-				possiblySharedExpectsEndNodes.add(child);
-				//}
 			}
 		}
 	}
