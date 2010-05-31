@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.EpsilonNode;
 import gll.result.INode;
 
-public final class EpsilonStackNode extends AbstractStackNode{
+public final class EpsilonStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
 	
 	public EpsilonStackNode(int id){
@@ -12,18 +12,6 @@ public final class EpsilonStackNode extends AbstractStackNode{
 	
 	private EpsilonStackNode(EpsilonStackNode epsilonParseStackNode){
 		super(epsilonParseStackNode);
-	}
-	
-	public boolean isReducable(){
-		return true;
-	}
-	
-	public boolean isList(){
-		return false;
-	}
-	
-	public boolean isEpsilon(){
-		return true;
 	}
 	
 	public String getMethodName(){

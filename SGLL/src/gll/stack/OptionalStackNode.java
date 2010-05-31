@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public final class OptionalStackNode extends AbstractStackNode{
+public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
 	private final AbstractStackNode optional;
 	
 	private final String nodeName;
@@ -30,18 +30,6 @@ public final class OptionalStackNode extends AbstractStackNode{
 		nodeName = optionalParseStackNode.nodeName;
 		
 		result = new ContainerNode(nodeName);
-	}
-	
-	public boolean isReducable(){
-		return false;
-	}
-	
-	public boolean isList(){
-		return true;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
 	}
 	
 	public void mark(){

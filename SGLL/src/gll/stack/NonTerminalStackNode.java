@@ -26,18 +26,6 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		result = new ContainerNode(nonTerminal);
 	}
 	
-	public boolean isReducable(){
-		return false;
-	}
-	
-	public boolean isList(){
-		return false;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
-	}
-	
 	public String getMethodName(){
 		return nonTerminal;
 	}

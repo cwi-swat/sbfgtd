@@ -4,7 +4,7 @@ import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
 
-public final class ListStackNode extends AbstractStackNode{
+public final class ListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
 
 	private final AbstractStackNode child;
@@ -45,18 +45,6 @@ public final class ListStackNode extends AbstractStackNode{
 		isPlusList = listParseStackNode.isPlusList;
 		
 		result = new ContainerNode(nodeName);
-	}
-	
-	public boolean isReducable(){
-		return false;
-	}
-	
-	public boolean isList(){
-		return true;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
 	}
 	
 	public String getMethodName(){

@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.LiteralNode;
 
-public final class LiteralStackNode extends AbstractStackNode{
+public final class LiteralStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[] literal;
 	
 	private final LiteralNode result;
@@ -21,18 +21,6 @@ public final class LiteralStackNode extends AbstractStackNode{
 		literal = literalParseStackNode.literal;
 		
 		result = literalParseStackNode.result;
-	}
-	
-	public boolean isReducable(){
-		return true;
-	}
-	
-	public boolean isList(){
-		return false;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
 	}
 	
 	public String getMethodName(){
