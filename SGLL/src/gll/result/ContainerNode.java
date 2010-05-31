@@ -45,7 +45,7 @@ public class ContainerNode implements INode{
 	
 	public void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException{
 		int index = stack.contains(this);
-		if(index != -1){
+		if(index != -1){ // Cycle found.
 			out.write("cycle(");
 			out.write(name);
 			out.write(',');
