@@ -57,6 +57,10 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return true;
 	}
 	
+	public boolean isClean(){
+		return true;
+	}
+	
 	public AbstractStackNode getCleanCopy(){
 		return new CaseInsensitiveLiteralStackNode(this);
 	}
@@ -70,14 +74,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	public int getLength(){
 		return ciLiteral.length;
-	}
-	
-	public void mark(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean isMarked(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){

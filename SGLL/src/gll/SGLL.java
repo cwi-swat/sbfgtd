@@ -103,11 +103,10 @@ public class SGLL implements IGLL{
 			possiblySharedEdgeNodesMap.unsafePut(startLocation, possiblySharedEdgeNodes);
 		}
 		
-		if(node.isMarked()){
+		if(!node.isClean()){
 			node = node.getCleanCopyWithPrefix();
 			node.setStartLocation(startLocation);
 		}
-		node.mark();
 		
 		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.add(node);
