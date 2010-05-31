@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.CharNode;
 import gll.result.INode;
 
-public final class CharStackNode extends AbstractStackNode{
+public final class CharStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
@@ -27,18 +27,6 @@ public final class CharStackNode extends AbstractStackNode{
 		characters = charParseStackNode.characters;
 		
 		production = charParseStackNode.production;
-	}
-	
-	public boolean isReducable(){
-		return true;
-	}
-	
-	public boolean isList(){
-		return false;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
 	}
 	
 	public String getMethodName(){

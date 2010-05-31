@@ -3,7 +3,7 @@ package gll.stack;
 import gll.result.INode;
 import gll.result.LiteralNode;
 
-public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode{
+public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[][] ciLiteral;
 	
 	private LiteralNode result;
@@ -32,18 +32,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode{
 		ciLiteral = contextInsensitiveLiteralParseStackNode.ciLiteral;
 		
 		result = null;
-	}
-	
-	public boolean isReducable(){
-		return true;
-	}
-	
-	public boolean isList(){
-		return false;
-	}
-	
-	public boolean isEpsilon(){
-		return false;
 	}
 	
 	public String getMethodName(){
