@@ -5,7 +5,7 @@ import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.IntegerHashMap;
-import gll.util.Stack;
+import gll.util.IndexedStack;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -305,7 +305,7 @@ public class SGLL implements IGLL{
 		
 		StringWriter out = new StringWriter();
 		try{
-			result.print(out, new Stack<INode>());
+			result.print(out, new IndexedStack<INode>(), 0);
 		}catch(IOException ioex){
 			// Ignore; never happens.
 		}

@@ -1,6 +1,6 @@
 package gll.result;
 
-import gll.util.Stack;
+import gll.util.IndexedStack;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -20,7 +20,7 @@ public class EpsilonNode implements INode{
 		return true;
 	}
 	
-	public void print(Writer out, Stack<INode> stack) throws IOException{
+	public void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException{
 		out.write(EPSILON_STRING);
 	}
 	

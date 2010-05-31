@@ -38,6 +38,6 @@ public class CycleEpsilon extends SGLL{
 		ce.parse("S");
 		System.out.println(ce.getStringResult());
 		
-		System.out.println("S([A([A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],[A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)]),A(a)],A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],[A([A(cycle(A),A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)],A()),A([A(cycle(A),[A(cycle(A),cycle(A)),A()]),A()],cycle(A)),A(a)]),A(a)]) <- good");
+		System.out.println("S([A([A(cycle(A,1),A()),A([A(cycle(A,1),[A(cycle(A,2),cycle(A,1)),A()]),A()],[A(cycle(A,2),A()),A([A(cycle(A,1),[A(cycle(A,2),cycle(A,1)),A()]),A()],cycle(A,1)),A(a)]),A(a)],A()),A([A(cycle(A,1),[A(cycle(A,2),cycle(A,1)),A()]),A()],[A([A(cycle(A,1),A()),A([A(cycle(A,1),[A(cycle(A,2),cycle(A,1)),A()]),A()],cycle(A,2)),A(a)],A()),A([A(cycle(A,1),[A(cycle(A,2),cycle(A,1)),A()]),A()],cycle(A,1)),A(a)]),A(a)]) <- good");
 	}
 }
