@@ -4,8 +4,9 @@ import gll.result.INode;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
-import gll.util.IntegerHashMap;
 import gll.util.IndexedStack;
+import gll.util.IntegerHashMap;
+import gll.util.RotatingQueue;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,8 +19,8 @@ public class SGLL implements IGLL{
 	
 	// Updatable
 	private final ArrayList<AbstractStackNode> stacksToExpand;
-	private final ArrayList<AbstractStackNode> stacksWithTerminalsToReduce;
-	private final ArrayList<AbstractStackNode> stacksWithNonTerminalsToReduce;
+	private final RotatingQueue<AbstractStackNode> stacksWithTerminalsToReduce;
+	private final RotatingQueue<AbstractStackNode> stacksWithNonTerminalsToReduce;
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final ArrayList<AbstractStackNode> possiblySharedExpects;
 	private final ArrayList<AbstractStackNode> possiblySharedExpectsEndNodes;
@@ -39,8 +40,8 @@ public class SGLL implements IGLL{
 		todoList = new ArrayList<AbstractStackNode>();
 		
 		stacksToExpand = new ArrayList<AbstractStackNode>();
-		stacksWithTerminalsToReduce = new ArrayList<AbstractStackNode>();
-		stacksWithNonTerminalsToReduce = new ArrayList<AbstractStackNode>();
+		stacksWithTerminalsToReduce = new RotatingQueue<AbstractStackNode>();
+		stacksWithNonTerminalsToReduce = new RotatingQueue<AbstractStackNode>();
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
 		possiblySharedExpects = new ArrayList<AbstractStackNode>();
@@ -110,7 +111,7 @@ public class SGLL implements IGLL{
 		node.initializeResultStore();
 		
 		possiblySharedEdgeNodes.add(node);
-		stacksWithNonTerminalsToReduce.add(node);
+		stacksWithNonTerminalsToReduce.put(node);
 		
 		return node;
 	}
@@ -171,16 +172,16 @@ public class SGLL implements IGLL{
 		}
 		
 		// Reduce terminals.
-		while(stacksWithTerminalsToReduce.size() > 0){
-			AbstractStackNode terminal = stacksWithTerminalsToReduce.remove(stacksWithTerminalsToReduce.size() - 1);
+		while(!stacksWithTerminalsToReduce.isEmpty()){
+			AbstractStackNode terminal = stacksWithTerminalsToReduce.get();
 			reduceTerminal(terminal);
 
 			todoList.remove(terminal);
 		}
 		
 		// Reduce non-terminals.
-		while(stacksWithNonTerminalsToReduce.size() > 0){
-			AbstractStackNode nonTerminal = stacksWithNonTerminalsToReduce.remove(stacksWithNonTerminalsToReduce.size() - 1);
+		while(!stacksWithNonTerminalsToReduce.isEmpty()){
+			AbstractStackNode nonTerminal = stacksWithNonTerminalsToReduce.get();
 			reduceNonTerminal(nonTerminal);
 		}
 	}
@@ -193,10 +194,10 @@ public class SGLL implements IGLL{
 			int nextLocation = node.getStartLocation() + node.getLength();
 			if(nextLocation < closestNextLocation){
 				stacksWithTerminalsToReduce.clear();
-				stacksWithTerminalsToReduce.add(node);
+				stacksWithTerminalsToReduce.put(node);
 				closestNextLocation = nextLocation;
 			}else if(nextLocation == closestNextLocation){
-				stacksWithTerminalsToReduce.add(node);
+				stacksWithTerminalsToReduce.put(node);
 			}
 		}
 		
