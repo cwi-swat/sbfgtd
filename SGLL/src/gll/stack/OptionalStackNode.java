@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
 	private final AbstractStackNode optional;
@@ -20,12 +22,22 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		this.result = null;
 	}
 	
-	private OptionalStackNode(OptionalStackNode optionalParseStackNode){
-		super(optionalParseStackNode);
+	private OptionalStackNode(OptionalStackNode original){
+		super(original);
 		
-		optional = optionalParseStackNode.optional;
+		optional = original.optional;
 		
-		nodeName = optionalParseStackNode.nodeName;
+		nodeName = original.nodeName;
+		
+		result = new ContainerNode(nodeName);
+	}
+	
+	private OptionalStackNode(OptionalStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+		
+		optional = original.optional;
+		
+		nodeName = original.nodeName;
 		
 		result = new ContainerNode(nodeName);
 	}
@@ -47,10 +59,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		OptionalStackNode opsn = new OptionalStackNode(this);
-		opsn.prefixes = prefixes;
-		opsn.prefixStartLocations = prefixStartLocations;
-		return opsn;
+		return new OptionalStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public AbstractStackNode[] getChildren(){

@@ -34,6 +34,18 @@ public abstract class AbstractStackNode{
 		edges = parseStackNode.edges;
 	}
 	
+	public AbstractStackNode(AbstractStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super();
+		
+		id = original.id;
+		
+		next = original.next;
+		edges = original.edges;
+		
+		this.prefixes = prefixes;
+		this.prefixStartLocations = prefixStartLocations;
+	}
+	
 	// General.
 	public int getId(){
 		return id;

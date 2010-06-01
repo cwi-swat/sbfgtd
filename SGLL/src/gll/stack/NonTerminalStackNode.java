@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
@@ -16,10 +18,18 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		result = null;
 	}
 	
-	private NonTerminalStackNode(NonTerminalStackNode nonTerminalParseStackNode){
-		super(nonTerminalParseStackNode);
+	private NonTerminalStackNode(NonTerminalStackNode original){
+		super(original);
 
-		nonTerminal = nonTerminalParseStackNode.nonTerminal;
+		nonTerminal = original.nonTerminal;
+		
+		result = new ContainerNode(nonTerminal);
+	}
+	
+	private NonTerminalStackNode(NonTerminalStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+
+		nonTerminal = original.nonTerminal;
 		
 		result = new ContainerNode(nonTerminal);
 	}
@@ -41,10 +51,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		NonTerminalStackNode ntpsn = new NonTerminalStackNode(this);
-		ntpsn.prefixes = prefixes;
-		ntpsn.prefixStartLocations = prefixStartLocations;
-		return ntpsn;
+		return new NonTerminalStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){

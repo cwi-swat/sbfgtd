@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.result.INode;
 import gll.result.LiteralNode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class LiteralStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[] literal;
@@ -15,12 +17,20 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		result = new LiteralNode(literal);
 	}
 	
-	private LiteralStackNode(LiteralStackNode literalParseStackNode){
-		super(literalParseStackNode);
+	private LiteralStackNode(LiteralStackNode original){
+		super(original);
 
-		literal = literalParseStackNode.literal;
+		literal = original.literal;
 		
-		result = literalParseStackNode.result;
+		result = original.result;
+	}
+	
+	private LiteralStackNode(LiteralStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+
+		literal = original.literal;
+		
+		result = original.result;
 	}
 	
 	public String getMethodName(){
@@ -43,10 +53,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		LiteralStackNode lpsn = new LiteralStackNode(this);
-		lpsn.prefixes = prefixes;
-		lpsn.prefixStartLocations = prefixStartLocations;
-		return lpsn;
+		return new LiteralStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){

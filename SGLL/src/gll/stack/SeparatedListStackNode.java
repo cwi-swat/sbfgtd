@@ -3,6 +3,8 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class SeparatedListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
@@ -37,14 +39,26 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		this.result = result;
 	}
 	
-	public SeparatedListStackNode(SeparatedListStackNode separatedListStackNode){
-		super(separatedListStackNode);
+	private SeparatedListStackNode(SeparatedListStackNode original){
+		super(original);
 		
-		nodeName = separatedListStackNode.nodeName;
+		nodeName = original.nodeName;
 
-		child = separatedListStackNode.child;
-		separators = separatedListStackNode.separators;
-		isPlusList = separatedListStackNode.isPlusList;
+		child = original.child;
+		separators = original.separators;
+		isPlusList = original.isPlusList;
+		
+		result = new ContainerNode(nodeName);
+	}
+	
+	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+		
+		nodeName = original.nodeName;
+
+		child = original.child;
+		separators = original.separators;
+		isPlusList = original.isPlusList;
 		
 		result = new ContainerNode(nodeName);
 	}
@@ -66,10 +80,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		SeparatedListStackNode slpsn = new SeparatedListStackNode(this);
-		slpsn.prefixes = prefixes;
-		slpsn.prefixStartLocations = prefixStartLocations;
-		return slpsn;
+		return new SeparatedListStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){
