@@ -25,7 +25,7 @@ public abstract class AbstractStackNode{
 		startLocation = -1;
 	}
 	
-	public AbstractStackNode(AbstractStackNode parseStackNode){
+	protected AbstractStackNode(AbstractStackNode parseStackNode){
 		super();
 		
 		id = parseStackNode.id;
@@ -34,7 +34,7 @@ public abstract class AbstractStackNode{
 		edges = parseStackNode.edges;
 	}
 	
-	public AbstractStackNode(AbstractStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+	protected AbstractStackNode(AbstractStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
 		super();
 		
 		id = original.id;

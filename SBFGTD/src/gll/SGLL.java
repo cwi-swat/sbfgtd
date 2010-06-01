@@ -127,6 +127,7 @@ public class SGLL implements IGLL{
 				addResults(edge, results, resultStartLocations);
 			}
 		}
+		
 		AbstractStackNode next;
 		if((next = node.getNext()) != null){
 			next = updateNextNode(next);
