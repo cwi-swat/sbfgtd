@@ -10,7 +10,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	private final String nodeName;
 	
-	private final INode result;
+	private INode result;
 	
 	public OptionalStackNode(int id, AbstractStackNode optional, String nodeName){
 		super(id);
@@ -18,8 +18,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		this.optional = optional;
 		
 		this.nodeName = nodeName;
-		
-		this.result = null;
 	}
 	
 	private OptionalStackNode(OptionalStackNode original){
@@ -28,8 +26,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		optional = original.optional;
 		
 		nodeName = original.nodeName;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	private OptionalStackNode(OptionalStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
@@ -38,8 +34,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		optional = original.optional;
 		
 		nodeName = original.nodeName;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	public int getLength(){
@@ -60,6 +54,10 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new OptionalStackNode(this, prefixes, prefixStartLocations);
+	}
+	
+	public void initializeResultStore(){
+		result = new ContainerNode(nodeName);
 	}
 	
 	public AbstractStackNode[] getChildren(){

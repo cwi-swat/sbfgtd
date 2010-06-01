@@ -13,7 +13,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	private final AbstractStackNode[] separators;
 	private final boolean isPlusList;
 	
-	private final INode result;
+	private INode result;
 	
 	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
 		super(id);
@@ -23,20 +23,16 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		this.child = child;
 		this.separators = separators;
 		this.isPlusList = isPlusList;
-		
-		this.result = null;
 	}
 	
-	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList, INode result){
-		super(id);
+	private SeparatedListStackNode(SeparatedListStackNode original, int newId){
+		super(newId);
 		
-		this.nodeName = nodeName;
-		
-		this.child = child;
-		this.separators = separators;
-		this.isPlusList = isPlusList;
-		
-		this.result = result;
+		nodeName = original.nodeName;
+
+		child = original.child;
+		separators = original.separators;
+		isPlusList = original.isPlusList;
 	}
 	
 	private SeparatedListStackNode(SeparatedListStackNode original){
@@ -47,8 +43,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		child = original.child;
 		separators = original.separators;
 		isPlusList = original.isPlusList;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
@@ -59,8 +53,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		child = original.child;
 		separators = original.separators;
 		isPlusList = original.isPlusList;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	public String getMethodName(){
@@ -83,13 +75,17 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		result = new ContainerNode(nodeName);
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode psn = child.getCleanCopy();
-		SeparatedListStackNode slpsn = new SeparatedListStackNode((id | IGLL.LIST_LIST_FLAG), child, separators, nodeName, true, new ContainerNode(nodeName));
+		AbstractStackNode slpsn = new SeparatedListStackNode(this, id | IGLL.LIST_LIST_FLAG);
 		
 		AbstractStackNode from = psn;
 		for(int i = 0; i < separators.length; i++){

@@ -8,30 +8,24 @@ import gll.util.IntegerList;
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
 	
-	private final INode result;
+	private INode result;
 	
 	public NonTerminalStackNode(int id, String nonTerminal){
 		super(id);
 		
 		this.nonTerminal = nonTerminal;
-		
-		result = null;
 	}
 	
 	private NonTerminalStackNode(NonTerminalStackNode original){
 		super(original);
 
 		nonTerminal = original.nonTerminal;
-		
-		result = new ContainerNode(nonTerminal);
 	}
 	
 	private NonTerminalStackNode(NonTerminalStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
 		super(original, prefixes, prefixStartLocations);
 
 		nonTerminal = original.nonTerminal;
-		
-		result = new ContainerNode(nonTerminal);
 	}
 	
 	public String getMethodName(){
@@ -52,6 +46,10 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new NonTerminalStackNode(this, prefixes, prefixStartLocations);
+	}
+	
+	public void initializeResultStore(){
+		result = new ContainerNode(nonTerminal);
 	}
 	
 	public int getLength(){

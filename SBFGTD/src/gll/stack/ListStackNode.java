@@ -12,7 +12,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	private final AbstractStackNode child;
 	private final boolean isPlusList;
 	
-	private final INode result;
+	private INode result;
 	
 	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList){
 		super(id);
@@ -21,19 +21,15 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		
 		this.child = child;
 		this.isPlusList = isPlusList;
-		
-		this.result = null;
 	}
 	
-	private ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList, INode result){
-		super(id);
+	private ListStackNode(ListStackNode original, int newId){
+		super(newId);
 		
-		this.nodeName = nodeName;
-		
-		this.child = child;
-		this.isPlusList = isPlusList;
-		
-		this.result = result;
+		nodeName = original.nodeName;
+
+		child = original.child;
+		isPlusList = true;
 	}
 	
 	private ListStackNode(ListStackNode original){
@@ -43,8 +39,6 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 
 		child = original.child;
 		isPlusList = original.isPlusList;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	private ListStackNode(ListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
@@ -54,8 +48,6 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 
 		child = original.child;
 		isPlusList = original.isPlusList;
-		
-		result = new ContainerNode(nodeName);
 	}
 	
 	public String getMethodName(){
@@ -78,13 +70,17 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		return new ListStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		result = new ContainerNode(nodeName);
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode psn = child.getCleanCopy();
-		ListStackNode lpsn = new ListStackNode((id | IGLL.LIST_LIST_FLAG), child, nodeName, true, new ContainerNode(nodeName));
+		AbstractStackNode lpsn = new ListStackNode(this, id | IGLL.LIST_LIST_FLAG);
 		
 		psn.addNext(lpsn);
 		lpsn.addEdge(this);

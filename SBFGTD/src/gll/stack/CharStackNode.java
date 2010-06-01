@@ -76,6 +76,10 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		return new CharStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		// Do nothing.
+	}
+	
 	public int getLength(){
 		return 1;
 	}

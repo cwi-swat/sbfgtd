@@ -148,6 +148,8 @@ public abstract class AbstractStackNode{
 		prefixStartLocations.add(length);
 	}
 	
+	public abstract void initializeResultStore();
+	
 	public abstract void addResult(INode[] children);
 	
 	public abstract INode getResult();
