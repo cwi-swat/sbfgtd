@@ -3,6 +3,8 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class ListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
@@ -23,7 +25,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		this.result = null;
 	}
 	
-	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList, INode result){
+	private ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList, INode result){
 		super(id);
 		
 		this.nodeName = nodeName;
@@ -34,13 +36,24 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		this.result = result;
 	}
 	
-	private ListStackNode(ListStackNode listParseStackNode){
-		super(listParseStackNode);
+	private ListStackNode(ListStackNode original){
+		super(original);
 		
-		nodeName = listParseStackNode.nodeName;
+		nodeName = original.nodeName;
 
-		child = listParseStackNode.child;
-		isPlusList = listParseStackNode.isPlusList;
+		child = original.child;
+		isPlusList = original.isPlusList;
+		
+		result = new ContainerNode(nodeName);
+	}
+	
+	private ListStackNode(ListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+		
+		nodeName = original.nodeName;
+
+		child = original.child;
+		isPlusList = original.isPlusList;
 		
 		result = new ContainerNode(nodeName);
 	}
@@ -62,10 +75,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		ListStackNode lpsn = new ListStackNode(this);
-		lpsn.prefixes = prefixes;
-		lpsn.prefixStartLocations = prefixStartLocations;
-		return lpsn;
+		return new ListStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){

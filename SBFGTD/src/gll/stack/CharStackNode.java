@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.result.CharNode;
 import gll.result.INode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class CharStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[][] ranges;
@@ -20,13 +22,22 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		this.characters = characters;
 	}
 	
-	private CharStackNode(CharStackNode charParseStackNode){
-		super(charParseStackNode);
+	private CharStackNode(CharStackNode original){
+		super(original);
 		
-		ranges = charParseStackNode.ranges;
-		characters = charParseStackNode.characters;
+		ranges = original.ranges;
+		characters = original.characters;
 		
-		production = charParseStackNode.production;
+		production = original.production;
+	}
+	
+	private CharStackNode(CharStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+		
+		ranges = original.ranges;
+		characters = original.characters;
+		
+		production = original.production;
 	}
 	
 	public String getMethodName(){
@@ -62,10 +73,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		CharStackNode cpsn = new CharStackNode(this);
-		cpsn.prefixes = prefixes;
-		cpsn.prefixStartLocations = prefixStartLocations;
-		return cpsn;
+		return new CharStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){

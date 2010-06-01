@@ -2,6 +2,8 @@ package gll.stack;
 
 import gll.result.INode;
 import gll.result.LiteralNode;
+import gll.util.ArrayList;
+import gll.util.IntegerList;
 
 public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[][] ciLiteral;
@@ -26,12 +28,16 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		}
 	}
 	
-	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode contextInsensitiveLiteralParseStackNode){
-		super(contextInsensitiveLiteralParseStackNode);
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original){
+		super(original);
 
-		ciLiteral = contextInsensitiveLiteralParseStackNode.ciLiteral;
-		
-		result = null;
+		ciLiteral = original.ciLiteral;
+	}
+	
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
+		super(original, prefixes, prefixStartLocations);
+
+		ciLiteral = original.ciLiteral;
 	}
 	
 	public String getMethodName(){
@@ -66,10 +72,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		CaseInsensitiveLiteralStackNode cilpsn = new CaseInsensitiveLiteralStackNode(this);
-		cilpsn.prefixes = prefixes;
-		cilpsn.prefixStartLocations = prefixStartLocations;
-		return cilpsn;
+		return new CaseInsensitiveLiteralStackNode(this, prefixes, prefixStartLocations);
 	}
 	
 	public int getLength(){
