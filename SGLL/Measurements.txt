@@ -37,9 +37,9 @@ input chars	| Average Time	| Lowest Time
 25			| 0 ms			| 0 ms
 30			| 10 ms			| 0 ms
 35			| 10 ms			| 0 ms
-40			| 30 ms			| 0 ms
+40			| 20 ms			| 0 ms
 45			| 30 ms			| 0 ms
-50			| 50 ms			| 50 ms
+50			| 40 ms			| 0 ms
 100			| 540 ms		| 450 ms
 150			| 2053 ms		| 1953 ms
 200			| 6420 ms		| 5958 ms

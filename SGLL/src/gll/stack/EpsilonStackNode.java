@@ -40,6 +40,10 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		return new EpsilonStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		// Do nothing.
+	}
+	
 	public int getLength(){
 		return 0;
 	}

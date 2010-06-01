@@ -56,6 +56,10 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		return new LiteralStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		// Do nothing.
+	}
+	
 	public int getLength(){
 		return literal.length;
 	}

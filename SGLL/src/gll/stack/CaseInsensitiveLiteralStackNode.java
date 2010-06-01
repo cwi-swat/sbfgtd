@@ -75,6 +75,10 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return new CaseInsensitiveLiteralStackNode(this, prefixes, prefixStartLocations);
 	}
 	
+	public void initializeResultStore(){
+		// Do nothing.
+	}
+	
 	public int getLength(){
 		return ciLiteral.length;
 	}
