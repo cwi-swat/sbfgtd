@@ -12,7 +12,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	private final AbstractStackNode child;
 	private final boolean isPlusList;
 	
-	private INode result;
+	private ContainerNode result;
 	
 	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList){
 		super(id);
