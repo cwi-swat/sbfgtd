@@ -8,7 +8,7 @@ import gll.util.IntegerList;
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
 	
-	private INode result;
+	private ContainerNode result;
 	
 	public NonTerminalStackNode(int id, String nonTerminal){
 		super(id);

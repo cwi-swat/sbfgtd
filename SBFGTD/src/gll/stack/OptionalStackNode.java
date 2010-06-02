@@ -10,7 +10,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	private final String nodeName;
 	
-	private INode result;
+	private ContainerNode result;
 	
 	public OptionalStackNode(int id, AbstractStackNode optional, String nodeName){
 		super(id);

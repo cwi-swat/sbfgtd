@@ -15,16 +15,16 @@ input chars	| Average Time	| Lowest Time
 35			| 0 ms			| 0 ms
 40			| 0 ms			| 0 ms
 45			| 0 ms			| 0 ms
-50			| ? ms			| 0 ms
-100			| ? ms			| ? ms
-150			| ? ms		| ? ms
-200			| ? ms		| ? ms
-250			| ? ms		| ? ms
-300			| ? ms		| ? ms
-350			| ? ms		| ? ms
-400			| ? ms		| ? ms
-450			| ? ms		| ? ms
-500			| ? ms		| ? ms
+50			| 0 ms			| 0 ms
+100			| 10 ms			| 0 ms
+150			| 10 ms			| 0 ms
+200			| 30 ms			| 0 ms
+250			| 30 ms			| 0 ms
+300			| 50 ms			| 50 ms
+350			| 70 ms			| 50 ms
+400			| 80 ms			| 50 ms
+450			| 110 ms		| 100 ms
+500			| 140 ms		| 100 ms
 
 Parser:
 ------------------------------------------
@@ -40,10 +40,10 @@ input chars	| Average Time	| Lowest Time
 40			| 20 ms			| 0 ms
 45			| 20 ms			| 0 ms
 50			| 40 ms			| 0 ms
-100			| 450 ms		| 351 ms
-150			| 1824 ms		| 1653 ms
-200			| 6214 ms		| 5862 ms
-250			| 13673 ms		| 13323 ms
+100			| 450 ms		| 350 ms
+150			| 1822 ms		| 1652 ms
+200			| 6153 ms		| 5758 ms
+250			| 13717 ms		| 13296 ms
 300			| 27245 ms		| 25798 ms
 350			| 52606 ms		| 50896 ms
 400			| ? ms		| ? ms
