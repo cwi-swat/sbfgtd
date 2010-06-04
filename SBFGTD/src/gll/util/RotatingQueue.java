@@ -75,6 +75,14 @@ public class RotatingQueue<E>{
 		return element;
 	}
 	
+	public E unsafeGet(){
+		getIndex = (getIndex + 1) & capacityMask;
+		E element = queue[getIndex];
+		queue[getIndex] = null;
+		
+		return element;
+	}
+	
 	public void clear(){
 		queue = (E[]) new Object[capacity];
 		
