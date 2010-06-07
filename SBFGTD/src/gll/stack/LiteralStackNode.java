@@ -1,5 +1,6 @@
 package gll.stack;
 
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.result.LiteralNode;
 import gll.util.ArrayList;
@@ -33,6 +34,10 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		result = original.result;
 	}
 	
+	public String getName(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
@@ -56,8 +61,8 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		return new LiteralStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		// Do nothing.
+	public void setResultStore(ContainerNode resultStore){
+		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){

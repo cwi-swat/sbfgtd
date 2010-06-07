@@ -1,5 +1,6 @@
 package gll;
 
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
@@ -107,7 +108,14 @@ public class SGLL implements IGLL{
 			node = node.getCleanCopyWithPrefix();
 			node.setStartLocation(startLocation);
 		}
-		node.initializeResultStore();
+		
+		String nodeName = node.getName();
+		ContainerNode resultStore = new ContainerNode(nodeName);
+		node.setResultStore(resultStore);
+		
+		if(location == input.length && !node.hasEdges() && !node.hasNext()){
+			root = node; // Root reached.
+		}
 		
 		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.put(node);
@@ -142,10 +150,6 @@ public class SGLL implements IGLL{
 	}
 	
 	private void addResults(AbstractStackNode edge, INode[][] results, int[] resultStartLocations){
-		if(location == input.length && !edge.hasEdges() && !edge.hasNext()){
-			root = edge; // Root reached.
-		}
-		
 		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
 			if(edge.getStartLocation() == resultStartLocations[i]){

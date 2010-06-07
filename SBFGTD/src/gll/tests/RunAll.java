@@ -36,12 +36,15 @@ public class RunAll{
 		Ambiguous6.main(args);
 		System.out.println();
 		
-		System.out.println("AmbiguousRecursive:");
-		AmbiguousRecursive.main(args);
+		System.out.println("RightRecursion:");
+		RightRecursion.main(args);
 		System.out.println();
-		
 		System.out.println("LeftRecursion:");
 		LeftRecursion.main(args);
+		System.out.println();
+		
+		System.out.println("AmbiguousRecursive:");
+		AmbiguousRecursive.main(args);
 		System.out.println();
 		
 		System.out.println("MergeAndSplit1:");
@@ -54,18 +57,21 @@ public class RunAll{
 		MergeAndSplit3.main(args);
 		System.out.println();
 		
-		System.out.println("NotAUselessSelfLoop:");
-		NotAUselessSelfLoop.main(args);
-		System.out.println();
-		System.out.println("UselessSelfLoop:");
-		UselessSelfLoop.main(args);
-		System.out.println();
-		
 		System.out.println("Epsilon:");
 		Epsilon.main(args);
 		System.out.println();
+		System.out.println("EmptyRightRecursion:");
+		EmptyRightRecursion.main(args);
+		System.out.println();
 		System.out.println("CycleEpsilon:");
 		CycleEpsilon.main(args);
+		System.out.println();
+		
+		System.out.println("UselessSelfLoop:");
+		UselessSelfLoop.main(args);
+		System.out.println();
+		System.out.println("NotAUselessSelfLoop:");
+		NotAUselessSelfLoop.main(args);
 		System.out.println();
 		
 		System.out.println("Optional1:");

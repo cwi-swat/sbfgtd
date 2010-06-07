@@ -1,6 +1,7 @@
 package gll.stack;
 
 import gll.result.CharNode;
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.util.ArrayList;
 import gll.util.IntegerList;
@@ -40,6 +41,10 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		production = original.production;
 	}
 	
+	public String getName(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
@@ -76,8 +81,8 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		return new CharStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		// Do nothing.
+	public void setResultStore(ContainerNode resultStore){
+		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){

@@ -55,6 +55,10 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		isPlusList = original.isPlusList;
 	}
 	
+	public String getName(){
+		return nodeName;
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
@@ -75,8 +79,8 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		result = new ContainerNode(nodeName);
+	public void setResultStore(ContainerNode resultStore){
+		result = resultStore;
 	}
 	
 	public int getLength(){

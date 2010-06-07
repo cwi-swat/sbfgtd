@@ -36,6 +36,14 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		nodeName = original.nodeName;
 	}
 	
+	public String getName(){
+		return nodeName;
+	}
+	
+	public String getMethodName(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
@@ -56,8 +64,8 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		return new OptionalStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		result = new ContainerNode(nodeName);
+	public void setResultStore(ContainerNode resultStore){
+		result = resultStore;
 	}
 	
 	public AbstractStackNode[] getChildren(){
@@ -70,10 +78,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		epsn.setStartLocation(startLocation);
 		
 		return new AbstractStackNode[]{copy, epsn};
-	}
-	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public void addResult(INode[] children){

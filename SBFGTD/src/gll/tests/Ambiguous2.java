@@ -40,6 +40,6 @@ public class Ambiguous2 extends SGLL{
 		a2.parse("S");
 		System.out.println(a2.getStringResult());
 		
-		System.out.println("[S(A(B(b)),ab),S(bab)] <- good");
+		System.out.println("[S(bab),S(A(B(b)),ab)] <- good");
 	}
 }
