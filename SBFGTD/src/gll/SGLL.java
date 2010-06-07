@@ -68,14 +68,16 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private AbstractStackNode updateNextNode(AbstractStackNode node){
+	private void updateNextNode(AbstractStackNode node, INode[][] prefixes, int[] prefixStartLocations){
 		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
 			AbstractStackNode possibleAlternative = possiblySharedNextNodes.get(i);
 			if(possibleAlternative.isSimilar(node)){
 				if(node.hasEdges()){
 					possibleAlternative.addEdges(node.getEdges());
 				}
-				return possibleAlternative;
+				
+				addPrefixes(possibleAlternative, prefixes, prefixStartLocations);
+				return;
 			}
 		}
 		
@@ -86,16 +88,24 @@ public class SGLL implements IGLL{
 		node.setStartLocation(location);
 		possiblySharedNextNodes.add(node);
 		stacksToExpand.add(node);
-		return node;
+		
+		addPrefixes(node, prefixes, prefixStartLocations);
 	}
 	
-	private AbstractStackNode updateEdgeNode(AbstractStackNode node){
+	private void addPrefixes(AbstractStackNode next, INode[][] prefixes, int[] prefixStartLocations){
+		for(int i = prefixes.length - 1; i >= 0; i--){
+			next.addPrefix(prefixes[i], prefixStartLocations[i]);
+		}
+	}
+	
+	private AbstractStackNode updateEdgeNode(AbstractStackNode node, INode[][] results, int[] resultStartLocations){
 		int startLocation = node.getStartLocation();
 		ArrayList<AbstractStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				AbstractStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
+					addResults(possibleAlternative, results, resultStartLocations);
 					return possibleAlternative;
 				}
 			}
@@ -120,7 +130,17 @@ public class SGLL implements IGLL{
 		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.put(node);
 		
+		addResults(node, results, resultStartLocations);
 		return node;
+	}
+	
+	private void addResults(AbstractStackNode edge, INode[][] results, int[] resultStartLocations){
+		int nrOfResults = results.length;
+		for(int i = nrOfResults - 1; i >= 0; i--){
+			if(edge.getStartLocation() == resultStartLocations[i]){
+				edge.addResult(results[i]);
+			}
+		}
 	}
 	
 	private void move(AbstractStackNode node){
@@ -130,31 +150,13 @@ public class SGLL implements IGLL{
 		ArrayList<AbstractStackNode> edges;
 		if((edges = node.getEdges()) != null){
 			for(int i = edges.size() - 1; i >= 0; i--){
-				AbstractStackNode edge = edges.get(i);
-				edge = updateEdgeNode(edge);
-				addResults(edge, results, resultStartLocations);
+				updateEdgeNode(edges.get(i), results, resultStartLocations);
 			}
 		}
 		
 		AbstractStackNode next;
 		if((next = node.getNext()) != null){
-			next = updateNextNode(next);
-			addPrefixes(next, results, resultStartLocations);
-		}
-	}
-	
-	private void addPrefixes(AbstractStackNode next, INode[][] prefixes, int[] prefixStartLocations){
-		for(int i = prefixes.length - 1; i >= 0; i--){
-			next.addPrefix(prefixes[i], prefixStartLocations[i]);
-		}
-	}
-	
-	private void addResults(AbstractStackNode edge, INode[][] results, int[] resultStartLocations){
-		int nrOfResults = results.length;
-		for(int i = nrOfResults - 1; i >= 0; i--){
-			if(edge.getStartLocation() == resultStartLocations[i]){
-				edge.addResult(results[i]);
-			}
+			updateNextNode(next, results, resultStartLocations);
 		}
 	}
 	
