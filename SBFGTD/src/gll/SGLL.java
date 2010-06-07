@@ -6,8 +6,10 @@ import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
+import gll.util.HashSet;
 import gll.util.IndexedStack;
 import gll.util.IntegerHashMap;
+import gll.util.ObjectIntegerKeyHashMap;
 import gll.util.RotatingQueue;
 
 import java.io.IOException;
@@ -27,6 +29,9 @@ public class SGLL implements IGLL{
 	private final DoubleArrayList<AbstractStackNode, AbstractStackNode> possiblySharedExpects;
 	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	private final IntegerHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
+	
+	private final ObjectIntegerKeyHashMap<String, ContainerNode> resultStoreCache;
+	private final HashSet<AbstractStackNode> withResults;
 	
 	private int previousLocation;
 	private int location;
@@ -49,6 +54,9 @@ public class SGLL implements IGLL{
 		
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
 		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<AbstractStackNode>>();
+		
+		resultStoreCache = new ObjectIntegerKeyHashMap<String, ContainerNode>();
+		withResults = new HashSet<AbstractStackNode>();
 		
 		previousLocation = -1;
 		location = 0;
@@ -98,15 +106,15 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private AbstractStackNode updateEdgeNode(AbstractStackNode node, INode[][] results, int[] resultStartLocations){
+	private void updateEdgeNode(AbstractStackNode node, INode[][] results, int[] resultStartLocations){
 		int startLocation = node.getStartLocation();
 		ArrayList<AbstractStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				AbstractStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
-					addResults(possibleAlternative, results, resultStartLocations);
-					return possibleAlternative;
+					if(withResults.contains(possibleAlternative)) addResults(possibleAlternative, results, resultStartLocations);
+					return;
 				}
 			}
 		}else{
@@ -120,8 +128,15 @@ public class SGLL implements IGLL{
 		}
 		
 		String nodeName = node.getName();
-		ContainerNode resultStore = new ContainerNode(nodeName);
+		ContainerNode resultStore = resultStoreCache.get(nodeName, startLocation);
 		node.setResultStore(resultStore);
+		if(resultStore == null){
+			resultStore = new ContainerNode(nodeName);
+			node.setResultStore(resultStore);
+			resultStoreCache.put(nodeName, startLocation, resultStore);
+			withResults.put(node);
+			addResults(node, results, resultStartLocations);
+		}
 		
 		if(location == input.length && !node.hasEdges() && !node.hasNext()){
 			root = node; // Root reached.
@@ -129,9 +144,6 @@ public class SGLL implements IGLL{
 		
 		possiblySharedEdgeNodes.add(node);
 		stacksWithNonTerminalsToReduce.put(node);
-		
-		addResults(node, results, resultStartLocations);
-		return node;
 	}
 	
 	private void addResults(AbstractStackNode edge, INode[][] results, int[] resultStartLocations){
@@ -174,6 +186,8 @@ public class SGLL implements IGLL{
 		if(previousLocation != location){ // Epsilon fix.
 			possiblySharedNextNodes.clear();
 			possiblySharedEdgeNodesMap.clear();
+			resultStoreCache.clear();
+			withResults.clear();
 		}
 		
 		// Reduce terminals.
