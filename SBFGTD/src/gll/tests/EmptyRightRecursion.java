@@ -14,7 +14,7 @@ B ::= B | epsilon
 public class EmptyRightRecursion extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
 	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(1, "B");
+	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
 	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
 	private final static AbstractStackNode EPSILON_4 = new EpsilonStackNode(4);
 	
@@ -41,6 +41,6 @@ public class EmptyRightRecursion extends SGLL{
 		erre.parse("S");
 		System.out.println(erre.getStringResult());
 		
-		System.out.println("S(A(a),[B(),cycle(B,1)])");
+		System.out.println("S(A(a),[cycle(B,1),B()])");
 	}
 }
