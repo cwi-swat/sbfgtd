@@ -49,3 +49,37 @@ input chars	| Average Time	| Lowest Time
 400			| ? ms		| ? ms
 450			| ? ms		| ? ms
 500			| ? ms		| ? ms
+
+
+-------------------------
+With sharing restored:
+-------------------------
+
+Parser:
+------------------------------------------
+input chars	| Average Time	| Lowest Time
+------------------------------------------
+5			| 0 ms			| 0 ms
+10			| 0 ms			| 0 ms
+15			| 0 ms			| 0 ms
+20			| 0 ms			| 0 ms
+25			| 0 ms			| 0 ms
+30			| 10 ms			| 0 ms
+35			| 10 ms			| 0 ms
+40			| 10 ms			| 0 ms
+45			| 20 ms			| 0 ms
+50			| 20 ms			| 0 ms
+100			| 330 ms		| 300 ms
+150			| 1071 ms		| 1002 ms
+200			| 3707 ms		| 3355 ms
+250			| 8420 ms		| 8220 ms
+300			| 32660 ms		| 21195 ms
+350			| 39434 ms		| 29662 ms
+400			| 55511 ms		| 48326 ms
+450			| 80445 ms		| 79122 ms
+500			| 134878 ms		| 117507 ms
+
+
+
+
+

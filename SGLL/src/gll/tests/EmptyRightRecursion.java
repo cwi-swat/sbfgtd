@@ -41,6 +41,6 @@ public class EmptyRightRecursion extends SGLL{
 		erre.parse("S");
 		System.out.println(erre.getStringResult());
 		
-		System.out.println("S(A(a),[cycle(B,1),B()])");
+		System.out.println("S(A(a),[B(cycle(B,1)),B()])");
 	}
 }
