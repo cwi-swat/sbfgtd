@@ -52,6 +52,6 @@ public class MergeAndSplit3 extends SGLL{
 		ms3.parse("S");
 		System.out.println(ms3.getStringResult());
 		
-		System.out.println("[S(A(B(A(a),a),a)),S(C(B(A(B(a),a),a)))] <- good");
+		System.out.println("[S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))] <- good");
 	}
 }

@@ -1,5 +1,6 @@
 package gll.stack;
 
+import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.util.ArrayList;
 import gll.util.IntegerList;
@@ -62,6 +63,8 @@ public abstract class AbstractStackNode{
 	public final boolean isList(){
 		return (this instanceof IListStackNode);
 	}
+	
+	public abstract String getName();
 	
 	public abstract String getMethodName();
 	
@@ -148,7 +151,7 @@ public abstract class AbstractStackNode{
 		prefixStartLocations.add(length);
 	}
 	
-	public abstract void initializeResultStore();
+	public abstract void setResultStore(ContainerNode resultStore);
 	
 	public abstract void addResult(INode[] children);
 	

@@ -28,6 +28,10 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		nonTerminal = original.nonTerminal;
 	}
 	
+	public String getName(){
+		return nonTerminal;
+	}
+	
 	public String getMethodName(){
 		return nonTerminal;
 	}
@@ -48,8 +52,8 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return new NonTerminalStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		result = new ContainerNode(nonTerminal);
+	public void setResultStore(ContainerNode resultStore){
+		result = resultStore;
 	}
 	
 	public int getLength(){

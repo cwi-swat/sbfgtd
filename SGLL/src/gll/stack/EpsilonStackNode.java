@@ -1,5 +1,6 @@
 package gll.stack;
 
+import gll.result.ContainerNode;
 import gll.result.EpsilonNode;
 import gll.result.INode;
 import gll.util.ArrayList;
@@ -18,6 +19,10 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 	
 	private EpsilonStackNode(EpsilonStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
 		super(original, prefixes, prefixStartLocations);
+	}
+	
+	public String getName(){
+		throw new UnsupportedOperationException();
 	}
 	
 	public String getMethodName(){
@@ -40,8 +45,8 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		return new EpsilonStackNode(this, prefixes, prefixStartLocations);
 	}
 	
-	public void initializeResultStore(){
-		// Do nothing.
+	public void setResultStore(ContainerNode resultStore){
+		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){
