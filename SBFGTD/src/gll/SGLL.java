@@ -164,8 +164,8 @@ public class SGLL implements IGLL{
 		if(resultStore == null){
 			resultStore = new ContainerNode(nodeName);
 			node.setResultStore(resultStore);
-			resultStoreCache.put(nodeName, startLocation, resultStore);
-			withResults.put(node);
+			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
+			withResults.unsafePut(node);
 			addResults(node, results, resultStartLocations);
 		}
 		
