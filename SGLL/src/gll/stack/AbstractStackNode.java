@@ -167,7 +167,7 @@ public abstract class AbstractStackNode{
 		int nrOfPrefixes = prefixes.size();
 		INode[][] results = new INode[nrOfPrefixes][];
 		INode thisResult = getResult();
-		for(int i = 0; i < nrOfPrefixes; i++){
+		for(int i = nrOfPrefixes - 1; i >= 0; i--){
 			INode[] prefix = prefixes.get(i);
 			int prefixLength = prefix.length;
 			INode[] result = new INode[prefixLength + 1];
