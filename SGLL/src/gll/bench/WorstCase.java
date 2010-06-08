@@ -50,6 +50,8 @@ public class WorstCase extends SGLL{
 			long time = end - start;
 			total += time;
 			lowest = (time < lowest) ? time : lowest;
+			
+			System.out.println(input.length+": intermediate time: "+time+"ms");
 		}
 		System.out.println(input.length+": avg="+(total / ITERATIONS)+"ms, lowest="+lowest+"ms");
 	}
