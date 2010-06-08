@@ -114,23 +114,22 @@ public class SGLL implements IGLL{
 	private void updatePrefixes(AbstractStackNode next, INode[][] prefixes, int[] prefixStartLocations){
 		for(int i = prefixes.length - 1; i >= 0; i--){
 			next.addPrefix(prefixes[i], prefixStartLocations[i]); // Not strictly necessary at the moment.
-			ArrayList<AbstractStackNode> edges;
-			if((edges = next.getEdges()) != null){
-				INode thisResult = next.getResult();
-				for(int j = prefixes.length - 1; j >= 0; j--){
-					INode[] prefix = prefixes[j];
-					int prefixStartLocation = prefixStartLocations[j];
-					int prefixLength = prefix.length;
-					INode[] result = new INode[prefixLength + 1];
-					System.arraycopy(prefix, 0, result, 0, prefixLength);
-					result[prefixLength] = thisResult;
-					
-					for(int k = edges.size() - 1; k >= 0; k--){
-						AbstractStackNode edge = edges.get(k);
-						if(withResults.contains(edge)){
-							if(edge.getStartLocation() == prefixStartLocation){
-								edge.addResult(result);
-							}
+			ArrayList<AbstractStackNode> edges = next.getEdges();
+			
+			INode thisResult = next.getResult();
+			for(int j = prefixes.length - 1; j >= 0; j--){
+				INode[] prefix = prefixes[j];
+				int prefixStartLocation = prefixStartLocations[j];
+				int prefixLength = prefix.length;
+				INode[] result = new INode[prefixLength + 1];
+				System.arraycopy(prefix, 0, result, 0, prefixLength);
+				result[prefixLength] = thisResult;
+				
+				for(int k = edges.size() - 1; k >= 0; k--){
+					AbstractStackNode edge = edges.get(k);
+					if(withResults.contains(edge)){
+						if(edge.getStartLocation() == prefixStartLocation){
+							edge.addResult(result);
 						}
 					}
 				}
