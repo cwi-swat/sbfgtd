@@ -6,9 +6,10 @@ import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
+import gll.util.HashSet;
 import gll.util.IndexedStack;
 import gll.util.IntegerHashMap;
-import gll.util.LinearObjectIntegerKeyedMap;
+import gll.util.ObjectIntegerKeyHashMap;
 import gll.util.RotatingQueue;
 
 import java.io.IOException;
@@ -29,8 +30,8 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	private final IntegerHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
-	private final LinearObjectIntegerKeyedMap<String, ContainerNode> resultStoreCache;
-	private final ArrayList<AbstractStackNode> withResults;
+	private final ObjectIntegerKeyHashMap<String, ContainerNode> resultStoreCache;
+	private final HashSet<AbstractStackNode> withResults;
 	
 	private int previousLocation;
 	private int location;
@@ -54,8 +55,8 @@ public class SGLL implements IGLL{
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
 		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<AbstractStackNode>>();
 		
-		resultStoreCache = new LinearObjectIntegerKeyedMap<String, ContainerNode>();
-		withResults = new ArrayList<AbstractStackNode>();
+		resultStoreCache = new ObjectIntegerKeyHashMap<String, ContainerNode>();
+		withResults = new HashSet<AbstractStackNode>();
 		
 		previousLocation = -1;
 		location = 0;
@@ -158,13 +159,13 @@ public class SGLL implements IGLL{
 		}
 		
 		String nodeName = node.getName();
-		ContainerNode resultStore = resultStoreCache.findValue(nodeName, startLocation);
+		ContainerNode resultStore = resultStoreCache.get(nodeName, startLocation);
 		node.setResultStore(resultStore);
 		if(resultStore == null){
 			resultStore = new ContainerNode(nodeName);
 			node.setResultStore(resultStore);
-			resultStoreCache.add(nodeName, startLocation, resultStore);
-			withResults.add(node);
+			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
+			withResults.unsafePut(node);
 			addResults(node, results, resultStartLocations);
 		}
 		
