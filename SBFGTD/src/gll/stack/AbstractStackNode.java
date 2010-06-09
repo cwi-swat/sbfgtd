@@ -159,9 +159,7 @@ public abstract class AbstractStackNode{
 	
 	public INode[][] getResults(){
 		if(prefixes == null){
-			INode[][] results = new INode[1][1];
-			results[0][0] = getResult();
-			return results;
+			return new INode[][]{{getResult()}};
 		}
 		
 		int nrOfPrefixes = prefixes.size();
