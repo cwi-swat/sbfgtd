@@ -1,12 +1,13 @@
 package gll.result;
 
+import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
 import java.io.IOException;
 import java.io.Writer;
 
 public interface INode{
-	void addAlternative(INode[] children);
+	void addAlternative(Link children);
 	
 	boolean isEpsilon();
 	

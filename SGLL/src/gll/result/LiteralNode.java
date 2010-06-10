@@ -1,5 +1,6 @@
 package gll.result;
 
+import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class LiteralNode implements INode{
 		this.content = content;
 	}
 	
-	public void addAlternative(INode[] children){
+	public void addAlternative(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -3,8 +3,9 @@ package gll.stack;
 import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.result.LiteralNode;
+import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.IntegerList;
+import gll.util.LinearIntegerKeyedMap;
 
 public final class LiteralStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[] literal;
@@ -26,8 +27,8 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		result = original.result;
 	}
 	
-	private LiteralStackNode(LiteralStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
-		super(original, prefixes, prefixStartLocations);
+	private LiteralStackNode(LiteralStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+		super(original, prefixes);
 
 		literal = original.literal;
 		
@@ -58,7 +59,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new LiteralStackNode(this, prefixes, prefixStartLocations);
+		return new LiteralStackNode(this, prefixesMap);
 	}
 	
 	public void setResultStore(ContainerNode resultStore){
@@ -73,7 +74,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode[] children){
+	public void addResult(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

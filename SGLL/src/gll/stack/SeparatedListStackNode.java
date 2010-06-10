@@ -3,8 +3,9 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.IntegerList;
+import gll.util.LinearIntegerKeyedMap;
 
 public final class SeparatedListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
@@ -45,8 +46,8 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		isPlusList = original.isPlusList;
 	}
 	
-	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
-		super(original, prefixes, prefixStartLocations);
+	private SeparatedListStackNode(SeparatedListStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+		super(original, prefixes);
 		
 		nodeName = original.nodeName;
 
@@ -76,7 +77,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new SeparatedListStackNode(this, prefixes, prefixStartLocations);
+		return new SeparatedListStackNode(this, prefixesMap);
 	}
 	
 	public void setResultStore(ContainerNode resultStore){
@@ -115,7 +116,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new AbstractStackNode[]{psn, epsn};
 	}
 	
-	public void addResult(INode[] children){
+	public void addResult(Link children){
 		result.addAlternative(children);
 	}
 	

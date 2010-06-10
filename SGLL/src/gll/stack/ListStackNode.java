@@ -3,8 +3,9 @@ package gll.stack;
 import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.IntegerList;
+import gll.util.LinearIntegerKeyedMap;
 
 public final class ListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
@@ -41,8 +42,8 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		isPlusList = original.isPlusList;
 	}
 	
-	private ListStackNode(ListStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
-		super(original, prefixes, prefixStartLocations);
+	private ListStackNode(ListStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+		super(original, prefixes);
 		
 		nodeName = original.nodeName;
 
@@ -71,7 +72,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new ListStackNode(this, prefixes, prefixStartLocations);
+		return new ListStackNode(this, prefixesMap);
 	}
 	
 	public void setResultStore(ContainerNode resultStore){
@@ -103,7 +104,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		return new AbstractStackNode[]{psn, epsn};
 	}
 	
-	public void addResult(INode[] children){
+	public void addResult(Link children){
 		result.addAlternative(children);
 	}
 	

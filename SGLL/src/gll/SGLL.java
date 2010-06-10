@@ -2,13 +2,15 @@ package gll;
 
 import gll.result.ContainerNode;
 import gll.result.INode;
+import gll.result.struct.Link;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
 import gll.util.HashSet;
 import gll.util.IndexedStack;
-import gll.util.IntegerHashMap;
+import gll.util.IntegerKeyHashMap;
+import gll.util.LinearIntegerKeyedMap;
 import gll.util.ObjectIntegerKeyHashMap;
 import gll.util.RotatingQueue;
 
@@ -28,7 +30,7 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final DoubleArrayList<AbstractStackNode, AbstractStackNode> possiblySharedExpects;
 	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
-	private final IntegerHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
+	private final IntegerKeyHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
 	private final ObjectIntegerKeyHashMap<String, ContainerNode> resultStoreCache;
 	private final HashSet<AbstractStackNode> withResults;
@@ -53,7 +55,7 @@ public class SGLL implements IGLL{
 		possiblySharedExpects = new DoubleArrayList<AbstractStackNode, AbstractStackNode>();
 		
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
-		possiblySharedEdgeNodesMap = new IntegerHashMap<ArrayList<AbstractStackNode>>();
+		possiblySharedEdgeNodesMap = new IntegerKeyHashMap<ArrayList<AbstractStackNode>>();
 		
 		resultStoreCache = new ObjectIntegerKeyHashMap<String, ContainerNode>();
 		withResults = new HashSet<AbstractStackNode>();
@@ -76,75 +78,69 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updateNextNode(AbstractStackNode node, INode[][] prefixes, int[] prefixStartLocations){
+	private void updateNextNode(AbstractStackNode next, AbstractStackNode node){
 		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; i--){
 			AbstractStackNode possibleAlternative = possiblySharedNextNodes.get(i);
-			if(possibleAlternative.isSimilar(node)){
-				if(node.hasEdges()){
-					possibleAlternative.addEdges(node.getEdges());
+			if(possibleAlternative.isSimilar(next)){
+				if(next.hasEdges()){
+					possibleAlternative.addEdges(next.getEdges());
 				}
 				
 				if(possibleAlternative.isClean()){
-					addPrefixes(possibleAlternative, prefixes, prefixStartLocations);
+					addPrefixes(possibleAlternative, constructResults(node.getPrefixesMap(), node.getResult(), node.getStartLocation()));
 				}else{
 					// Something horrible happened; update the prefixes.
-					updatePrefixes(possibleAlternative, prefixes, prefixStartLocations);
+					updatePrefixes(possibleAlternative, node);
 				}
 				return;
 			}
 		}
 		
-		if(node.startLocationIsSet()){
-			node = node.getCleanCopy();
+		if(next.startLocationIsSet()){
+			next = next.getCleanCopy();
 		}
 		
-		node.setStartLocation(location);
-		possiblySharedNextNodes.add(node);
-		stacksToExpand.add(node);
+		next.setStartLocation(location);
+		possiblySharedNextNodes.add(next);
+		stacksToExpand.add(next);
 		
-		addPrefixes(node, prefixes, prefixStartLocations);
+		addPrefixes(next, constructResults(node.getPrefixesMap(), node.getResult(), node.getStartLocation()));
 	}
 	
-	private void addPrefixes(AbstractStackNode next, INode[][] prefixes, int[] prefixStartLocations){
+	private void addPrefixes(AbstractStackNode next, Link[] prefixes){
 		for(int i = prefixes.length - 1; i >= 0; i--){
-			next.addPrefix(prefixes[i], prefixStartLocations[i]);
+			next.addPrefix(prefixes[i]);
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode next, INode[][] prefixes, int[] prefixStartLocations){
-		for(int i = prefixes.length - 1; i >= 0; i--){
-			next.addPrefix(prefixes[i], prefixStartLocations[i]); // Not strictly necessary at the moment.
-			ArrayList<AbstractStackNode> edges = next.getEdges();
-			
-			INode thisResult = next.getResult();
-			for(int j = prefixes.length - 1; j >= 0; j--){
-				INode[] prefix = prefixes[j];
-				int prefixStartLocation = prefixStartLocations[j];
-				int prefixLength = prefix.length;
-				INode[] result = new INode[prefixLength + 1];
-				System.arraycopy(prefix, 0, result, 0, prefixLength);
-				result[prefixLength] = thisResult;
-				
-				for(int k = edges.size() - 1; k >= 0; k--){
-					AbstractStackNode edge = edges.get(k);
-					if(withResults.contains(edge)){
-						if(edge.getStartLocation() == prefixStartLocation){
-							edge.addResult(result);
-						}
-					}
+	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
+		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		Link[] prefixes = constructResults(prefixesMap, node.getResult(), node.getStartLocation());
+		
+		ArrayList<AbstractStackNode> edges = next.getEdges();
+		for(int i = edges.size() - 1; i >= 0; i--){
+			AbstractStackNode edge = edges.get(i);
+			if(withResults.contains(edge)){
+				int productionStartLocation = edge.getStartLocation();
+				ArrayList<Link> nodePrefixes = new ArrayList<Link>();
+				for(int j = prefixes.length - 1; j >= 0; j--){
+					Link prefix = prefixes[j];
+					if(prefix.productionStart == productionStartLocation) nodePrefixes.add(prefix);
 				}
+				
+				edge.addResult(new Link(nodePrefixes, node.getResult(), productionStartLocation));
 			}
 		}
 	}
 	
-	private void updateEdgeNode(AbstractStackNode node, INode[][] results, int[] resultStartLocations){
+	private void updateEdgeNode(AbstractStackNode node, Link[] results){
 		int startLocation = node.getStartLocation();
 		ArrayList<AbstractStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				AbstractStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
-					if(withResults.contains(possibleAlternative)) addResults(possibleAlternative, results, resultStartLocations);
+					if(withResults.contains(possibleAlternative)) addResults(possibleAlternative, results);
 					return;
 				}
 			}
@@ -166,7 +162,7 @@ public class SGLL implements IGLL{
 			node.setResultStore(resultStore);
 			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
 			withResults.unsafePut(node);
-			addResults(node, results, resultStartLocations);
+			addResults(node, results);
 		}
 		
 		if(location == input.length && !node.hasEdges() && !node.hasNext()){
@@ -177,30 +173,43 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce.put(node);
 	}
 	
-	private void addResults(AbstractStackNode edge, INode[][] results, int[] resultStartLocations){
+	private void addResults(AbstractStackNode edge, Link[] results){
 		int nrOfResults = results.length;
 		for(int i = nrOfResults - 1; i >= 0; i--){
-			if(edge.getStartLocation() == resultStartLocations[i]){
+			if(edge.getStartLocation() == results[i].productionStart){
 				edge.addResult(results[i]);
 			}
 		}
 	}
 	
 	private void move(AbstractStackNode node){
-		INode[][] results = node.getResults();
-		int[] resultStartLocations = node.getResultStartLocations();
-		
 		ArrayList<AbstractStackNode> edges;
 		if((edges = node.getEdges()) != null){
+			Link[] results = constructResults(node.getPrefixesMap(), node.getResult(), node.getStartLocation());
+			
 			for(int i = edges.size() - 1; i >= 0; i--){
-				updateEdgeNode(edges.get(i), results, resultStartLocations);
+				updateEdgeNode(edges.get(i), results);
 			}
 		}
 		
 		AbstractStackNode next;
 		if((next = node.getNext()) != null){
-			updateNextNode(next, results, resultStartLocations);
+			updateNextNode(next, node);
 		}
+	}
+	
+	public Link[] constructResults(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result, int startLocation){
+		if(prefixesMap == null){
+			return new Link[]{new Link(null, result, startLocation)};
+		}
+		
+		int nrOfPrefixes = prefixesMap.size();
+		Link[] results = new Link[nrOfPrefixes];
+		for(int i = nrOfPrefixes - 1; i >= 0; i--){
+			results[i] = new Link(prefixesMap.getValue(i), result, prefixesMap.getKey(i));
+		}
+		
+		return results;
 	}
 	
 	private void reduceTerminal(AbstractStackNode terminal){
