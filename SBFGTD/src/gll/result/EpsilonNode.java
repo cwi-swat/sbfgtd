@@ -1,5 +1,6 @@
 package gll.result;
 
+import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ public class EpsilonNode implements INode{
 		super();
 	}
 	
-	public void addAlternative(INode[] children){
+	public void addAlternative(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

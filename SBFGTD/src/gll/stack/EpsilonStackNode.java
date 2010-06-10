@@ -3,8 +3,9 @@ package gll.stack;
 import gll.result.ContainerNode;
 import gll.result.EpsilonNode;
 import gll.result.INode;
+import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.IntegerList;
+import gll.util.LinearIntegerKeyedMap;
 
 public final class EpsilonStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
@@ -17,8 +18,8 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		super(original);
 	}
 	
-	private EpsilonStackNode(EpsilonStackNode original, ArrayList<INode[]> prefixes, IntegerList prefixStartLocations){
-		super(original, prefixes, prefixStartLocations);
+	private EpsilonStackNode(EpsilonStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+		super(original, prefixes);
 	}
 	
 	public String getName(){
@@ -42,7 +43,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new EpsilonStackNode(this, prefixes, prefixStartLocations);
+		return new EpsilonStackNode(this, prefixesMap);
 	}
 	
 	public void setResultStore(ContainerNode resultStore){
@@ -57,7 +58,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		throw new UnsupportedOperationException();
 	}
 	
-	public void addResult(INode[] children){
+	public void addResult(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -1,6 +1,6 @@
 package gll.util;
 
-public class IntegerHashMap<V>{
+public class IntegerKeyHashMap<V>{
 	private final static int DEFAULT_BIT_SIZE = 2;
 	
 	private Entry<V>[] entries;
@@ -11,7 +11,7 @@ public class IntegerHashMap<V>{
 	private int threshold;
 	private int load;
 	
-	public IntegerHashMap(){
+	public IntegerKeyHashMap(){
 		super();
 		
 		int nrOfEntries = 1 << (bitSize = DEFAULT_BIT_SIZE);
@@ -145,6 +145,10 @@ public class IntegerHashMap<V>{
 		}
 		
 		return null;
+	}
+	
+	public int size(){
+		return load;
 	}
 	
 	public void clear(){
