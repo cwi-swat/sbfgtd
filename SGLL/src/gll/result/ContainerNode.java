@@ -5,7 +5,6 @@ import gll.util.ArrayList;
 import gll.util.IndexedStack;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 // TODO Fix amb printing.
@@ -33,39 +32,38 @@ public class ContainerNode implements INode{
 		return false;
 	}
 	
-	private void printAlternative(Link children, Writer out, IndexedStack<INode> stack, int childDepth) throws IOException{
-		out.write(name);
-		out.write('(');
-		StringWriter sw = new StringWriter();
-		children.node.print(sw, stack, childDepth);
-		printProduction(children, out, sw.toString(), true, stack, childDepth);
-		out.write(')');
+	private void gatherAlternatives(Link child, ArrayList<INode[]> gatheredAlternatives){
+		gatherProduction(child, new INode[]{child.node}, gatheredAlternatives);
 	}
 	
-	private boolean printProduction(Link production, Writer out, String postFix, boolean last, IndexedStack<INode> stack, int childDepth) throws IOException{
-		ArrayList<Link> prefixes = production.prefixes;
+	private void gatherProduction(Link child, INode[] postFix, ArrayList<INode[]> gatheredAlternatives){
+		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
-			out.write(postFix);
-			if(!last) out.write(',');
-			return false;
+			gatheredAlternatives.add(postFix);
+			return;
 		}
-
+		
 		int nrOfPrefixes = prefixes.size();
 		if(nrOfPrefixes == 1){
-			StringWriter sw = new StringWriter();
-			prefixes.get(0).node.print(sw, stack, childDepth);
-			String newPostFix = sw.toString() + ',' + postFix;
-			return printProduction(prefixes.get(0), out, newPostFix, true, stack, childDepth);
+			Link prefix = prefixes.get(0);
+			
+			int length = postFix.length;
+			INode[] newPostFix = new INode[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = prefix.node;
+			gatherProduction(prefix, newPostFix, gatheredAlternatives);
+			return;
 		}
 		
 		for(int i = nrOfPrefixes - 1; i >= 0; i--){
-			StringWriter sw = new StringWriter();
 			Link prefix = prefixes.get(i);
-			prefix.node.print(sw, stack, childDepth);
-			String newPostFix = sw.toString() + postFix;
-			printProduction(prefix, out, newPostFix, (i == 0), stack, childDepth);
+			
+			int length = postFix.length;
+			INode[] newPostFix = new INode[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = prefix.node;
+			gatherProduction(child.prefixes.get(i), newPostFix, gatheredAlternatives);
 		}
-		return true;
 	}
 	
 	public void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException{
@@ -83,63 +81,77 @@ public class ContainerNode implements INode{
 		
 		stack.push(this, depth); // Push
 		
-		if(alternatives == null){
-			printAlternative(firstAlternative, out, stack, childDepth);
+		// Gather
+		ArrayList<INode[]> gatheredAlternatives = new ArrayList<INode[]>();
+		gatherAlternatives(firstAlternative, gatheredAlternatives);
+		if(alternatives != null){
+			for(int i = alternatives.size() - 1; i >= 0; i--){
+				gatherAlternatives(alternatives.get(i), gatheredAlternatives);
+			}
+		}
+		
+		// Print
+		int nrOfAlternatives = gatheredAlternatives.size();
+		if(nrOfAlternatives == 1){
+			printAlternative(gatheredAlternatives.get(0), out, stack, childDepth);
 		}else{
 			out.write('[');
-			for(int i = alternatives.size() - 1; i >= 1; i--){
-				printAlternative(alternatives.get(i), out, stack, childDepth);
+			printAlternative(gatheredAlternatives.get(0), out, stack, childDepth);
+			for(int i = nrOfAlternatives - 1; i >= 1; i--){
 				out.write(',');
+				printAlternative(gatheredAlternatives.get(i), out, stack, childDepth);
 			}
-			printAlternative(alternatives.get(0), out, stack, childDepth);
-			out.write(',');
-			printAlternative(firstAlternative, out, stack, childDepth);
 			out.write(']');
 		}
 		
 		stack.purge(); // Pop
 	}
 	
-	private void printAlternative(Link children, StringBuilder sb){
-		sb.append(name);
-		sb.append('(');
-		printProduction(children, sb, children.node.toString(), true);
-		sb.append(')');
+	private void printAlternative(INode[] children, Writer out, IndexedStack<INode> stack, int childDepth) throws IOException{
+		out.write(name);
+		out.write('(');
+		children[0].print(out, stack, childDepth);
+		for(int i = 1; i < children.length; i++){
+			out.write(',');
+			children[i].print(out, stack, childDepth);
+		}
+		out.write(')');
 	}
 	
-	private boolean printProduction(Link production, StringBuilder sb, String postFix, boolean last){
-		ArrayList<Link> prefixes = production.prefixes;
-		int nrOfPrefixes = prefixes.size();
-		if(nrOfPrefixes == 0){
-			sb.append(postFix);
-			if(!last) sb.append(',');
-			return false;
+	private void printAlternative(INode[] children, StringBuilder sb){
+		sb.append(name);
+		sb.append('(');
+		sb.append(children[0]);
+		for(int i = 1; i < children.length; i++){
+			sb.append(',');
+			sb.append(children[i]);
 		}
-		
-		boolean isAmbiguous = false;
-		for(int i = nrOfPrefixes - 1; i >= 0; i--){
-			Link prefix = prefixes.get(i);
-			String nodeString = prefix.node.toString();
-			String newPostFix = nodeString + ',' + postFix;
-			isAmbiguous |= printProduction(prefix, sb, newPostFix, (i != 0));
-		}
-		return isAmbiguous;
+		sb.append(')');
 	}
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-		if(alternatives == null){
-			printAlternative(firstAlternative, sb);
+		// Gather
+		ArrayList<INode[]> gatheredAlternatives = new ArrayList<INode[]>();
+		gatherAlternatives(firstAlternative, gatheredAlternatives);
+		if(alternatives != null){
+			for(int i = alternatives.size() - 1; i >= 0; i--){
+				gatherAlternatives(alternatives.get(i), gatheredAlternatives);
+			}
+		}
+		
+		// Print
+		int nrOfAlternatives = gatheredAlternatives.size();
+		if(nrOfAlternatives == 1){
+			printAlternative(gatheredAlternatives.get(0), sb);
 		}else{
 			sb.append('[');
-			for(int i = alternatives.size() - 1; i >= 1; i--){
-				printAlternative(alternatives.get(i), sb);
+			printAlternative(gatheredAlternatives.get(0), sb);
+			for(int i = nrOfAlternatives - 1; i >= 1; i--){
 				sb.append(',');
+				printAlternative(gatheredAlternatives.get(i), sb);
 			}
-			printAlternative(alternatives.get(0), sb);
-			sb.append(',');
-			printAlternative(firstAlternative, sb);
 			sb.append(']');
 		}
 		
