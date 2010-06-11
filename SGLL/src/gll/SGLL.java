@@ -113,6 +113,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	// TODO Fix nastiest bug ever.
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
 		Link[] prefixes = constructResults(prefixesMap, node.getResult(), node.getStartLocation());
