@@ -9,7 +9,7 @@ import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
 import gll.util.HashSet;
 import gll.util.IndexedStack;
-import gll.util.IntegerKeyHashMap;
+import gll.util.IntegerKeyedHashMap;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.ObjectIntegerKeyedHashMap;
 import gll.util.RotatingQueue;
@@ -30,7 +30,7 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final DoubleArrayList<AbstractStackNode, AbstractStackNode> possiblySharedExpects;
 	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
-	private final IntegerKeyHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
+	private final IntegerKeyedHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
 	private final ObjectIntegerKeyedHashMap<String, ContainerNode> resultStoreCache;
 	private final HashSet<AbstractStackNode> withResults;
@@ -55,7 +55,7 @@ public class SGLL implements IGLL{
 		possiblySharedExpects = new DoubleArrayList<AbstractStackNode, AbstractStackNode>();
 		
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
-		possiblySharedEdgeNodesMap = new IntegerKeyHashMap<ArrayList<AbstractStackNode>>();
+		possiblySharedEdgeNodesMap = new IntegerKeyedHashMap<ArrayList<AbstractStackNode>>();
 		
 		resultStoreCache = new ObjectIntegerKeyedHashMap<String, ContainerNode>();
 		withResults = new HashSet<AbstractStackNode>();
