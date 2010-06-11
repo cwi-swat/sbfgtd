@@ -147,8 +147,8 @@ public class ContainerNode implements INode{
 			printAlternative(gatheredAlternatives.get(0), sb);
 		}else{
 			sb.append('[');
-			printAlternative(gatheredAlternatives.get(0), sb);
-			for(int i = nrOfAlternatives - 1; i >= 1; i--){
+			printAlternative(gatheredAlternatives.get(nrOfAlternatives - 1), sb);
+			for(int i = nrOfAlternatives - 2; i >= 0; i--){
 				sb.append(',');
 				printAlternative(gatheredAlternatives.get(i), sb);
 			}
