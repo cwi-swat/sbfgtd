@@ -1,2 +1,2 @@
-Recognizer: O(N^(2 + ((rounddown(N / 2) + 1) / N))) = ~O(N^2.5)
-Tree construction: O(N^MAXPRODLENGTH)
+Recognizer: O(N^2) (need proof)
+Tree construction: O(N^3)
