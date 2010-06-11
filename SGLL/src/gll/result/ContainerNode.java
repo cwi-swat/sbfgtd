@@ -7,7 +7,6 @@ import gll.util.IndexedStack;
 import java.io.IOException;
 import java.io.Writer;
 
-// TODO Fix amb printing.
 public class ContainerNode implements INode{
 	private final String name;
 	private Link firstAlternative;
