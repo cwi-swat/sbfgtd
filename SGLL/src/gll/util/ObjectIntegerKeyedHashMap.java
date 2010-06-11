@@ -1,6 +1,6 @@
 package gll.util;
 
-public class ObjectIntegerKeyHashMap<K, V>{
+public class ObjectIntegerKeyedHashMap<K, V>{
 	private Entry<K, V>[] entries;
 
 	private int hashMask;
@@ -9,7 +9,7 @@ public class ObjectIntegerKeyHashMap<K, V>{
 	private int threshold;
 	private int load;
 	
-	public ObjectIntegerKeyHashMap(){
+	public ObjectIntegerKeyedHashMap(){
 		super();
 		
 		int nrOfEntries = 1 << bitSize;

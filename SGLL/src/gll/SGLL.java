@@ -11,7 +11,7 @@ import gll.util.HashSet;
 import gll.util.IndexedStack;
 import gll.util.IntegerKeyHashMap;
 import gll.util.LinearIntegerKeyedMap;
-import gll.util.ObjectIntegerKeyHashMap;
+import gll.util.ObjectIntegerKeyedHashMap;
 import gll.util.RotatingQueue;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	private final IntegerKeyHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
-	private final ObjectIntegerKeyHashMap<String, ContainerNode> resultStoreCache;
+	private final ObjectIntegerKeyedHashMap<String, ContainerNode> resultStoreCache;
 	private final HashSet<AbstractStackNode> withResults;
 	
 	private int previousLocation;
@@ -57,7 +57,7 @@ public class SGLL implements IGLL{
 		possiblySharedNextNodes = new ArrayList<AbstractStackNode>();
 		possiblySharedEdgeNodesMap = new IntegerKeyHashMap<ArrayList<AbstractStackNode>>();
 		
-		resultStoreCache = new ObjectIntegerKeyHashMap<String, ContainerNode>();
+		resultStoreCache = new ObjectIntegerKeyedHashMap<String, ContainerNode>();
 		withResults = new HashSet<AbstractStackNode>();
 		
 		previousLocation = -1;
