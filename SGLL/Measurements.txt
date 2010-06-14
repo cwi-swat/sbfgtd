@@ -49,3 +49,30 @@ input chars	| Average Time	| Lowest Time
 400			| 6041 ms		| 5660 ms
 450			| 8866 ms		| 8518 ms
 500			| 13431 ms		| 12073 ms
+
+
+
+
+------------------------------
+@Q9450 Win32
+------------------------------
+5: avg=0ms, lowest=0ms
+10: avg=0ms, lowest=0ms
+15: avg=0ms, lowest=0ms
+20: avg=3ms, lowest=0ms
+25: avg=0ms, lowest=0ms
+30: avg=3ms, lowest=0ms
+35: avg=0ms, lowest=0ms
+40: avg=3ms, lowest=0ms
+45: avg=6ms, lowest=0ms
+50: avg=6ms, lowest=0ms
+100: avg=34ms, lowest=31ms
+150: avg=125ms, lowest=109ms
+200: avg=490ms, lowest=390ms
+250: avg=1006ms, lowest=984ms
+300: avg=1937ms, lowest=1843ms
+350: avg=3025ms, lowest=2922ms
+400: avg=4975ms, lowest=4766ms
+450: avg=7221ms, lowest=7062ms
+500: avg=10500ms, lowest=10187ms
+
