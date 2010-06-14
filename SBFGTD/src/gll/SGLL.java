@@ -113,24 +113,32 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	// TODO Fix nastiest bug ever.
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
 		Link[] prefixes = constructResults(prefixesMap, node.getResult(), node.getStartLocation());
 		
-		ArrayList<AbstractStackNode> edges = next.getEdges();
-		for(int i = edges.size() - 1; i >= 0; i--){
-			AbstractStackNode edge = edges.get(i);
-			if(withResults.contains(edge)){
-				int productionStartLocation = edge.getStartLocation();
-				ArrayList<Link> nodePrefixes = new ArrayList<Link>();
-				for(int j = prefixes.length - 1; j >= 0; j--){
-					Link prefix = prefixes[j];
-					if(prefix.productionStart == productionStartLocation) nodePrefixes.add(prefix);
+		// Update results (if necessary).
+		ArrayList<AbstractStackNode> edges;
+		if((edges = next.getEdges()) != null){
+			for(int i = edges.size() - 1; i >= 0; i--){
+				AbstractStackNode edge = edges.get(i);
+				if(withResults.contains(edge)){
+					int productionStartLocation = edge.getStartLocation();
+					ArrayList<Link> nodePrefixes = new ArrayList<Link>();
+					for(int j = prefixes.length - 1; j >= 0; j--){
+						Link prefix = prefixes[j];
+						if(prefix.productionStart == productionStartLocation) nodePrefixes.add(prefix);
+					}
+					
+					edge.addResult(new Link(nodePrefixes, node.getResult(), productionStartLocation));
 				}
-				
-				edge.addResult(new Link(nodePrefixes, node.getResult(), productionStartLocation));
 			}
+		}
+		
+		// Update prefixes.
+		for(int j = prefixes.length - 1; j >= 0; j--){
+			Link prefix = prefixes[j];
+			next.addPrefix(prefix);
 		}
 	}
 	
