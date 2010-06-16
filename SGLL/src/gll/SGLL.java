@@ -136,10 +136,7 @@ public class SGLL implements IGLL{
 		}
 		
 		// Update prefixes.
-		for(int j = prefixes.length - 1; j >= 0; j--){
-			Link prefix = prefixes[j];
-			next.addPrefix(prefix);
-		}
+		addPrefixes(next, prefixes);
 	}
 	
 	private void updateEdgeNode(AbstractStackNode node, Link[] results){
