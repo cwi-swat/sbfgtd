@@ -1,4 +1,4 @@
-Performance (@ Q6600, 8GB DDR-800, JDK 1.6):
+Performance (@ Q6600, 8GB DDR-800, Linux, JDK 1.6):
 
 S ::= SSS | SS | "a"
 
@@ -52,9 +52,8 @@ input chars	| Average Time	| Lowest Time
 
 
 
-
 ------------------------------
-@Q9450 Win32
+@ Q9450, 8GB DDR-1066 (4GB visible), Win32, JDK 1.6
 ------------------------------
 5: avg=0ms, lowest=0ms
 10: avg=0ms, lowest=0ms
