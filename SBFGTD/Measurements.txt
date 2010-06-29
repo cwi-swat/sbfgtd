@@ -16,15 +16,15 @@ input chars	| Average Time	| Lowest Time
 40			| 0 ms			| 0 ms
 45			| 0 ms			| 0 ms
 50			| 0 ms			| 0 ms
-100			| 10 ms			| 0 ms
+100			| 0 ms			| 0 ms
 150			| 10 ms			| 0 ms
-200			| 30 ms			| 0 ms
-250			| 30 ms			| 0 ms
-300			| 50 ms			| 50 ms
-350			| 70 ms			| 50 ms
-400			| 80 ms			| 50 ms
-450			| 110 ms		| 100 ms
-500			| 130 ms		| 100 ms
+200			| 10 ms			| 0 ms
+250			| 20 ms			| 0 ms
+300			| 20 ms			| 0 ms
+350			| 40 ms			| 0 ms
+400			| 50 ms			| 50 ms
+450			| 70 ms			| 50 ms
+500			| 80 ms			| 50 ms
 
 Parser:
 ------------------------------------------
