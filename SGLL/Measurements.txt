@@ -42,36 +42,10 @@ input chars	| Average Time	| Lowest Time
 50			| 0 ms			| 0 ms
 100			| 50 ms			| 50 ms
 150			| 170 ms		| 150 ms
-200			| 451 ms		| 450 ms
-250			| 1232 ms		| 1101 ms
-300			| 2294 ms		| 2203 ms
-350			| 3876 ms		| 3658 ms
-400			| 6041 ms		| 5660 ms
-450			| 8866 ms		| 8518 ms
-500			| 13431 ms		| 12073 ms
-
-
-
-------------------------------
-@ Q9450, 8GB DDR-1066 (4GB visible), Win32, JDK 1.6
-------------------------------
-5: avg=0ms, lowest=0ms
-10: avg=0ms, lowest=0ms
-15: avg=0ms, lowest=0ms
-20: avg=3ms, lowest=0ms
-25: avg=0ms, lowest=0ms
-30: avg=3ms, lowest=0ms
-35: avg=0ms, lowest=0ms
-40: avg=3ms, lowest=0ms
-45: avg=6ms, lowest=0ms
-50: avg=6ms, lowest=0ms
-100: avg=34ms, lowest=31ms
-150: avg=125ms, lowest=109ms
-200: avg=490ms, lowest=390ms
-250: avg=1006ms, lowest=984ms
-300: avg=1937ms, lowest=1843ms
-350: avg=3025ms, lowest=2922ms
-400: avg=4975ms, lowest=4766ms
-450: avg=7221ms, lowest=7062ms
-500: avg=10500ms, lowest=10187ms
-
+200			| 460 ms		| 450 ms
+250			| 1282 ms		| 1154 ms
+300			| 2344 ms		| 2254 ms
+350			| 4119 ms		| 3906 ms
+400			| 6524 ms		| 6112 ms
+450			| 9541 ms		| 8981 ms
+500			| 14540 ms		| 13084 ms

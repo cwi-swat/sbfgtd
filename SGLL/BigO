@@ -1,3 +1,6 @@
+TODO: Update
+
+
 Recognizer: between O(N^2) and O(N^2.5); better then O(N^2.25) in practice
 Tree construction: between O(N^2.5) and O(N^3); better then O(N^2.5) in practice.
 
