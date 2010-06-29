@@ -1,8 +1,8 @@
 TODO: Update
 
 
-Recognizer: between O(N^2) and O(N^2.5); better then O(N^2.25) in practice
-Tree construction: between O(N^2.5) and O(N^3); better then O(N^2.5) in practice.
+Recognizer: between O(N^2) and O(N^2.5); near O(N^2) in practice
+Tree construction: between O(N^2.5) and O(N^3); slightly worse then O(N^3) in practice.
 
 -------------------------------------------------
 -------------------------------------------------
@@ -21,7 +21,7 @@ Sharing check O(1) or O(N^(rounddown(N / 2 + 1) / N)):
 -Every 'production' (list of nodes) can be shared in constant time (since it has one edge at the end that needs to be checked when the production is 'expected'; edges can be indexed on the level they point too, so look-up time is O(1)).
 -Every node that is at the end of a production that is not a chain production that gets shared needs to merge it's edges with it's 'sibling'. This can be done in O(NUMBER_OF_EDGES) time. The average number of edges a node has in the worst case is: N^(rounddown(N / 2 + 1) / N) ~= between 0 and N.
 
-Total O (O(N^(2 + (rounddown(N / 2 + 1) / N / 2))) ~= O(N^2) to O(N^2.5)); better then O(N^2.25) in reality because of implementation tricks:
+Total O (O(N^(2 + (rounddown(N / 2 + 1) / N / 2))) ~= O(N^2) to O(N^2.5)):
 -NUMBER_OF_NODES * SHARING_CHECK.
 -SHARING_CHECK = rounddown(N / 2 + 1) / N / SHORTEST_NON_CHAIN_RULE_PRODUCTION_LENGTH
 
