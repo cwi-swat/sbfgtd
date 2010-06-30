@@ -161,14 +161,14 @@ public class SGLL implements IGLL{
 		addPrefixes(next, prefixes);
 	}
 	
-	private void updateEdgeNode(AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result){
+	private void updateEdgeNode(AbstractStackNode node, ArrayList<Link> prefixes, INode result){
 		int startLocation = node.getStartLocation();
 		ArrayList<AbstractStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				AbstractStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
-					if(withResults.contains(possibleAlternative)) addResult(possibleAlternative, prefixesMap, result);
+					if(withResults.contains(possibleAlternative)) addResult(possibleAlternative, prefixes, result);
 					return;
 				}
 			}
@@ -190,7 +190,7 @@ public class SGLL implements IGLL{
 			node.setResultStore(resultStore);
 			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
 			withResults.unsafePut(node);
-			addResult(node, prefixesMap, result);
+			addResult(node, prefixes, result);
 		}
 		
 		if(location == input.length && !node.hasEdges() && !node.hasNext()){
@@ -201,16 +201,8 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce.put(node);
 	}
 	
-	private void addResult(AbstractStackNode edge, LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result){
-		int startLocation = edge.getStartLocation();
-		if(prefixesMap != null){
-			ArrayList<Link> prefixes = prefixesMap.findValue(startLocation);
-			if(prefixes != null){
-				edge.addResult(new Link(prefixes, result, startLocation));
-			}
-		}else{
-			edge.addResult(new Link(null, result, startLocation));
-		}
+	private void addResult(AbstractStackNode edge, ArrayList<Link> prefixes, INode result){
+		edge.addResult(new Link(prefixes, result, edge.getStartLocation()));
 	}
 	
 	private void move(AbstractStackNode node){
@@ -220,7 +212,13 @@ public class SGLL implements IGLL{
 			INode result = node.getResult();
 			
 			for(int i = edges.size() - 1; i >= 0; i--){
-				updateEdgeNode(edges.get(i), prefixesMap, result);
+				AbstractStackNode edge = edges.get(i);
+				ArrayList<Link> prefixes = null;
+				if(prefixesMap != null){
+					prefixes = prefixesMap.findValue(edge.getStartLocation());
+					if(prefixes == null) continue;
+				}
+				updateEdgeNode(edge, prefixes, result);
 			}
 		}
 		
