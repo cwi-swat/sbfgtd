@@ -216,8 +216,11 @@ public class SGLL implements IGLL{
 	private void move(AbstractStackNode node){
 		ArrayList<AbstractStackNode> edges;
 		if((edges = node.getEdges()) != null){
+			LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+			INode result = node.getResult();
+			
 			for(int i = edges.size() - 1; i >= 0; i--){
-				updateEdgeNode(edges.get(i), node.getPrefixesMap(), node.getResult());
+				updateEdgeNode(edges.get(i), prefixesMap, result);
 			}
 		}
 		
