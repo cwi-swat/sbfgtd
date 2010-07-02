@@ -108,9 +108,9 @@ public class SGLL implements IGLL{
 					updateProductionEndNode(possibleAlternative, next);
 				}
 				
-				if(possibleAlternative.isClean()){
-					addPrefixes(possibleAlternative, constructPrefixes(node.getPrefixesMap(), node.getResult(), node.getStartLocation()));
-				}else{
+				addPrefixes(possibleAlternative, node);
+				
+				if(!possibleAlternative.isClean()){
 					// Something horrible happened; update the prefixes.
 					updatePrefixes(possibleAlternative, node);
 				}
@@ -126,18 +126,28 @@ public class SGLL implements IGLL{
 		possiblySharedNextNodes.add(next);
 		stacksToExpand.add(next);
 		
-		addPrefixes(next, constructPrefixes(node.getPrefixesMap(), node.getResult(), node.getStartLocation()));
+		addPrefixes(next, node);
 	}
 	
-	private void addPrefixes(AbstractStackNode next, Link[] prefixes){
-		for(int i = prefixes.length - 1; i >= 0; i--){
-			next.addPrefix(prefixes[i]);
+	private void addPrefixes(AbstractStackNode next, AbstractStackNode node){
+		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		INode result = node.getResult();
+		
+		if(prefixesMap == null){
+			next.addPrefix(new Link(null, result), node.getStartLocation());
+		}else{
+			int nrOfPrefixes = prefixesMap.size();
+			for(int i = nrOfPrefixes - 1; i >= 0; i--){
+				int startLocation = prefixesMap.getKey(i);
+				
+				next.addPrefix(new Link(prefixesMap.getValue(i), result), startLocation);
+			}
 		}
 	}
 	
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
-		Link[] prefixes = constructPrefixes(prefixesMap, node.getResult(), node.getStartLocation());
+		INode result = node.getResult();
 		
 		// Update results (if necessary).
 		ArrayList<AbstractStackNode> edges;
@@ -145,20 +155,15 @@ public class SGLL implements IGLL{
 			for(int i = edges.size() - 1; i >= 0; i--){
 				AbstractStackNode edge = edges.get(i);
 				if(withResults.contains(edge)){
-					int productionStartLocation = edge.getStartLocation();
-					ArrayList<Link> nodePrefixes = new ArrayList<Link>();
-					for(int j = prefixes.length - 1; j >= 0; j--){
-						Link prefix = prefixes[j];
-						if(prefix.productionStart == productionStartLocation) nodePrefixes.add(prefix);
+					Link prefix = constructPrefixesFor(prefixesMap, result, edge.getStartLocation());
+					if(prefix != null){
+						ArrayList<Link> edgePrefixes = new ArrayList<Link>();
+						edgePrefixes.add(prefix);
+						edge.addResult(new Link(edgePrefixes, next.getResult()));
 					}
-					
-					edge.addResult(new Link(nodePrefixes, node.getResult(), productionStartLocation));
 				}
 			}
 		}
-		
-		// Update prefixes.
-		addPrefixes(next, prefixes);
 	}
 	
 	private void updateEdgeNode(AbstractStackNode node, ArrayList<Link> prefixes, INode result){
@@ -202,7 +207,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void addResult(AbstractStackNode edge, ArrayList<Link> prefixes, INode result){
-		edge.addResult(new Link(prefixes, result, edge.getStartLocation()));
+		edge.addResult(new Link(prefixes, result));
 	}
 	
 	private void move(AbstractStackNode node){
@@ -228,18 +233,16 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private Link[] constructPrefixes(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result, int startLocation){
+	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result, int startLocation){
 		if(prefixesMap == null){
-			return new Link[]{new Link(null, result, startLocation)};
+			return new Link(null, result);
 		}
 		
-		int nrOfPrefixes = prefixesMap.size();
-		Link[] results = new Link[nrOfPrefixes];
-		for(int i = nrOfPrefixes - 1; i >= 0; i--){
-			results[i] = new Link(prefixesMap.getValue(i), result, prefixesMap.getKey(i));
+		ArrayList<Link> prefixes = prefixesMap.findValue(startLocation);
+		if(prefixes != null){
+			return new Link(prefixes, result);
 		}
-		
-		return results;
+		return null;
 	}
 	
 	private void reduceTerminal(AbstractStackNode terminal){
