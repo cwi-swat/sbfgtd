@@ -163,7 +163,7 @@ public abstract class AbstractStackNode{
 	
 	public abstract void setResultStore(ContainerNode resultStore);
 	
-	public abstract void addResult(Link children);
+	public abstract ContainerNode getResultStore();
 	
 	public abstract INode getResult();
 }
