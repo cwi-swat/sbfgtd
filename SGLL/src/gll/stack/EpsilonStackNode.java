@@ -50,15 +50,15 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		throw new UnsupportedOperationException();
 	}
 	
+	public ContainerNode getResultStore(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public int getLength(){
 		return 0;
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public void addResult(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

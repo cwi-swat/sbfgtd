@@ -69,6 +69,10 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		result = resultStore;
 	}
 	
+	public ContainerNode getResultStore(){
+		return result;
+	}
+	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode copy = optional.getCleanCopy();
 		AbstractStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
@@ -79,10 +83,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		epsn.setStartLocation(startLocation);
 		
 		return new AbstractStackNode[]{copy, epsn};
-	}
-	
-	public void addResult(Link children){
-		result.addAlternative(children);
 	}
 	
 	public INode getResult(){

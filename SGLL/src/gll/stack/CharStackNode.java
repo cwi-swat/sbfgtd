@@ -86,15 +86,15 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		throw new UnsupportedOperationException();
 	}
 	
+	public ContainerNode getResultStore(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public int getLength(){
 		return 1;
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public void addResult(Link children){
 		throw new UnsupportedOperationException();
 	}
 	

@@ -84,6 +84,10 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		result = resultStore;
 	}
 	
+	public ContainerNode getResultStore(){
+		return result;
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
@@ -114,10 +118,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		epsn.setStartLocation(startLocation);
 		
 		return new AbstractStackNode[]{psn, epsn};
-	}
-	
-	public void addResult(Link children){
-		result.addAlternative(children);
 	}
 	
 	public INode getResult(){

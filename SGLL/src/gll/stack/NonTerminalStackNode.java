@@ -57,16 +57,16 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		result = resultStore;
 	}
 	
+	public ContainerNode getResultStore(){
+		return result;
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){
 		throw new UnsupportedOperationException();
-	}
-	
-	public void addResult(Link children){
-		result.addAlternative(children);
 	}
 	
 	public INode getResult(){

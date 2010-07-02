@@ -79,6 +79,10 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		result = resultStore;
 	}
 	
+	public ContainerNode getResultStore(){
+		return result;
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
@@ -102,10 +106,6 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		epsn.setStartLocation(startLocation);
 		
 		return new AbstractStackNode[]{psn, epsn};
-	}
-	
-	public void addResult(Link children){
-		result.addAlternative(children);
 	}
 	
 	public INode getResult(){
