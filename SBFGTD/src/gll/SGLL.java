@@ -193,15 +193,14 @@ public class SGLL implements IGLL{
 		
 		String nodeName = node.getName();
 		ContainerNode resultStore = resultStoreCache.get(nodeName, startLocation);
-		node.setResultStore(resultStore);
 		if(resultStore == null){
 			resultStore = new ContainerNode(nodeName);
-			node.setResultStore(resultStore);
 			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
 			withResults.unsafePut(node);
 			
 			resultStore.addAlternative(new Link(prefixes, result));
 		}
+		node.setResultStore(resultStore);
 		
 		if(location == input.length && !node.hasEdges() && !node.hasNext()){
 			root = node; // Root reached.
