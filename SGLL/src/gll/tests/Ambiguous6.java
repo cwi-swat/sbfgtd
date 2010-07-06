@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -67,8 +68,8 @@ public class Ambiguous6 extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous6 a6 = new Ambiguous6("a".toCharArray());
-		a6.parse("S");
-		System.out.println(a6.getStringResult());
+		INode result = a6.parse("S");
+		System.out.println(result);
 		
 		System.out.println("[S(A(B(C([D(E(F(G(a)))),D(a)])))),S(E(F(G(a))))] <- good");
 	}

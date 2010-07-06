@@ -5,6 +5,7 @@ import gll.util.ArrayList;
 import gll.util.IndexedStack;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 
 public class ContainerNode implements INode{
@@ -105,43 +106,14 @@ public class ContainerNode implements INode{
 		out.write(')');
 	}
 	
-	private void printAlternative(INode[] children, StringBuilder sb){
-		sb.append(name);
-		sb.append('(');
-		sb.append(children[0]);
-		for(int i = 1; i < children.length; i++){
-			sb.append(',');
-			sb.append(children[i]);
-		}
-		sb.append(')');
-	}
-	
 	public String toString(){
-		StringBuilder sb = new StringBuilder();
-		
-		// Gather
-		ArrayList<INode[]> gatheredAlternatives = new ArrayList<INode[]>();
-		gatherAlternatives(firstAlternative, gatheredAlternatives);
-		if(alternatives != null){
-			for(int i = alternatives.size() - 1; i >= 0; i--){
-				gatherAlternatives(alternatives.get(i), gatheredAlternatives);
-			}
+		StringWriter sw = new StringWriter();
+		try{
+			print(sw, new IndexedStack<INode>(), 0);
+		}catch(IOException ioex){
+			// Never happens.
 		}
 		
-		// Print
-		int nrOfAlternatives = gatheredAlternatives.size();
-		if(nrOfAlternatives == 1){
-			printAlternative(gatheredAlternatives.get(0), sb);
-		}else{
-			sb.append('[');
-			printAlternative(gatheredAlternatives.get(nrOfAlternatives - 1), sb);
-			for(int i = nrOfAlternatives - 2; i >= 0; i--){
-				sb.append(',');
-				printAlternative(gatheredAlternatives.get(i), sb);
-			}
-			sb.append(']');
-		}
-		
-		return sb.toString();
+		return sw.toString();
 	}
 }

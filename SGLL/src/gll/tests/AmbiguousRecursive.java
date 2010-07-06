@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -30,8 +31,8 @@ public class AmbiguousRecursive extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousRecursive ar = new AmbiguousRecursive("aaa".toCharArray());
-		ar.parse("S");
-		System.out.println(ar.getStringResult());
+		INode result = ar.parse("S");
+		System.out.println(result);
 		
 		System.out.println("[S(S(a),S(a),S(a)),S(S(a),S(S(a),S(a))),S(S(S(a),S(a)),S(a))] <- good");
 	}

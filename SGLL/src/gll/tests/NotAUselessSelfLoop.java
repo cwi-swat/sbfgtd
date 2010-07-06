@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -49,8 +50,8 @@ public class NotAUselessSelfLoop extends SGLL{
 	
 	public static void main(String[] args){
 		NotAUselessSelfLoop nausl = new NotAUselessSelfLoop("aaa".toCharArray());
-		nausl.parse("S");
-		System.out.println(nausl.getStringResult());
+		INode result = nausl.parse("S");
+		System.out.println(result);
 		
 		System.out.println("[S([B(C(A(a),A(a)),C(a)),B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a))),B(A(C(a),C(a)),A(a))]),S(A(a),A(C(a),C(a))),S(A(C(a),C(a)),A(a))] <- good");
 	}

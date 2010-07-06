@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.ListStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
@@ -35,8 +36,8 @@ public class AmbiguousNonTerminalPlusList1 extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousNonTerminalPlusList1 nrpl1 = new AmbiguousNonTerminalPlusList1("aaa".toCharArray());
-		nrpl1.parse("S");
-		System.out.println(nrpl1.getStringResult());
+		INode result = nrpl1.parse("S");
+		System.out.println(result);
 		
 		System.out.println("[S(a,A+(A(a),A+(A(a)))),S(A+(A(a),A+(A(a))),a)] <- good");
 	}

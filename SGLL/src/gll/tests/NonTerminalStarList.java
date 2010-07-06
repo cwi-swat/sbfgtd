@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.ListStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
@@ -29,8 +30,8 @@ public class NonTerminalStarList extends SGLL{
 	
 	public static void main(String[] args){
 		NonTerminalStarList nrsl = new NonTerminalStarList("aaa".toCharArray());
-		nrsl.parse("S");
-		System.out.println(nrsl.getStringResult());
+		INode result = nrsl.parse("S");
+		System.out.println(result);
 		
 		System.out.println("S(A*(A(a),A*(A(a),A*(A(a))))) <- good");
 	}

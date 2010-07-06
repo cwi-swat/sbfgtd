@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.CharStackNode;
 import gll.stack.ListStackNode;
 import gll.stack.NonTerminalStackNode;
@@ -30,8 +31,8 @@ public class AmbiguousNestedPlusList extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousNestedPlusList anpl = new AmbiguousNestedPlusList("aa".toCharArray());
-		anpl.parse("S");
-		System.out.println(anpl.getStringResult());
+		INode result = anpl.parse("S");
+		System.out.println(result);
 		
 		System.out.println("S([A+(A([a]+([a](a))),A+(A([a]+([a](a))))),A+(A([a]+([a](a),[a]+([a](a)))))]) <- good");
 	}

@@ -8,14 +8,11 @@ import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
 import gll.util.HashSet;
-import gll.util.IndexedStack;
 import gll.util.IntegerKeyedHashMap;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.ObjectIntegerKeyedHashMap;
 import gll.util.RotatingQueue;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 
 public class SGLL implements IGLL{
@@ -386,18 +383,6 @@ public class SGLL implements IGLL{
 		}
 		
 		return false;
-	}
-	
-	protected String getStringResult(){
-		INode result = root.getResult();
-		
-		StringWriter out = new StringWriter();
-		try{
-			result.print(out, new IndexedStack<INode>(), 0);
-		}catch(IOException ioex){
-			// Ignore; never happens.
-		}
-		return out.toString();
 	}
 	
 	public INode parse(String start){
