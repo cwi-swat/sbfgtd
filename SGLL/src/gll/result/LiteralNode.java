@@ -3,9 +3,6 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
-import java.io.IOException;
-import java.io.Writer;
-
 public class LiteralNode implements INode{
 	private final char[] content;
 	
@@ -23,11 +20,11 @@ public class LiteralNode implements INode{
 		return false;
 	}
 	
-	public void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException{
-		out.write(content);
+	public String toString(){
+		return new String(content);
 	}
 	
-	public String toString(){
+	public String toString(IndexedStack<INode> stack, int depth){
 		return new String(content);
 	}
 }
