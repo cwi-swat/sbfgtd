@@ -3,13 +3,10 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
-import java.io.IOException;
-import java.io.Writer;
-
 public interface INode{
 	void addAlternative(Link children);
 	
 	boolean isEpsilon();
 	
-	void print(Writer out, IndexedStack<INode> stack, int depth) throws IOException;
+	String toString(IndexedStack<INode> stack, int depth);
 }
