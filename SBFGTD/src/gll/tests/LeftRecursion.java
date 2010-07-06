@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -31,8 +32,8 @@ public class LeftRecursion extends SGLL{
 	
 	public static void main(String[] args){
 		LeftRecursion lr = new LeftRecursion("aaa".toCharArray());
-		lr.parse("S");
-		System.out.println(lr.getStringResult());
+		INode result = lr.parse("S");
+		System.out.println(result);
 		
 		System.out.println("S(A(A(A(a),a),a)) <- good");
 	}

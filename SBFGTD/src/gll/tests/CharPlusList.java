@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.CharStackNode;
 import gll.stack.ListStackNode;
 import gll.stack.AbstractStackNode;
@@ -22,8 +23,8 @@ public class CharPlusList extends SGLL{
 	
 	public static void main(String[] args){
 		CharPlusList cpl = new CharPlusList("abc".toCharArray());
-		cpl.parse("S");
-		System.out.println(cpl.getStringResult());
+		INode result = cpl.parse("S");
+		System.out.println(result);
 		
 		System.out.println("S([a-z]+([a-z](a),[a-z]+([a-z](b),[a-z]+([a-z](c))))) <- good");
 	}

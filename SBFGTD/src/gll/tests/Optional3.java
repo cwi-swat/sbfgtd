@@ -1,6 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
+import gll.result.INode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.OptionalStackNode;
@@ -39,8 +40,9 @@ public class Optional3 extends SGLL{
 	
 	public static void main(String[] args){
 		Optional3 o3 = new Optional3("aa".toCharArray());
-		o3.parse("S");
-		System.out.println(o3.getStringResult());
+		INode result = o3.parse("S");
+		System.out.println(result);
+		
 		System.out.println("[S(a,O?(O(A(a)))),S(a,A(a))] <- good");
 	}
 }
