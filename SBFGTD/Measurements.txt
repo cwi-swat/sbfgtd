@@ -2,6 +2,30 @@ Performance (@ Q6600, 8GB DDR-800, Linux, JDK 1.6):
 
 S ::= SSS | SS | "a"
 
+Recognizer:
+------------------------------------------
+input chars	| Average Time	| Lowest Time
+------------------------------------------
+5			| 0 ms			| 0 ms
+10			| 0 ms			| 0 ms
+15			| 0 ms			| 0 ms
+20			| 0 ms			| 0 ms
+25			| 0 ms			| 0 ms
+30			| 0 ms			| 0 ms
+35			| 0 ms			| 0 ms
+40			| 0 ms			| 0 ms
+45			| 0 ms			| 0 ms
+50			| 0 ms			| 0 ms
+100			| 10 ms			| 0 ms
+150			| 70 ms			| 50 ms
+200			| 160 ms		| 150 ms
+250			| 360 ms		| 350 ms
+300			| 721 ms		| 701 ms
+350			| 1271 ms		| 1251 ms
+400			| 2122 ms		| 2102 ms
+450			| 3324 ms		| 3304 ms
+500			| 4976 ms		| 4956 ms
+
 Parser:
 ------------------------------------------
 input chars	| Average Time	| Lowest Time
