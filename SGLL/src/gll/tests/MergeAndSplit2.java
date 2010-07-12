@@ -31,6 +31,7 @@ public class MergeAndSplit2 extends SGLL{
 	
 	public void S(){
 		expect(NONTERMINAL_D4);
+		
 		expect(NONTERMINAL_D5, LITERAL_a6);
 	}
 	
