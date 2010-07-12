@@ -8,7 +8,8 @@ import gll.stack.OptionalStackNode;
 import gll.stack.AbstractStackNode;
 
 /*
-S ::= a(A?) | aA
+S ::= aO? | aA
+O ::= A
 A ::= a
 */
 public class Optional3 extends SGLL{
