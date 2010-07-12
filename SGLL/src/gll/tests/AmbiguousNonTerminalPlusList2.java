@@ -6,6 +6,7 @@ import gll.stack.ListStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
+
 /*
 S ::= A+
 A ::= a | aa
