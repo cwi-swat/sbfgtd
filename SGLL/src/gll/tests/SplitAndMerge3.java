@@ -7,43 +7,52 @@ import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 
 /*
-S ::= aAa
-A ::= Ba | aB
-B ::= a
+S ::= A | C
+A ::= Ba | a
+B ::= Aa | a
+C ::= B
 */
-public class MergeAndSplit1 extends SGLL{
+public class SplitAndMerge3 extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
+	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
 	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
-	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_B3 = new NonTerminalStackNode(3, "B");
+	private final static AbstractStackNode NONTERMINAL_C4 = new NonTerminalStackNode(4, "C");
 	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a6 = new LiteralStackNode(6, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
 	
-	public MergeAndSplit1(char[] input){
+	public SplitAndMerge3(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(LITERAL_a3, NONTERMINAL_A0, LITERAL_a4);
+		expect(NONTERMINAL_A0);
+
+		expect(NONTERMINAL_C4);
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B1, LITERAL_a5);
+		expect(NONTERMINAL_B2, LITERAL_a6);
 		
-		expect(LITERAL_a6, NONTERMINAL_B2);
+		expect(LITERAL_a5);
 	}
 	
 	public void B(){
-		expect(LITERAL_a7);
+		expect(NONTERMINAL_A1, LITERAL_a7);
+		
+		expect(LITERAL_a5);
+	}
+	
+	public void C(){
+		expect(NONTERMINAL_B3);
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit1 ms1 = new MergeAndSplit1("aaaa".toCharArray());
-		INode result = ms1.parse("S");
+		SplitAndMerge3 sm3 = new SplitAndMerge3("aaa".toCharArray());
+		INode result = sm3.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S(a,[A(a,B(a)),A(B(a),a)],a) <- good");
+		System.out.println("[S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))] <- good");
 	}
 }
