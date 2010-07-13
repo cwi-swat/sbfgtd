@@ -13,7 +13,7 @@ C ::= Baa | Ba
 B ::= A
 A ::= a
 */
-public class MergeAndSplit2 extends SGLL{
+public class SplitAndMerge2 extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
 	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
 	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
@@ -25,7 +25,7 @@ public class MergeAndSplit2 extends SGLL{
 	private final static AbstractStackNode LITERAL_a8 = new LiteralStackNode(8, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_aa9 = new LiteralStackNode(9, new char[]{'a','a'});
 	
-	public MergeAndSplit2(char[] input){
+	public SplitAndMerge2(char[] input){
 		super(input);
 	}
 	
@@ -54,8 +54,8 @@ public class MergeAndSplit2 extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		MergeAndSplit2 ms2 = new MergeAndSplit2("aaa".toCharArray());
-		INode result = ms2.parse("S");
+		SplitAndMerge2 sm2 = new SplitAndMerge2("aaa".toCharArray());
+		INode result = sm2.parse("S");
 		System.out.println(result);
 		
 		System.out.println("[S(D(C(B(A(a)),aa))),S(D(C(B(A(a)),a)),a)] <- good");

@@ -48,13 +48,13 @@ public class RunAll{
 		System.out.println();
 		
 		System.out.println("MergeAndSplit1:");
-		MergeAndSplit1.main(args);
+		SplitAndMerge1.main(args);
 		System.out.println();
 		System.out.println("MergeAndSplit2:");
-		MergeAndSplit2.main(args);
+		SplitAndMerge2.main(args);
 		System.out.println();
 		System.out.println("MergeAndSplit3:");
-		MergeAndSplit3.main(args);
+		SplitAndMerge3.main(args);
 		System.out.println();
 		
 		System.out.println("Epsilon:");
