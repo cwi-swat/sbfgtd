@@ -1,5 +1,6 @@
 package gll.stack;
 
+import gll.IGLL;
 import gll.result.ContainerNode;
 import gll.result.INode;
 import gll.result.struct.Link;
@@ -75,7 +76,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode copy = optional.getCleanCopy();
-		AbstractStackNode epsn = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID);
+		AbstractStackNode epsn = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
 		copy.addEdge(this);
 		epsn.addEdge(this);
 		
