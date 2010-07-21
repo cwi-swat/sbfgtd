@@ -62,6 +62,10 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		return new OptionalStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithNewId(int newId){
+		return new OptionalStackNode(newId, optional, nodeName);
+	}
+	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new OptionalStackNode(this, prefixesMap);
 	}
@@ -75,15 +79,15 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		AbstractStackNode copy = optional.getCleanCopy();
-		AbstractStackNode epsn = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
-		copy.addEdge(this);
-		epsn.addEdge(this);
+		AbstractStackNode child = optional.getCleanCopy();
+		AbstractStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
+		child.addEdge(this);
+		empty.addEdge(this);
 		
-		copy.setStartLocation(startLocation);
-		epsn.setStartLocation(startLocation);
+		child.setStartLocation(startLocation);
+		empty.setStartLocation(startLocation);
 		
-		return new AbstractStackNode[]{copy, epsn};
+		return new AbstractStackNode[]{child, empty};
 	}
 	
 	public INode getResult(){

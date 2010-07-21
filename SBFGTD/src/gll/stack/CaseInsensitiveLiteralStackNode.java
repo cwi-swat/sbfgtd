@@ -36,6 +36,12 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		ciLiteral = original.ciLiteral;
 	}
 	
+	private CaseInsensitiveLiteralStackNode(int newId, char[][] ciLiteral){
+		super(newId);
+
+		this.ciLiteral = ciLiteral;
+	}
+	
 	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
 		super(original, prefixes);
 
@@ -75,6 +81,10 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	public AbstractStackNode getCleanCopy(){
 		return new CaseInsensitiveLiteralStackNode(this);
+	}
+	
+	public AbstractStackNode getCleanCopyWithNewId(int newId){
+		return new CaseInsensitiveLiteralStackNode(newId, ciLiteral);
 	}
 	
 	public AbstractStackNode getCleanCopyWithPrefix(){

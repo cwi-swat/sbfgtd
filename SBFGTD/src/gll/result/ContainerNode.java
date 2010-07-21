@@ -46,8 +46,7 @@ public class ContainerNode implements INode{
 			int length = postFix.length;
 			String[] newPostFix = new String[length + 1];
 			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			String result = prefix.node.toString(stack, depth);
-			newPostFix[0] = result;
+			newPostFix[0] = prefix.node.toString(stack, depth);
 			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth);
 		}
 	}

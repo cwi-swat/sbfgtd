@@ -42,6 +42,10 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		return new EpsilonStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithNewId(int newId){
+		return new EpsilonStackNode(newId);
+	}
+	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new EpsilonStackNode(this, prefixesMap);
 	}
