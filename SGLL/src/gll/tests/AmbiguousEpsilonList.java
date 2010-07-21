@@ -2,22 +2,23 @@ package gll.tests;
 
 import gll.SGLL;
 import gll.result.INode;
+import gll.stack.AbstractStackNode;
 import gll.stack.CharStackNode;
+import gll.stack.EpsilonStackNode;
 import gll.stack.ListStackNode;
 import gll.stack.NonTerminalStackNode;
-import gll.stack.AbstractStackNode;
 
 /*
 S ::= A+
-A ::= [a]+
+A ::= a | epsilon
 */
-public class AmbiguousNestedPlusList extends SGLL{
+public class AmbiguousEpsilonList extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
 	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
 	private final static AbstractStackNode CHAR2 = new CharStackNode(2, "[a]", new char[][]{}, new char[]{'a'});
-	private final static AbstractStackNode CHAR_LIST3 = new ListStackNode(3, CHAR2, "[a]+", true);
+	private final static AbstractStackNode EPSILON3 = new EpsilonStackNode(3);
 	
-	public AmbiguousNestedPlusList(char[] input){
+	public AmbiguousEpsilonList(char[] input){
 		super(input);
 	}
 	
@@ -26,14 +27,16 @@ public class AmbiguousNestedPlusList extends SGLL{
 	}
 	
 	public void A(){
-		expect(CHAR_LIST3);
+		expect(CHAR2);
+		
+		expect(EPSILON3);
 	}
 	
 	public static void main(String[] args){
-		AmbiguousNestedPlusList anpl = new AmbiguousNestedPlusList("aa".toCharArray());
-		INode result = anpl.parse("S");
+		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("aa".toCharArray());
+		INode result = ael.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A([a]+([a](a))),A([a]+([a](a)))),A+(A([a]+([a](a),[a](a))))]) <- good");
+		System.out.println(" <- good");
 	}
 }

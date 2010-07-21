@@ -78,6 +78,10 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		return new CharStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithNewId(int newId){
+		return new CharStackNode(newId, production, ranges, characters);
+	}
+	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new CharStackNode(this, prefixesMap);
 	}

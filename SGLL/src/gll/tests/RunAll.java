@@ -96,6 +96,14 @@ public class RunAll{
 		System.out.println("NonTerminalStarList:");
 		NonTerminalStarList.main(args);
 		System.out.println();
+		
+		System.out.println("SeparatedPlusList:");
+		SeparatedPlusList.main(args);
+		System.out.println();
+		System.out.println("SeparatedStarList:");
+		SeparatedStarList.main(args);
+		System.out.println();
+		
 		System.out.println("AmbiguousNonTerminalPlusList1:");
 		AmbiguousNonTerminalPlusList1.main(args);
 		System.out.println();
@@ -105,12 +113,8 @@ public class RunAll{
 		System.out.println("AmbiguousNestedPlusList:");
 		AmbiguousNestedPlusList.main(args);
 		System.out.println();
-		
-		System.out.println("SeparatedPlusList:");
-		SeparatedPlusList.main(args);
-		System.out.println();
-		System.out.println("SeparatedStarList:");
-		SeparatedStarList.main(args);
+		System.out.println("AmbiguousEpsilonList:");
+		AmbiguousEpsilonList.main(args);
 		System.out.println();
 	}
 }

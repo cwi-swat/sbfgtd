@@ -58,6 +58,10 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		return new LiteralStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithNewId(int newId){
+		return new LiteralStackNode(newId, literal);
+	}
+	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new LiteralStackNode(this, prefixesMap);
 	}
