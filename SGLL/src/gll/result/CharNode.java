@@ -18,10 +18,6 @@ public class CharNode implements INode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isEpsilon(){
-		return false;
-	}
-	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);

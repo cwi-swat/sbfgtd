@@ -104,9 +104,11 @@ public class SGLL implements IGLL{
 				if((edges = next.getEdges()) != null){
 					possibleAlternative.addEdges(next.getEdges());
 					
-					if(!possibleAlternative.isClean()){
+					if(!possibleAlternative.isClean() && possibleAlternative.getStartLocation() == location){
 						// Something horrible happened; update the prefixes.
-						updatePrefixes(possibleAlternative, node, edges);
+						if(possibleAlternative != node){ // List cycle fix.
+							updatePrefixes(possibleAlternative, node, edges);
+						}
 					}
 				}else{
 					// Don't lose any edges.
@@ -136,9 +138,7 @@ public class SGLL implements IGLL{
 		}else{
 			int nrOfPrefixes = prefixesMap.size();
 			for(int i = nrOfPrefixes - 1; i >= 0; i--){
-				int startLocation = prefixesMap.getKey(i);
-				
-				next.addPrefix(new Link(prefixesMap.getValue(i), result), startLocation);
+				next.addPrefix(new Link(prefixesMap.getValue(i), result), prefixesMap.getKey(i));
 			}
 		}
 	}
@@ -189,7 +189,7 @@ public class SGLL implements IGLL{
 		String nodeName = node.getName();
 		ContainerNode resultStore = resultStoreCache.get(nodeName, startLocation);
 		if(resultStore == null){
-			resultStore = new ContainerNode(nodeName);
+			resultStore = new ContainerNode(nodeName, node.isList());
 			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
 			withResults.unsafePut(node);
 			
@@ -349,12 +349,12 @@ public class SGLL implements IGLL{
 			if(!shareNode(child, node)){
 				stacksToExpand.add(child);
 				possiblySharedExpects.add(child, child);
+				possiblySharedNextNodes.add(child); // For epsilon list cycles.
 			}
 			
 			if(listChildren.length > 1){ // Star list or optional.
-				child = listChildren[1];
 				// This is always epsilon; so shouldn't be shared.
-				stacksToExpand.add(child);
+				stacksToExpand.add(listChildren[1]);
 			}
 		}
 	}

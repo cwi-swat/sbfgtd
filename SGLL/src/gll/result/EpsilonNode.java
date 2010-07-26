@@ -14,10 +14,6 @@ public class EpsilonNode implements INode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isEpsilon(){
-		return true;
-	}
-	
 	public String toString(){
 		return EPSILON_STRING;
 	}

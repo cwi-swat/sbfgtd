@@ -83,18 +83,15 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		AbstractStackNode head = child.getCleanCopy();
-		AbstractStackNode tail = child.getCleanCopyWithNewId(child.id | IGLL.LIST_LIST_FLAG);
+		AbstractStackNode listNode = child.getCleanCopy();
 		
-		head.setStartLocation(startLocation);
-		head.addNext(tail);
-		head.addEdge(this);
-		
-		tail.addNext(tail);
-		tail.addEdge(this);
+		listNode.addNext(listNode);
+		listNode.addEdge(this);
+		listNode.setStartLocation(startLocation);
+		listNode.addPrefix(null, startLocation); // Dirty hack that works.
 		
 		if(isPlusList){
-			return new AbstractStackNode[]{head};
+			return new AbstractStackNode[]{listNode};
 		}
 		
 		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
@@ -102,7 +99,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		empty.setStartLocation(startLocation);
 		empty.addEdge(this);
 		
-		return new AbstractStackNode[]{head, empty};
+		return new AbstractStackNode[]{listNode, empty};
 	}
 	
 	public INode getResult(){
