@@ -66,10 +66,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(this);
 	}
 	
-	public AbstractStackNode getCleanCopyWithNewId(int newId){
-		return new SeparatedListStackNode(newId, child, separators, nodeName, isPlusList);
-	}
-	
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new SeparatedListStackNode(this, prefixesMap);
 	}

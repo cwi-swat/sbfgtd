@@ -72,8 +72,6 @@ public abstract class AbstractStackNode{
 	
 	public abstract AbstractStackNode getCleanCopy();
 	
-	public abstract AbstractStackNode getCleanCopyWithNewId(int newId);
-	
 	public abstract AbstractStackNode getCleanCopyWithPrefix();
 	
 	public boolean isSimilar(AbstractStackNode node){
