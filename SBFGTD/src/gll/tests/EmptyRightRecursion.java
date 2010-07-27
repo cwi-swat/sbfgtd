@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.EpsilonStackNode;
 import gll.stack.LiteralStackNode;
@@ -39,7 +39,7 @@ public class EmptyRightRecursion extends SGLL{
 	
 	public static void main(String[] args){
 		EmptyRightRecursion erre = new EmptyRightRecursion("a".toCharArray());
-		INode result = erre.parse("S");
+		AbstractNode result = erre.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S(A(a),[B(cycle(B,1)),B()])");

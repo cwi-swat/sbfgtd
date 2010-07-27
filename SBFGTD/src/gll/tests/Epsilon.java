@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.EpsilonStackNode;
 
@@ -21,7 +21,7 @@ public class Epsilon extends SGLL{
 	
 	public static void main(String[] args){
 		Epsilon e = new Epsilon(new char[]{});
-		INode result = e.parse("S");
+		AbstractNode result = e.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S() <- good");

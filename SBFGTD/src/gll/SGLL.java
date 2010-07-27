@@ -1,7 +1,7 @@
 package gll;
 
 import gll.result.ContainerNode;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
@@ -131,7 +131,7 @@ public class SGLL implements IGLL{
 	
 	private void addPrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
-		INode result = node.getResult();
+		AbstractNode result = node.getResult();
 		
 		if(prefixesMap == null){
 			next.addPrefix(new Link(null, result), node.getStartLocation());
@@ -145,7 +145,7 @@ public class SGLL implements IGLL{
 	
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, ArrayList<AbstractStackNode> edges){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
-		INode result = node.getResult();
+		AbstractNode result = node.getResult();
 		
 		// Update results (if necessary).
 		for(int i = edges.size() - 1; i >= 0; i--){
@@ -162,7 +162,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updateEdgeNode(AbstractStackNode node, ArrayList<Link> prefixes, INode result){
+	private void updateEdgeNode(AbstractStackNode node, ArrayList<Link> prefixes, AbstractNode result){
 		int startLocation = node.getStartLocation();
 		ArrayList<AbstractStackNode> possiblySharedEdgeNodes = possiblySharedEdgeNodesMap.get(startLocation);
 		if(possiblySharedEdgeNodes != null){
@@ -209,7 +209,7 @@ public class SGLL implements IGLL{
 		ArrayList<AbstractStackNode> edges;
 		if((edges = node.getEdges()) != null){
 			LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
-			INode result = node.getResult();
+			AbstractNode result = node.getResult();
 			
 			for(int i = edges.size() - 1; i >= 0; i--){
 				AbstractStackNode edge = edges.get(i);
@@ -228,7 +228,7 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, INode result, int startLocation){
+	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, AbstractNode result, int startLocation){
 		if(prefixesMap == null){
 			return new Link(null, result);
 		}
@@ -383,7 +383,7 @@ public class SGLL implements IGLL{
 		return false;
 	}
 	
-	public INode parse(String start){
+	public AbstractNode parse(String start){
 		// Initialize.
 		AbstractStackNode rootNode = new NonTerminalStackNode(START_SYMBOL_ID, start).getCleanCopy();
 		rootNode.setStartLocation(0);

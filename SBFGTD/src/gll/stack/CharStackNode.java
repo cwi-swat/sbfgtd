@@ -2,7 +2,7 @@ package gll.stack;
 
 import gll.result.CharNode;
 import gll.result.ContainerNode;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
@@ -13,7 +13,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 	
 	private final String production;
 	
-	private INode result;
+	private AbstractNode result;
 	
 	public CharStackNode(int id, String production, char[][] ranges, char[] characters){
 		super(id);
@@ -102,7 +102,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		throw new UnsupportedOperationException();
 	}
 	
-	public INode getResult(){
+	public AbstractNode getResult(){
 		return result;
 	}
 	

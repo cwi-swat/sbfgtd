@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.EpsilonStackNode;
 import gll.stack.ListStackNode;
@@ -30,9 +30,9 @@ public class EpsilonList extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("".toCharArray());
-		INode result = ael.parse("S");
+		AbstractNode result = ael.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A()),A+(repeat(1),A()))]) <- good");
+		System.out.println("S([A+(A()),A+(repeat(A())))]) <- good");
 	}
 }

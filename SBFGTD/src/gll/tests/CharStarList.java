@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.CharStackNode;
 import gll.stack.ListStackNode;
 import gll.stack.AbstractStackNode;
@@ -23,7 +23,7 @@ public class CharStarList extends SGLL{
 	
 	public static void main(String[] args){
 		CharStarList csl = new CharStarList("abc".toCharArray());
-		INode result = csl.parse("S");
+		AbstractNode result = csl.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S([a-z]*([a-z](a),[a-z](b),[a-z](c))) <- good");

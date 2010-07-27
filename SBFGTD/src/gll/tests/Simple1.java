@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -29,7 +29,7 @@ public class Simple1 extends SGLL{
 	
 	public static void main(String[] args){
 		Simple1 s1 = new Simple1("aab".toCharArray());
-		INode result = s1.parse("S");
+		AbstractNode result = s1.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S(A(aa),b) <- good");

@@ -1,7 +1,7 @@
 package gll.stack;
 
 import gll.result.ContainerNode;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
@@ -73,7 +73,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public INode getResult(){
+	public AbstractNode getResult(){
 		return result;
 	}
 

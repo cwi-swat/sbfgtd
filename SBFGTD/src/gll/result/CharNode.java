@@ -3,7 +3,7 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.IndexedStack;
 
-public class CharNode implements INode{
+public class CharNode extends AbstractNode{
 	private final String production;
 	private final char character;
 	
@@ -27,7 +27,7 @@ public class CharNode implements INode{
 		return sb.toString();
 	}
 	
-	public String toString(IndexedStack<INode> stack, int depth){
+	public String toString(IndexedStack<AbstractNode> stack, int depth){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);
 		sb.append('(');

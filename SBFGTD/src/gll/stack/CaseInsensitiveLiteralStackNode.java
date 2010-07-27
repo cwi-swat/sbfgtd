@@ -1,7 +1,7 @@
 package gll.stack;
 
 import gll.result.ContainerNode;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.result.LiteralNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
@@ -107,7 +107,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		throw new UnsupportedOperationException();
 	}
 	
-	public INode getResult(){
+	public AbstractNode getResult(){
 		return result;
 	}
 	

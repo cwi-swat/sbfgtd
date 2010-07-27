@@ -5,7 +5,7 @@ import gll.util.ArrayList;
 import gll.util.IndexedStack;
 import gll.util.Stack;
 
-public class ContainerNode implements INode{
+public class ContainerNode extends AbstractNode{
 	private final String name;
 	private Link firstAlternative;
 	private ArrayList<Link> alternatives;
@@ -32,12 +32,12 @@ public class ContainerNode implements INode{
 		return false;
 	}
 	
-	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth){
+	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
 		String result = child.node.toString(stack, depth);
 		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth);
 	}
 	
-	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth){
+	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -55,19 +55,22 @@ public class ContainerNode implements INode{
 		}
 	}
 	
-	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth){
-		INode childNode = child.node;
+	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
+		AbstractNode childNode = child.node;
 		String result = childNode.toString(stack, depth);
 		
-		IndexedStack<INode> listElementStack = new IndexedStack<INode>();
-		listElementStack.push(childNode, 0);
+		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
-		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<INode>());
-		
-		listElementStack.pop();
+		if(childNode.isContainerNode()){
+			listElementStack.push(childNode, 0);
+			gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
+			listElementStack.pop();
+		}else{
+			gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
+		}
 	}
 	
-	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth, IndexedStack<INode> listElementStack, int elementNr, Stack<INode> blackList){
+	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, IndexedStack<AbstractNode> listElementStack, int elementNr, Stack<AbstractNode> blackList){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -82,16 +85,25 @@ public class ContainerNode implements INode{
 				continue;
 			}
 			
-			INode prefixNode = prefix.node;
+			AbstractNode prefixNode = prefix.node;
 			
 			if(blackList.contains(prefixNode)) continue;
 			
 			int index = listElementStack.contains(prefixNode);
 			if(index != -1){
 				int length = postFix.length;
-				String[] newPostFix = new String[length + 1];
-				System.arraycopy(postFix, 0, newPostFix, 1, length);
-				newPostFix[0] = "repeat("+(elementNr - index)+")";
+				int repeatLength = elementNr - index;
+				
+				String[] newPostFix = new String[length - repeatLength + 1];
+				System.arraycopy(postFix, repeatLength, newPostFix, 1, length - repeatLength);
+				
+				StringBuilder buffer = new StringBuilder();
+				buffer.append("repeat(");
+				for(int j = 0; j < repeatLength; j++){
+					buffer.append(postFix[j]);
+				}
+				buffer.append(')');
+				newPostFix[0] = buffer.toString();
 				
 				blackList.push(prefixNode);
 				
@@ -103,12 +115,17 @@ public class ContainerNode implements INode{
 				String[] newPostFix = new String[length + 1];
 				System.arraycopy(postFix, 0, newPostFix, 1, length);
 				
-				listElementStack.push(prefixNode, elementNr);
-				
-				newPostFix[0] = prefixNode.toString(stack, depth);
-				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
-				
-				listElementStack.pop();
+				if(prefixNode.isContainerNode()){
+					listElementStack.push(prefixNode, elementNr);
+					
+					newPostFix[0] = prefixNode.toString(stack, depth);
+					gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+					
+					listElementStack.pop();
+				}else{
+					newPostFix[0] = prefixNode.toString(stack, depth);
+					gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+				}
 			}
 		}
 	}
@@ -124,7 +141,7 @@ public class ContainerNode implements INode{
 		out.append(')');
 	}
 	
-	private void print(StringBuilder out, IndexedStack<INode> stack, int depth){
+	private void print(StringBuilder out, IndexedStack<AbstractNode> stack, int depth){
 		int index = stack.contains(this);
 		if(index != -1){ // Cycle found.
 			out.append("cycle(");
@@ -176,12 +193,12 @@ public class ContainerNode implements INode{
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		print(sb, new IndexedStack<INode>(), 0);
+		print(sb, new IndexedStack<AbstractNode>(), 0);
 		
 		return sb.toString();
 	}
 	
-	public String toString(IndexedStack<INode> stack, int depth){
+	public String toString(IndexedStack<AbstractNode> stack, int depth){
 		StringBuilder sb = new StringBuilder();
 		print(sb, stack, depth);
 		

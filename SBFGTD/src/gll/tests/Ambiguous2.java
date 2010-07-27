@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -38,7 +38,7 @@ public class Ambiguous2 extends SGLL{
 	
 	public static void main(String[] args){
 		Ambiguous2 a2 = new Ambiguous2("bab".toCharArray());
-		INode result = a2.parse("S");
+		AbstractNode result = a2.parse("S");
 		System.out.println(result);
 		
 		System.out.println("[S(bab),S(A(B(b)),ab)] <- good");

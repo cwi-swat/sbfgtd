@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.CharStackNode;
 import gll.stack.EpsilonStackNode;
@@ -34,9 +34,9 @@ public class AmbiguousEpsilonList extends SGLL{
 	
 	public static void main(String[] args){
 		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("a".toCharArray());
-		INode result = ael.parse("S");
+		AbstractNode result = ael.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A([a](a)),A()),A+(A(),A([a](a)),A()),A+(repeat(1),A(),A([a](a)),A()),A+(A([a](a)),repeat(1),A()),A+(A(),A([a](a)),repeat(1),A()),A+(repeat(1),A(),A([a](a)),repeat(1),A()),A+(A([a](a))),A+(A(),A([a](a))),A+(repeat(1),A(),A([a](a)))]) <- good");
+		System.out.println("S([A+(A([a](a)),A()),A+(A(),A([a](a)),A()),A+(repeat(A()),A([a](a)),A()),A+(A([a](a)),repeat(A())),A+(A(),A([a](a)),repeat(A())),A+(repeat(A()),A([a](a)),repeat(A())),A+(A([a](a))),A+(A(),A([a](a))),A+(repeat(A()),A([a](a)))]) <- good");
 	}
 }

@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.CaseInsensitiveLiteralStackNode;
 import gll.stack.AbstractStackNode;
 
@@ -23,7 +23,7 @@ public class CILiteral extends SGLL{
 	
 	public static void main(String[] args){
 		CILiteral cil = new CILiteral("Bla".toCharArray());
-		INode result = cil.parse("S");
+		AbstractNode result = cil.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S(Bla) <- good");
