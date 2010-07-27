@@ -88,10 +88,10 @@ public class ContainerNode implements INode{
 			int index = listElementStack.contains(prefixNode);
 			if(index != -1){
 				int length = postFix.length;
-				String[] newPostFix = new String[length];
-				System.arraycopy(postFix, 0, newPostFix, 0, length);
+				String[] newPostFix = new String[length + 1];
+				System.arraycopy(postFix, 0, newPostFix, 1, length);
 				
-				newPostFix[0] = "repeat("+newPostFix[0]+")";
+				newPostFix[0] = "repeat("+(elementNr - index)+")";
 				blackList.add(prefixNode);
 				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
 			}else{
