@@ -33,6 +33,6 @@ public class EpsilonList extends SGLL{
 		INode result = ael.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A()),A+(repeat(A()))]) <- good");
+		System.out.println("S([A+(A()),A+(repeat(1),A()))]) <- good");
 	}
 }
