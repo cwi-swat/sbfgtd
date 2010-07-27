@@ -57,16 +57,18 @@ public class ContainerNode implements INode{
 	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth){
 		String result = child.node.toString(stack, depth);
 		
-		IndexedStack<Link> listElementStack = new IndexedStack<Link>();
-		listElementStack.push(child, 0);
+		IndexedStack<ArrayList<Link>> listElementStack = new IndexedStack<ArrayList<Link>>();
 		
-		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new ArrayList<Link>());
+		ArrayList<Link> childPrefixes = child.prefixes;
+		
+		listElementStack.push(childPrefixes, 0);
+		
+		gatherList(childPrefixes, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new ArrayList<ArrayList<Link>>());
 		
 		listElementStack.pop();
 	}
 	
-	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth, IndexedStack<Link> listElementStack, int elementNr, ArrayList<Link> blackList){
-		ArrayList<Link> prefixes = child.prefixes;
+	private void gatherList(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth, IndexedStack<ArrayList<Link>> listElementStack, int elementNr, ArrayList<ArrayList<Link>> blackList){
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
 			return;
@@ -80,26 +82,28 @@ public class ContainerNode implements INode{
 				continue;
 			}
 			
-			if(blackList.contains(prefix)) continue;
+			ArrayList<Link> prefixPrefixes = prefix.prefixes;
 			
-			int index = listElementStack.contains(prefix);
+			if(blackList.contains(prefixPrefixes)) continue;
+			
+			int index = listElementStack.contains(prefixPrefixes);
 			if(index != -1){
 				int length = postFix.length;
 				String[] newPostFix = new String[length];
 				System.arraycopy(postFix, 0, newPostFix, 0, length);
 				
 				newPostFix[0] = "repeat("+newPostFix[0]+")";
-				blackList.add(prefix);
-				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+				blackList.add(prefixPrefixes);
+				gatherList(prefixPrefixes, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
 			}else{
 				int length = postFix.length;
 				String[] newPostFix = new String[length + 1];
 				System.arraycopy(postFix, 0, newPostFix, 1, length);
 				
-				listElementStack.push(prefix, elementNr);
+				listElementStack.push(prefixPrefixes, elementNr);
 				
 				newPostFix[0] = prefix.node.toString(stack, depth);
-				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+				gatherList(prefixPrefixes, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
 				
 				listElementStack.pop();
 			}
