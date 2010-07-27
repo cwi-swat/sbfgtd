@@ -3,6 +3,7 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.IndexedStack;
+import gll.util.Stack;
 
 public class ContainerNode implements INode{
 	private final String name;
@@ -61,12 +62,12 @@ public class ContainerNode implements INode{
 		IndexedStack<INode> listElementStack = new IndexedStack<INode>();
 		listElementStack.push(childNode, 0);
 		
-		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new ArrayList<INode>());
+		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<INode>());
 		
 		listElementStack.pop();
 	}
 	
-	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth, IndexedStack<INode> listElementStack, int elementNr, ArrayList<INode> blackList){
+	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<INode> stack, int depth, IndexedStack<INode> listElementStack, int elementNr, Stack<INode> blackList){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -90,10 +91,13 @@ public class ContainerNode implements INode{
 				int length = postFix.length;
 				String[] newPostFix = new String[length + 1];
 				System.arraycopy(postFix, 0, newPostFix, 1, length);
-				
 				newPostFix[0] = "repeat("+(elementNr - index)+")";
-				blackList.add(prefixNode);
+				
+				blackList.push(prefixNode);
+				
 				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+				
+				blackList.pop();
 			}else{
 				int length = postFix.length;
 				String[] newPostFix = new String[length + 1];
