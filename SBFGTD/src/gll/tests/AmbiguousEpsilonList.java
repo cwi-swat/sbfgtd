@@ -33,10 +33,10 @@ public class AmbiguousEpsilonList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("".toCharArray());
+		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("a".toCharArray());
 		INode result = ael.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A()),A+(repeat(A()))]) <- good");
+		System.out.println("S([A+(A([a](a))),A+(A([a](a)),repeat(A())),A+(repeat(A()),A([a](a))),A+(repeat(A()),A([a](a)),repeat(A()))]) <- good");
 	}
 }
