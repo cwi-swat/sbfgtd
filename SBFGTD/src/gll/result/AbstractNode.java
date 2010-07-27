@@ -9,7 +9,7 @@ public abstract class AbstractNode{
 		super();
 	}
 	
-	public boolean isContainerNode(){
+	public boolean isContainer(){
 		return (this instanceof ContainerNode);
 	}
 	

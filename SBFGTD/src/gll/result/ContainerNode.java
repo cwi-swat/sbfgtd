@@ -61,7 +61,7 @@ public class ContainerNode extends AbstractNode{
 		
 		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
-		if(childNode.isContainerNode()){
+		if(childNode.isContainer()){
 			listElementStack.push(childNode, 0);
 			gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
 			listElementStack.pop();
@@ -115,7 +115,7 @@ public class ContainerNode extends AbstractNode{
 				String[] newPostFix = new String[length + 1];
 				System.arraycopy(postFix, 0, newPostFix, 1, length);
 				
-				if(prefixNode.isContainerNode()){
+				if(prefixNode.isContainer()){
 					listElementStack.push(prefixNode, elementNr);
 					
 					newPostFix[0] = prefixNode.toString(stack, depth);
