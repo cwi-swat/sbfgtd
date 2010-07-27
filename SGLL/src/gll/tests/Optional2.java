@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.OptionalStackNode;
@@ -31,7 +31,7 @@ public class Optional2 extends SGLL{
 	
 	public static void main(String[] args){
 		Optional2 o2 = new Optional2("a".toCharArray());
-		INode result = o2.parse("S");
+		AbstractNode result = o2.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S(a,O?()) <- good");

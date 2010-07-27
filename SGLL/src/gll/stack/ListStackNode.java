@@ -2,7 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.ContainerNode;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
@@ -102,7 +102,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		return new AbstractStackNode[]{listNode, empty};
 	}
 	
-	public INode getResult(){
+	public AbstractNode getResult(){
 		return result;
 	}
 

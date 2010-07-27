@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.SeparatedListStackNode;
@@ -33,7 +33,7 @@ public class SeparatedStarList extends SGLL{
 	
 	public static void main(String[] args){
 		SeparatedStarList nrsl = new SeparatedStarList("ababa".toCharArray());
-		INode result = nrsl.parse("S");
+		AbstractNode result = nrsl.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S((Ab)*(A(a),b,A(a),b,A(a))) <- good");

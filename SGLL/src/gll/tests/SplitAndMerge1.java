@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
@@ -41,7 +41,7 @@ public class SplitAndMerge1 extends SGLL{
 	
 	public static void main(String[] args){
 		SplitAndMerge1 sm1 = new SplitAndMerge1("aaaa".toCharArray());
-		INode result = sm1.parse("S");
+		AbstractNode result = sm1.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S(a,[A(a,B(a)),A(B(a),a)],a) <- good");

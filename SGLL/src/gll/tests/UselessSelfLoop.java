@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
@@ -42,7 +42,7 @@ public class UselessSelfLoop extends SGLL{
 	
 	public static void main(String[] args){
 		UselessSelfLoop usl = new UselessSelfLoop("a".toCharArray());
-		INode result = usl.parse("S");
+		AbstractNode result = usl.parse("S");
 		System.out.println(result);
 		
 		System.out.println("[S([A([B(cycle(A,2)),B(a)]),A(a)]),S([B([A(cycle(B,2)),A(a)]),B(a)])] <- good");

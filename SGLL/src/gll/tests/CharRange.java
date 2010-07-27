@@ -1,7 +1,7 @@
 package gll.tests;
 
 import gll.SGLL;
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.stack.CharStackNode;
 import gll.stack.AbstractStackNode;
 
@@ -21,7 +21,7 @@ public class CharRange extends SGLL{
 	
 	public static void main(String[] args){
 		CharRange cr = new CharRange("a".toCharArray());
-		INode result = cr.parse("S");
+		AbstractNode result = cr.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S([a-z](a)) <- good");

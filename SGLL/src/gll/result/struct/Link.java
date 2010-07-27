@@ -1,13 +1,13 @@
 package gll.result.struct;
 
-import gll.result.INode;
+import gll.result.AbstractNode;
 import gll.util.ArrayList;
 
 public class Link{
 	public final ArrayList<Link> prefixes;
-	public final INode node;
+	public final AbstractNode node;
 	
-	public Link(ArrayList<Link> prefixes, INode node){
+	public Link(ArrayList<Link> prefixes, AbstractNode node){
 		super();
 		
 		this.prefixes = prefixes;
