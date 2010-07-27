@@ -113,6 +113,9 @@ public class RunAll{
 		System.out.println("AmbiguousNestedPlusList:");
 		AmbiguousNestedPlusList.main(args);
 		System.out.println();
+		System.out.println("EpsilonList:");
+		EpsilonList.main(args);
+		System.out.println();
 		System.out.println("AmbiguousEpsilonList:");
 		AmbiguousEpsilonList.main(args);
 		System.out.println();
