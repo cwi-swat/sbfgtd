@@ -29,8 +29,8 @@ public class EpsilonList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		AmbiguousEpsilonList ael = new AmbiguousEpsilonList("".toCharArray());
-		AbstractNode result = ael.parse("S");
+		EpsilonList el = new EpsilonList("".toCharArray());
+		AbstractNode result = el.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S([A+(A()),A+(repeat(A())))]) <- good");
