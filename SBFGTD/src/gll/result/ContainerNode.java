@@ -136,7 +136,7 @@ public class ContainerNode extends AbstractNode{
 			out.append("cycle(");
 			out.append(name);
 			out.append(',');
-			out.append(""+(depth - index));
+			out.append((depth - index));
 			out.append(")");
 			return;
 		}
