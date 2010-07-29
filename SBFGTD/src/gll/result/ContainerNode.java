@@ -61,13 +61,9 @@ public class ContainerNode extends AbstractNode{
 		
 		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
-		if(childNode.isContainer()){
-			listElementStack.push(childNode, 0);
-			gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
-			listElementStack.pop();
-		}else{
-			gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
-		}
+		if(childNode.isContainer()) listElementStack.push(childNode, 0);
+		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
+		if(childNode.isContainer()) listElementStack.pop();
 	}
 	
 	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, IndexedStack<AbstractNode> listElementStack, int elementNr, Stack<AbstractNode> blackList){
@@ -115,17 +111,12 @@ public class ContainerNode extends AbstractNode{
 				String[] newPostFix = new String[length + 1];
 				System.arraycopy(postFix, 0, newPostFix, 1, length);
 				
-				if(prefixNode.isContainer()){
-					listElementStack.push(prefixNode, elementNr);
-					
-					newPostFix[0] = prefixNode.toString(stack, depth);
-					gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
-					
-					listElementStack.pop();
-				}else{
-					newPostFix[0] = prefixNode.toString(stack, depth);
-					gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
-				}
+				if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
+				
+				newPostFix[0] = prefixNode.toString(stack, depth);
+				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
+				
+				if(prefixNode.isContainer()) listElementStack.pop();
 			}
 		}
 	}
