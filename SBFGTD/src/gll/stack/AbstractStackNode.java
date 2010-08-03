@@ -16,6 +16,8 @@ public abstract class AbstractStackNode{
 	
 	protected LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap;
 	
+	private boolean markedAsWithResults;
+	
 	public AbstractStackNode(int id){
 		super();
 		
@@ -183,6 +185,14 @@ public abstract class AbstractStackNode{
 	
 	public LinearIntegerKeyedMap<ArrayList<Link>> getPrefixesMap(){
 		return prefixesMap;
+	}
+	
+	public void markAsWithResults(){
+		markedAsWithResults = true;
+	}
+	
+	public boolean isMarkedAsWithResults(){
+		return markedAsWithResults;
 	}
 	
 	public abstract void setResultStore(ContainerNode resultStore);
