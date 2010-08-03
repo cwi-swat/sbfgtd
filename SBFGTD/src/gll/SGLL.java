@@ -100,7 +100,7 @@ public class SGLL implements IGLL{
 			if(possibleAlternative.isSimilar(next)){
 				addPrefixes(possibleAlternative, node);
 				
-				ArrayList<AbstractStackNode> edges;
+				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges;
 				if((edges = next.getEdges()) != null){
 					possibleAlternative.addEdges(next.getEdges());
 					
@@ -143,20 +143,25 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, ArrayList<AbstractStackNode> edges){
+	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges){
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
 		AbstractNode result = node.getResult();
 		
 		// Update results (if necessary).
 		for(int i = edges.size() - 1; i >= 0; i--){
-			AbstractStackNode edge = edges.get(i);
-			if(withResults.contains(edge)){
-				Link prefix = constructPrefixesFor(prefixesMap, result, edge.getStartLocation());
-				if(prefix != null){
-					ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-					edgePrefixes.add(prefix);
-					ContainerNode resultStore = edge.getResultStore();
-					resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
+			int startLocation = edges.getKey(i);
+			ArrayList<AbstractStackNode> edgesPart = edges.getValue(i);
+			for(int j = edgesPart.size() - 1; j >= 0; j--){
+				AbstractStackNode edge = edgesPart.get(j);
+				
+				if(withResults.contains(edge)){
+					Link prefix = constructPrefixesFor(prefixesMap, result, startLocation);
+					if(prefix != null){
+						ArrayList<Link> edgePrefixes = new ArrayList<Link>();
+						edgePrefixes.add(prefix);
+						ContainerNode resultStore = edge.getResultStore();
+						resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
+					}
 				}
 			}
 		}
@@ -206,19 +211,24 @@ public class SGLL implements IGLL{
 	}
 	
 	private void move(AbstractStackNode node){
-		ArrayList<AbstractStackNode> edges;
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges;
 		if((edges = node.getEdges()) != null){
 			LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
 			AbstractNode result = node.getResult();
 			
 			for(int i = edges.size() - 1; i >= 0; i--){
-				AbstractStackNode edge = edges.get(i);
 				ArrayList<Link> prefixes = null;
 				if(prefixesMap != null){
-					prefixes = prefixesMap.findValue(edge.getStartLocation());
+					int startLocation = edges.getKey(i);
+					prefixes = prefixesMap.findValue(startLocation);
 					if(prefixes == null) continue;
 				}
-				updateEdgeNode(edge, prefixes, result);
+
+				ArrayList<AbstractStackNode> edgeList = edges.getValue(i);
+				for(int j = edgeList.size() - 1; j >= 0; j--){
+					AbstractStackNode edge = edgeList.get(j);
+					updateEdgeNode(edge, prefixes, result);
+				}
 			}
 		}
 		

@@ -8,7 +8,7 @@ import gll.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
 	protected AbstractStackNode next;
-	protected ArrayList<AbstractStackNode> edges;
+	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
 	
 	protected final int id;
 	
@@ -30,7 +30,7 @@ public abstract class AbstractStackNode{
 		id = parseStackNode.id;
 		
 		next = parseStackNode.next;
-		edges = parseStackNode.edges;
+		edgesMap = parseStackNode.edgesMap;
 	}
 	
 	protected AbstractStackNode(AbstractStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
@@ -39,7 +39,7 @@ public abstract class AbstractStackNode{
 		id = original.id;
 		
 		next = original.next;
-		edges = original.edges;
+		edgesMap = original.edgesMap;
 		
 		this.prefixesMap = prefixes;
 	}
@@ -92,31 +92,57 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void addEdge(AbstractStackNode edge){
-		if(edges == null) edges = new ArrayList<AbstractStackNode>(1);
+		int startLocation = edge.getStartLocation();
+		
+		ArrayList<AbstractStackNode> edges;
+		if(edgesMap == null){
+			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
+			edges = new ArrayList<AbstractStackNode>(1);
+			edgesMap.add(startLocation, edges);
+		}else{
+			edges = edgesMap.findValue(startLocation);
+			if(edges == null){
+				edges = new ArrayList<AbstractStackNode>(1);
+				edgesMap.add(startLocation, edges);
+			}
+		}
+		
 		edges.add(edge);
 	}
 	
-	public void addEdges(ArrayList<AbstractStackNode> edgesToAdd){
-		if(edges != edgesToAdd){
-			OUTER : for(int i = edgesToAdd.size() - 1; i >= 0; i--){
-				AbstractStackNode node = edgesToAdd.get(i);
-				for(int j = edges.size() - 1; j >= 0; j--){
-					AbstractStackNode edge = edges.get(j);
-					if(edge == node || (edge.getId() == node.getId() && edge.getStartLocation() == node.getStartLocation())){
-						continue OUTER;
+	public void addEdges(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd){
+		if(edgesMap != edgesMapToAdd){
+			for(int i = edgesMapToAdd.size() - 1; i >= 0; i--){
+				int startLocation = edgesMapToAdd.getKey(i);
+				ArrayList<AbstractStackNode> edgesToAdd = edgesMapToAdd.getValue(i);
+				
+				ArrayList<AbstractStackNode> edges = edgesMap.findValue(startLocation);
+				
+				if(edges == null){
+					edgesMap.add(startLocation, edgesToAdd);
+				}else if(edges != edgesToAdd){
+					OUTER : for(int j = edgesToAdd.size() - 1; j >= 0; j--){
+						AbstractStackNode edgeToAdd = edgesToAdd.get(j);
+						for(int k = edges.size() - 1; k >= 0; k--){
+							AbstractStackNode edge = edges.get(k);
+							if(edgeToAdd == edge || (edgeToAdd.getId() == edge.getId())){
+								continue OUTER;
+							}
+						}
+						
+						edges.add(edgeToAdd);
 					}
 				}
-				edges.add(node);
 			}
 		}
 	}
 	
 	public boolean hasEdges(){
-		return (edges != null);
+		return (edgesMap != null);
 	}
 	
-	public ArrayList<AbstractStackNode> getEdges(){
-		return edges;
+	public LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> getEdges(){
+		return edgesMap;
 	}
 	
 	// Location.
