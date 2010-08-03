@@ -30,7 +30,6 @@ public class SGLL implements IGLL{
 	private final IntegerKeyedHashMap<ArrayList<AbstractStackNode>> possiblySharedEdgeNodesMap;
 	
 	private final ObjectIntegerKeyedHashMap<String, ContainerNode> resultStoreCache;
-	private final HashSet<AbstractStackNode> withResults;
 	
 	private int previousLocation;
 	private int location;
@@ -55,7 +54,6 @@ public class SGLL implements IGLL{
 		possiblySharedEdgeNodesMap = new IntegerKeyedHashMap<ArrayList<AbstractStackNode>>();
 		
 		resultStoreCache = new ObjectIntegerKeyedHashMap<String, ContainerNode>();
-		withResults = new HashSet<AbstractStackNode>();
 		
 		previousLocation = -1;
 		location = 0;
@@ -154,7 +152,7 @@ public class SGLL implements IGLL{
 			for(int j = edgesPart.size() - 1; j >= 0; j--){
 				AbstractStackNode edge = edgesPart.get(j);
 				
-				if(withResults.contains(edge)){
+				if(edge.isMarkedAsWithResults()){
 					Link prefix = constructPrefixesFor(prefixesMap, result, startLocation);
 					if(prefix != null){
 						ArrayList<Link> edgePrefixes = new ArrayList<Link>();
@@ -174,7 +172,7 @@ public class SGLL implements IGLL{
 			for(int i = possiblySharedEdgeNodes.size() - 1; i >= 0; i--){
 				AbstractStackNode possibleAlternative = possiblySharedEdgeNodes.get(i);
 				if(possibleAlternative.isSimilar(node)){
-					if(withResults.contains(possibleAlternative)){
+					if(possibleAlternative.isMarkedAsWithResults()){
 						ContainerNode resultStore = possibleAlternative.getResultStore();
 						resultStore.addAlternative(new Link(prefixes, result));
 					}
@@ -196,7 +194,7 @@ public class SGLL implements IGLL{
 		if(resultStore == null){
 			resultStore = new ContainerNode(nodeName, node.isList());
 			resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
-			withResults.unsafePut(node);
+			node.markAsWithResults();
 			
 			resultStore.addAlternative(new Link(prefixes, result));
 		}
@@ -265,7 +263,6 @@ public class SGLL implements IGLL{
 			possiblySharedNextNodes.clear();
 			possiblySharedEdgeNodesMap.clear();
 			resultStoreCache.clear();
-			withResults.clear();
 		}
 		
 		// Reduce terminals.
