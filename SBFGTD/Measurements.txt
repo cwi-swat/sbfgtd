@@ -2,50 +2,26 @@ Performance (@ Q6600, 8GB DDR-800, Linux, JDK 1.6):
 
 S ::= SSS | SS | "a"
 
-Recognizer:
-------------------------------------------
-input chars	| Average Time	| Lowest Time
-------------------------------------------
-5			| 0 ms			| 0 ms
-10			| 0 ms			| 0 ms
-15			| 0 ms			| 0 ms
-20			| 0 ms			| 0 ms
-25			| 0 ms			| 0 ms
-30			| 0 ms			| 0 ms
-35			| 0 ms			| 0 ms
-40			| 0 ms			| 0 ms
-45			| 0 ms			| 0 ms
-50			| 0 ms			| 0 ms
-100			| 10 ms			| 0 ms
-150			| 70 ms			| 50 ms
-200			| 160 ms		| 150 ms
-250			| 360 ms		| 350 ms
-300			| 721 ms		| 701 ms
-350			| 1271 ms		| 1251 ms
-400			| 2122 ms		| 2102 ms
-450			| 3324 ms		| 3304 ms
-500			| 4976 ms		| 4956 ms
-
 Parser:
 ------------------------------------------
 input chars	| Average Time	| Lowest Time
 ------------------------------------------
-5			| 0 ms			| 0 ms
-10			| 0 ms			| 0 ms
-15			| 0 ms			| 0 ms
-20			| 0 ms			| 0 ms
-25			| 0 ms			| 0 ms
-30			| 0 ms			| 0 ms
-35			| 0 ms			| 0 ms
-40			| 0 ms			| 0 ms
-45			| 0 ms			| 0 ms
-50			| 0 ms			| 0 ms
-100			| 30 ms			| 0 ms
-150			| 110 ms		| 100 ms
-200			| 340 ms		| 300 ms
-250			| 1006 ms		| 701 ms
-300			| 1923 ms		| 1802 ms
-350			| 3395 ms		| 2954 ms
-400			| 5301 ms		| 5009 ms
-450			| 7873 ms		| 7412 ms
-500			| 11717 ms		| 10917 ms
+5			|  ms			|  ms
+10			|  ms			|  ms
+15			|  ms			|  ms
+20			|  ms			|  ms
+25			|  ms			|  ms
+30			|  ms			|  ms
+35			|  ms			|  ms
+40			|  ms			|  ms
+45			|  ms			|  ms
+50			|  ms		|  ms
+100			|  ms		|  ms
+150			|  ms		|  ms
+200			|  ms		|  ms
+250			|  ms		|  ms
+300			|  ms		|  ms
+350			|  ms		|  ms
+400			|  ms		|  ms
+450			|  ms		|  ms
+500			|  ms		|  ms
