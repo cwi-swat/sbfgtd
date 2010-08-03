@@ -6,22 +6,22 @@ Parser:
 ------------------------------------------
 input chars	| Average Time	| Lowest Time
 ------------------------------------------
-5			|  ms			|  ms
-10			|  ms			|  ms
-15			|  ms			|  ms
-20			|  ms			|  ms
-25			|  ms			|  ms
-30			|  ms			|  ms
-35			|  ms			|  ms
-40			|  ms			|  ms
-45			|  ms			|  ms
-50			|  ms		|  ms
-100			|  ms		|  ms
-150			|  ms		|  ms
-200			|  ms		|  ms
-250			|  ms		|  ms
-300			|  ms		|  ms
-350			|  ms		|  ms
-400			|  ms		|  ms
-450			|  ms		|  ms
-500			|  ms		|  ms
+5			| 0 ms			| 0 ms
+10			| 0 ms			| 0 ms
+15			| 0 ms			| 0 ms
+20			| 0 ms			| 0 ms
+25			| 0 ms			| 0 ms
+30			| 0 ms			| 0 ms
+35			| 0 ms			| 0 ms
+40			| 10 ms			| 0 ms
+45			| 10 ms			| 0 ms
+50			| 20 ms			| 0 ms
+100			| 140 ms		| 100 ms
+150			| 561 ms		| 551 ms
+200			| 1993 ms		| 1753 ms
+250			| 4218 ms		| 4006 ms
+300			| 8313 ms		| 7511 ms
+350			| 13561 ms		| 13021 ms
+400			| 22380 ms		| 20594 ms
+450			| 37104 ms		| 35810 ms
+500			| 47018 ms		| 46329 ms
