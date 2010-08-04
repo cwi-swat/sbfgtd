@@ -1,13 +1,12 @@
 package gll;
 
-import gll.result.ContainerNode;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.DoubleArrayList;
-import gll.util.HashSet;
 import gll.util.IntegerKeyedHashMap;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.ObjectIntegerKeyedHashMap;
