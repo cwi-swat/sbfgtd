@@ -122,5 +122,8 @@ public class RunAll{
 		System.out.println("AmbiguousEpsilonList:");
 		AmbiguousEpsilonList.main(args);
 		System.out.println();
+		System.out.println("AmbiguousSeparatedEpsilonList:");
+		AmbiguousSeparatedEpsilonList.main(args);
+		System.out.println();
 	}
 }

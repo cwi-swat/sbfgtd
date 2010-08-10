@@ -33,6 +33,6 @@ public class EpsilonList extends SGLL{
 		AbstractNode result = el.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A()),A+(repeat(A())))]) <- good");
+		System.out.println("S(A+(repeat(A()))) <- good");
 	}
 }
