@@ -60,7 +60,14 @@ public class IndexedStack<E>{
 		data[--size] = null;
 	}
 	
-	public int contains(E object){
+	public boolean contains(E object){
+		for(int i = size - 1; i >= 0; i--){
+			if(data[i].equals(object)) return true;
+		}
+		return false;
+	}
+	
+	public int findIndex(E object){
 		for(int i = size - 1; i >= 0; i--){
 			if(data[i].equals(object)) return indexes[i];
 		}

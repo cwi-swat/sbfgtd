@@ -3,7 +3,8 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.IndexedStack;
-import gll.util.Stack;
+import gll.util.IntegerList;
+import gll.util.LinearIntegerKeyedMap;
 
 public class ContainerNode extends AbstractNode{
 	private final String name;
@@ -62,18 +63,28 @@ public class ContainerNode extends AbstractNode{
 		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
 		if(childNode.isContainer()) listElementStack.push(childNode, 0);
-		gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1, new Stack<AbstractNode>());
+		int start = gatheredAlternatives.size();
+		IntegerList foundCycles = gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1);
+		if(foundCycles != null){
+			gatheredAlternatives.resetTo(start);
+			gatherList(child, new String[]{"repeat("+result+")"}, gatheredAlternatives, stack, depth, listElementStack, 1);
+		}
 		if(childNode.isContainer()) listElementStack.pop();
 	}
 	
-	private void gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, IndexedStack<AbstractNode> listElementStack, int elementNr, Stack<AbstractNode> blackList){
+	private IntegerList gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, IndexedStack<AbstractNode> listElementStack, int elementNr){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
-			return;
+			return null;
 		}
 		
+		IntegerList cycles = null;
+		
+		LinearIntegerKeyedMap<IntegerList> cyclesList = null;
 		for(int i = prefixes.size() - 1; i >= 0; i--){
+			int start = gatheredAlternatives.size();
+			
 			Link prefix = prefixes.get(i);
 			
 			if(prefix == null){
@@ -83,40 +94,88 @@ public class ContainerNode extends AbstractNode{
 			
 			AbstractNode prefixNode = prefix.node;
 			
-			if(blackList.contains(prefixNode)) continue;
-			
-			int index = listElementStack.contains(prefixNode);
+			int index = listElementStack.findIndex(prefixNode);
 			if(index != -1){
-				int length = postFix.length;
-				int repeatLength = elementNr - index;
+				if(cycles == null) cycles = new IntegerList();
+				cycles.add(index);
+				continue;
+			}
+			
+			int length = postFix.length;
+			String[] newPostFix = new String[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			
+			if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
+			
+			newPostFix[0] = prefixNode.toString(stack, depth);
+			IntegerList foundCycles = gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
+			
+			if(prefixNode.isContainer()) listElementStack.pop();
+			
+			if(foundCycles != null){
+				gatheredAlternatives.resetTo(start);
 				
-				String[] newPostFix = new String[length - repeatLength + 1];
-				System.arraycopy(postFix, repeatLength, newPostFix, 1, length - repeatLength);
-				
-				StringBuilder buffer = new StringBuilder();
-				buffer.append("repeat(");
-				for(int j = 0; j < repeatLength; j++){
-					buffer.append(postFix[j]);
+				if(cyclesList == null){
+					cyclesList = new LinearIntegerKeyedMap<IntegerList>();
 				}
-				buffer.append(')');
-				newPostFix[0] = buffer.toString();
-				
-				blackList.push(prefixNode);
-				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
-				blackList.pop();
-			}else{
-				int length = postFix.length;
-				String[] newPostFix = new String[length + 1];
-				System.arraycopy(postFix, 0, newPostFix, 1, length);
-				
-				if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
-				
-				newPostFix[0] = prefixNode.toString(stack, depth);
-				gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1, blackList);
-				
-				if(prefixNode.isContainer()) listElementStack.pop();
+				cyclesList.add(i, foundCycles);
 			}
 		}
+		
+		if(cycles != null) return cycles;
+		
+		if(cyclesList != null){
+			for(int k = cyclesList.size() - 1; k >= 0; k--){
+				int cycleIndex = cyclesList.getKey(k);
+				IntegerList foundCycles = cyclesList.getValue(k);
+				for(int j = foundCycles.size() - 1; j >= 0; j--){
+					int oldLength = postFix.length;
+					int repeatLength = elementNr - foundCycles.get(j);
+					String[] cyclePostFix = new String[oldLength - repeatLength + 1];
+					System.arraycopy(postFix, repeatLength, cyclePostFix, 1, oldLength - repeatLength);
+					
+					StringBuilder buffer = new StringBuilder();
+					buffer.append("repeat(");
+					buffer.append(prefixes.get(cycleIndex).node.toString(listElementStack, depth));
+					for(int i = 0; i < repeatLength; i++){
+						buffer.append(',');
+						buffer.append(postFix[i]);
+					}
+					buffer.append(')');
+					cyclePostFix[0] = buffer.toString();
+					
+					if(cycleIndex == 0 && prefixes.size() == 1){
+						gatheredAlternatives.add(cyclePostFix); // This cycle is the only thing in the list.
+					}else{
+						for(int i = prefixes.size() - 1; i >= 0; i--){
+							if(i == cycleIndex) continue;
+							
+							Link prefix = prefixes.get(i);
+							
+							if(prefix == null){
+								gatheredAlternatives.add(cyclePostFix);
+								continue;
+							}
+							
+							AbstractNode prefixNode = prefix.node;
+			
+							int length = cyclePostFix.length;
+							String[] newPostFix = new String[length + 1];
+							System.arraycopy(cyclePostFix, 0, newPostFix, 1, length);
+							
+							if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
+							
+							newPostFix[0] = prefixNode.toString(stack, depth);
+							gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
+							
+							if(prefixNode.isContainer()) listElementStack.pop();
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	private void printAlternative(String[] children, StringBuilder out){
@@ -131,7 +190,7 @@ public class ContainerNode extends AbstractNode{
 	}
 	
 	private void print(StringBuilder out, IndexedStack<AbstractNode> stack, int depth){
-		int index = stack.contains(this);
+		int index = stack.findIndex(this);
 		if(index != -1){ // Cycle found.
 			out.append("cycle(");
 			out.append(name);

@@ -26,12 +26,32 @@ public class ArrayList<E>{
 		System.arraycopy(oldData, 0, data, 0, size);
 	}
 	
+	public void enlargeTo(int capacity){
+		E[] oldData = data;
+		data = (E[]) new Object[capacity];
+		System.arraycopy(oldData, 0, data, 0, size);
+	}
+	
 	public void add(E object){
 		if(size == data.length){
 			enlarge();
 		}
 		
 		data[size++] = object;
+	}
+	
+	public void addAll(ArrayList<E> list){
+		int listSize = list.size();
+		int combinedSize = size + listSize;
+		int capacity = data.length;
+		if(combinedSize > capacity){
+			do{/* Nothing. */}while(combinedSize > (capacity <<= 1));
+			enlargeTo(capacity);
+		}
+		
+		for(int i = listSize - 1; i >= 0; i--){
+			data[size++] = list.get(i);
+		}
 	}
 	
 	public E get(int index){
@@ -69,6 +89,10 @@ public class ArrayList<E>{
 	
 	public void dirtyClear(){
 		size = 0;
+	}
+	
+	public void resetTo(int index){
+		size = index;
 	}
 	
 	public int size(){
