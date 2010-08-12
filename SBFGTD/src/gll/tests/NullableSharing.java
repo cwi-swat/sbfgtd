@@ -38,6 +38,6 @@ public class NullableSharing extends SGLL{
 		AbstractNode result = ns.parse("S");
 		System.out.println(result);
 		
-		System.out.println(" <- good");
+		System.out.println("S(N(A()),N(A())) <- good");
 	}
 }
