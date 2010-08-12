@@ -15,5 +15,5 @@ public abstract class AbstractNode{
 	
 	public abstract void addAlternative(Link children);
 	
-	public abstract String toString(IndexedStack<AbstractNode> stack, int depth);
+	public abstract String print(IndexedStack<AbstractNode> stack, int depth);
 }
