@@ -36,7 +36,7 @@ public class ContainerNode extends AbstractNode{
 	}
 	
 	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
-		String result = child.node.toString(stack, depth);
+		String result = child.node.print(stack, depth);
 		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth);
 	}
 	
@@ -53,14 +53,14 @@ public class ContainerNode extends AbstractNode{
 			int length = postFix.length;
 			String[] newPostFix = new String[length + 1];
 			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			newPostFix[0] = prefix.node.toString(stack, depth);
+			newPostFix[0] = prefix.node.print(stack, depth);
 			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth);
 		}
 	}
 	
 	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
 		AbstractNode childNode = child.node;
-		String result = childNode.toString(stack, depth);
+		String result = childNode.print(stack, depth);
 		
 		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
@@ -109,7 +109,7 @@ public class ContainerNode extends AbstractNode{
 			
 			if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
 			
-			newPostFix[0] = prefixNode.toString(stack, depth);
+			newPostFix[0] = prefixNode.print(stack, depth);
 			IntegerList foundCycles = gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
 			
 			if(prefixNode.isContainer()) listElementStack.pop();
@@ -138,7 +138,7 @@ public class ContainerNode extends AbstractNode{
 					
 					StringBuilder buffer = new StringBuilder();
 					buffer.append("repeat(");
-					buffer.append(prefixes.get(cycleIndex).node.toString(listElementStack, depth));
+					buffer.append(prefixes.get(cycleIndex).node.print(listElementStack, depth));
 					for(int i = 0; i < repeatLength; i++){
 						buffer.append(',');
 						buffer.append(postFix[i]);
@@ -167,7 +167,7 @@ public class ContainerNode extends AbstractNode{
 							
 							if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
 							
-							newPostFix[0] = prefixNode.toString(stack, depth);
+							newPostFix[0] = prefixNode.print(stack, depth);
 							gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
 							
 							if(prefixNode.isContainer()) listElementStack.pop();
@@ -191,15 +191,19 @@ public class ContainerNode extends AbstractNode{
 		out.append(')');
 	}
 	
-	private void print(StringBuilder out, IndexedStack<AbstractNode> stack, int depth){
+	public String print(IndexedStack<AbstractNode> stack, int depth){
+		if(cachedResult != null) return cachedResult;
+		
+		StringBuilder sb = new StringBuilder();
+		
 		int index = stack.findIndex(this);
 		if(index != -1){ // Cycle found.
-			out.append("cycle(");
-			out.append(name);
-			out.append(',');
-			out.append((depth - index));
-			out.append(")");
-			return;
+			sb.append("cycle(");
+			sb.append(name);
+			sb.append(',');
+			sb.append((depth - index));
+			sb.append(")");
+			return (cachedResult = sb.toString());
 		}
 		
 		int childDepth = depth + 1;
@@ -227,30 +231,23 @@ public class ContainerNode extends AbstractNode{
 		// Print
 		int nrOfAlternatives = gatheredAlternatives.size();
 		if(nrOfAlternatives == 1){
-			printAlternative(gatheredAlternatives.get(0), out);
+			printAlternative(gatheredAlternatives.get(0), sb);
 		}else{
-			out.append('[');
-			printAlternative(gatheredAlternatives.get(nrOfAlternatives - 1), out);
+			sb.append('[');
+			printAlternative(gatheredAlternatives.get(nrOfAlternatives - 1), sb);
 			for(int i = nrOfAlternatives - 2; i >= 0; i--){
-				out.append(',');
-				printAlternative(gatheredAlternatives.get(i), out);
+				sb.append(',');
+				printAlternative(gatheredAlternatives.get(i), sb);
 			}
-			out.append(']');
+			sb.append(']');
 		}
 		
 		stack.purge(); // Pop
+		
+		return (cachedResult = sb.toString());
 	}
 	
 	public String toString(){
-		return toString(new IndexedStack<AbstractNode>(), 0);
-	}
-	
-	public String toString(IndexedStack<AbstractNode> stack, int depth){
-		if(cachedResult != null) return cachedResult;
-		
-		StringBuilder sb = new StringBuilder();
-		print(sb, stack, depth);
-		
-		return (cachedResult = sb.toString());
+		return print(new IndexedStack<AbstractNode>(), 0);
 	}
 }

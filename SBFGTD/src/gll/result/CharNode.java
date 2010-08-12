@@ -18,7 +18,7 @@ public class CharNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String toString(){
+	public String print(IndexedStack<AbstractNode> stack, int depth){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);
 		sb.append('(');
@@ -27,7 +27,7 @@ public class CharNode extends AbstractNode{
 		return sb.toString();
 	}
 	
-	public String toString(IndexedStack<AbstractNode> stack, int depth){
+	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);
 		sb.append('(');

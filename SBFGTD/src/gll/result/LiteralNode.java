@@ -16,11 +16,11 @@ public class LiteralNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String toString(){
+	public String print(IndexedStack<AbstractNode> stack, int depth){
 		return new String(content);
 	}
 	
-	public String toString(IndexedStack<AbstractNode> stack, int depth){
+	public String toString(){
 		return new String(content);
 	}
 }

@@ -14,11 +14,11 @@ public class EpsilonNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String toString(){
+	public String print(IndexedStack<AbstractNode> stack, int depth){
 		return EPSILON_STRING;
 	}
 	
-	public String toString(IndexedStack<AbstractNode> stack, int depth){
+	public String toString(){
 		return EPSILON_STRING;
 	}
 }
