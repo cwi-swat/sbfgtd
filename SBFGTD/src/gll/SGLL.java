@@ -241,14 +241,12 @@ public class SGLL implements IGLL{
 		nullableEncountered = true;
 		
 		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
-		AbstractNode result = node.getResult();
-		
 		ArrayList<Link> prefixes = null;
 		if(prefixesMap != null){
 			prefixes = prefixesMap.findValue(location);
 		}
 		
-		updateEdgeNode(edge, prefixes, result);
+		updateEdgeNode(edge, prefixes, node.getResult());
 	}
 	
 	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, AbstractNode result, int startLocation){
@@ -320,7 +318,7 @@ public class SGLL implements IGLL{
 				AbstractStackNode possiblySharedNode = possiblySharedExpects.getFirst(j);
 				if(possiblySharedNode.isSimilar(node)){
 					if(!possiblySharedNode.isClean()){ // Is nullable.
-						moveNullable(possiblySharedNode, stack);
+						moveNullable(possiblySharedExpects.getSecond(j), stack);
 					}
 					possiblySharedExpects.getSecond(j).addEdge(stack);
 					return true;
