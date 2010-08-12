@@ -13,6 +13,8 @@ public class ContainerNode extends AbstractNode{
 	
 	private final boolean isListContainer;
 	
+	private String cachedResult;
+	
 	public ContainerNode(String name, boolean isListContainer){
 		super();
 		
@@ -240,16 +242,15 @@ public class ContainerNode extends AbstractNode{
 	}
 	
 	public String toString(){
-		StringBuilder sb = new StringBuilder();
-		print(sb, new IndexedStack<AbstractNode>(), 0);
-		
-		return sb.toString();
+		return toString(new IndexedStack<AbstractNode>(), 0);
 	}
 	
 	public String toString(IndexedStack<AbstractNode> stack, int depth){
+		if(cachedResult != null) return cachedResult;
+		
 		StringBuilder sb = new StringBuilder();
 		print(sb, stack, depth);
 		
-		return sb.toString();
+		return (cachedResult = sb.toString());
 	}
 }
