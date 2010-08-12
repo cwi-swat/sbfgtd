@@ -33,6 +33,8 @@ public class SGLL implements IGLL{
 	private int previousLocation;
 	private int location;
 	
+	private boolean nullableEncountered;
+	
 	private AbstractStackNode root;
 	
 	public SGLL(char[] input){
@@ -235,6 +237,20 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	private void moveNullable(AbstractStackNode node, AbstractStackNode edge){
+		nullableEncountered = true;
+		
+		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		AbstractNode result = node.getResult();
+		
+		ArrayList<Link> prefixes = null;
+		if(prefixesMap != null){
+			prefixes = prefixesMap.findValue(location);
+		}
+		
+		updateEdgeNode(edge, prefixes, result);
+	}
+	
 	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, AbstractNode result, int startLocation){
 		if(prefixesMap == null){
 			return new Link(null, result);
@@ -303,6 +319,9 @@ public class SGLL implements IGLL{
 			for(int j = possiblySharedExpects.size() - 1; j >= 0; j--){
 				AbstractStackNode possiblySharedNode = possiblySharedExpects.getFirst(j);
 				if(possiblySharedNode.isSimilar(node)){
+					if(!possiblySharedNode.isClean()){ // Is nullable.
+						moveNullable(possiblySharedNode, stack);
+					}
 					possiblySharedExpects.getSecond(j).addEdge(stack);
 					return true;
 				}
@@ -397,12 +416,13 @@ public class SGLL implements IGLL{
 		expand();
 		
 		do{
-			findStacksToReduce();
-			
+			if(!nullableEncountered) findStacksToReduce();
+
+			nullableEncountered = false;
 			reduce();
 			
-			expand();
-		}while(todoList.size() > 0);
+			if(!nullableEncountered) expand();
+		}while((todoList.size() > 0) || nullableEncountered);
 		
 		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
 		
