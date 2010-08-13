@@ -14,7 +14,7 @@ public class EpsilonNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public String print(IndexedStack<AbstractNode> stack, int depth){
+	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		return EPSILON_STRING;
 	}
 	
