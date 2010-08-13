@@ -20,15 +20,9 @@ public class ArrayList<E>{
 		size = 0;
 	}
 	
-	public void enlarge(){
+	private void enlarge(){
 		E[] oldData = data;
 		data = (E[]) new Object[size << 1];
-		System.arraycopy(oldData, 0, data, 0, size);
-	}
-	
-	public void enlargeTo(int capacity){
-		E[] oldData = data;
-		data = (E[]) new Object[capacity];
 		System.arraycopy(oldData, 0, data, 0, size);
 	}
 	
@@ -38,20 +32,6 @@ public class ArrayList<E>{
 		}
 		
 		data[size++] = object;
-	}
-	
-	public void addAll(ArrayList<E> list){
-		int listSize = list.size();
-		int combinedSize = size + listSize;
-		int capacity = data.length;
-		if(combinedSize > capacity){
-			do{/* Nothing. */}while(combinedSize > (capacity <<= 1));
-			enlargeTo(capacity);
-		}
-		
-		for(int i = listSize - 1; i >= 0; --i){
-			data[size++] = list.get(i);
-		}
 	}
 	
 	public E get(int index){
