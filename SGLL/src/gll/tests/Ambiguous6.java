@@ -22,9 +22,11 @@ public class Ambiguous6 extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_C2 = new NonTerminalStackNode(2, "C");
 	private final static AbstractStackNode NONTERMINAL_D3 = new NonTerminalStackNode(3, "D");
 	private final static AbstractStackNode NONTERMINAL_E4 = new NonTerminalStackNode(4, "E");
-	private final static AbstractStackNode NONTERMINAL_F5 = new NonTerminalStackNode(5, "F");
-	private final static AbstractStackNode NONTERMINAL_G6 = new NonTerminalStackNode(6, "G");
-	private final static AbstractStackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_E5 = new NonTerminalStackNode(5, "E");
+	private final static AbstractStackNode NONTERMINAL_F6 = new NonTerminalStackNode(6, "F");
+	private final static AbstractStackNode NONTERMINAL_G7 = new NonTerminalStackNode(7, "G");
+	private final static AbstractStackNode LITERAL_a8 = new LiteralStackNode(8, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a9 = new LiteralStackNode(9, new char[]{'a'});
 	
 	public Ambiguous6(char[] input){
 		super(input);
@@ -49,21 +51,21 @@ public class Ambiguous6 extends SGLL{
 	}
 	
 	public void D(){
-		expect(NONTERMINAL_E4);
+		expect(NONTERMINAL_E5);
 		
-		expect(LITERAL_a7);
+		expect(LITERAL_a8);
 	}
 	
 	public void E(){
-		expect(NONTERMINAL_F5);
+		expect(NONTERMINAL_F6);
 	}
 	
 	public void F(){
-		expect(NONTERMINAL_G6);
+		expect(NONTERMINAL_G7);
 	}
 	
 	public void G(){
-		expect(LITERAL_a7);
+		expect(LITERAL_a9);
 	}
 	
 	public static void main(String[] args){

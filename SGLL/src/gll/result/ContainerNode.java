@@ -47,7 +47,7 @@ public class ContainerNode extends AbstractNode{
 			return;
 		}
 		
-		for(int i = prefixes.size() - 1; i >= 0; i--){
+		for(int i = prefixes.size() - 1; i >= 0; --i){
 			Link prefix = prefixes.get(i);
 			
 			int length = postFix.length;
@@ -84,7 +84,7 @@ public class ContainerNode extends AbstractNode{
 		IntegerList cycles = null;
 		
 		LinearIntegerKeyedMap<IntegerList> cyclesList = null;
-		for(int i = prefixes.size() - 1; i >= 0; i--){
+		for(int i = prefixes.size() - 1; i >= 0; --i){
 			int start = gatheredAlternatives.size();
 			
 			Link prefix = prefixes.get(i);
@@ -130,7 +130,7 @@ public class ContainerNode extends AbstractNode{
 			for(int k = cyclesList.size() - 1; k >= 0; k--){
 				int cycleIndex = cyclesList.getKey(k);
 				IntegerList foundCycles = cyclesList.getValue(k);
-				for(int j = foundCycles.size() - 1; j >= 0; j--){
+				for(int j = foundCycles.size() - 1; j >= 0; --j){
 					int oldLength = postFix.length;
 					int repeatLength = elementNr - foundCycles.get(j);
 					String[] cyclePostFix = new String[oldLength - repeatLength + 1];
@@ -139,7 +139,7 @@ public class ContainerNode extends AbstractNode{
 					StringBuilder buffer = new StringBuilder();
 					buffer.append("repeat(");
 					buffer.append(prefixes.get(cycleIndex).node.print(listElementStack, depth, cycleMark));
-					for(int i = 0; i < repeatLength; i++){
+					for(int i = 0; i < repeatLength; ++i){
 						buffer.append(',');
 						buffer.append(postFix[i]);
 					}
@@ -149,7 +149,7 @@ public class ContainerNode extends AbstractNode{
 					if(cycleIndex == 0 && prefixes.size() == 1){
 						gatheredAlternatives.add(cyclePostFix); // This cycle is the only thing in the list.
 					}else{
-						for(int i = prefixes.size() - 1; i >= 0; i--){
+						for(int i = prefixes.size() - 1; i >= 0; --i){
 							if(i == cycleIndex) continue;
 							
 							Link prefix = prefixes.get(i);
@@ -184,7 +184,7 @@ public class ContainerNode extends AbstractNode{
 		out.append(name);
 		out.append('(');
 		out.append(children[0]);
-		for(int i = 1; i < children.length; i++){
+		for(int i = 1; i < children.length; ++i){
 			out.append(',');
 			out.append(children[i]);
 		}
@@ -223,14 +223,14 @@ public class ContainerNode extends AbstractNode{
 		if(!isListContainer){
 			gatherAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark);
 			if(alternatives != null){
-				for(int i = alternatives.size() - 1; i >= 0; i--){
+				for(int i = alternatives.size() - 1; i >= 0; --i){
 					gatherAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark);
 				}
 			}
 		}else{
 			gatherListAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark);
 			if(alternatives != null){
-				for(int i = alternatives.size() - 1; i >= 0; i--){
+				for(int i = alternatives.size() - 1; i >= 0; --i){
 					gatherListAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark);
 				}
 			}
@@ -243,7 +243,7 @@ public class ContainerNode extends AbstractNode{
 		}else{
 			sb.append('[');
 			printAlternative(gatheredAlternatives.get(nrOfAlternatives - 1), sb);
-			for(int i = nrOfAlternatives - 2; i >= 0; i--){
+			for(int i = nrOfAlternatives - 2; i >= 0; --i){
 				sb.append(',');
 				printAlternative(gatheredAlternatives.get(i), sb);
 			}
