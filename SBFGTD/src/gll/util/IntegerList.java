@@ -27,13 +27,11 @@ public class IntegerList{
 	}
 	
 	public void add(int integer){
-		int index = size;
 		if(size == data.length){
 			enlarge();
 		}
-		++size;
 		
-		data[index] = integer;
+		data[size++] = integer;
 	}
 	
 	public int get(int index){
