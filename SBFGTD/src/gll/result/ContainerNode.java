@@ -35,12 +35,12 @@ public class ContainerNode extends AbstractNode{
 		return false;
 	}
 	
-	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
-		String result = child.node.print(stack, depth);
-		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth);
+	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+		String result = child.node.print(stack, depth, cycleMark);
+		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark);
 	}
 	
-	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
+	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -53,28 +53,28 @@ public class ContainerNode extends AbstractNode{
 			int length = postFix.length;
 			String[] newPostFix = new String[length + 1];
 			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			newPostFix[0] = prefix.node.print(stack, depth);
-			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth);
+			newPostFix[0] = prefix.node.print(stack, depth, cycleMark);
+			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark);
 		}
 	}
 	
-	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth){
+	private void gatherListAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		AbstractNode childNode = child.node;
-		String result = childNode.print(stack, depth);
+		String result = childNode.print(stack, depth, cycleMark);
 		
 		IndexedStack<AbstractNode> listElementStack = new IndexedStack<AbstractNode>();
 		
 		if(childNode.isContainer()) listElementStack.push(childNode, 0);
 		int start = gatheredAlternatives.size();
-		IntegerList foundCycles = gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, listElementStack, 1);
+		IntegerList foundCycles = gatherList(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, listElementStack, 1);
 		if(foundCycles != null){
 			gatheredAlternatives.resetTo(start);
-			gatherList(child, new String[]{"repeat("+result+")"}, gatheredAlternatives, stack, depth, listElementStack, 1);
+			gatherList(child, new String[]{"repeat("+result+")"}, gatheredAlternatives, stack, depth, cycleMark, listElementStack, 1);
 		}
 		if(childNode.isContainer()) listElementStack.pop();
 	}
 	
-	private IntegerList gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, IndexedStack<AbstractNode> listElementStack, int elementNr){
+	private IntegerList gatherList(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, IndexedStack<AbstractNode> listElementStack, int elementNr){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -109,8 +109,8 @@ public class ContainerNode extends AbstractNode{
 			
 			if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
 			
-			newPostFix[0] = prefixNode.print(stack, depth);
-			IntegerList foundCycles = gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
+			newPostFix[0] = prefixNode.print(stack, depth, cycleMark);
+			IntegerList foundCycles = gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, listElementStack, elementNr + 1);
 			
 			if(prefixNode.isContainer()) listElementStack.pop();
 			
@@ -138,7 +138,7 @@ public class ContainerNode extends AbstractNode{
 					
 					StringBuilder buffer = new StringBuilder();
 					buffer.append("repeat(");
-					buffer.append(prefixes.get(cycleIndex).node.print(listElementStack, depth));
+					buffer.append(prefixes.get(cycleIndex).node.print(listElementStack, depth, cycleMark));
 					for(int i = 0; i < repeatLength; i++){
 						buffer.append(',');
 						buffer.append(postFix[i]);
@@ -167,10 +167,10 @@ public class ContainerNode extends AbstractNode{
 							
 							if(prefixNode.isContainer()) listElementStack.push(prefixNode, elementNr);
 							
-							newPostFix[0] = prefixNode.print(stack, depth);
-							gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, listElementStack, elementNr + 1);
+							newPostFix[0] = prefixNode.print(stack, depth, cycleMark);
+							gatherList(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, listElementStack, elementNr + 1);
 							
-							if(prefixNode.isContainer()) listElementStack.pop();
+							if(prefixNode.isContainer()) listElementStack.dirtyPurge();
 						}
 					}
 				}
@@ -191,8 +191,13 @@ public class ContainerNode extends AbstractNode{
 		out.append(')');
 	}
 	
-	public String print(IndexedStack<AbstractNode> stack, int depth){
-		if(cachedResult != null) return cachedResult;
+	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+		if(cachedResult != null && (depth <= cycleMark.depth)){
+			if(depth == cycleMark.depth){
+				cycleMark.reset();
+			}
+			return cachedResult;
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -203,7 +208,10 @@ public class ContainerNode extends AbstractNode{
 			sb.append(',');
 			sb.append((depth - index));
 			sb.append(")");
-			return (cachedResult = sb.toString());
+			
+			cycleMark.setMark(index);
+			
+			return sb.toString();
 		}
 		
 		int childDepth = depth + 1;
@@ -213,17 +221,17 @@ public class ContainerNode extends AbstractNode{
 		// Gather
 		ArrayList<String[]> gatheredAlternatives = new ArrayList<String[]>();
 		if(!isListContainer){
-			gatherAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth);
+			gatherAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark);
 			if(alternatives != null){
 				for(int i = alternatives.size() - 1; i >= 0; i--){
-					gatherAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth);
+					gatherAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark);
 				}
 			}
 		}else{
-			gatherListAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth);
+			gatherListAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark);
 			if(alternatives != null){
 				for(int i = alternatives.size() - 1; i >= 0; i--){
-					gatherListAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth);
+					gatherListAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark);
 				}
 			}
 		}
@@ -242,12 +250,12 @@ public class ContainerNode extends AbstractNode{
 			sb.append(']');
 		}
 		
-		stack.purge(); // Pop
+		stack.dirtyPurge(); // Pop
 		
-		return (cachedResult = sb.toString());
+		return (depth <= cycleMark.depth) ? (cachedResult = sb.toString()) : sb.toString();
 	}
 	
 	public String toString(){
-		return print(new IndexedStack<AbstractNode>(), 0);
+		return print(new IndexedStack<AbstractNode>(), 0, new CycleMark());
 	}
 }
