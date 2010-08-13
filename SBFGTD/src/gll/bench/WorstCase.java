@@ -32,7 +32,7 @@ public class WorstCase extends SGLL{
 	
 	private static char[] createInput(int size){
 		char[] input = new char[size];
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size - 1; i >= 0; --i){
 			input[i] = 'a';
 		}
 		return input;
@@ -41,7 +41,7 @@ public class WorstCase extends SGLL{
 	private static void runTest(char[] input){
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
-		for(int i = ITERATIONS - 1; i >= 0; i--){
+		for(int i = ITERATIONS - 1; i >= 0; --i){
 			long start = System.currentTimeMillis();
 			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
@@ -59,7 +59,7 @@ public class WorstCase extends SGLL{
 	public static void main(String[] args){
 		// Warmup.
 		char[] input = createInput(5);
-		for(int i = 9999; i >= 0; i--){
+		for(int i = 9999; i >= 0; --i){
 			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
 		}

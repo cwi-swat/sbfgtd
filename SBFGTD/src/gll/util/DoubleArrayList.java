@@ -51,28 +51,28 @@ public class DoubleArrayList<F, S>{
 	}
 	
 	public boolean containsFirst(F firstObject){
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size - 1; i >= 0; --i){
 			if(first[i] == firstObject) return true;
 		}
 		return false;
 	}
 	
 	public boolean containsSecond(S secondObject){
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size - 1; i >= 0; --i){
 			if(second[i] == secondObject) return true;
 		}
 		return false;
 	}
 	
 	public int findFirst(F firstObject){
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size - 1; i >= 0; --i){
 			if(first[i] == firstObject) return i;
 		}
 		return -1;
 	}
 	
 	public int findSecond(S secondObject){
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size - 1; i >= 0; --i){
 			if(second[i] == secondObject) return i;
 		}
 		return -1;

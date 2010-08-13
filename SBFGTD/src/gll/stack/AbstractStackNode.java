@@ -114,7 +114,7 @@ public abstract class AbstractStackNode{
 	
 	public void addEdges(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd){
 		if(edgesMap != edgesMapToAdd){
-			for(int i = edgesMapToAdd.size() - 1; i >= 0; i--){
+			for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
 				int startLocation = edgesMapToAdd.getKey(i);
 				ArrayList<AbstractStackNode> edgesToAdd = edgesMapToAdd.getValue(i);
 				
@@ -123,9 +123,9 @@ public abstract class AbstractStackNode{
 				if(edges == null){
 					edgesMap.add(startLocation, edgesToAdd);
 				}else if(edges != edgesToAdd){
-					OUTER : for(int j = edgesToAdd.size() - 1; j >= 0; j--){
+					OUTER : for(int j = edgesToAdd.size() - 1; j >= 0; --j){
 						AbstractStackNode edgeToAdd = edgesToAdd.get(j);
-						for(int k = edges.size() - 1; k >= 0; k--){
+						for(int k = edges.size() - 1; k >= 0; --k){
 							AbstractStackNode edge = edges.get(k);
 							if(edgeToAdd == edge){
 								continue OUTER;
