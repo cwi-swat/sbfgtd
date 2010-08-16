@@ -121,14 +121,13 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges, AbstractNode result){
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, AbstractNode result){
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		// Update results (if necessary).
-		for(int i = edges.size() - 1; i >= 0; --i){
-			int startLocation = edges.getKey(i);
-			ArrayList<AbstractStackNode> edgesPart = edges.getValue(i);
+		for(int i = edgesMap.size() - 1; i >= 0; --i){
+			int startLocation = edgesMap.getKey(i);
+			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
 			for(int j = edgesPart.size() - 1; j >= 0; --j){
 				AbstractStackNode edge = edgesPart.get(j);
 				
@@ -202,7 +201,6 @@ public class SGLL implements IGLL{
 					prefixes = prefixesMap[i];
 				}
 				
-				//boolean ok = false;
 				ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
 				for(int j = edgeList.size() - 1; j >= 0; --j){
 					AbstractStackNode edge = edgeList.get(j);
