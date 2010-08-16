@@ -108,20 +108,22 @@ public class SGLL implements IGLL{
 	}
 	
 	private void addPrefixes(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
-		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		if(prefixesMap == null){
 			next.addPrefix(new Link(null, result), node.getStartLocation());
 		}else{
-			int nrOfPrefixes = prefixesMap.size();
+			int nrOfPrefixes = edgesMap.size();
 			for(int i = nrOfPrefixes - 1; i >= 0; --i){
-				next.addPrefix(new Link(prefixesMap.getValue(i), result), prefixesMap.getKey(i));
+				next.addPrefix(new Link(prefixesMap[i], result), edgesMap.getKey(i));
 			}
 		}
 	}
 	
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges, AbstractNode result){
-		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		// Update results (if necessary).
 		for(int i = edges.size() - 1; i >= 0; --i){
@@ -131,7 +133,7 @@ public class SGLL implements IGLL{
 				AbstractStackNode edge = edgesPart.get(j);
 				
 				if(edge.isMarkedAsWithResults()){
-					Link prefix = constructPrefixesFor(prefixesMap, result, startLocation);
+					Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, startLocation);
 					if(prefix != null){
 						ArrayList<Link> edgePrefixes = new ArrayList<Link>();
 						edgePrefixes.add(prefix);
@@ -190,18 +192,18 @@ public class SGLL implements IGLL{
 	
 	private void move(AbstractStackNode node){
 		if(node.isEndNode()){
-			LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edges = node.getEdges();
-			LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+			LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+			ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 			AbstractNode result = node.getResult();
 			
-			for(int i = edges.size() - 1; i >= 0; --i){
+			for(int i = edgesMap.size() - 1; i >= 0; --i){
 				ArrayList<Link> prefixes = null;
 				if(prefixesMap != null){
-					prefixes = prefixesMap.findValue(edges.getKey(i));
+					prefixes = prefixesMap[i];
 				}
 				
 				//boolean ok = false;
-				ArrayList<AbstractStackNode> edgeList = edges.getValue(i);
+				ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
 				for(int j = edgeList.size() - 1; j >= 0; --j){
 					AbstractStackNode edge = edgeList.get(j);
 					if(updateEdgeNode(edge, prefixes, result)) break;
@@ -218,21 +220,23 @@ public class SGLL implements IGLL{
 	private void moveNullable(AbstractStackNode node, AbstractStackNode edge){
 		nullableEncountered = true;
 		
-		LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap = node.getPrefixesMap();
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		ArrayList<Link> prefixes = null;
 		if(prefixesMap != null){
-			prefixes = prefixesMap.findValue(location);
+			prefixes = prefixesMap[edgesMap.findKey(location)];
 		}
 		
 		updateEdgeNode(edge, prefixes, node.getResult());
 	}
 	
-	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap, AbstractNode result, int startLocation){
+	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap, AbstractNode result, int startLocation){
 		if(prefixesMap == null){
 			return new Link(null, result);
 		}
 		
-		ArrayList<Link> prefixes = prefixesMap.findValue(startLocation);
+		int index = edgesMap.findKey(startLocation);
+		ArrayList<Link> prefixes = prefixesMap[index];
 		if(prefixes != null){
 			return new Link(prefixes, result);
 		}

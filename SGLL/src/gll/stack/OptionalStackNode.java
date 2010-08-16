@@ -1,11 +1,10 @@
 package gll.stack;
 
 import gll.IGLL;
-import gll.result.ContainerNode;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.LinearIntegerKeyedMap;
 
 public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
 	private final AbstractStackNode optional;
@@ -30,7 +29,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		nodeName = original.nodeName;
 	}
 	
-	private OptionalStackNode(OptionalStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	private OptionalStackNode(OptionalStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 		
 		optional = original.optional;

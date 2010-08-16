@@ -1,10 +1,9 @@
 package gll.stack;
 
-import gll.result.ContainerNode;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.LinearIntegerKeyedMap;
 
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
@@ -23,7 +22,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		nonTerminal = original.nonTerminal;
 	}
 	
-	private NonTerminalStackNode(NonTerminalStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	private NonTerminalStackNode(NonTerminalStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 
 		nonTerminal = original.nonTerminal;

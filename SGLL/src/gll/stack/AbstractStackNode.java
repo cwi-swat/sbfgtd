@@ -9,12 +9,11 @@ import gll.util.LinearIntegerKeyedMap;
 public abstract class AbstractStackNode{
 	protected AbstractStackNode next;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
+	protected ArrayList<Link>[] prefixesMap;
 	
 	protected final int id;
 	
 	protected int startLocation;
-	
-	protected LinearIntegerKeyedMap<ArrayList<Link>> prefixesMap;
 	
 	private boolean isEndNode;
 	private boolean markedAsWithResults;
@@ -37,7 +36,7 @@ public abstract class AbstractStackNode{
 		this.isEndNode = original.isEndNode;
 	}
 	
-	protected AbstractStackNode(AbstractStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	protected AbstractStackNode(AbstractStackNode original, ArrayList<Link>[] prefixes){
 		super();
 		
 		id = original.id;
@@ -175,21 +174,32 @@ public abstract class AbstractStackNode{
 	public void addPrefix(Link prefix, int prefixStartLocation){
 		ArrayList<Link> prefixes;
 		if(prefixesMap == null){
-			prefixesMap = new LinearIntegerKeyedMap<ArrayList<Link>>();
+			prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
 			prefixes = new ArrayList<Link>(1);
-			prefixesMap.add(prefixStartLocation, prefixes);
+			prefixesMap[edgesMap.findKey(prefixStartLocation)] = prefixes;
 		}else{
-			prefixes = prefixesMap.findValue(prefixStartLocation);
+			int index = edgesMap.findKey(prefixStartLocation);
+			int capacity = prefixesMap.length;
+			if(index >= capacity){
+				int newCapacity = capacity << 1;
+				do{
+					newCapacity <<= 1;
+				}while(index >= newCapacity);
+				ArrayList<Link>[] oldPrefixesMap = prefixesMap;
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[newCapacity];
+				System.arraycopy(oldPrefixesMap, 0, prefixesMap, 0, capacity);
+			}
+			prefixes = prefixesMap[index];
 			if(prefixes == null){
 				prefixes = new ArrayList<Link>(1);
-				prefixesMap.add(prefixStartLocation, prefixes);
+				prefixesMap[index] = prefixes;
 			}
 		}
 		
 		prefixes.add(prefix);
 	}
 	
-	public LinearIntegerKeyedMap<ArrayList<Link>> getPrefixesMap(){
+	public ArrayList<Link>[] getPrefixesMap(){
 		return prefixesMap;
 	}
 	
