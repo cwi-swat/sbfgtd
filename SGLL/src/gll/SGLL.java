@@ -249,17 +249,6 @@ public class SGLL implements IGLL{
 	
 	private void reduceNonTerminal(AbstractStackNode nonTerminal){
 		move(nonTerminal);
-		
-		/*System.out.println(nonTerminal);
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = nonTerminal.getEdges();
-		for(int i = edgesMap.size() - 1; i >= 0; --i){
-			ArrayList<AbstractStackNode> edges = edgesMap.getValue(i);
-			for(int j = edges.size() - 1; j >= 0; --j){
-				AbstractStackNode edge = edges.get(j);
-				System.out.println("\t"+edge);
-			}
-		}
-		System.out.println();*/
 	}
 	
 	private void reduce(){
