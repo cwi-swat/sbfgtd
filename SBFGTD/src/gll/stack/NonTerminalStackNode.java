@@ -46,9 +46,13 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new NonTerminalStackNode(this);
+		return new NonTerminalStackNode(id, nonTerminal);
 	}
 	
+	public AbstractStackNode getCleanCopyWithMark(){
+		return new NonTerminalStackNode(this);
+	}
+
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new NonTerminalStackNode(this, prefixesMap);
 	}

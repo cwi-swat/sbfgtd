@@ -63,9 +63,13 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new SeparatedListStackNode(this);
+		return new SeparatedListStackNode(id, child, separators, nodeName, isPlusList);
 	}
 	
+	public AbstractStackNode getCleanCopyWithMark(){
+		return new SeparatedListStackNode(this);
+	}
+
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new SeparatedListStackNode(this, prefixesMap);
 	}
@@ -84,7 +88,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode listNode = child.getCleanCopy();
-		
+		listNode.markAsEndNode();
 		listNode.addEdge(this);
 		listNode.setStartLocation(startLocation);
 		listNode.addPrefix(null, startLocation);
@@ -108,7 +112,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		}
 		
 		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
-
+		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
 		empty.addEdge(this);
 		
