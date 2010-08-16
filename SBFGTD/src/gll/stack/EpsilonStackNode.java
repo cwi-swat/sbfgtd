@@ -1,11 +1,10 @@
 package gll.stack;
 
+import gll.result.AbstractNode;
 import gll.result.ContainerNode;
 import gll.result.EpsilonNode;
-import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.LinearIntegerKeyedMap;
 
 public final class EpsilonStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
@@ -18,7 +17,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		super(original);
 	}
 	
-	private EpsilonStackNode(EpsilonStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	private EpsilonStackNode(EpsilonStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 	}
 	

@@ -1,11 +1,10 @@
 package gll.stack;
 
 import gll.IGLL;
-import gll.result.ContainerNode;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.LinearIntegerKeyedMap;
 
 public final class SeparatedListStackNode extends AbstractStackNode implements IListStackNode{
 	private final String nodeName;
@@ -36,7 +35,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		isPlusList = original.isPlusList;
 	}
 	
-	private SeparatedListStackNode(SeparatedListStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 		
 		nodeName = original.nodeName;

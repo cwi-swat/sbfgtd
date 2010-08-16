@@ -1,11 +1,10 @@
 package gll.stack;
 
+import gll.result.AbstractNode;
 import gll.result.CharNode;
 import gll.result.ContainerNode;
-import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
-import gll.util.LinearIntegerKeyedMap;
 
 public final class CharStackNode extends AbstractStackNode implements IReducableStackNode{
 	private final char[][] ranges;
@@ -33,7 +32,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		production = original.production;
 	}
 	
-	private CharStackNode(CharStackNode original, LinearIntegerKeyedMap<ArrayList<Link>> prefixes){
+	private CharStackNode(CharStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 		
 		ranges = original.ranges;

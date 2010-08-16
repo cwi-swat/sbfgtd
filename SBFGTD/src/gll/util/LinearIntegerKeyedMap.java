@@ -56,6 +56,15 @@ public class LinearIntegerKeyedMap<V>{
 		return values[index];
 	}
 	
+	public int findKey(int key){
+		for(int i = size - 1; i >= 0; --i){
+			if(keys[i] == key){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public V findValue(int key){
 		for(int i = size - 1; i >= 0; --i){
 			if(keys[i] == key){
@@ -67,6 +76,10 @@ public class LinearIntegerKeyedMap<V>{
 	
 	public int size(){
 		return size;
+	}
+	
+	public int capacity(){
+		return keys.length;
 	}
 	
 	public void clear(){
