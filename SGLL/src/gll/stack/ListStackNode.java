@@ -59,9 +59,13 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new ListStackNode(this);
+		return new ListStackNode(id, child, nodeName, isPlusList);
 	}
 	
+	public AbstractStackNode getCleanCopyWithMark(){
+		return new ListStackNode(this);
+	}
+
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new ListStackNode(this, prefixesMap);
 	}
@@ -80,7 +84,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode listNode = child.getCleanCopy();
-		
+		listNode.markAsEndNode();
 		listNode.addNext(listNode);
 		listNode.addEdge(this);
 		listNode.setStartLocation(startLocation);
@@ -91,7 +95,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		}
 		
 		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
-
+		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
 		empty.addEdge(this);
 		
