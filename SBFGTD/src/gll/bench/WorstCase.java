@@ -38,10 +38,21 @@ public class WorstCase extends SGLL{
 		return input;
 	}
 	
-	private static void runTest(char[] input){
+	private static void cleanup() throws Exception{
+		System.gc();
+		System.gc();
+		System.gc();
+		System.gc();
+		System.gc();
+		Thread.sleep(1000);
+	}
+	
+	private static void runTest(char[] input) throws Exception{
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
 		for(int i = ITERATIONS - 1; i >= 0; --i){
+			cleanup();
+			
 			long start = System.currentTimeMillis();
 			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
@@ -56,7 +67,7 @@ public class WorstCase extends SGLL{
 		System.out.println(input.length+": avg="+(total / ITERATIONS)+"ms, lowest="+lowest+"ms");
 	}
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		// Warmup.
 		char[] input = createInput(5);
 		for(int i = 9999; i >= 0; --i){
