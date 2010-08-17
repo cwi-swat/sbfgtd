@@ -101,10 +101,10 @@ public class SGLL implements IGLL{
 		
 		next.setStartLocation(location);
 		next.addEdges(edges);
+		addPrefixes(next, node, result);
+		
 		possiblySharedNextNodes.add(next);
 		stacksToExpand.add(next);
-		
-		addPrefixes(next, node, result);
 	}
 	
 	private void addPrefixes(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
@@ -203,8 +203,7 @@ public class SGLL implements IGLL{
 				
 				ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
 				for(int j = edgeList.size() - 1; j >= 0; --j){
-					AbstractStackNode edge = edgeList.get(j);
-					if(updateEdgeNode(edge, prefixes, result)) break;
+					if(updateEdgeNode(edgeList.get(j), prefixes, result)) break;
 				}
 			}
 		}
