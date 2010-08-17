@@ -23,9 +23,9 @@ public abstract class AbstractStackNode{
 		
 		this.id = id;
 		
-		startLocation = -1;
-		
 		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
+		
+		startLocation = -1;
 	}
 	
 	protected AbstractStackNode(AbstractStackNode original){
