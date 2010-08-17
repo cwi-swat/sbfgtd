@@ -124,7 +124,7 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void addEdges(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd){
-		if(edgesMap == null){
+		if(edgesMap.size() == 0){
 			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMapToAdd);
 		}else if(edgesMap != edgesMapToAdd){
 			for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
