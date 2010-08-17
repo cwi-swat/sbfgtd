@@ -1,7 +1,7 @@
 package gll.stack;
 
-import gll.result.ContainerNode;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
@@ -24,6 +24,8 @@ public abstract class AbstractStackNode{
 		this.id = id;
 		
 		startLocation = -1;
+		
+		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
 	}
 	
 	protected AbstractStackNode(AbstractStackNode original){
@@ -31,6 +33,7 @@ public abstract class AbstractStackNode{
 		
 		id = original.id;
 		
+		edgesMap = original.edgesMap;
 		next = original.next;
 		
 		this.isEndNode = original.isEndNode;
@@ -41,14 +44,14 @@ public abstract class AbstractStackNode{
 		
 		id = original.id;
 		
-		next = original.next;
 		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(original.edgesMap);
+		next = original.next;
 		
-		this.prefixesMap = prefixes;
+		prefixesMap = prefixes;
 		
 		startLocation = original.startLocation;
 
-		this.isEndNode = original.isEndNode;
+		isEndNode = original.isEndNode;
 	}
 	
 	// General.
@@ -108,24 +111,13 @@ public abstract class AbstractStackNode{
 		return next;
 	}
 	
-	public void initNoEdges(){
-		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
-	}
-	
 	public void addEdge(AbstractStackNode edge){
 		int startLocation = edge.getStartLocation();
 		
-		ArrayList<AbstractStackNode> edges;
-		if(edgesMap == null){
-			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
+		ArrayList<AbstractStackNode> edges = edgesMap.findValue(startLocation);
+		if(edges == null){
 			edges = new ArrayList<AbstractStackNode>(1);
 			edgesMap.add(startLocation, edges);
-		}else{
-			edges = edgesMap.findValue(startLocation);
-			if(edges == null){
-				edges = new ArrayList<AbstractStackNode>(1);
-				edgesMap.add(startLocation, edges);
-			}
 		}
 		
 		edges.add(edge);
