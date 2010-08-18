@@ -32,9 +32,9 @@ public abstract class AbstractStackNode{
 		super();
 		
 		id = original.id;
-		
-		edgesMap = original.edgesMap;
+
 		next = original.next;
+		edgesMap = original.edgesMap;
 		
 		this.isEndNode = original.isEndNode;
 	}
@@ -43,9 +43,9 @@ public abstract class AbstractStackNode{
 		super();
 		
 		id = original.id;
-		
-		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(original.edgesMap);
+
 		next = original.next;
+		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(original.edgesMap);
 		
 		prefixesMap = prefixes;
 		
