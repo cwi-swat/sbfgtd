@@ -125,5 +125,9 @@ public class RunAll{
 		System.out.println("AmbiguousSeparatedEpsilonList:");
 		AmbiguousSeparatedEpsilonList.main(args);
 		System.out.println();
+		
+		System.out.println("NullableSharing:");
+		NullableSharing.main(args);
+		System.out.println();
 	}
 }

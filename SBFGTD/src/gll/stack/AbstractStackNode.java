@@ -16,7 +16,6 @@ public abstract class AbstractStackNode{
 	protected int startLocation;
 	
 	private boolean isEndNode;
-	private boolean markedAsWithResults;
 	
 	public AbstractStackNode(int id){
 		super();
@@ -193,14 +192,6 @@ public abstract class AbstractStackNode{
 	
 	public ArrayList<Link>[] getPrefixesMap(){
 		return prefixesMap;
-	}
-	
-	public void markAsWithResults(){
-		markedAsWithResults = true;
-	}
-	
-	public boolean isMarkedAsWithResults(){
-		return markedAsWithResults;
 	}
 	
 	public abstract void setResultStore(ContainerNode resultStore);
