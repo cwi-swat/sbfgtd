@@ -6,6 +6,7 @@ import gll.result.struct.Link;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
+import gll.util.HashMap;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.ObjectIntegerKeyedHashMap;
 import gll.util.RotatingQueue;
@@ -34,6 +35,8 @@ public class SGLL implements IGLL{
 	
 	private AbstractStackNode root;
 	
+	private final HashMap<String, Method> methodCache;
+	
 	public SGLL(char[] input){
 		super();
 		
@@ -54,6 +57,8 @@ public class SGLL implements IGLL{
 		
 		previousLocation = -1;
 		location = 0;
+		
+		methodCache = new HashMap<String, Method>();
 	}
 	
 	protected void expect(AbstractStackNode... symbolsToExpect){
@@ -61,8 +66,19 @@ public class SGLL implements IGLL{
 	}
 	
 	private void callMethod(String methodName){
+		Method method = methodCache.get(methodName);
+		if(method == null){
+			try{
+				method = getClass().getMethod(methodName);
+				method.setAccessible(true); // Try to bypass the 'isAccessible' check to save time.
+			}catch(Exception ex){
+				// Not going to happen.
+				ex.printStackTrace(); // Temp
+			}
+			methodCache.putUnsafe(methodName, method);
+		}
+		
 		try{
-			Method method = getClass().getMethod(methodName);
 			method.invoke(this);
 		}catch(Exception ex){
 			// Not going to happen.
