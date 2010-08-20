@@ -78,6 +78,8 @@ public abstract class AbstractStackNode{
 		return (this instanceof IListStackNode);
 	}
 	
+	public abstract String getIdentifier();
+	
 	public abstract String getName();
 	
 	public abstract String getMethodName();

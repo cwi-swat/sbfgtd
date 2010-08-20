@@ -28,11 +28,15 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		nonTerminal = original.nonTerminal;
 	}
 	
-	public String getName(){
+	public String getIdentifier(){
 		return nonTerminal;
 	}
 	
 	public String getMethodName(){
+		return nonTerminal;
+	}
+	
+	public String getName(){
 		return nonTerminal;
 	}
 	

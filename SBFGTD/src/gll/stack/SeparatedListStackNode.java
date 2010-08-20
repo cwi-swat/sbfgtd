@@ -45,6 +45,10 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		isPlusList = original.isPlusList;
 	}
 	
+	public String getIdentifier(){
+		return nodeName+id; // Add the id to make it unique.
+	}
+	
 	public String getName(){
 		return nodeName;
 	}

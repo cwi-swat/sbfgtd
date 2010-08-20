@@ -129,5 +129,9 @@ public class RunAll{
 		System.out.println("NullableSharing:");
 		NullableSharing.main(args);
 		System.out.println();
+		
+		System.out.println("ListOverlap:");
+		ListOverlap.main(args);
+		System.out.println();
 	}
 }

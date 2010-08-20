@@ -37,6 +37,10 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		nodeName = original.nodeName;
 	}
 	
+	public String getIdentifier(){
+		return nodeName+id; // Add the id to make it unique.
+	}
+	
 	public String getName(){
 		return nodeName;
 	}
