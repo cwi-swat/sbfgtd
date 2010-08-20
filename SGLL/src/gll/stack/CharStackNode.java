@@ -41,6 +41,10 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		production = original.production;
 	}
 	
+	public String getIdentifier(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public String getName(){
 		throw new UnsupportedOperationException();
 	}

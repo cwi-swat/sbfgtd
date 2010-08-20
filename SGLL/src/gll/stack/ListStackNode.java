@@ -41,6 +41,10 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		isPlusList = original.isPlusList;
 	}
 	
+	public String getIdentifier(){
+		return nodeName+id; // Add the id to make it unique.
+	}
+	
 	public String getName(){
 		return nodeName;
 	}

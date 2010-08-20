@@ -101,7 +101,7 @@ public class SGLL implements IGLL{
 		addPrefixes(next, node, result);
 		
 		if(!next.isReducable()){ // Is non-terminal or list.
-			ContainerNode resultStore = resultStoreCache.get(next.getName(), location);
+			ContainerNode resultStore = resultStoreCache.get(next.getIdentifier(), location);
 			if(resultStore != null){ // Is nullable, add the known results.
 				next.setResultStore(resultStore);
 				stacksWithNonTerminalsToReduce.put(next);
@@ -122,13 +122,11 @@ public class SGLL implements IGLL{
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
+			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
 			Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, startLocation);
-			if(prefix != null){
-				ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-				edgePrefixes.add(prefix);
-				ContainerNode resultStore = edge.getResultStore();
-				resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
-			}
+			edgePrefixes.add(prefix);
+			ContainerNode resultStore = edge.getResultStore();
+			resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
 		}
 	}
 	
@@ -156,14 +154,15 @@ public class SGLL implements IGLL{
 			ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
 			
 			AbstractStackNode edge = edgeList.get(0);
+			String identifier = edge.getIdentifier();
 			String nodeName = edge.getName();
-			ContainerNode resultStore = resultStoreCache.get(nodeName, startLocation);
+			ContainerNode resultStore = resultStoreCache.get(identifier, startLocation);
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
 			if(resultStore != null){
 				resultStore.addAlternative(resultLink);
 			}else{
 				resultStore = new ContainerNode(nodeName, edge.isList());
-				resultStoreCache.unsafePut(nodeName, startLocation, resultStore);
+				resultStoreCache.unsafePut(identifier, startLocation, resultStore);
 				resultStore.addAlternative(resultLink);
 				
 				if(!edge.isClean()){
@@ -211,7 +210,7 @@ public class SGLL implements IGLL{
 			prefixes = prefixesMap[edgesMap.findKey(location)];
 		}
 		
-		ContainerNode resultStore = resultStoreCache.get(edge.getName(), location);
+		ContainerNode resultStore = resultStoreCache.get(edge.getIdentifier(), location);
 		resultStore.addAlternative(new Link(prefixes, node.getResult()));
 	}
 	
@@ -221,11 +220,7 @@ public class SGLL implements IGLL{
 		}
 		
 		int index = edgesMap.findKey(startLocation);
-		ArrayList<Link> prefixes = prefixesMap[index];
-		if(prefixes != null){
-			return new Link(prefixes, result);
-		}
-		return null;
+		return new Link(prefixesMap[index], result);
 	}
 	
 	private void reduceTerminal(AbstractStackNode terminal){
