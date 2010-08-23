@@ -65,17 +65,17 @@ public class SGLL implements IGLL{
 		lastExpects.add(symbolsToExpect);
 	}
 	
-	private void callMethod(String methodName){
-		Method method = methodCache.get(methodName);
+	protected void invokeExpects(String name){
+		Method method = methodCache.get(name);
 		if(method == null){
 			try{
-				method = getClass().getMethod(methodName);
+				method = getClass().getMethod(name);
 				method.setAccessible(true); // Try to bypass the 'isAccessible' check to save time.
 			}catch(Exception ex){
 				// Not going to happen.
 				ex.printStackTrace(); // Temp
 			}
-			methodCache.putUnsafe(methodName, method);
+			methodCache.putUnsafe(name, method);
 		}
 		
 		try{
@@ -327,7 +327,7 @@ public class SGLL implements IGLL{
 					expects[i].addEdge(node);
 				}
 			}else{
-				callMethod(node.getMethodName());
+				invokeExpects(node.getMethodName());
 				handleExpects(node);
 			}
 		}else{ // 'List'
