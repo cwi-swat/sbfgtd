@@ -50,13 +50,13 @@ public class RunAll{
 		AmbiguousRecursive.main(args);
 		System.out.println();
 		
-		System.out.println("MergeAndSplit1:");
+		System.out.println("SplitAndMerge1:");
 		SplitAndMerge1.main(args);
 		System.out.println();
-		System.out.println("MergeAndSplit2:");
+		System.out.println("SplitAndMerge2:");
 		SplitAndMerge2.main(args);
 		System.out.println();
-		System.out.println("MergeAndSplit3:");
+		System.out.println("SplitAndMerge3:");
 		SplitAndMerge3.main(args);
 		System.out.println();
 		
