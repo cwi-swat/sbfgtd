@@ -22,18 +22,16 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode> stacksToExpand;
 	private final RotatingQueue<AbstractStackNode> stacksWithTerminalsToReduce;
 	private final RotatingQueue<AbstractStackNode> stacksWithNonTerminalsToReduce;
-	private final ArrayList<AbstractStackNode[]> lastExpects;
-	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	
-
+	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final HashMap<String, AbstractStackNode[]> cachedExpects;
+	
+	private final ArrayList<AbstractStackNode> possiblySharedNextNodes;
 	
 	private final ObjectIntegerKeyedHashMap<String, ContainerNode> resultStoreCache;
 	
 	private int previousLocation;
 	private int location;
-	
-	private boolean nullableEncountered;
 	
 	private AbstractStackNode root;
 	
@@ -218,20 +216,6 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void moveNullable(AbstractStackNode node, AbstractStackNode edge){
-		nullableEncountered = true;
-		
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
-		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
-		ArrayList<Link> prefixes = null;
-		if(prefixesMap != null){
-			prefixes = prefixesMap[edgesMap.findKey(location)];
-		}
-		
-		ContainerNode resultStore = resultStoreCache.get(edge.getIdentifier(), location);
-		resultStore.addAlternative(new Link(prefixes, node.getResult()));
-	}
-	
 	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap, AbstractNode result, int startLocation){
 		if(prefixesMap == null){
 			return new Link(null, result);
@@ -294,14 +278,6 @@ public class SGLL implements IGLL{
 		for(int j = possiblySharedNextNodes.size() - 1; j >= 0; --j){
 			AbstractStackNode possiblySharedNode = possiblySharedNextNodes.get(j);
 			if(possiblySharedNode.isSimilar(node)){
-				if(!possiblySharedNode.isClean()){ // Is nullable.
-					AbstractStackNode last;
-					AbstractStackNode next = possiblySharedNode;
-					do{
-						last = next;
-					}while((next = next.getNext()) != null);
-					moveNullable(last, stack);
-				}
 				possiblySharedNode.addEdge(stack);
 				possiblySharedNode.addPrefix(null, location);
 				return true;
@@ -318,7 +294,6 @@ public class SGLL implements IGLL{
 			AbstractStackNode[] expectedNodes = lastExpects.get(i);
 			int numberOfNodes = expectedNodes.length;
 			
-			// Handle sharing (and loops).
 			AbstractStackNode next = expectedNodes[numberOfNodes - 1].getCleanCopy();
 			next.markAsEndNode();
 			
@@ -403,13 +378,12 @@ public class SGLL implements IGLL{
 		expand();
 		
 		do{
-			if(!nullableEncountered) findStacksToReduce();
-
-			nullableEncountered = false;
+			findStacksToReduce();
+			
 			reduce();
 			
-			if(!nullableEncountered) expand();
-		}while((todoList.size() > 0) || nullableEncountered);
+			expand();
+		}while(todoList.size() > 0);
 		
 		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
 		
