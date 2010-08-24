@@ -21,6 +21,7 @@ public class SplitAndMerge3 extends SGLL{
 	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a6 = new LiteralStackNode(6, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a8 = new LiteralStackNode(8, new char[]{'a'});
 	
 	public SplitAndMerge3(char[] input){
 		super(input);
@@ -33,15 +34,15 @@ public class SplitAndMerge3 extends SGLL{
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B2, LITERAL_a6);
+		expect(NONTERMINAL_B2, LITERAL_a5);
 		
-		expect(LITERAL_a5);
+		expect(LITERAL_a6);
 	}
 	
 	public void B(){
 		expect(NONTERMINAL_A1, LITERAL_a7);
 		
-		expect(LITERAL_a5);
+		expect(LITERAL_a8);
 	}
 	
 	public void C(){
