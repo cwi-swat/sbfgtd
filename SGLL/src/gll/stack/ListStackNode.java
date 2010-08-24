@@ -88,9 +88,9 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	public AbstractStackNode[] getChildren(){
 		AbstractStackNode listNode = child.getCleanCopy();
 		listNode.markAsEndNode();
+		listNode.setStartLocation(startLocation);
 		listNode.addNext(listNode);
 		listNode.addEdge(this);
-		listNode.setStartLocation(startLocation);
 		listNode.addPrefix(null, startLocation);
 		
 		if(isPlusList){
