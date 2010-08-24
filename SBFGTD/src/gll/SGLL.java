@@ -70,7 +70,11 @@ public class SGLL implements IGLL{
 		if(method == null){
 			try{
 				method = getClass().getMethod(name);
-				method.setAccessible(true); // Try to bypass the 'isAccessible' check to save time.
+				try{
+					method.setAccessible(true); // Try to bypass the 'isAccessible' check to save time.
+				}catch(SecurityException sex){
+					// Ignore this if it happens.
+				}
 			}catch(Exception ex){
 				// Not going to happen.
 				ex.printStackTrace(); // Temp
