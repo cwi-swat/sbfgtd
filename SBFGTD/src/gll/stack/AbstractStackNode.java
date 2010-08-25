@@ -124,9 +124,10 @@ public abstract class AbstractStackNode{
 		edges.add(edge);
 	}
 	
-	public void updateNode(AbstractStackNode predecessor, AbstractNode result){
+	public void updateNode(AbstractStackNode predecessor){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
+		AbstractNode result = predecessor.getResult();
 		
 		int edgesMapSize = edgesMap.size();
 		if(edgesMapSize == 0){

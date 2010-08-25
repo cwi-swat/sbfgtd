@@ -96,13 +96,13 @@ public class SGLL implements IGLL{
 		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; --i){
 			AbstractStackNode possibleAlternative = possiblySharedNextNodes.get(i);
 			if(possibleAlternative.isSimilar(next)){
-				possibleAlternative.updateNode(node, result);
+				possibleAlternative.updateNode(node);
 				
 				if(next.isEndNode()){
 					if(!possibleAlternative.isClean() && possibleAlternative.getStartLocation() == location){
 						if(possibleAlternative != node){ // List cycle fix.
 							// Encountered self recursive epsilon cycle; update the prefixes.
-							updatePrefixes(possibleAlternative, node, result);
+							updatePrefixes(possibleAlternative, node);
 						}
 					}
 				}
@@ -115,7 +115,7 @@ public class SGLL implements IGLL{
 		}
 		
 		next.setStartLocation(location);
-		next.updateNode(node, result);
+		next.updateNode(node);
 		
 		if(!next.isReducable()){ // Is non-terminal or list.
 			ContainerNode resultStore = resultStoreCache.get(next.getIdentifier(), location);
@@ -129,9 +129,10 @@ public class SGLL implements IGLL{
 		stacksToExpand.add(next);
 	}
 	
-	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
+	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
+		AbstractNode result = node.getResult();
 		
 		// Update results (if necessary).
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
