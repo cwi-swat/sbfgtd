@@ -13,25 +13,24 @@ A ::= a
 */
 public class AmbiguousNonTerminalPlusList1 extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
 	private final static AbstractStackNode LIST2 = new ListStackNode(2, NONTERMINAL_A0, "A+", true);
-	private final static AbstractStackNode LIST3 = new ListStackNode(3, NONTERMINAL_A1, "A+", true);
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a6 = new LiteralStackNode(6, new char[]{'a'});
 	
 	public AmbiguousNonTerminalPlusList1(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(LITERAL_a4, LIST2);
+		expect(LITERAL_a3, LIST1);
 		
-		expect(LIST3, LITERAL_a5);
+		expect(LIST2, LITERAL_a4);
 	}
 	
 	public void A(){
-		expect(LITERAL_a6);
+		expect(LITERAL_a5);
 	}
 	
 	public static void main(String[] args){
