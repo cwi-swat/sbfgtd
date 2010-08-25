@@ -124,14 +124,86 @@ public abstract class AbstractStackNode{
 		edges.add(edge);
 	}
 	
-	public void addEdges(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd){
-		if(edgesMap.size() == 0){
+	public void updateNode(AbstractStackNode predecessor, AbstractNode result){
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
+		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
+		
+		int edgesMapSize = edgesMap.size();
+		if(edgesMapSize == 0){
 			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMapToAdd);
+
+			if(prefixesMap == null){
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
+			}
+			
+			if(prefixesMapToAdd == null){
+				addPrefix(new Link(null, result), predecessor.getStartLocation());
+			}else{
+				int nrOfPrefixes = edgesMapToAdd.size();
+				for(int i = nrOfPrefixes - 1; i >= 0; --i){
+					ArrayList<Link> prefixes = prefixesMap[i];
+					if(prefixes == null){
+						prefixes = new ArrayList<Link>(1);
+						prefixesMap[i] = prefixes;
+					}
+					
+					prefixes.add(new Link(prefixesMapToAdd[i], result));
+				}
+			}
 		}else if(edgesMap != edgesMapToAdd){
-			for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
-				int startLocation = edgesMapToAdd.getKey(i);
-				if(edgesMap.findValue(startLocation) == null){
-					edgesMap.add(startLocation, edgesMapToAdd.getValue(i));
+			int possibleMaxSize = edgesMapSize + edgesMapToAdd.size();
+			if(prefixesMap == null){
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize];
+			}else{
+				if(possibleMaxSize > prefixesMap.length){
+					ArrayList<Link>[] oldPrefixesMap = prefixesMap;
+					prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize];
+					System.arraycopy(oldPrefixesMap, 0, prefixesMap, 0, edgesMapSize);
+				}
+			}
+			
+			if(prefixesMapToAdd == null){
+				int startLocation = edgesMapToAdd.getKey(0);
+				int index = edgesMap.findKey(startLocation);
+				if(index == -1){
+					edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
+				}
+				
+				addPrefix(new Link(null, result), predecessor.getStartLocation());
+			}else{
+				for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
+					int startLocation = edgesMapToAdd.getKey(i);
+					int index = edgesMap.findKey(startLocation);
+					if(index == -1){
+						edgesMap.add(startLocation, edgesMapToAdd.getValue(i));
+					}
+					
+					index = edgesMap.size() - 1;
+					ArrayList<Link> prefixes = prefixesMap[index];
+					if(prefixes == null){
+						prefixes = new ArrayList<Link>(1);
+						prefixesMap[index] = prefixes;
+					}
+					prefixes.add(new Link(prefixesMapToAdd[i], result));
+				}
+			}
+		}else{
+			if(prefixesMap == null){
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
+			}
+			
+			if(prefixesMapToAdd == null){
+				addPrefix(new Link(null, result), predecessor.getStartLocation());
+			}else{
+				int nrOfPrefixes = edgesMapToAdd.size();
+				for(int i = nrOfPrefixes - 1; i >= 0; --i){
+					ArrayList<Link> prefixes = prefixesMap[i];
+					if(prefixes == null){
+						prefixes = new ArrayList<Link>(1);
+						prefixesMap[i] = prefixes;
+					}
+					
+					prefixes.add(new Link(prefixesMapToAdd[i], result));
 				}
 			}
 		}
