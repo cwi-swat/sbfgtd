@@ -91,8 +91,6 @@ public class SGLL implements IGLL{
 	}
 	
 	private void updateNextNode(AbstractStackNode next, AbstractStackNode node){
-		AbstractNode result = node.getResult();
-		
 		for(int i = possiblySharedNextNodes.size() - 1; i >= 0; --i){
 			AbstractStackNode possibleAlternative = possiblySharedNextNodes.get(i);
 			if(possibleAlternative.isSimilar(next)){
@@ -267,8 +265,7 @@ public class SGLL implements IGLL{
 		for(int j = possiblySharedNextNodes.size() - 1; j >= 0; --j){
 			AbstractStackNode possiblySharedNode = possiblySharedNextNodes.get(j);
 			if(possiblySharedNode.isSimilar(node)){
-				possiblySharedNode.addEdge(stack);
-				possiblySharedNode.addPrefix(null, location);
+				possiblySharedNode.addEdgeWithPrefix(stack, null, location);
 				return true;
 			}
 		}
