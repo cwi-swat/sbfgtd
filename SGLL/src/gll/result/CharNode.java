@@ -18,6 +18,10 @@ public class CharNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean isNullable(){
+		return false;
+	}
+	
 	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		StringBuilder sb = new StringBuilder();
 		sb.append(production);

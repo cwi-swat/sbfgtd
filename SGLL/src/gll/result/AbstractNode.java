@@ -9,9 +9,7 @@ public abstract class AbstractNode{
 		super();
 	}
 	
-	public boolean isContainer(){
-		return (this instanceof ContainerNode);
-	}
+	protected abstract boolean isNullable();
 	
 	public abstract void addAlternative(Link children);
 	

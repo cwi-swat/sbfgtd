@@ -56,7 +56,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IReduca
 		return new EpsilonStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	

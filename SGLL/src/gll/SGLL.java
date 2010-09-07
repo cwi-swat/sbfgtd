@@ -2,6 +2,7 @@ package gll;
 
 import gll.result.AbstractNode;
 import gll.result.ContainerNode;
+import gll.result.ListContainerNode;
 import gll.result.struct.Link;
 import gll.stack.AbstractStackNode;
 import gll.stack.NonTerminalStackNode;
@@ -29,7 +30,7 @@ public class SGLL implements IGLL{
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
 	
-	private final ObjectIntegerKeyedHashMap<String, ContainerNode> resultStoreCache;
+	private final ObjectIntegerKeyedHashMap<String, AbstractNode> resultStoreCache;
 	
 	private int previousLocation;
 	private int location;
@@ -54,7 +55,7 @@ public class SGLL implements IGLL{
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
 		
-		resultStoreCache = new ObjectIntegerKeyedHashMap<String, ContainerNode>();
+		resultStoreCache = new ObjectIntegerKeyedHashMap<String, AbstractNode>();
 		
 		previousLocation = -1;
 		location = 0;
@@ -114,7 +115,7 @@ public class SGLL implements IGLL{
 			next.updateNode(node);
 			
 			if(!next.isReducable()){ // Is non-terminal or list.
-				ContainerNode resultStore = resultStoreCache.get(next.getIdentifier(), location);
+				AbstractNode resultStore = resultStoreCache.get(next.getIdentifier(), location);
 				if(resultStore != null){ // Is nullable, add the known results.
 					next.setResultStore(resultStore);
 					stacksWithNonTerminalsToReduce.put(next);
@@ -141,7 +142,7 @@ public class SGLL implements IGLL{
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
 			Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, startLocation);
 			edgePrefixes.add(prefix);
-			ContainerNode resultStore = edge.getResultStore();
+			AbstractNode resultStore = edge.getResultStore();
 			resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
 		}
 	}
@@ -158,12 +159,12 @@ public class SGLL implements IGLL{
 			AbstractStackNode edge = edgeList.get(0);
 			String identifier = edge.getIdentifier();
 			String nodeName = edge.getName();
-			ContainerNode resultStore = resultStoreCache.get(identifier, startLocation);
+			AbstractNode resultStore = resultStoreCache.get(identifier, startLocation);
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
 			if(resultStore != null){
 				resultStore.addAlternative(resultLink);
 			}else{
-				resultStore = new ContainerNode(nodeName, edge.isList());
+				resultStore = (!edge.isList()) ? new ContainerNode(nodeName, startLocation == location) : new ListContainerNode(nodeName, startLocation == location);
 				resultStoreCache.unsafePut(identifier, startLocation, resultStore);
 				resultStore.addAlternative(resultLink);
 				

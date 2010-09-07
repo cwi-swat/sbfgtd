@@ -1,7 +1,6 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.ContainerNode;
 import gll.result.LiteralNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
@@ -69,11 +68,11 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		return new LiteralStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	
-	public ContainerNode getResultStore(){
+	public AbstractNode getResultStore(){
 		throw new UnsupportedOperationException();
 	}
 	

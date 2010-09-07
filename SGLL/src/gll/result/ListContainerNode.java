@@ -4,7 +4,7 @@ import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.IndexedStack;
 
-public class ContainerNode extends AbstractNode{
+public class ListContainerNode extends AbstractNode{
 	private final String name;
 	private Link firstAlternative;
 	private ArrayList<Link> alternatives;
@@ -13,7 +13,7 @@ public class ContainerNode extends AbstractNode{
 	
 	private String cachedResult;
 	
-	public ContainerNode(String name , boolean isNullable){
+	public ListContainerNode(String name, boolean isNullable){
 		super();
 		
 		this.name = name;
@@ -45,14 +45,25 @@ public class ContainerNode extends AbstractNode{
 			return;
 		}
 		
-		for(int i = prefixes.size() - 1; i >= 0; --i){
+		int nrOfPrefixes = prefixes.size();
+		
+		for(int i = nrOfPrefixes - 1; i >= 0; --i){
 			Link prefix = prefixes.get(i);
 			
-			int length = postFix.length;
-			String[] newPostFix = new String[length + 1];
-			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			newPostFix[0] = prefix.node.print(stack, depth, cycleMark);
-			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark);
+			if(prefix == null){
+				gatheredAlternatives.add(postFix);
+			}else{
+				AbstractNode childNode = prefix.node;
+				if(childNode.isNullable()){ // Possibly a cycle.
+					// TODO
+				}else{
+					int length = postFix.length;
+					String[] newPostFix = new String[length + 1];
+					System.arraycopy(postFix, 0, newPostFix, 1, length);
+					newPostFix[0] = childNode.print(stack, depth, cycleMark);
+					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark);
+				}
+			}
 		}
 	}
 	
