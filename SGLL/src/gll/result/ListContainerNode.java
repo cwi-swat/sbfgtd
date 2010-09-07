@@ -34,11 +34,21 @@ public class ListContainerNode extends AbstractNode{
 	}
 	
 	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
-		String result = child.node.print(stack, depth, cycleMark);
-		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark);
+		AbstractNode childNode = child.node;
+		String result = childNode.print(stack, depth, cycleMark);
+		
+		ArrayList<AbstractNode> blackList = new ArrayList<AbstractNode>();
+		if(childNode.isNullable()){
+			String cycle = gatherCycle(child, new String[]{result}, stack, depth, cycleMark, blackList);
+			if(cycle != null){
+				gatherProduction(child, new String[]{cycle}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+				return;
+			}
+		}
+		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, blackList);
 	}
 	
-	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -53,18 +63,82 @@ public class ListContainerNode extends AbstractNode{
 			if(prefix == null){
 				gatheredAlternatives.add(postFix);
 			}else{
-				AbstractNode childNode = prefix.node;
-				if(childNode.isNullable()){ // Possibly a cycle.
-					// TODO
-				}else{
+				AbstractNode prefixNode = prefix.node;
+				if(blackList.contains(prefixNode)){
+					continue;
+				}
+				
+				String result = prefixNode.print(stack, depth, cycleMark);
+				
+				if(prefixNode.isNullable()){ // Possibly a cycle.
+					String cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
+					if(cycle != null){
+						int length = postFix.length;
+						String[] newPostFix = new String[length + 1];
+						System.arraycopy(postFix, 0, newPostFix, 1, length);
+						newPostFix[0] = cycle;
+						
+						gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+						continue;
+					}
+				}
+				
+				int length = postFix.length;
+				String[] newPostFix = new String[length + 1];
+				System.arraycopy(postFix, 0, newPostFix, 1, length);
+				newPostFix[0] = result;
+				gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+			}
+		}
+	}
+	
+	private String gatherCycle(Link child, String[] postFix, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+		AbstractNode originNode = child.node;
+		
+		blackList.add(originNode);
+		
+		OUTER : do{
+			ArrayList<Link> prefixes = child.prefixes;
+			if(prefixes == null){
+				return null;
+			}
+			
+			int nrOfPrefixes = prefixes.size();
+			
+			for(int i = nrOfPrefixes - 1; i >= 0; --i){
+				Link prefix = prefixes.get(i);
+				AbstractNode prefixNode = prefix.node;
+				
+				if(prefixNode == originNode){
+					StringBuilder buffer = new StringBuilder();
+					buffer.append("repeat(");
+					buffer.append(postFix[0]);
+					for(int j = 1; j < postFix.length; ++j){
+						buffer.append(',');
+						buffer.append(postFix[j]);
+					}
+					buffer.append(')');
+					
+					return buffer.toString();
+				}
+				
+				if(prefixNode.isNullable()){
+					blackList.add(prefixNode);
+					
 					int length = postFix.length;
 					String[] newPostFix = new String[length + 1];
 					System.arraycopy(postFix, 0, newPostFix, 1, length);
-					newPostFix[0] = childNode.print(stack, depth, cycleMark);
-					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark);
+					newPostFix[0] = prefixNode.print(stack, depth, cycleMark);
+					
+					child = prefix;
+					postFix = newPostFix;
+					continue OUTER;
 				}
 			}
-		}
+			break;
+		}while(true);
+		
+		return null;
 	}
 	
 	private void printAlternative(String[] children, StringBuilder out){
