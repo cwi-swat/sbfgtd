@@ -1,7 +1,6 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
@@ -287,9 +286,9 @@ public abstract class AbstractStackNode{
 	public abstract AbstractStackNode[] getChildren();
 	
 	// Results.
-	public abstract void setResultStore(ContainerNode resultStore);
+	public abstract void setResultStore(AbstractNode resultStore);
 	
-	public abstract ContainerNode getResultStore();
+	public abstract AbstractNode getResultStore();
 	
 	public abstract AbstractNode getResult();
 }

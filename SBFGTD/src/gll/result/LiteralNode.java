@@ -16,6 +16,10 @@ public class LiteralNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean isNullable(){
+		return false;
+	}
+	
 	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		return new String(content);
 	}

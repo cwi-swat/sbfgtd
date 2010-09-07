@@ -89,7 +89,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		return new CharStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	
