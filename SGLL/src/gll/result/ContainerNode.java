@@ -10,14 +10,16 @@ public class ContainerNode extends AbstractNode{
 	private ArrayList<Link> alternatives;
 	
 	private final boolean isNullable;
+	private final boolean isSeparator;
 	
 	private String cachedResult;
 	
-	public ContainerNode(String name , boolean isNullable){
+	public ContainerNode(String name , boolean isNullable, boolean isSeparator){
 		super();
 		
 		this.name = name;
 		this.isNullable = isNullable;
+		this.isSeparator = isSeparator;
 	}
 	
 	public void addAlternative(Link children){
@@ -29,8 +31,12 @@ public class ContainerNode extends AbstractNode{
 		}
 	}
 	
-	public boolean isNullable(){
+	protected boolean isNullable(){
 		return isNullable;
+	}
+	
+	protected boolean isSeparator(){
+		return isSeparator;
 	}
 	
 	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
@@ -67,7 +73,7 @@ public class ContainerNode extends AbstractNode{
 		out.append(')');
 	}
 	
-	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	protected String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		if(cachedResult != null && (depth <= cycleMark.depth)){
 			if(depth == cycleMark.depth){
 				cycleMark.reset();

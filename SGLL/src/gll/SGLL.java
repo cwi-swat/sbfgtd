@@ -164,7 +164,7 @@ public class SGLL implements IGLL{
 			if(resultStore != null){
 				resultStore.addAlternative(resultLink);
 			}else{
-				resultStore = (!edge.isList()) ? new ContainerNode(nodeName, startLocation == location) : new ListContainerNode(nodeName, startLocation == location);
+				resultStore = (!edge.isList()) ? new ContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
 				resultStoreCache.unsafePut(identifier, startLocation, resultStore);
 				resultStore.addAlternative(resultLink);
 				
