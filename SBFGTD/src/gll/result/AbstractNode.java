@@ -9,11 +9,13 @@ public abstract class AbstractNode{
 		super();
 	}
 	
-	protected abstract boolean isNullable();
-	
 	public abstract void addAlternative(Link children);
 	
-	public abstract String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark);
+	protected abstract boolean isNullable();
+	
+	protected abstract boolean isSeparator();
+	
+	protected abstract String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark);
 	
 	protected static class CycleMark{
 		public int depth = Integer.MAX_VALUE;

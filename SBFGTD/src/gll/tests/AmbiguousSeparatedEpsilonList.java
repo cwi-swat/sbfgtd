@@ -41,7 +41,7 @@ public class AmbiguousSeparatedEpsilonList extends SGLL{
 	}
 	
 	public static void main(String[] args){
-		AmbiguousSeparatedEpsilonList asel = new AmbiguousSeparatedEpsilonList("aa".toCharArray());
+		AmbiguousSeparatedEpsilonList asel = new AmbiguousSeparatedEpsilonList("a".toCharArray());
 		AbstractNode result = asel.parse("S");
 		System.out.println(result);
 		

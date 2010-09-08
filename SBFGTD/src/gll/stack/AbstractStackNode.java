@@ -16,6 +16,8 @@ public abstract class AbstractStackNode{
 	
 	private boolean isEndNode;
 	
+	private boolean isSeparator;
+	
 	public AbstractStackNode(int id){
 		super();
 		
@@ -35,6 +37,7 @@ public abstract class AbstractStackNode{
 		edgesMap = original.edgesMap;
 		
 		this.isEndNode = original.isEndNode;
+		this.isSeparator = original.isSeparator;
 	}
 	
 	protected AbstractStackNode(AbstractStackNode original, ArrayList<Link>[] prefixes){
@@ -50,6 +53,7 @@ public abstract class AbstractStackNode{
 		startLocation = original.startLocation;
 
 		isEndNode = original.isEndNode;
+		this.isSeparator = original.isSeparator;
 	}
 	
 	// General.
@@ -84,6 +88,14 @@ public abstract class AbstractStackNode{
 	public abstract String getMethodName();
 	
 	public abstract boolean reduce(char[] input);
+	
+	public void markAsSeparator(){
+		isSeparator = true;
+	}
+	
+	public boolean isSeparator(){
+		return isSeparator;
+	}
 	
 	// Sharing.
 	public abstract boolean isClean();

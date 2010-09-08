@@ -14,11 +14,15 @@ public class EpsilonNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isNullable(){
-		return true;
+	protected boolean isNullable(){
+		return false;
 	}
 	
-	public String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	protected boolean isSeparator(){
+		return false;
+	}
+	
+	protected String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		return EPSILON_STRING;
 	}
 	
