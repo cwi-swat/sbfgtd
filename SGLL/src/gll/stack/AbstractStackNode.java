@@ -69,6 +69,14 @@ public abstract class AbstractStackNode{
 		return isEndNode;
 	}
 	
+	public void markAsSeparator(){
+		isSeparator = true;
+	}
+	
+	public boolean isSeparator(){
+		return isSeparator;
+	}
+	
 	public final boolean isReducable(){
 		return (this instanceof IReducableStackNode);
 	}
@@ -88,14 +96,6 @@ public abstract class AbstractStackNode{
 	public abstract String getMethodName();
 	
 	public abstract boolean reduce(char[] input);
-	
-	public void markAsSeparator(){
-		isSeparator = true;
-	}
-	
-	public boolean isSeparator(){
-		return isSeparator;
-	}
 	
 	// Sharing.
 	public abstract boolean isClean();
