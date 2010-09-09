@@ -45,11 +45,26 @@ public class ListContainerNode extends AbstractNode{
 		
 		ArrayList<AbstractNode> blackList = new ArrayList<AbstractNode>();
 		if(childNode.isNullable()){
-			String cycle = gatherCycle(child, new String[]{result}, stack, depth, cycleMark, blackList);
+			String[] cycle = gatherCycle(child, new String[]{result}, stack, depth, cycleMark, blackList);
 			if(cycle != null){
-				gatherProduction(child, new String[]{cycle}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+				StringBuilder buffer = new StringBuilder();
+				buffer.append("repeat(");
+				buffer.append(cycle[0]);
+				int cycleLength = cycle.length;
+				for(int j = 1; j < cycleLength; ++j){
+					buffer.append(',');
+					buffer.append(cycle[j]);
+				}
+				buffer.append(')');
+				
+				if(cycleLength == 1){
+					gatherProduction(child, new String[]{buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+				}else{
+					gatherProduction(child, new String[]{result, buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+				}
 				return;
 			}
+			blackList.dirtyClear();
 		}
 		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, blackList);
 	}
@@ -77,16 +92,37 @@ public class ListContainerNode extends AbstractNode{
 				String result = prefixNode.print(stack, depth, cycleMark);
 				
 				if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
-					String cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
+					int blackListIndex = blackList.size();
+					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 					if(cycle != null){
+						StringBuilder buffer = new StringBuilder();
+						buffer.append("repeat(");
+						buffer.append(cycle[0]);
+						int cycleLength = cycle.length;
+						for(int j = 1; j < cycleLength; ++j){
+							buffer.append(',');
+							buffer.append(cycle[j]);
+						}
+						buffer.append(')');
+
 						int length = postFix.length;
-						String[] newPostFix = new String[length + 1];
-						System.arraycopy(postFix, 0, newPostFix, 1, length);
-						newPostFix[0] = cycle;
+						String[] newPostFix;
+						if(cycleLength == 1){
+							newPostFix = new String[length + 1];
+							System.arraycopy(postFix, 0, newPostFix, 1, length);
+							newPostFix[0] = buffer.toString();
+						}else{
+							newPostFix = new String[length + 2];
+							System.arraycopy(postFix, 0, newPostFix, 2, length);
+							newPostFix[1] = buffer.toString();
+							newPostFix[0] = result;
+						}
 						
 						gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+						blackList.resetTo(blackListIndex);
 						continue;
 					}
+					blackList.resetTo(blackListIndex);
 				}
 				
 				int length = postFix.length;
@@ -98,7 +134,7 @@ public class ListContainerNode extends AbstractNode{
 		}
 	}
 	
-	private String gatherCycle(Link child, String[] postFix, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+	private String[] gatherCycle(Link child, String[] postFix, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
 		AbstractNode originNode = child.node;
 		
 		blackList.add(originNode);
@@ -116,19 +152,12 @@ public class ListContainerNode extends AbstractNode{
 				AbstractNode prefixNode = prefix.node;
 				
 				if(prefixNode == originNode){
-					StringBuilder buffer = new StringBuilder();
-					buffer.append("repeat(");
-					buffer.append(postFix[0]);
-					for(int j = 1; j < postFix.length; ++j){
-						buffer.append(',');
-						buffer.append(postFix[j]);
-					}
-					buffer.append(')');
-					
-					return buffer.toString();
+					return postFix;
 				}
 				
 				if(prefixNode.isNullable()){
+					//blackList.add(prefixNode);
+					
 					int length = postFix.length;
 					String[] newPostFix = new String[length + 1];
 					System.arraycopy(postFix, 0, newPostFix, 1, length);
