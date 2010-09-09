@@ -152,8 +152,6 @@ public class ListContainerNode extends AbstractNode{
 				}
 				
 				if(prefixNode.isNullable()){
-					//blackList.add(prefixNode);
-					
 					int length = postFix.length;
 					String[] newPostFix = new String[length + 1];
 					System.arraycopy(postFix, 0, newPostFix, 1, length);
