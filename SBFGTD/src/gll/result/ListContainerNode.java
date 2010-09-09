@@ -64,7 +64,6 @@ public class ListContainerNode extends AbstractNode{
 				}
 				return;
 			}
-			blackList.dirtyClear();
 		}
 		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, blackList);
 	}
@@ -92,7 +91,6 @@ public class ListContainerNode extends AbstractNode{
 				String result = prefixNode.print(stack, depth, cycleMark);
 				
 				if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
-					int blackListIndex = blackList.size();
 					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 					if(cycle != null){
 						StringBuilder buffer = new StringBuilder();
@@ -119,10 +117,8 @@ public class ListContainerNode extends AbstractNode{
 						}
 						
 						gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
-						blackList.resetTo(blackListIndex);
 						continue;
 					}
-					blackList.resetTo(blackListIndex);
 				}
 				
 				int length = postFix.length;
