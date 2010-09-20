@@ -114,6 +114,8 @@ public class ListContainerNode extends AbstractNode{
 	}
 	
 	private void gatherAmbiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+		ArrayList<String[]> gatheredPrefixes = new ArrayList<String[]>();
+		
 		for(int i = prefixes.size() - 1; i >= 0; --i){
 			Link prefix = prefixes.get(i);
 			
@@ -130,19 +132,68 @@ public class ListContainerNode extends AbstractNode{
 				if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
 					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 					if(cycle != null){
-						String[] newPostFix = buildCycle(cycle, postFix, result);
+						String[] newPostFix = buildCycle(cycle, new String[]{}, result);
 						
-						gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+						gatherProduction(prefix, newPostFix, gatheredPrefixes, stack, depth, cycleMark, blackList);
 						continue;
 					}
 				}
 				
-				int length = postFix.length;
-				String[] newPostFix = new String[length + 1];
-				System.arraycopy(postFix, 0, newPostFix, 1, length);
-				newPostFix[0] = result;
-				gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+				gatherProduction(prefix, new String[]{result}, gatheredPrefixes, stack, depth, cycleMark, blackList);
 			}
+		}
+		
+		int nrOfGatheredPrefixes = gatheredPrefixes.size();
+		if(nrOfGatheredPrefixes ==  0) return;
+		
+		if(nrOfGatheredPrefixes == 1){
+			String[] prefixAlternative = gatheredPrefixes.get(0);
+			
+			int length = postFix.length;
+			int prefixLength = prefixAlternative.length;
+			String[] newPostFix = new String[length + prefixLength];
+			System.arraycopy(postFix, 0, newPostFix, prefixLength, length);
+			System.arraycopy(prefixAlternative, 0, newPostFix, 0, prefixLength);
+			
+			gatheredAlternatives.add(newPostFix);
+		}else{
+			StringBuilder sb = new StringBuilder();
+			sb.append('[');
+			
+			String[] prefixAlternative = gatheredPrefixes.get(0);
+			
+			sb.append(name);
+			sb.append('(');
+			sb.append(prefixAlternative[0]);
+			for(int j = 1; j < prefixAlternative.length; ++j){
+				sb.append(',');
+				sb.append(prefixAlternative[j]);
+			}
+			sb.append(')');
+			
+			for(int i = nrOfGatheredPrefixes - 1; i >= 1; --i){
+				sb.append(',');
+				
+				prefixAlternative = gatheredPrefixes.get(i);
+				
+				sb.append(name);
+				sb.append('(');
+				sb.append(prefixAlternative[0]);
+				for(int j = 1; j < prefixAlternative.length; ++j){
+					sb.append(',');
+					sb.append(prefixAlternative[j]);
+				}
+				sb.append(')');
+			}
+	
+			sb.append(']');
+			
+			int length = postFix.length;
+			String[] newPostFix = new String[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = sb.toString();
+			
+			gatheredAlternatives.add(newPostFix);
 		}
 	}
 	
