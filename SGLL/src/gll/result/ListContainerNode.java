@@ -75,9 +75,46 @@ public class ListContainerNode extends AbstractNode{
 			return;
 		}
 		
-		int nrOfPrefixes = prefixes.size();
+		if(prefixes.size() == 1){
+			gatherUnambiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+		}else{
+			gatherAmbiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+		}
+	}
+	
+	private void gatherUnambiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+		Link prefix = prefixes.get(0);
 		
-		for(int i = nrOfPrefixes - 1; i >= 0; --i){
+		if(prefix == null){
+			gatheredAlternatives.add(postFix);
+		}else{
+			AbstractNode prefixNode = prefix.node;
+			if(blackList.contains(prefixNode)){
+				return;
+			}
+			
+			String result = prefixNode.print(stack, depth, cycleMark);
+			
+			if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
+				String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
+				if(cycle != null){
+					String[] newPostFix = buildCycle(cycle, postFix, result);
+					
+					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+					return;
+				}
+			}
+			
+			int length = postFix.length;
+			String[] newPostFix = new String[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = result;
+			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+		}
+	}
+	
+	private void gatherAmbiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+		for(int i = prefixes.size() - 1; i >= 0; --i){
 			Link prefix = prefixes.get(i);
 			
 			if(prefix == null){
@@ -93,28 +130,7 @@ public class ListContainerNode extends AbstractNode{
 				if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
 					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 					if(cycle != null){
-						StringBuilder buffer = new StringBuilder();
-						buffer.append("repeat(");
-						buffer.append(cycle[0]);
-						int cycleLength = cycle.length;
-						for(int j = 1; j < cycleLength; ++j){
-							buffer.append(',');
-							buffer.append(cycle[j]);
-						}
-						buffer.append(')');
-
-						int length = postFix.length;
-						String[] newPostFix;
-						if(cycleLength == 1){
-							newPostFix = new String[length + 1];
-							System.arraycopy(postFix, 0, newPostFix, 1, length);
-							newPostFix[0] = buffer.toString();
-						}else{
-							newPostFix = new String[length + 2];
-							System.arraycopy(postFix, 0, newPostFix, 2, length);
-							newPostFix[1] = buffer.toString();
-							newPostFix[0] = result;
-						}
+						String[] newPostFix = buildCycle(cycle, postFix, result);
 						
 						gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
 						continue;
@@ -166,6 +182,33 @@ public class ListContainerNode extends AbstractNode{
 		}while(true);
 		
 		return null;
+	}
+	
+	private String[] buildCycle(String[] cycle, String[] postFix, String result){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("repeat(");
+		buffer.append(cycle[0]);
+		int cycleLength = cycle.length;
+		for(int j = 1; j < cycleLength; ++j){
+			buffer.append(',');
+			buffer.append(cycle[j]);
+		}
+		buffer.append(')');
+
+		int length = postFix.length;
+		String[] newPostFix;
+		if(cycleLength == 1){
+			newPostFix = new String[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = buffer.toString();
+		}else{
+			newPostFix = new String[length + 2];
+			System.arraycopy(postFix, 0, newPostFix, 2, length);
+			newPostFix[1] = buffer.toString();
+			newPostFix[0] = result;
+		}
+		
+		return newPostFix;
 	}
 	
 	private void printAlternative(String[] children, StringBuilder out){
