@@ -2,6 +2,7 @@ package gll.result;
 
 import gll.result.struct.Link;
 import gll.util.ArrayList;
+import gll.util.HashMap;
 import gll.util.IndexedStack;
 
 public class ListContainerNode extends AbstractNode{
@@ -39,7 +40,7 @@ public class ListContainerNode extends AbstractNode{
 		return isSeparator;
 	}
 	
-	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, HashMap<ArrayList<Link>, String> sharedPrefixCache){
 		AbstractNode childNode = child.node;
 		String result = childNode.print(stack, depth, cycleMark);
 		
@@ -58,17 +59,17 @@ public class ListContainerNode extends AbstractNode{
 				buffer.append(')');
 				
 				if(cycleLength == 1){
-					gatherProduction(child, new String[]{buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+					gatherProduction(child, new String[]{buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 				}else{
-					gatherProduction(child, new String[]{result, buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+					gatherProduction(child, new String[]{result, buffer.toString()}, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 				}
 				return;
 			}
 		}
-		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, blackList);
+		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 	}
 	
-	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);
@@ -76,13 +77,13 @@ public class ListContainerNode extends AbstractNode{
 		}
 		
 		if(prefixes.size() == 1){
-			gatherUnambiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+			gatherUnambiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 		}else{
-			gatherAmbiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+			gatherAmbiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 		}
 	}
 	
-	private void gatherUnambiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+	private void gatherUnambiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
 		Link prefix = prefixes.get(0);
 		
 		if(prefix == null){
@@ -100,7 +101,7 @@ public class ListContainerNode extends AbstractNode{
 				if(cycle != null){
 					String[] newPostFix = buildCycle(cycle, postFix, result);
 					
-					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 					return;
 				}
 			}
@@ -109,11 +110,22 @@ public class ListContainerNode extends AbstractNode{
 			String[] newPostFix = new String[length + 1];
 			System.arraycopy(postFix, 0, newPostFix, 1, length);
 			newPostFix[0] = result;
-			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList);
+			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
 		}
 	}
 	
-	private void gatherAmbiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+	private void gatherAmbiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
+		String prefixResult = sharedPrefixCache.get(prefixes);
+		if(prefixResult != null){
+			int length = postFix.length;
+			String[] newPostFix = new String[length + 1];
+			System.arraycopy(postFix, 0, newPostFix, 1, length);
+			newPostFix[0] = prefixResult;
+			
+			gatheredAlternatives.add(newPostFix);
+			return;
+		}
+		
 		ArrayList<String[]> gatheredPrefixes = new ArrayList<String[]>();
 		
 		for(int i = prefixes.size() - 1; i >= 0; --i){
@@ -134,12 +146,12 @@ public class ListContainerNode extends AbstractNode{
 					if(cycle != null){
 						String[] newPostFix = buildCycle(cycle, new String[]{}, result);
 						
-						gatherProduction(prefix, newPostFix, gatheredPrefixes, stack, depth, cycleMark, blackList);
+						gatherProduction(prefix, newPostFix, gatheredPrefixes, stack, depth, cycleMark, blackList, sharedPrefixCache);
 						continue;
 					}
 				}
 				
-				gatherProduction(prefix, new String[]{result}, gatheredPrefixes, stack, depth, cycleMark, blackList);
+				gatherProduction(prefix, new String[]{result}, gatheredPrefixes, stack, depth, cycleMark, blackList, sharedPrefixCache);
 			}
 		}
 		
@@ -188,10 +200,13 @@ public class ListContainerNode extends AbstractNode{
 	
 			sb.append(']');
 			
+			prefixResult = sb.toString();
+			sharedPrefixCache.put(prefixes, prefixResult);
+			
 			int length = postFix.length;
 			String[] newPostFix = new String[length + 1];
 			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			newPostFix[0] = sb.toString();
+			newPostFix[0] = prefixResult;
 			
 			gatheredAlternatives.add(newPostFix);
 		}
@@ -301,11 +316,12 @@ public class ListContainerNode extends AbstractNode{
 		stack.push(this, depth); // Push
 		
 		// Gather
+		HashMap<ArrayList<Link>, String> sharedPrefixCache = new HashMap<ArrayList<Link>, String>();
 		ArrayList<String[]> gatheredAlternatives = new ArrayList<String[]>();
-		gatherAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark);
+		gatherAlternatives(firstAlternative, gatheredAlternatives, stack, childDepth, cycleMark, sharedPrefixCache);
 		if(alternatives != null){
 			for(int i = alternatives.size() - 1; i >= 0; --i){
-				gatherAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark);
+				gatherAlternatives(alternatives.get(i), gatheredAlternatives, stack, childDepth, cycleMark, sharedPrefixCache);
 			}
 		}
 		
