@@ -3,7 +3,7 @@ package gll.result;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
-public abstract class ContainerNode extends AbstractNode{
+public abstract class AbstractContainerNode extends AbstractNode{
 	protected final String name;
 	protected Link firstAlternative;
 	protected ArrayList<Link> alternatives;
@@ -11,7 +11,7 @@ public abstract class ContainerNode extends AbstractNode{
 	protected final boolean isNullable;
 	protected final boolean isSeparator;
 	
-	public ContainerNode(String name, boolean isNullable, boolean isSeparator){
+	public AbstractContainerNode(String name, boolean isNullable, boolean isSeparator){
 		super();
 		
 		this.name = name;

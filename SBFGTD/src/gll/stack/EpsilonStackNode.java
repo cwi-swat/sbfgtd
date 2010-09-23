@@ -1,7 +1,7 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.ContainerNode;
+import gll.result.AbstractContainerNode;
 import gll.result.EpsilonNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
@@ -56,11 +56,11 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 		return new EpsilonStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractContainerNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	
-	public ContainerNode getResultStore(){
+	public AbstractContainerNode getResultStore(){
 		throw new UnsupportedOperationException();
 	}
 	
