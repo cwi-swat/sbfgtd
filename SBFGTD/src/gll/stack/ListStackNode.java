@@ -2,6 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
@@ -11,7 +12,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	private final AbstractStackNode child;
 	private final boolean isPlusList;
 	
-	private AbstractNode result;
+	private ContainerNode result;
 	
 	public ListStackNode(int id, AbstractStackNode child, String nodeName, boolean isPlusList){
 		super(id);
@@ -72,11 +73,11 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		return new ListStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		result = resultStore;
 	}
 	
-	public AbstractNode getResultStore(){
+	public ContainerNode getResultStore(){
 		return result;
 	}
 	

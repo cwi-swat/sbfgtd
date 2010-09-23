@@ -56,7 +56,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 		return new EpsilonStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	

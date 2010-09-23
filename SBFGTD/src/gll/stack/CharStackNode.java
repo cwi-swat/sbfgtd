@@ -89,7 +89,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		return new CharStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	

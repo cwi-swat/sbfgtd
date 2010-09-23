@@ -94,7 +94,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return new CaseInsensitiveLiteralStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	
