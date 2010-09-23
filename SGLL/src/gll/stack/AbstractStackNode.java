@@ -77,8 +77,8 @@ public abstract class AbstractStackNode{
 		return isSeparator;
 	}
 	
-	public final boolean isReducable(){
-		return (this instanceof IReducableStackNode);
+	public final boolean isMatchable(){
+		return (this instanceof IMatchableStackNode);
 	}
 	
 	public final boolean isEpsilon(){
@@ -95,7 +95,7 @@ public abstract class AbstractStackNode{
 	
 	public abstract String getMethodName();
 	
-	public abstract boolean reduce(char[] input);
+	public abstract boolean match(char[] input);
 	
 	// Sharing.
 	public abstract boolean isClean();

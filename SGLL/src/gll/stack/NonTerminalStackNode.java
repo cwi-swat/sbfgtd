@@ -39,7 +39,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return nonTerminal;
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	

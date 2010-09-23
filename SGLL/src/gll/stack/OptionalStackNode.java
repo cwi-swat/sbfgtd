@@ -52,7 +52,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	

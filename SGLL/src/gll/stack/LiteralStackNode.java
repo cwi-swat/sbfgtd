@@ -5,7 +5,7 @@ import gll.result.LiteralNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
-public final class LiteralStackNode extends AbstractStackNode implements IReducableStackNode{
+public final class LiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[] literal;
 	
 	private final LiteralNode result;
@@ -45,7 +45,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IReduca
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		for(int i = literal.length - 1; i >= 0; --i){
 			if(literal[i] != input[startLocation + i]) return false; // Did not match.
 		}
