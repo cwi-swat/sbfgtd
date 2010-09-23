@@ -52,7 +52,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	

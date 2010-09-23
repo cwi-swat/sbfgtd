@@ -6,7 +6,7 @@ import gll.result.LiteralNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
-public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IReducableStackNode{
+public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ciLiteral;
 	
 	private LiteralNode result;
@@ -59,7 +59,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		int literalLength = ciLiteral.length;
 		char[] resultLiteral = new char[literalLength];
 		OUTER : for(int i = literalLength - 1; i >= 0; --i){

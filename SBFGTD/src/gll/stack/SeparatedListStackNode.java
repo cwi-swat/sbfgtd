@@ -56,7 +56,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		throw new UnsupportedOperationException();
 	}
 	

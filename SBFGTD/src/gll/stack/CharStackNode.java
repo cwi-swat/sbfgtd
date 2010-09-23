@@ -6,7 +6,7 @@ import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
-public final class CharStackNode extends AbstractStackNode implements IReducableStackNode{
+public final class CharStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ranges;
 	private final char[] characters;
 	
@@ -53,7 +53,7 @@ public final class CharStackNode extends AbstractStackNode implements IReducable
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean reduce(char[] input){
+	public boolean match(char[] input){
 		char next = input[startLocation];
 		for(int i = ranges.length - 1; i >= 0; --i){
 			char[] range = ranges[i];
