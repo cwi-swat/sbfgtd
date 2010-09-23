@@ -2,7 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.AbstractNode;
-import gll.result.ContainerNode;
+import gll.result.AbstractContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
@@ -11,7 +11,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	private final String nodeName;
 	
-	private ContainerNode result;
+	private AbstractContainerNode result;
 	
 	public OptionalStackNode(int id, AbstractStackNode optional, String nodeName){
 		super(id);
@@ -73,11 +73,11 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		return new OptionalStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractContainerNode resultStore){
 		result = resultStore;
 	}
 	
-	public ContainerNode getResultStore(){
+	public AbstractContainerNode getResultStore(){
 		return result;
 	}
 	

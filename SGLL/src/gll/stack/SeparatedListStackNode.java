@@ -2,7 +2,7 @@ package gll.stack;
 
 import gll.IGLL;
 import gll.result.AbstractNode;
-import gll.result.ContainerNode;
+import gll.result.AbstractContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
@@ -13,7 +13,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	private final AbstractStackNode[] separators;
 	private final boolean isPlusList;
 	
-	private ContainerNode result;
+	private AbstractContainerNode result;
 	
 	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
 		super(id);
@@ -77,11 +77,11 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(ContainerNode resultStore){
+	public void setResultStore(AbstractContainerNode resultStore){
 		result = resultStore;
 	}
 	
-	public ContainerNode getResultStore(){
+	public AbstractContainerNode getResultStore(){
 		return result;
 	}
 	

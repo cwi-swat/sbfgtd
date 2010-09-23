@@ -5,7 +5,7 @@ import gll.util.ArrayList;
 import gll.util.HashMap;
 import gll.util.IndexedStack;
 
-public class ListContainerNode extends ContainerNode{
+public class ListContainerNode extends AbstractContainerNode{
 	private String cachedResult;
 	
 	public ListContainerNode(String name, boolean isNullable, boolean isSeparator){

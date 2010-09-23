@@ -4,7 +4,7 @@ import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.IndexedStack;
 
-public class SortContainerNode extends ContainerNode{
+public class SortContainerNode extends AbstractContainerNode{
 	private String cachedResult;
 	
 	public SortContainerNode(String name, boolean isNullable, boolean isSeparator){
