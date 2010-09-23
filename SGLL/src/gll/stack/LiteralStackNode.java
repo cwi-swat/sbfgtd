@@ -1,6 +1,7 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.LiteralNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
@@ -68,11 +69,11 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		return new LiteralStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractNode getResultStore(){
+	public ContainerNode getResultStore(){
 		throw new UnsupportedOperationException();
 	}
 	

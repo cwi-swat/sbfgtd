@@ -1,13 +1,14 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
+import gll.result.ContainerNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
 	
-	private AbstractNode result;
+	private ContainerNode result;
 	
 	public NonTerminalStackNode(int id, String nonTerminal){
 		super(id);
@@ -59,11 +60,11 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return new NonTerminalStackNode(this, prefixesMap);
 	}
 	
-	public void setResultStore(AbstractNode resultStore){
+	public void setResultStore(ContainerNode resultStore){
 		result = resultStore;
 	}
 	
-	public AbstractNode getResultStore(){
+	public ContainerNode getResultStore(){
 		return result;
 	}
 	

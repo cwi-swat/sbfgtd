@@ -5,39 +5,11 @@ import gll.util.ArrayList;
 import gll.util.HashMap;
 import gll.util.IndexedStack;
 
-public class ListContainerNode extends AbstractNode{
-	private final String name;
-	private Link firstAlternative;
-	private ArrayList<Link> alternatives;
-	
-	private final boolean isNullable;
-	private final boolean isSeparator;
-	
+public class ListContainerNode extends ContainerNode{
 	private String cachedResult;
 	
 	public ListContainerNode(String name, boolean isNullable, boolean isSeparator){
-		super();
-		
-		this.name = name;
-		this.isNullable = isNullable;
-		this.isSeparator = isSeparator;
-	}
-	
-	public void addAlternative(Link children){
-		if(firstAlternative == null){
-			firstAlternative = children;
-		}else{
-			if(alternatives == null) alternatives = new ArrayList<Link>(1);
-			alternatives.add(children);
-		}
-	}
-	
-	protected boolean isNullable(){
-		return isNullable;
-	}
-	
-	protected boolean isSeparator(){
-		return isSeparator;
+		super(name, isNullable, isSeparator);
 	}
 	
 	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, HashMap<ArrayList<Link>, String> sharedPrefixCache){
