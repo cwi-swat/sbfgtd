@@ -1,13 +1,14 @@
 package gll.stack;
 
-import gll.result.AbstractNode;
 import gll.result.AbstractContainerNode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
 	protected AbstractStackNode next;
+	protected ArrayList<AbstractStackNode> alternateNexts;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
 	
@@ -35,6 +36,7 @@ public abstract class AbstractStackNode{
 		id = original.id;
 
 		next = original.next;
+		alternateNexts = original.alternateNexts;
 		edgesMap = original.edgesMap;
 		
 		this.isEndNode = original.isEndNode;
@@ -47,6 +49,7 @@ public abstract class AbstractStackNode{
 		id = original.id;
 
 		next = original.next;
+		alternateNexts = original.alternateNexts;
 		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(original.edgesMap);
 		
 		prefixesMap = prefixes;
@@ -112,8 +115,19 @@ public abstract class AbstractStackNode{
 	}
 	
 	// Linking & prefixes.
-	public void addNext(AbstractStackNode next){
+	public void setNext(AbstractStackNode next){
 		this.next = next;
+	}
+	
+	public void addNext(AbstractStackNode next){
+		if(this.next == null){
+			this.next = next;
+		}else{
+			if(alternateNexts == null){
+				alternateNexts = new ArrayList<AbstractStackNode>();
+			}
+			alternateNexts.add(next);
+		}
 	}
 	
 	public boolean hasNext(){
@@ -122,6 +136,10 @@ public abstract class AbstractStackNode{
 	
 	public AbstractStackNode getNext(){
 		return next;
+	}
+	
+	public ArrayList<AbstractStackNode> getAlternateNexts(){
+		return alternateNexts;
 	}
 	
 	public void addEdge(AbstractStackNode edge){
