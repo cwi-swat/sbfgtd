@@ -26,7 +26,8 @@ public class SGLL implements IGLL{
 	private final RotatingQueue<AbstractStackNode> stacksWithNonTerminalsToReduce;
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
-	private final HashMap<String, AbstractStackNode[]> cachedExpects;
+	private final ArrayList<AbstractStackNode> sharedLastExpects;
+	private final HashMap<String, ArrayList<AbstractStackNode>> cachedExpects;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
 	
@@ -51,7 +52,8 @@ public class SGLL implements IGLL{
 		stacksWithNonTerminalsToReduce = new RotatingQueue<AbstractStackNode>();
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
-		cachedExpects = new HashMap<String, AbstractStackNode[]>();
+		sharedLastExpects = new ArrayList<AbstractStackNode>();
+		cachedExpects = new HashMap<String, ArrayList<AbstractStackNode>>();
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
 		
@@ -210,6 +212,13 @@ public class SGLL implements IGLL{
 		AbstractStackNode next;
 		if((next = node.getNext()) != null){
 			updateNextNode(next, node);
+			
+			ArrayList<AbstractStackNode> alternateNexts = node.getAlternateNexts();
+			if(alternateNexts != null){
+				for(int i = alternateNexts.size() - 1; i >= 0; --i){
+					updateNextNode(alternateNexts.get(i), node);
+				}
+			}
 		}
 	}
 	
@@ -283,28 +292,100 @@ public class SGLL implements IGLL{
 	}
 	
 	private void handleExpects(AbstractStackNode stackBeingWorkedOn){
-		int nrOfExpects = lastExpects.size();
-		AbstractStackNode[] expects = new AbstractStackNode[nrOfExpects];
+		sharedLastExpects.dirtyClear(); // I can introduce a hack here but won't ... for now ;-).
 		
-		for(int i = nrOfExpects - 1; i >= 0; --i){
+		int nrOfExpects = lastExpects.size();
+		ArrayList<AbstractStackNode> expects = new ArrayList<AbstractStackNode>(nrOfExpects);
+		
+		EXPECT : for(int i = nrOfExpects - 1; i >= 0; --i){
 			AbstractStackNode[] expectedNodes = lastExpects.get(i);
 			int numberOfNodes = expectedNodes.length;
+			
+			AbstractStackNode first = expectedNodes[0];
+			
+			// Handle prefix sharing.
+			for(int j = sharedLastExpects.size() - 1; j >= 0; --j){
+				AbstractStackNode sharedNode = sharedLastExpects.get(j);
+				
+				if(sharedNode.getId() == first.getId()){
+					int index = 1;
+					for(; index < numberOfNodes; ++index){
+						AbstractStackNode next = expectedNodes[index];
+						int nextId = next.getId();
+						AbstractStackNode nextShared = sharedNode.getNext();
+						if(nextShared == null){
+							AbstractStackNode last = expectedNodes[numberOfNodes - 1].getCleanCopy();
+							last.markAsEndNode();
+							
+							for(int k = numberOfNodes - 2; k >= index; --k){
+								AbstractStackNode current = expectedNodes[k].getCleanCopy();
+								current.setNext(last);
+								last = current;
+							}
+							
+							sharedNode.addNext(last);
+							continue EXPECT;
+						}
+						
+						if(nextShared.getId() == nextId){
+							sharedNode = nextShared;
+							continue;
+						}
+						
+						ArrayList<AbstractStackNode> alternateSharedNexts = sharedNode.getAlternateNexts();
+						if(alternateSharedNexts != null){
+							for(int k = alternateSharedNexts.size() - 1; k >= 0; --k){
+								nextShared = alternateSharedNexts.get(k);
+								if(nextShared.getId() == nextId){
+									sharedNode = nextShared;
+									continue;
+								}
+							}
+						}
+						
+						AbstractStackNode last = expectedNodes[numberOfNodes - 1].getCleanCopy();
+						last.markAsEndNode();
+						
+						for(int k = numberOfNodes - 2; k >= index; --k){
+							AbstractStackNode current = expectedNodes[k].getCleanCopy();
+							current.setNext(last);
+							last = current;
+						}
+						
+						sharedNode.addNext(last);
+						continue EXPECT;
+					}
+					
+					sharedNode.markAsEndNode();
+					
+					continue EXPECT;
+				}
+			}
 			
 			AbstractStackNode next = expectedNodes[numberOfNodes - 1].getCleanCopy();
 			next.markAsEndNode();
 			
-			for(int k = numberOfNodes - 2; k >= 0; --k){
-				AbstractStackNode current = expectedNodes[k].getCleanCopy();
-				current.addNext(next);
-				next = current;
+			if(numberOfNodes - 2 >= 0){
+				for(int j = numberOfNodes - 2; j >= 1; --j){
+					AbstractStackNode current = expectedNodes[j].getCleanCopy();
+					current.setNext(next);
+					next = current;
+				}
+				
+				first = first.getCleanCopy();
+				first.setNext(next);
+			}else{
+				first = next; // Chain rule.
 			}
 
-			next.setStartLocation(location);
-			next.addEdge(stackBeingWorkedOn);
+			first.setStartLocation(location);
+			first.addEdge(stackBeingWorkedOn);
 			
-			stacksToExpand.add(next);
+			sharedLastExpects.add(first);
 			
-			expects[i] = next;
+			stacksToExpand.add(first);
+			
+			expects.add(first);
 		}
 		
 		cachedExpects.put(stackBeingWorkedOn.getName(), expects);
@@ -317,10 +398,10 @@ public class SGLL implements IGLL{
 		}
 		
 		if(!node.isList()){
-			AbstractStackNode[] expects = cachedExpects.get(node.getName());
+			ArrayList<AbstractStackNode> expects = cachedExpects.get(node.getName());
 			if(expects != null){
-				for(int i = expects.length - 1; i >= 0; --i){
-					expects[i].addEdge(node);
+				for(int i = expects.size() - 1; i >= 0; --i){
+					expects.get(i).addEdge(node);
 				}
 			}else{
 				invokeExpects(node.getMethodName());

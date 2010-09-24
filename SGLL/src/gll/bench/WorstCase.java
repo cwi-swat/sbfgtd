@@ -12,8 +12,6 @@ public class WorstCase extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, "S");
 	private final static AbstractStackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, "S");
-	private final static AbstractStackNode NONTERMINAL_S3 = new NonTerminalStackNode(3, "S");
-	private final static AbstractStackNode NONTERMINAL_S4 = new NonTerminalStackNode(4, "S");
 	private final static AbstractStackNode TERMINAL_a5 = new LiteralStackNode(5, new char[]{'a'});
 	
 	public WorstCase(char[] input){
@@ -23,7 +21,7 @@ public class WorstCase extends SGLL{
 	public void S(){
 		expect(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
 		
-		expect(NONTERMINAL_S3, NONTERMINAL_S4);
+		expect(NONTERMINAL_S0, NONTERMINAL_S1);
 		
 		expect(TERMINAL_a5);
 	}
