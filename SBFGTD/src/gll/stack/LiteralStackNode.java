@@ -61,7 +61,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		return new LiteralStackNode(id, literal);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new LiteralStackNode(this);
 	}
 

@@ -65,7 +65,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		return new ListStackNode(id, child, nodeName, isPlusList);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new ListStackNode(this);
 	}
 

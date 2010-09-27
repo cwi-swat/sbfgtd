@@ -1,7 +1,7 @@
 package gll;
 
-import gll.result.AbstractNode;
 import gll.result.AbstractContainerNode;
+import gll.result.AbstractNode;
 import gll.result.ListContainerNode;
 import gll.result.SortContainerNode;
 import gll.result.struct.Link;
@@ -110,11 +110,11 @@ public class SGLL implements IGLL{
 			}
 		}else{
 			if(next.startLocationIsSet()){
-				next = next.getCleanCopyWithMark();
+				next = next.getCleanCopyWithoutPrefixes();
 			}
-			
-			next.setStartLocation(location);
+
 			next.updateNode(node);
+			next.setStartLocation(location);
 			
 			if(!next.isMatchable()){ // Is non-terminal or list.
 				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
@@ -148,11 +148,13 @@ public class SGLL implements IGLL{
 			}
 		}else{
 			if(next.startLocationIsSet()){
-				next = next.getCleanCopyWithMark();
+				next = next.getCleanCopyWithoutPrefixes();
+				next.updateNode(node);
+			}else{
+				next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			}
 			
 			next.setStartLocation(location);
-			next.updateNode(node);
 			
 			if(!next.isMatchable()){ // Is non-terminal or list.
 				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
@@ -253,7 +255,7 @@ public class SGLL implements IGLL{
 			
 			LinearIntegerKeyedMap<AbstractStackNode> alternateNexts = node.getAlternateNexts();
 			if(alternateNexts != null){
-				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = next.getEdges();
+				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateNexts.size() - 1; i >= 0; --i){

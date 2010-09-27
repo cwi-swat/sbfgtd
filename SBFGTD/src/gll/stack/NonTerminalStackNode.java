@@ -52,7 +52,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return new NonTerminalStackNode(id, nonTerminal);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new NonTerminalStackNode(this);
 	}
 

@@ -81,7 +81,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		return new CharStackNode(id, production, ranges, characters);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new CharStackNode(this);
 	}
 

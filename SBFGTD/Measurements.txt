@@ -6,16 +6,16 @@ Recognizer:
 ------------------------------------------
 Input chars	| Average Time	| Lowest Time
 ------------------------------------------
-50			|  ms			|  ms
-100			|  ms			|  ms
-150			|  ms		|  ms
-200			|  ms		|  ms
-250			|  ms		|  ms
-300			|  ms		|  ms
-350			|  ms		|  ms
-400			|  ms		|  ms
-450			|  ms		|  ms
-500			|  ms		|  ms
+50			| 0 ms			| 0 ms
+100			| 0 ms			| 0 ms
+150			| 50 ms			| 50 ms
+200			| 100 ms		| 100 ms
+250			| 230 ms		| 200 ms
+300			| 400 ms		| 400 ms
+350			| 681 ms		| 651 ms
+400			| 1011 ms		| 1002 ms
+450			| 1442 ms		| 1402 ms
+500			| 1963 ms		| 1953 ms
 
 
 Parser:
