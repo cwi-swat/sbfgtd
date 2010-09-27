@@ -45,6 +45,6 @@ public class AmbiguousSeparatedEpsilonList extends SGLL{
 		AbstractNode result = asel.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([(ASEP)+(A(a)),(ASEP)+(A(a),repeat(SEP(),A())),(ASEP)+(A(),repeat(SEP(),A()),SEP(),A(a)),(ASEP)+(A(),repeat(SEP(),A()),SEP(),A(a),repeat(SEP(),A()))]) <- good");
+		System.out.println("S([(ASEP)+([(ASEP)+(A(a)),(ASEP)+(A(),repeat(SEP(),A()),SEP(),A(a))],repeat(SEP(),A())),(ASEP)+(A(),repeat(SEP(),A()),SEP(),A(a)),(ASEP)+(A(a))]) <- good");
 	}
 }
