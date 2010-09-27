@@ -106,7 +106,7 @@ public abstract class AbstractStackNode{
 	
 	public abstract AbstractStackNode getCleanCopy();
 	
-	public abstract AbstractStackNode getCleanCopyWithMark();
+	public abstract AbstractStackNode getCleanCopyWithoutPrefixes();
 	
 	public abstract AbstractStackNode getCleanCopyWithPrefix();
 	
@@ -284,6 +284,11 @@ public abstract class AbstractStackNode{
 				}
 			}
 		}
+	}
+	
+	public void updatePrefixSharedNode(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+		this.edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMap);
+		this.prefixesMap = prefixesMap;
 	}
 	
 	public boolean hasEdges(){

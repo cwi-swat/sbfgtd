@@ -69,7 +69,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(id, child, separators, nodeName, isPlusList);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new SeparatedListStackNode(this);
 	}
 

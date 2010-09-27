@@ -86,7 +86,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return new CaseInsensitiveLiteralStackNode(id, ciLiteral);
 	}
 	
-	public AbstractStackNode getCleanCopyWithMark(){
+	public AbstractStackNode getCleanCopyWithoutPrefixes(){
 		return new CaseInsensitiveLiteralStackNode(this);
 	}
 
