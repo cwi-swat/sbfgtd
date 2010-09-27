@@ -294,16 +294,8 @@ public abstract class AbstractStackNode{
 		return edgesMap;
 	}
 	
-	public void setEdges(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap){ // Internal
-		this.edgesMap = edgesMap;
-	}
-	
 	public ArrayList<Link>[] getPrefixesMap(){
 		return prefixesMap;
-	}
-	
-	public void setPrefixesMap(ArrayList<Link>[] prefixesMap){ // Internal
-		this.prefixesMap = prefixesMap;
 	}
 	
 	// Location.
