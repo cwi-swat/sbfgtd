@@ -2,6 +2,7 @@ package gll.bench;
 
 import gll.SGLL;
 import gll.stack.AbstractStackNode;
+import gll.stack.ListStackNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 
@@ -100,12 +101,21 @@ public class NonLeftFactoredNonShared extends SGLL{
 	private final static AbstractStackNode LITERAL_29 = new LiteralStackNode(129, "#".toCharArray());
 	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, "1".toCharArray());
 	
+	private final static AbstractStackNode NONTERMINAL_A999 = new NonTerminalStackNode(999, "A");
+	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, NONTERMINAL_A999, "A+", true);
+	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, new char[]{'a'});
+	
 	private NonLeftFactoredNonShared(char[] input){
 		super(input);
 	}
 	
 	public void S(){
+		expect(LIST9999);
+	}
+	
+	public void A(){
 		expect(NONTERMINAL_E10000);
+		expect(LITERAL_a99999);
 	}
 	
 	public void E(){
@@ -147,11 +157,8 @@ public class NonLeftFactoredNonShared extends SGLL{
 	
 	private static char[] createInput(int size){
 		char[] input = new char[size];
-		input[0] = '1';
-		input[1] = '+';
-		for(int i = size - 1; i >= 2; --i){
-			input[i] = '1';
-			input[--i] = '+';
+		for(int i = size - 1; i >= 0; --i){
+			input[i] = 'a';
 		}
 		return input;
 	}
@@ -193,7 +200,7 @@ public class NonLeftFactoredNonShared extends SGLL{
 		}
 		
 		// The benchmarks.
-		for(int i = 501; i <= 1001; i += 500){
+		for(int i = 50000; i <= 200000; i += 50000){
 			input = createInput(i);
 			runTest(input);
 		}
