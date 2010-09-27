@@ -151,7 +151,7 @@ public class SGLL implements IGLL{
 				next = next.getCleanCopyWithoutPrefixes();
 				next.updateNode(node);
 			}else{
-				next.updatePrefixSharedNode(edgesMap, prefixesMap);
+				next.updatePrefixSharedNode(edgesMap, prefixesMap); // Prevent unnecessary overhead; share whenever possible.
 			}
 			
 			next.setStartLocation(location);
