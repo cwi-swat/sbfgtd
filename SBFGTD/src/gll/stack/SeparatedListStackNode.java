@@ -98,7 +98,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		AbstractStackNode from = listNode;
 		AbstractStackNode to = separators[0].getCleanCopy();
 		to.markAsSeparator();
-		AbstractStackNode firstSeparator = to;
 		from.setNext(to);
 		from = to;
 		for(int i = 1; i < separators.length; ++i){
@@ -108,8 +107,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 			from = to;
 		}
 		from.setNext(listNode);
-		
-		listNode.setNext(firstSeparator);
 		
 		if(isPlusList){
 			return new AbstractStackNode[]{listNode};
