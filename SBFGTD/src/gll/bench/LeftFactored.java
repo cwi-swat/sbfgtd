@@ -117,7 +117,7 @@ public class LeftFactored extends SGLL{
 		expect(LITERAL_1000);
 	}
 	
-	private final static int ITERATIONS = 5;
+	private final static int ITERATIONS = 3;
 	
 	private static char[] createInput(int size){
 		char[] input = new char[size];
@@ -167,7 +167,7 @@ public class LeftFactored extends SGLL{
 		}
 		
 		// The benchmarks.
-		for(int i = 51; i <= 501; i += 50){
+		for(int i = 501; i <= 1001; i += 500){
 			input = createInput(i);
 			runTest(input);
 		}

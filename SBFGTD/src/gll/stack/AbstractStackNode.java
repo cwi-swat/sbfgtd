@@ -8,7 +8,7 @@ import gll.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
 	protected AbstractStackNode next;
-	protected ArrayList<AbstractStackNode> alternateNexts;
+	protected LinearIntegerKeyedMap<AbstractStackNode> alternateNexts;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
 	
@@ -124,9 +124,9 @@ public abstract class AbstractStackNode{
 			this.next = next;
 		}else{
 			if(alternateNexts == null){
-				alternateNexts = new ArrayList<AbstractStackNode>();
+				alternateNexts = new LinearIntegerKeyedMap<AbstractStackNode>();
 			}
-			alternateNexts.add(next);
+			alternateNexts.add(next.getId(), next);
 		}
 	}
 	
@@ -138,7 +138,7 @@ public abstract class AbstractStackNode{
 		return next;
 	}
 	
-	public ArrayList<AbstractStackNode> getAlternateNexts(){
+	public LinearIntegerKeyedMap<AbstractStackNode> getAlternateNexts(){
 		return alternateNexts;
 	}
 	
