@@ -251,13 +251,13 @@ public class SGLL implements IGLL{
 		if((next = node.getNext()) != null){
 			updateNextNode(next, node);
 			
-			ArrayList<AbstractStackNode> alternateNexts = node.getAlternateNexts();
+			LinearIntegerKeyedMap<AbstractStackNode> alternateNexts = node.getAlternateNexts();
 			if(alternateNexts != null){
 				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = next.getEdges();
 				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateNexts.size() - 1; i >= 0; --i){
-					updateAlternativeNextNode(alternateNexts.get(i), node, edgesMap, prefixesMap);
+					updateAlternativeNextNode(alternateNexts.getValue(i), node, edgesMap, prefixesMap);
 				}
 			}
 		}
@@ -373,14 +373,12 @@ public class SGLL implements IGLL{
 						continue;
 					}
 					
-					ArrayList<AbstractStackNode> alternateSharedNexts = sharedNode.getAlternateNexts();
+					LinearIntegerKeyedMap<AbstractStackNode> alternateSharedNexts = sharedNode.getAlternateNexts();
 					if(alternateSharedNexts != null){
-						for(int k = alternateSharedNexts.size() - 1; k >= 0; --k){
-							nextShared = alternateSharedNexts.get(k);
-							if(nextShared.getId() == nextId){
-								sharedNode = nextShared;
-								continue;
-							}
+						nextShared = alternateSharedNexts.findValue(nextId);
+						if(nextShared != null){
+							sharedNode = nextShared;
+							continue;
 						}
 					}
 					
