@@ -152,8 +152,7 @@ public class SGLL implements IGLL{
 			}
 			
 			next.setStartLocation(location);
-			next.setEdges(edgesMap);
-			next.setPrefixesMap(prefixesMap);
+			next.updateNode(node);
 			
 			if(!next.isMatchable()){ // Is non-terminal or list.
 				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
