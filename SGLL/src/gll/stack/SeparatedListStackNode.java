@@ -93,6 +93,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		AbstractStackNode listNode = child.getCleanCopy();
 		listNode.markAsEndNode();
 		listNode.setStartLocation(startLocation);
+		listNode.initEdges();
 		listNode.addEdgeWithPrefix(this, null, startLocation);
 		
 		AbstractStackNode from = listNode;
@@ -115,6 +116,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
 		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
+		empty.initEdges();
 		empty.addEdge(this);
 		
 		return new AbstractStackNode[]{listNode, empty};

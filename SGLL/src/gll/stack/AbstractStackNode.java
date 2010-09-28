@@ -25,8 +25,6 @@ public abstract class AbstractStackNode{
 		
 		this.id = id;
 		
-		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
-		
 		startLocation = -1;
 	}
 	
@@ -142,6 +140,10 @@ public abstract class AbstractStackNode{
 		return alternateNexts;
 	}
 	
+	public void initEdges(){
+		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
+	}
+	
 	public void addEdge(AbstractStackNode edge){
 		int startLocation = edge.getStartLocation();
 		
@@ -205,8 +207,7 @@ public abstract class AbstractStackNode{
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
 		AbstractNode result = predecessor.getResult();
 		
-		int edgesMapSize = edgesMap.size();
-		if(edgesMapSize == 0){
+		if(edgesMap == null){
 			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMapToAdd);
 
 			if(prefixesMap == null){
@@ -228,6 +229,7 @@ public abstract class AbstractStackNode{
 				}
 			}
 		}else if(edgesMap != edgesMapToAdd){
+			int edgesMapSize = edgesMap.size();
 			int possibleMaxSize = edgesMapSize + edgesMapToAdd.size();
 			if(prefixesMap == null){
 				prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize];
@@ -287,7 +289,7 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void updatePrefixSharedNode(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		this.edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMap);
+		this.edgesMap = edgesMap;
 		this.prefixesMap = prefixesMap;
 	}
 	

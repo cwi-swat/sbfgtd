@@ -85,11 +85,13 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		AbstractStackNode child = optional.getCleanCopy();
 		child.markAsEndNode();
 		child.setStartLocation(startLocation);
+		child.initEdges();
 		child.addEdge(this);
 		
 		AbstractStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
 		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
+		empty.initEdges();
 		empty.addEdge(this);
 		
 		return new AbstractStackNode[]{child, empty};

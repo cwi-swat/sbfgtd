@@ -90,6 +90,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		listNode.markAsEndNode();
 		listNode.setStartLocation(startLocation);
 		listNode.setNext(listNode);
+		listNode.initEdges();
 		listNode.addEdgeWithPrefix(this, null, startLocation);
 		
 		if(isPlusList){
@@ -99,6 +100,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
 		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
+		empty.initEdges();
 		empty.addEdge(this);
 		
 		return new AbstractStackNode[]{listNode, empty};
