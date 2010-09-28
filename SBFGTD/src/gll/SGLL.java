@@ -149,11 +149,9 @@ public class SGLL implements IGLL{
 		}else{
 			if(next.startLocationIsSet()){
 				next = next.getCleanCopyWithoutPrefixes();
-				next.updateNode(node);
-			}else{
-				next.updatePrefixSharedNode(edgesMap, prefixesMap); // Prevent unnecessary overhead; share whenever possible.
 			}
 			
+			next.updatePrefixSharedNode(edgesMap, prefixesMap); // Prevent unnecessary overhead; share whenever possible.
 			next.setStartLocation(location);
 			
 			if(!next.isMatchable()){ // Is non-terminal or list.
@@ -255,7 +253,7 @@ public class SGLL implements IGLL{
 			
 			LinearIntegerKeyedMap<AbstractStackNode> alternateNexts = node.getAlternateNexts();
 			if(alternateNexts != null){
-				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = next.getEdges();
 				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateNexts.size() - 1; i >= 0; --i){
