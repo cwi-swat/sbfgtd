@@ -100,7 +100,7 @@ public class SGLL implements IGLL{
 		if(alternative != null){
 			alternative.updateNode(node);
 			
-			if(next.isEndNode()){
+			if(alternative.isEndNode()){
 				if(!alternative.isClean() && alternative.getStartLocation() == location){
 					if(alternative != node){ // List cycle fix.
 						// Encountered self recursive epsilon cycle; update the prefixes.
