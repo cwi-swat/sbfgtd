@@ -132,6 +132,44 @@ public class SGLL implements IGLL{
 		}
 	}
 	
+	private void updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+		int id = next.getId();
+		AbstractStackNode alternative = sharedNextNodes.get(id);
+		if(alternative != null){
+			alternative.updateNode(node);
+			
+			if(next.isEndNode()){
+				if(!alternative.isClean() && alternative.getStartLocation() == location){
+					if(alternative != node){ // List cycle fix.
+						// Encountered self recursive epsilon cycle; update the prefixes.
+						updatePrefixes(alternative, node);
+					}
+				}
+			}
+		}else{
+			if(next.startLocationIsSet()){
+				next = next.getCleanCopyWithoutPrefixes();
+			}
+			
+			next.updatePrefixSharedNode(edgesMap, prefixesMap);
+			next.setStartLocation(location);
+			
+			if(!next.isMatchable()){ // Is non-terminal or list.
+				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+				if(levelResultStoreMap != null){
+					AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
+					if(resultStore != null){ // Is nullable, add the known results.
+						next.setResultStore(resultStore);
+						stacksWithNonTerminalsToReduce.put(next);
+					}
+				}
+			}
+			
+			sharedNextNodes.putUnsafe(id, next);
+			stacksToExpand.add(next);
+		}
+	}
+	
 	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
@@ -215,8 +253,11 @@ public class SGLL implements IGLL{
 			
 			LinearIntegerKeyedMap<AbstractStackNode> alternateNexts = node.getAlternateNexts();
 			if(alternateNexts != null){
+				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = next.getEdges();
+				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
+				
 				for(int i = alternateNexts.size() - 1; i >= 0; --i){
-					updateNextNode(alternateNexts.getValue(i), node);
+					updateAlternativeNextNode(alternateNexts.getValue(i), node, edgesMap, prefixesMap);
 				}
 			}
 		}
