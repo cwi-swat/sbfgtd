@@ -288,7 +288,7 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void updatePrefixSharedNode(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		this.edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMap);
+		this.edgesMap = edgesMap;
 		this.prefixesMap = prefixesMap;
 	}
 	
