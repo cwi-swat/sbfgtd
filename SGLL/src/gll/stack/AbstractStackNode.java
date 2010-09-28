@@ -35,7 +35,6 @@ public abstract class AbstractStackNode{
 
 		next = original.next;
 		alternateNexts = original.alternateNexts;
-		edgesMap = original.edgesMap;
 		
 		this.isEndNode = original.isEndNode;
 		this.isSeparator = original.isSeparator;
@@ -48,14 +47,14 @@ public abstract class AbstractStackNode{
 
 		next = original.next;
 		alternateNexts = original.alternateNexts;
-		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(original.edgesMap);
+		edgesMap = original.edgesMap;
 		
 		prefixesMap = prefixes;
 		
 		startLocation = original.startLocation;
 
 		isEndNode = original.isEndNode;
-		this.isSeparator = original.isSeparator;
+		isSeparator = original.isSeparator;
 	}
 	
 	// General.
@@ -289,7 +288,7 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void updatePrefixSharedNode(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		this.edgesMap = edgesMap;
+		this.edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMap);
 		this.prefixesMap = prefixesMap;
 	}
 	
