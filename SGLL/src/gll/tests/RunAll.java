@@ -41,6 +41,9 @@ public class RunAll{
 		System.out.println("Ambiguous8:");
 		Ambiguous8.main(args);
 		System.out.println();
+		System.out.println("Ambiguous9:");
+		Ambiguous9.main(args);
+		System.out.println();
 		
 		System.out.println("RightRecursion:");
 		RightRecursion.main(args);
