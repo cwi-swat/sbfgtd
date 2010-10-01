@@ -10,7 +10,6 @@ import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.HashMap;
 import gll.util.IntegerKeyedHashMap;
-import gll.util.IntegerList;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.RotatingQueue;
 
