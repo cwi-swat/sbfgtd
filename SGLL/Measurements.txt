@@ -27,7 +27,7 @@ Input chars	| Average Time	| Lowest Time
 150			| 120 ms		| 100 ms
 200			| 330 ms		| 300 ms
 250			| 1161 ms		| 1101 ms
-300			| 2695 ms		| 2657 ms
+300			| 2685 ms		| 2654 ms
 350			| 4277 ms		| 4257 ms
 400			| 6752 ms		| 6711 ms
 450			| 9876 ms		| 9815 ms
