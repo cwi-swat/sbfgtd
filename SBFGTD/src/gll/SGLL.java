@@ -448,7 +448,7 @@ public class SGLL implements IGLL{
 	
 	public AbstractNode parse(String start){
 		// Initialize.
-		AbstractStackNode rootNode = new NonTerminalStackNode(START_SYMBOL_ID, 0, start);
+		AbstractStackNode rootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
 		rootNode.initEdges();
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);
