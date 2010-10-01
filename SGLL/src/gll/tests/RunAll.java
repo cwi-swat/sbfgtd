@@ -55,6 +55,9 @@ public class RunAll{
 		System.out.println("AmbiguousRecursive:");
 		AmbiguousRecursive.main(args);
 		System.out.println();
+		System.out.println("AmbiguousRecursivePrefixShared:");
+		AmbiguousRecursivePrefixShared.main(args);
+		System.out.println();
 		
 		System.out.println("SplitAndMerge1:");
 		SplitAndMerge1.main(args);

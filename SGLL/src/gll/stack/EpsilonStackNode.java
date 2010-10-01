@@ -11,8 +11,8 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	
 	private boolean isReduced;
 	
-	public EpsilonStackNode(int id){
-		super(id);
+	public EpsilonStackNode(int id, int dot){
+		super(id, dot);
 	}
 	
 	private EpsilonStackNode(EpsilonStackNode original){
@@ -45,7 +45,7 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new EpsilonStackNode(id);
+		return new EpsilonStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){

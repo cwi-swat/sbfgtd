@@ -12,10 +12,10 @@ import gll.stack.NonTerminalStackNode;
 * A ::= epsilon
 */
 public class NullableSharing extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_N1 = new NonTerminalStackNode(1, "N");
-	private final static AbstractStackNode NONTERMINAL_N2 = new NonTerminalStackNode(2, "N");
-	private final static AbstractStackNode EPSILON3 = new EpsilonStackNode(3);
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode NONTERMINAL_N1 = new NonTerminalStackNode(1, 0, "N");
+	private final static AbstractStackNode NONTERMINAL_N2 = new NonTerminalStackNode(2, 1, "N");
+	private final static AbstractStackNode EPSILON3 = new EpsilonStackNode(3, 0);
 	
 	public NullableSharing(char[] input){
 		super(input);

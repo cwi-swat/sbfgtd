@@ -11,7 +11,7 @@ S ::= ci(bla)
 NOTE: ci(*) means whatever * represents is Case Insensitive.
 */
 public class CILiteral extends SGLL{
-	private final static AbstractStackNode LITERAL_bla0 = new CaseInsensitiveLiteralStackNode(0, new char[]{'b','l','a'});
+	private final static AbstractStackNode LITERAL_bla0 = new CaseInsensitiveLiteralStackNode(0, 0, new char[]{'b','l','a'});
 	
 	public CILiteral(char[] input){
 		super(input);

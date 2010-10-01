@@ -11,8 +11,8 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	
 	private final LiteralNode result;
 	
-	public LiteralStackNode(int id, char[] literal){
-		super(id);
+	public LiteralStackNode(int id, int dot, char[] literal){
+		super(id, dot);
 
 		this.literal = literal;
 		result = new LiteralNode(literal);
@@ -58,7 +58,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new LiteralStackNode(id, literal);
+		return new LiteralStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){

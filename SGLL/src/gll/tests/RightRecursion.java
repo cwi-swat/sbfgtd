@@ -11,10 +11,10 @@ S ::= A
 A ::= aA | a
 */
 public class RightRecursion extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
-	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, 1, "A");
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, 0, new char[]{'a'});
 	
 	public RightRecursion(char[] input){
 		super(input);

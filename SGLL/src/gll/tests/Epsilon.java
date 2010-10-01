@@ -12,11 +12,11 @@ S ::= AA
 A ::= epsilon
 */
 public class Epsilon extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, "A");
-	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
-	private final static AbstractStackNode EPSILON_3 = new EpsilonStackNode(3);
-	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, 1, "A");
+	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, 2, "B");
+	private final static AbstractStackNode EPSILON_3 = new EpsilonStackNode(3, 0);
+	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, 0, new char[]{'a'});
 	
 	public Epsilon(char[] input){
 		super(input);

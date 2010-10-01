@@ -12,10 +12,10 @@ S ::= A+
 A ::= a | aa
 */
 public class AmbiguousNonTerminalPlusList2 extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
-	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_aa3 = new LiteralStackNode(3, new char[]{'a', 'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, NONTERMINAL_A0, "A+", true);
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_aa3 = new LiteralStackNode(3, 0, new char[]{'a', 'a'});
 	
 	public AmbiguousNonTerminalPlusList2(char[] input){
 		super(input);

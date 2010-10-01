@@ -10,6 +10,7 @@ import gll.stack.NonTerminalStackNode;
 import gll.util.ArrayList;
 import gll.util.HashMap;
 import gll.util.IntegerKeyedHashMap;
+import gll.util.IntegerList;
 import gll.util.LinearIntegerKeyedMap;
 import gll.util.RotatingQueue;
 
@@ -27,6 +28,7 @@ public class SGLL implements IGLL{
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
+	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
 	private final HashMap<String, ArrayList<AbstractStackNode>> cachedExpects;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
@@ -53,6 +55,7 @@ public class SGLL implements IGLL{
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
+		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
 		cachedExpects = new HashMap<String, ArrayList<AbstractStackNode>>();
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
@@ -111,10 +114,7 @@ public class SGLL implements IGLL{
 			return alternative;
 		}
 		
-		if(next.startLocationIsSet()){
-			next = next.getCleanCopyWithoutPrefixes();
-		}
-		
+		next = next.getCleanCopyWithoutPrefixes();
 		next.updateNode(node);
 		next.setStartLocation(location);
 		
@@ -134,18 +134,13 @@ public class SGLL implements IGLL{
 		return next;
 	}
 	
-	private void updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	private void updateAlternativeNextNode(AbstractStackNode next, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
 		int id = next.getId();
 		AbstractStackNode alternative = sharedNextNodes.get(id);
 		if(alternative != null){
 			alternative.updatePrefixSharedNode(edgesMap, prefixesMap);
 		}else{
-			if(next.startLocationIsSet()){
-				next = next.getCleanCopyWithoutPrefixes();
-			}
-			
-			next.updateNode(node);
-			
+			next = next.getCleanCopyWithoutPrefixes();
 			next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			next.setStartLocation(location);
 			
@@ -242,17 +237,44 @@ public class SGLL implements IGLL{
 			updateEdges(node);
 		}
 		
-		AbstractStackNode next;
-		if((next = node.getNext()) != null){
+		if(node.hasNext()){
+			int nextDot = node.getDot() + 1;
+
+			AbstractStackNode[] prod = node.getNext();
+			AbstractStackNode next = prod[nextDot];
+			next.setNext(prod);
 			next = updateNextNode(next, node);
 			
-			LinearIntegerKeyedMap<AbstractStackNode> alternateNexts = node.getAlternateNexts();
-			if(alternateNexts != null){
+			LinearIntegerKeyedMap<AbstractStackNode[]> alternateProds = node.getAlternateNexts();
+			if(alternateProds != null){
+				int nextNextDot = nextDot + 1;
+				
+				// Handle alternative nexts (and prefix sharing).
+				sharedPrefixNext.dirtyClear();
+				
+				sharedPrefixNext.add(next.getId(), next);
+				
 				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = next.getEdges();
 				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
 				
-				for(int i = alternateNexts.size() - 1; i >= 0; --i){
-					updateAlternativeNextNode(alternateNexts.getValue(i), node, edgesMap, prefixesMap);
+				for(int i = alternateProds.size() - 1; i >= 0; --i){
+					prod = alternateProds.getValue(i);
+					AbstractStackNode alternativeNext = prod[nextDot];
+					int alternativeNextId = alternativeNext.getId();
+					
+					AbstractStackNode sharedNext = sharedPrefixNext.findValue(alternativeNextId);
+					if(sharedNext == null){
+						alternativeNext.setNext(prod);
+						updateAlternativeNextNode(alternativeNext, edgesMap, prefixesMap);
+						
+						sharedPrefixNext.add(alternativeNextId, alternativeNext);
+					}else if(nextNextDot < prod.length){
+						if(sharedNext.hasNext()){
+							sharedNext.addNext(prod);
+						}else{
+							sharedNext.setNext(prod);
+						}
+					}
 				}
 			}
 		}
@@ -333,85 +355,24 @@ public class SGLL implements IGLL{
 		int nrOfExpects = lastExpects.size();
 		ArrayList<AbstractStackNode> expects = new ArrayList<AbstractStackNode>(nrOfExpects);
 		
-		EXPECT : for(int i = nrOfExpects - 1; i >= 0; --i){
+		for(int i = nrOfExpects - 1; i >= 0; --i){
 			AbstractStackNode[] expectedNodes = lastExpects.get(i);
-			int numberOfNodes = expectedNodes.length;
+			
+			expectedNodes[expectedNodes.length - 1].markAsEndNode(); // Meh.
 			
 			AbstractStackNode first = expectedNodes[0];
-			int firstId = first.getId();
 			
 			// Handle prefix sharing.
-			AbstractStackNode sharedNode = sharedLastExpects.findValue(firstId);
-			
-			if(sharedNode != null){
-				int index = 1;
-				for(; index < numberOfNodes; ++index){
-					AbstractStackNode next = expectedNodes[index];
-					int nextId = next.getId();
-					AbstractStackNode nextShared = sharedNode.getNext();
-					if(nextShared == null){
-						AbstractStackNode last = expectedNodes[numberOfNodes - 1].getCleanCopy();
-						last.markAsEndNode();
-						
-						for(int k = numberOfNodes - 2; k >= index; --k){
-							AbstractStackNode current = expectedNodes[k].getCleanCopy();
-							current.setNext(last);
-							last = current;
-						}
-						
-						sharedNode.addNext(last);
-						continue EXPECT;
-					}
-					
-					if(nextShared.getId() == nextId){
-						sharedNode = nextShared;
-						continue;
-					}
-					
-					LinearIntegerKeyedMap<AbstractStackNode> alternateSharedNexts = sharedNode.getAlternateNexts();
-					if(alternateSharedNexts != null){
-						nextShared = alternateSharedNexts.findValue(nextId);
-						if(nextShared != null){
-							sharedNode = nextShared;
-							continue;
-						}
-					}
-					
-					AbstractStackNode last = expectedNodes[numberOfNodes - 1].getCleanCopy();
-					last.markAsEndNode();
-					
-					for(int k = numberOfNodes - 2; k >= index; --k){
-						AbstractStackNode current = expectedNodes[k].getCleanCopy();
-						current.setNext(last);
-						last = current;
-					}
-					
-					sharedNode.addNext(last);
-					continue EXPECT;
-				}
-				
-				sharedNode.markAsEndNode();
-				
-				continue EXPECT;
+			int firstId = first.getId();
+			AbstractStackNode sharedNode;
+			if((sharedNode = sharedLastExpects.findValue(firstId)) != null){
+				sharedNode.addNext(expectedNodes);
+				continue;
 			}
 			
-			AbstractStackNode next = expectedNodes[numberOfNodes - 1].getCleanCopy();
-			next.markAsEndNode();
-			
-			if(numberOfNodes - 2 >= 0){
-				for(int j = numberOfNodes - 2; j >= 1; --j){
-					AbstractStackNode current = expectedNodes[j].getCleanCopy();
-					current.setNext(next);
-					next = current;
-				}
-				
-				first = first.getCleanCopy();
-				first.setNext(next);
-			}else{
-				first = next; // Chain rule.
-			}
-
+			first = first.getCleanCopy();
 			first.setStartLocation(location);
+			first.setNext(expectedNodes);
 			first.initEdges();
 			first.addEdge(stackBeingWorkedOn);
 			
@@ -488,7 +449,7 @@ public class SGLL implements IGLL{
 	
 	public AbstractNode parse(String start){
 		// Initialize.
-		AbstractStackNode rootNode = new NonTerminalStackNode(START_SYMBOL_ID, start);
+		AbstractStackNode rootNode = new NonTerminalStackNode(START_SYMBOL_ID, 0, start);
 		rootNode.initEdges();
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);

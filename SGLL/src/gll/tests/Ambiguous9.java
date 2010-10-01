@@ -7,19 +7,19 @@ import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 
 /*
-* S ::= E
-* E ::= E + E | E * E | 1
-* 
-* NOTE: This test, tests prefix sharing.
+S ::= E
+E ::= E + E | E * E | 1
+
+NOTE: This test, tests prefix sharing.
 */
 public class Ambiguous9 extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, "E");
-	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, "E");
-	private final static AbstractStackNode NONTERMINAL_E2 = new NonTerminalStackNode(2, "E");
-	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, "E");
-	private final static AbstractStackNode LITERAL_4 = new LiteralStackNode(4, "+".toCharArray());
-	private final static AbstractStackNode LITERAL_5 = new LiteralStackNode(5, "*".toCharArray());
-	private final static AbstractStackNode LITERAL_6 = new LiteralStackNode(6, "1".toCharArray());
+	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
+	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 0, "E");
+	private final static AbstractStackNode NONTERMINAL_E2 = new NonTerminalStackNode(2, 2, "E");
+	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, 2, "E");
+	private final static AbstractStackNode LITERAL_4 = new LiteralStackNode(4, 1, "+".toCharArray());
+	private final static AbstractStackNode LITERAL_5 = new LiteralStackNode(5, 1, "*".toCharArray());
+	private final static AbstractStackNode LITERAL_6 = new LiteralStackNode(6, 0, "1".toCharArray());
 	
 	
 	public Ambiguous9(char[] input){

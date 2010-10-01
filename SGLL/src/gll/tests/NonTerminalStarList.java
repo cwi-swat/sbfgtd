@@ -12,9 +12,9 @@ S ::= A+
 A ::= a
 */
 public class NonTerminalStarList extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A*", false);
-	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, NONTERMINAL_A0, "A*", false);
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 0, new char[]{'a'});
 	
 	public NonTerminalStarList(char[] input){
 		super(input);

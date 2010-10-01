@@ -12,9 +12,9 @@ S ::= A+
 A ::= epsilon
 */
 public class EpsilonList extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
-	private final static AbstractStackNode EPSILON2 = new EpsilonStackNode(3);
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, NONTERMINAL_A0, "A+", true);
+	private final static AbstractStackNode EPSILON2 = new EpsilonStackNode(3, 0);
 	
 	public EpsilonList(char[] input){
 		super(input);

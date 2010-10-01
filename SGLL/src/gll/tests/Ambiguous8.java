@@ -7,20 +7,20 @@ import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 
 /*
-* S ::= AB | AC
-* A ::= a
-* B ::= a
-* C ::= a
-* 
-* NOTE: This test, tests prefix sharing.
+S ::= AB | AC
+A ::= a
+B ::= a
+C ::= a
+
+NOTE: This test, tests prefix sharing.
 */
 public class Ambiguous8 extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static AbstractStackNode NONTERMINAL_C2 = new NonTerminalStackNode(2, "C");
-	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, 1, "B");
+	private final static AbstractStackNode NONTERMINAL_C2 = new NonTerminalStackNode(2, 1, "C");
+	private final static AbstractStackNode LITERAL_a3 = new LiteralStackNode(3, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a4 = new LiteralStackNode(4, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, 0, new char[]{'a'});
 	
 	public Ambiguous8(char[] input){
 		super(input);
