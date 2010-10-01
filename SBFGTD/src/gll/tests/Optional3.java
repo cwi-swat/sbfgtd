@@ -13,13 +13,13 @@ O ::= A
 A ::= a
 */
 public class Optional3 extends SGLL{
-	private final static AbstractStackNode LITERAL_a0 = new LiteralStackNode(0, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a1 = new LiteralStackNode(1, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, new char[]{'a'});
-	private final static AbstractStackNode NONTERMINAL_A3 = new NonTerminalStackNode(3, "A");
-	private final static AbstractStackNode NONTERMINAL_A4 = new NonTerminalStackNode(4, "A");
-	private final static AbstractStackNode NON_TERMINAL_O5 = new NonTerminalStackNode(5, "O");
-	private final static AbstractStackNode OPTIONAL_6 = new OptionalStackNode(6, NON_TERMINAL_O5, "O?");
+	private final static AbstractStackNode LITERAL_a0 = new LiteralStackNode(0, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a1 = new LiteralStackNode(1, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 0, new char[]{'a'});
+	private final static AbstractStackNode NONTERMINAL_A3 = new NonTerminalStackNode(3, 1, "A");
+	private final static AbstractStackNode NONTERMINAL_A4 = new NonTerminalStackNode(4, 0, "A");
+	private final static AbstractStackNode NON_TERMINAL_O5 = new NonTerminalStackNode(5, 0, "O");
+	private final static AbstractStackNode OPTIONAL_6 = new OptionalStackNode(6, 1, NON_TERMINAL_O5, "O?");
 	
 	public Optional3(char[] input){
 		super(input);

@@ -7,12 +7,13 @@ import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
-	protected AbstractStackNode next;
-	protected LinearIntegerKeyedMap<AbstractStackNode> alternateNexts;
+	protected AbstractStackNode[] next;
+	protected LinearIntegerKeyedMap<AbstractStackNode[]> alternateNexts;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
 	
 	protected final int id;
+	protected final int dot;
 	
 	protected int startLocation;
 	
@@ -20,10 +21,11 @@ public abstract class AbstractStackNode{
 	
 	private boolean isSeparator;
 	
-	public AbstractStackNode(int id){
+	public AbstractStackNode(int id, int dot){
 		super();
 		
 		this.id = id;
+		this.dot = dot;
 		
 		startLocation = -1;
 	}
@@ -32,6 +34,7 @@ public abstract class AbstractStackNode{
 		super();
 		
 		id = original.id;
+		dot = original.dot;
 
 		next = original.next;
 		alternateNexts = original.alternateNexts;
@@ -44,6 +47,7 @@ public abstract class AbstractStackNode{
 		super();
 		
 		id = original.id;
+		dot = original.dot;
 
 		next = original.next;
 		alternateNexts = original.alternateNexts;
@@ -112,30 +116,34 @@ public abstract class AbstractStackNode{
 	}
 	
 	// Linking & prefixes.
-	public void setNext(AbstractStackNode next){
+	public int getDot(){
+		return dot;
+	}
+	
+	public void setNext(AbstractStackNode[] next){
 		this.next = next;
 	}
 	
-	public void addNext(AbstractStackNode next){
+	public void addNext(AbstractStackNode[] next){
 		if(this.next == null){
 			this.next = next;
 		}else{
 			if(alternateNexts == null){
-				alternateNexts = new LinearIntegerKeyedMap<AbstractStackNode>();
+				alternateNexts = new LinearIntegerKeyedMap<AbstractStackNode[]>();
 			}
-			alternateNexts.add(next.getId(), next);
+			alternateNexts.add(next[dot + 1].getId(), next);
 		}
 	}
 	
 	public boolean hasNext(){
-		return (next != null);
+		return !((next == null) || (next.length == (dot + 1)));
 	}
 	
-	public AbstractStackNode getNext(){
+	public AbstractStackNode[] getNext(){
 		return next;
 	}
 	
-	public LinearIntegerKeyedMap<AbstractStackNode> getAlternateNexts(){
+	public LinearIntegerKeyedMap<AbstractStackNode[]> getAlternateNexts(){
 		return alternateNexts;
 	}
 	

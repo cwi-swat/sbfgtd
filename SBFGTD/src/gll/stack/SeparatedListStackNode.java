@@ -15,8 +15,8 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	
 	private AbstractContainerNode result;
 	
-	public SeparatedListStackNode(int id, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
-		super(id);
+	public SeparatedListStackNode(int id, int dot, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
+		super(id, dot);
 		
 		this.nodeName = nodeName;
 		
@@ -66,7 +66,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new SeparatedListStackNode(id, child, separators, nodeName, isPlusList);
+		return new SeparatedListStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){
@@ -96,24 +96,24 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		listNode.initEdges();
 		listNode.addEdgeWithPrefix(this, null, startLocation);
 		
-		AbstractStackNode from = listNode;
-		AbstractStackNode to = separators[0].getCleanCopy();
-		to.markAsSeparator();
-		from.setNext(to);
-		from = to;
-		for(int i = 1; i < separators.length; ++i){
-			to = separators[i].getCleanCopy();
-			to.markAsSeparator();
-			from.setNext(to);
-			from = to;
+		int numberOfSeparators = separators.length;
+		AbstractStackNode[] prod = new AbstractStackNode[numberOfSeparators + 2];
+		
+		listNode.setNext(prod);
+		prod[0] = listNode; // Start
+		for(int i = numberOfSeparators - 1; i >= 0; --i){
+			AbstractStackNode separator = separators[i];
+			separator.setNext(prod);
+			separator.markAsSeparator();
+			prod[i + 1] = separator;
 		}
-		from.setNext(listNode);
+		prod[numberOfSeparators + 1] = listNode; // End
 		
 		if(isPlusList){
 			return new AbstractStackNode[]{listNode};
 		}
 		
-		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID);
+		EpsilonStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID, 0);
 		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
 		empty.initEdges();

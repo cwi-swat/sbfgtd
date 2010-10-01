@@ -12,10 +12,10 @@ S ::= A+
 A ::= [a]+
 */
 public class AmbiguousNestedPlusList extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
-	private final static AbstractStackNode CHAR2 = new CharStackNode(2, "[a]", new char[][]{}, new char[]{'a'});
-	private final static AbstractStackNode CHAR_LIST3 = new ListStackNode(3, CHAR2, "[a]+", true);
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, NONTERMINAL_A0, "A+", true);
+	private final static AbstractStackNode CHAR2 = new CharStackNode(2, 0, "[a]", new char[][]{}, new char[]{'a'});
+	private final static AbstractStackNode CHAR_LIST3 = new ListStackNode(3, 0, CHAR2, "[a]+", true);
 	
 	public AmbiguousNestedPlusList(char[] input){
 		super(input);

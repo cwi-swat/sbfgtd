@@ -10,8 +10,8 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	
 	private AbstractContainerNode result;
 	
-	public NonTerminalStackNode(int id, String nonTerminal){
-		super(id);
+	public NonTerminalStackNode(int id, int dot, String nonTerminal){
+		super(id, dot);
 		
 		this.nonTerminal = nonTerminal;
 	}
@@ -49,7 +49,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new NonTerminalStackNode(id, nonTerminal);
+		return new NonTerminalStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){

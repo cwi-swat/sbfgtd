@@ -34,6 +34,13 @@ public class IntegerList{
 		data[size++] = integer;
 	}
 	
+	public boolean contains(int integer){
+		for(int i = size - 1; i >= 0; --i){
+			if(data[i] == integer) return true;
+		}
+		return false;
+	}
+	
 	public int get(int index){
 		return data[index];
 	}

@@ -13,10 +13,10 @@ S ::= A+
 A ::= a | epsilon
 */
 public class AmbiguousEpsilonList extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, NONTERMINAL_A0, "A+", true);
-	private final static AbstractStackNode CHAR2 = new CharStackNode(2, "[a]", new char[][]{}, new char[]{'a'});
-	private final static AbstractStackNode EPSILON3 = new EpsilonStackNode(3);
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, NONTERMINAL_A0, "A+", true);
+	private final static AbstractStackNode CHAR2 = new CharStackNode(2, 0, "[a]", new char[][]{}, new char[]{'a'});
+	private final static AbstractStackNode EPSILON3 = new EpsilonStackNode(3, 0);
 	
 	public AmbiguousEpsilonList(char[] input){
 		super(input);

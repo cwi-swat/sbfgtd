@@ -11,8 +11,8 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	private LiteralNode result;
 	
-	public CaseInsensitiveLiteralStackNode(int id, char[] ciLiteral){
-		super(id);
+	public CaseInsensitiveLiteralStackNode(int id, int dot, char[] ciLiteral){
+		super(id, dot);
 		
 		int nrOfCharacters = ciLiteral.length;
 		this.ciLiteral = new char[nrOfCharacters][];
@@ -27,12 +27,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 				this.ciLiteral[i] = new char[]{character};
 			}
 		}
-	}
-	
-	private CaseInsensitiveLiteralStackNode(int id, char[][] ciLiteral){
-		super(id);
-
-		this.ciLiteral = ciLiteral;
 	}
 	
 	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original){
@@ -83,7 +77,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new CaseInsensitiveLiteralStackNode(id, ciLiteral);
+		return new CaseInsensitiveLiteralStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){

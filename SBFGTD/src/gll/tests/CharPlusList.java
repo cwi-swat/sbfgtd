@@ -10,8 +10,8 @@ import gll.stack.AbstractStackNode;
 S ::= [a-z]+
 */
 public class CharPlusList extends SGLL{
-	private final static AbstractStackNode CHAR0 = new CharStackNode(0, "[a-z]", new char[][]{{'a', 'z'}}, new char[]{});
-	private final static AbstractStackNode LIST1 = new ListStackNode(1, CHAR0, "[a-z]+", true);
+	private final static AbstractStackNode CHAR0 = new CharStackNode(0, 0, "[a-z]", new char[][]{{'a', 'z'}}, new char[]{});
+	private final static AbstractStackNode LIST1 = new ListStackNode(1, 0, CHAR0, "[a-z]+", true);
 	
 	public CharPlusList(char[] input){
 		super(input);

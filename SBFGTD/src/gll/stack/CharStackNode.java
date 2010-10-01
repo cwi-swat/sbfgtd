@@ -14,8 +14,8 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	
 	private AbstractNode result;
 	
-	public CharStackNode(int id, String production, char[][] ranges, char[] characters){
-		super(id);
+	public CharStackNode(int id, int dot, String production, char[][] ranges, char[] characters){
+		super(id, dot);
 		
 		this.production = production;
 
@@ -78,7 +78,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new CharStackNode(id, production, ranges, characters);
+		return new CharStackNode(this);
 	}
 	
 	public AbstractStackNode getCleanCopyWithoutPrefixes(){

@@ -14,16 +14,16 @@ B ::= A
 A ::= a
 */
 public class SplitAndMerge2 extends SGLL{
-	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, "A");
-	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, "B");
-	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, "B");
-	private final static AbstractStackNode NONTERMINAL_C3 = new NonTerminalStackNode(3, "C");
-	private final static AbstractStackNode NONTERMINAL_D4 = new NonTerminalStackNode(4, "D");
-	private final static AbstractStackNode NONTERMINAL_D5 = new NonTerminalStackNode(5, "D");
-	private final static AbstractStackNode LITERAL_a6 = new LiteralStackNode(6, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a7 = new LiteralStackNode(7, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_a8 = new LiteralStackNode(8, new char[]{'a'});
-	private final static AbstractStackNode LITERAL_aa9 = new LiteralStackNode(9, new char[]{'a','a'});
+	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
+	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, 0, "B");
+	private final static AbstractStackNode NONTERMINAL_B2 = new NonTerminalStackNode(2, 0, "B");
+	private final static AbstractStackNode NONTERMINAL_C3 = new NonTerminalStackNode(3, 0, "C");
+	private final static AbstractStackNode NONTERMINAL_D4 = new NonTerminalStackNode(4, 0, "D");
+	private final static AbstractStackNode NONTERMINAL_D5 = new NonTerminalStackNode(5, 0, "D");
+	private final static AbstractStackNode LITERAL_a6 = new LiteralStackNode(6, 1, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a7 = new LiteralStackNode(7, 0, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a8 = new LiteralStackNode(8, 1, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_aa9 = new LiteralStackNode(9, 1, new char[]{'a','a'});
 	
 	public SplitAndMerge2(char[] input){
 		super(input);
