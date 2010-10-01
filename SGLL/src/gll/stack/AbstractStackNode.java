@@ -7,6 +7,9 @@ import gll.util.ArrayList;
 import gll.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
+	public final static int START_SYMBOL_ID = -1; // 0xffffffff
+	public final static int DEFAULT_LIST_EPSILON_ID = -2; // (0xeffffffe | 0x80000000)
+	
 	protected AbstractStackNode[] next;
 	protected LinearIntegerKeyedMap<AbstractStackNode[]> alternateNexts;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;

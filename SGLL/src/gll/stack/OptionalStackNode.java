@@ -1,12 +1,13 @@
 package gll.stack;
 
-import gll.IGLL;
-import gll.result.AbstractNode;
 import gll.result.AbstractContainerNode;
+import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
 
 public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
+	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
+	
 	private final AbstractStackNode optional;
 	
 	private final String nodeName;
@@ -88,7 +89,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		child.initEdges();
 		child.addEdge(this);
 		
-		AbstractStackNode empty = new EpsilonStackNode(IGLL.DEFAULT_LIST_EPSILON_ID, 0);
+		AbstractStackNode empty = EMPTY.getCleanCopy();
 		empty.markAsEndNode();
 		empty.setStartLocation(startLocation);
 		empty.initEdges();
