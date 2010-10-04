@@ -75,10 +75,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	public AbstractStackNode getCleanCopy(){
 		return new OptionalStackNode(this);
 	}
-	
-	public AbstractStackNode getCleanCopyWithoutPrefixes(){
-		return new OptionalStackNode(this);
-	}
 
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new OptionalStackNode(this, prefixesMap);

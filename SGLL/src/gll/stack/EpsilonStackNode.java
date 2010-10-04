@@ -47,10 +47,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	public AbstractStackNode getCleanCopy(){
 		return new EpsilonStackNode(this);
 	}
-	
-	public AbstractStackNode getCleanCopyWithoutPrefixes(){
-		return new EpsilonStackNode(this);
-	}
 
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new EpsilonStackNode(this, prefixesMap);

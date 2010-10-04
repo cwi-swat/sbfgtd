@@ -60,10 +60,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	public AbstractStackNode getCleanCopy(){
 		return new LiteralStackNode(this);
 	}
-	
-	public AbstractStackNode getCleanCopyWithoutPrefixes(){
-		return new LiteralStackNode(this);
-	}
 
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new LiteralStackNode(this, prefixesMap);

@@ -88,10 +88,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	public AbstractStackNode getCleanCopy(){
 		return new SeparatedListStackNode(this);
 	}
-	
-	public AbstractStackNode getCleanCopyWithoutPrefixes(){
-		return new SeparatedListStackNode(this);
-	}
 
 	public AbstractStackNode getCleanCopyWithPrefix(){
 		return new SeparatedListStackNode(this, prefixesMap);

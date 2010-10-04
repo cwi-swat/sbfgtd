@@ -113,7 +113,7 @@ public class SGLL implements IGLL{
 			return alternative;
 		}
 		
-		next = next.getCleanCopyWithoutPrefixes();
+		next = next.getCleanCopy();
 		next.updateNode(node);
 		next.setStartLocation(location);
 		
@@ -139,7 +139,7 @@ public class SGLL implements IGLL{
 		if(alternative != null){
 			alternative.updatePrefixSharedNode(edgesMap, prefixesMap);
 		}else{
-			next = next.getCleanCopyWithoutPrefixes();
+			next = next.getCleanCopy();
 			next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			next.setStartLocation(location);
 			
