@@ -110,8 +110,6 @@ public abstract class AbstractStackNode{
 	
 	public abstract AbstractStackNode getCleanCopy();
 	
-	public abstract AbstractStackNode getCleanCopyWithoutPrefixes();
-	
 	public abstract AbstractStackNode getCleanCopyWithPrefix();
 	
 	public boolean isSimilar(AbstractStackNode node){
