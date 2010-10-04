@@ -38,7 +38,7 @@ public abstract class AbstractStackNode{
 		
 		id = original.id;
 		dot = original.dot;
-
+		
 		next = original.next;
 		alternateNexts = original.alternateNexts;
 		

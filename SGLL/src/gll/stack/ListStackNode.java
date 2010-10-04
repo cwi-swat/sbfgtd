@@ -10,8 +10,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	
 	private final String nodeName;
 
-	private final AbstractStackNode child;
-	private final boolean isPlusList;
+	private final AbstractStackNode[] children;
 	
 	private AbstractContainerNode result;
 	
@@ -20,8 +19,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		
 		this.nodeName = nodeName;
 		
-		this.child = child;
-		this.isPlusList = isPlusList;
+		this.children = generateChildren(child, isPlusList);
 	}
 	
 	private ListStackNode(ListStackNode original){
@@ -29,8 +27,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		
 		nodeName = original.nodeName;
 
-		child = original.child;
-		isPlusList = original.isPlusList;
+		children = original.children;
 	}
 	
 	private ListStackNode(ListStackNode original, ArrayList<Link>[] prefixes){
@@ -38,8 +35,23 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		
 		nodeName = original.nodeName;
 
-		child = original.child;
-		isPlusList = original.isPlusList;
+		children = original.children;
+	}
+	
+	private AbstractStackNode[] generateChildren(AbstractStackNode child, boolean isPlusList){
+		AbstractStackNode listNode = child.getCleanCopy();
+		listNode.markAsEndNode();
+		listNode.setStartLocation(startLocation);
+		listNode.setNext(new AbstractStackNode[]{listNode, listNode});
+		
+		if(isPlusList){
+			return new AbstractStackNode[]{listNode};
+		}
+		
+		AbstractStackNode empty = EMPTY.getCleanCopy();
+		empty.markAsEndNode();
+		
+		return new AbstractStackNode[]{listNode, empty};
 	}
 	
 	public String getIdentifier(){
@@ -87,24 +99,7 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		AbstractStackNode listNode = child.getCleanCopy();
-		listNode.markAsEndNode();
-		listNode.setStartLocation(startLocation);
-		listNode.setNext(new AbstractStackNode[]{listNode, listNode});
-		listNode.initEdges();
-		listNode.addEdgeWithPrefix(this, null, startLocation);
-		
-		if(isPlusList){
-			return new AbstractStackNode[]{listNode};
-		}
-		
-		AbstractStackNode empty = EMPTY.getCleanCopy();
-		empty.markAsEndNode();
-		empty.setStartLocation(startLocation);
-		empty.initEdges();
-		empty.addEdge(this);
-		
-		return new AbstractStackNode[]{listNode, empty};
+		return children;
 	}
 	
 	public AbstractNode getResult(){

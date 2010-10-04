@@ -8,7 +8,7 @@ import gll.util.ArrayList;
 public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
 	
-	private final AbstractStackNode optional;
+	private final AbstractStackNode[] children;
 	
 	private final String nodeName;
 	
@@ -17,7 +17,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	public OptionalStackNode(int id, int dot, AbstractStackNode optional, String nodeName){
 		super(id, dot);
 		
-		this.optional = optional;
+		this.children = generateChildren(optional);
 		
 		this.nodeName = nodeName;
 	}
@@ -25,7 +25,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	private OptionalStackNode(OptionalStackNode original){
 		super(original);
 		
-		optional = original.optional;
+		children = original.children;
 		
 		nodeName = original.nodeName;
 	}
@@ -33,9 +33,19 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	private OptionalStackNode(OptionalStackNode original, ArrayList<Link>[] prefixes){
 		super(original, prefixes);
 		
-		optional = original.optional;
+		children = original.children;
 		
 		nodeName = original.nodeName;
+	}
+	
+	private AbstractStackNode[] generateChildren(AbstractStackNode optional){
+		AbstractStackNode child = optional.getCleanCopy();
+		child.markAsEndNode();
+		
+		AbstractStackNode empty = EMPTY.getCleanCopy();
+		empty.markAsEndNode();
+		
+		return new AbstractStackNode[]{child, empty};
 	}
 	
 	public String getIdentifier(){
@@ -83,19 +93,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		AbstractStackNode child = optional.getCleanCopy();
-		child.markAsEndNode();
-		child.setStartLocation(startLocation);
-		child.initEdges();
-		child.addEdge(this);
-		
-		AbstractStackNode empty = EMPTY.getCleanCopy();
-		empty.markAsEndNode();
-		empty.setStartLocation(startLocation);
-		empty.initEdges();
-		empty.addEdge(this);
-		
-		return new AbstractStackNode[]{child, empty};
+		return children;
 	}
 	
 	public AbstractNode getResult(){

@@ -10,9 +10,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	
 	private final String nodeName;
 
-	private final AbstractStackNode child;
-	private final AbstractStackNode[] separators;
-	private final boolean isPlusList;
+	private final AbstractStackNode[] children;
 	
 	private AbstractContainerNode result;
 	
@@ -21,9 +19,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		
 		this.nodeName = nodeName;
 		
-		this.child = child;
-		this.separators = separators;
-		this.isPlusList = isPlusList;
+		this.children = generateChildren(child, separators, isPlusList);
 	}
 	
 	private SeparatedListStackNode(SeparatedListStackNode original){
@@ -31,9 +27,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		
 		nodeName = original.nodeName;
 
-		child = original.child;
-		separators = original.separators;
-		isPlusList = original.isPlusList;
+		children = original.children;
 	}
 	
 	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<Link>[] prefixes){
@@ -41,9 +35,34 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		
 		nodeName = original.nodeName;
 
-		child = original.child;
-		separators = original.separators;
-		isPlusList = original.isPlusList;
+		children = original.children;
+	}
+	
+	private AbstractStackNode[] generateChildren(AbstractStackNode child,  AbstractStackNode[] separators, boolean isPlusList){
+		AbstractStackNode listNode = child.getCleanCopy();
+		listNode.markAsEndNode();
+		
+		int numberOfSeparators = separators.length;
+		AbstractStackNode[] prod = new AbstractStackNode[numberOfSeparators + 2];
+		
+		listNode.setNext(prod);
+		prod[0] = listNode; // Start
+		for(int i = numberOfSeparators - 1; i >= 0; --i){
+			AbstractStackNode separator = separators[i];
+			separator.setNext(prod);
+			separator.markAsSeparator();
+			prod[i + 1] = separator;
+		}
+		prod[numberOfSeparators + 1] = listNode; // End
+		
+		if(isPlusList){
+			return new AbstractStackNode[]{listNode};
+		}
+		
+		AbstractStackNode empty = EMPTY.getCleanCopy();
+		empty.markAsEndNode();
+		
+		return new AbstractStackNode[]{listNode, empty};
 	}
 	
 	public String getIdentifier(){
@@ -91,36 +110,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractStackNode[] getChildren(){
-		AbstractStackNode listNode = child.getCleanCopy();
-		listNode.markAsEndNode();
-		listNode.setStartLocation(startLocation);
-		listNode.initEdges();
-		listNode.addEdgeWithPrefix(this, null, startLocation);
-		
-		int numberOfSeparators = separators.length;
-		AbstractStackNode[] prod = new AbstractStackNode[numberOfSeparators + 2];
-		
-		listNode.setNext(prod);
-		prod[0] = listNode; // Start
-		for(int i = numberOfSeparators - 1; i >= 0; --i){
-			AbstractStackNode separator = separators[i];
-			separator.setNext(prod);
-			separator.markAsSeparator();
-			prod[i + 1] = separator;
-		}
-		prod[numberOfSeparators + 1] = listNode; // End
-		
-		if(isPlusList){
-			return new AbstractStackNode[]{listNode};
-		}
-		
-		AbstractStackNode empty = EMPTY.getCleanCopy();
-		empty.markAsEndNode();
-		empty.setStartLocation(startLocation);
-		empty.initEdges();
-		empty.addEdge(this);
-		
-		return new AbstractStackNode[]{listNode, empty};
+		return children;
 	}
 	
 	public AbstractNode getResult(){
