@@ -337,14 +337,12 @@ public class SGLL implements IGLL{
 		location = closestNextLocation;
 	}
 	
-	private boolean shareListNode(AbstractStackNode node, AbstractStackNode stack){
-		int id = node.getId();
+	private boolean shareListNode(int id, AbstractStackNode stack){
 		AbstractStackNode sharedNode = sharedNextNodes.get(id);
 		if(sharedNode != null){
 			sharedNode.addEdgeWithPrefix(stack, null, location);
 			return true;
 		}
-		sharedNextNodes.putUnsafe(id, node);
 		return false;
 	}
 	
@@ -405,13 +403,27 @@ public class SGLL implements IGLL{
 			AbstractStackNode[] listChildren = node.getChildren();
 			
 			AbstractStackNode child = listChildren[0];
-			if(!shareListNode(child, node)){
+			int childId = child.getId();
+			if(!shareListNode(childId, node)){
+				child = child.getCleanCopy();
+				
+				sharedNextNodes.putUnsafe(childId, child);
+				
+				child.setStartLocation(location);
+				child.initEdges();
+				child.addEdgeWithPrefix(node, null, location);
+				
 				stacksToExpand.add(child);
 			}
 			
 			if(listChildren.length > 1){ // Star list or optional.
 				// This is always epsilon (and unique for this position); so shouldn't be shared.
-				stacksToExpand.add(listChildren[1]);
+				AbstractStackNode empty = listChildren[1].getCleanCopy();
+				empty.setStartLocation(location);
+				empty.initEdges();
+				empty.addEdge(node);
+				
+				stacksToExpand.add(empty);
 			}
 		}
 	}
