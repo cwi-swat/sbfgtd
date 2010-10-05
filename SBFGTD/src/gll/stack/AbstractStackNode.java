@@ -318,10 +318,6 @@ public abstract class AbstractStackNode{
 		this.startLocation = startLocation;
 	}
 	
-	public boolean startLocationIsSet(){
-		return (startLocation != -1);
-	}
-	
 	public int getStartLocation(){
 		return startLocation;
 	}
