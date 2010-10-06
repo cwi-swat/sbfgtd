@@ -125,7 +125,7 @@ public class SGLL implements IGLL{
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 			if(levelResultStoreMap != null){
 				AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
-				if(resultStore != null){ // Is nullable, add the known results.
+				if(resultStore != null){ // Is nullable, queue for reduction.
 					stacksWithNonTerminalsToReduce.put(next);
 				}
 			}
@@ -150,7 +150,7 @@ public class SGLL implements IGLL{
 				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 				if(levelResultStoreMap != null){
 					AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
-					if(resultStore != null){ // Is nullable, add the known results.
+					if(resultStore != null){ // Is nullable, queue for reduction.
 						stacksWithNonTerminalsToReduce.put(next);
 					}
 				}
