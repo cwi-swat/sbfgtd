@@ -336,7 +336,5 @@ public abstract class AbstractStackNode{
 	// Results.
 	public abstract void setResultStore(AbstractContainerNode resultStore);
 	
-	public abstract AbstractContainerNode getResultStore();
-	
 	public abstract AbstractNode getResult();
 }

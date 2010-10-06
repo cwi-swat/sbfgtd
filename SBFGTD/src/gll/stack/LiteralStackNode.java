@@ -69,10 +69,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public int getLength(){
 		return literal.length;
 	}

@@ -60,10 +60,6 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		result = resultStore;
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		return result;
-	}
-	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}

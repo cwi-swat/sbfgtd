@@ -89,10 +89,6 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public int getLength(){
 		return 1;
 	}

@@ -56,10 +56,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public int getLength(){
 		return 0;
 	}
