@@ -28,7 +28,7 @@ public class SGLL implements IGLL{
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
-	private final HashMap<String, ArrayList<AbstractStackNode>> cachedExpects;
+	private final HashMap<String, ArrayList<AbstractStackNode>> cachedEdgesForExpect;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
 	
@@ -55,7 +55,7 @@ public class SGLL implements IGLL{
 		lastExpects = new ArrayList<AbstractStackNode[]>();
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
 		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
-		cachedExpects = new HashMap<String, ArrayList<AbstractStackNode>>();
+		cachedEdgesForExpect = new HashMap<String, ArrayList<AbstractStackNode>>();
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
 		
@@ -352,6 +352,8 @@ public class SGLL implements IGLL{
 		int nrOfExpects = lastExpects.size();
 		ArrayList<AbstractStackNode> expects = new ArrayList<AbstractStackNode>(nrOfExpects);
 		
+		ArrayList<AbstractStackNode> cachedEdges = null;
+		
 		for(int i = nrOfExpects - 1; i >= 0; --i){
 			AbstractStackNode[] expectedNodes = lastExpects.get(i);
 			
@@ -371,7 +373,11 @@ public class SGLL implements IGLL{
 			first.setStartLocation(location);
 			first.setNext(expectedNodes);
 			first.initEdges();
-			first.addEdge(stackBeingWorkedOn);
+			if(cachedEdges == null){
+				cachedEdges = first.addEdge(stackBeingWorkedOn);
+			}else{
+				first.addEdges(cachedEdges, location);
+			}
 			
 			sharedLastExpects.add(firstId, first);
 			
@@ -380,7 +386,7 @@ public class SGLL implements IGLL{
 			expects.add(first);
 		}
 		
-		cachedExpects.put(stackBeingWorkedOn.getName(), expects);
+		cachedEdgesForExpect.put(stackBeingWorkedOn.getName(), cachedEdges);
 	}
 	
 	private void expandStack(AbstractStackNode node){
@@ -390,11 +396,9 @@ public class SGLL implements IGLL{
 		}
 		
 		if(!node.isList()){
-			ArrayList<AbstractStackNode> expects = cachedExpects.get(node.getName());
-			if(expects != null){
-				for(int i = expects.size() - 1; i >= 0; --i){
-					expects.get(i).addEdge(node);
-				}
+			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
+			if(cachedEdges != null){
+				cachedEdges.add(node);
 			}else{
 				invokeExpects(node.getMethodName());
 				handleExpects(node);
@@ -430,7 +434,7 @@ public class SGLL implements IGLL{
 	
 	private void expand(){
 		if(previousLocation != location){
-			cachedExpects.clear();
+			cachedEdgesForExpect.clear();
 		}
 		while(stacksToExpand.size() > 0){
 			lastExpects.dirtyClear();
