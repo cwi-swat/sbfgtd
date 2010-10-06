@@ -97,10 +97,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		result = resultStore;
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		return result;
-	}
-	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}

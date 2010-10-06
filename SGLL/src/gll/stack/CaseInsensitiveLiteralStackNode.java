@@ -88,10 +88,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public int getLength(){
 		return ciLiteral.length;
 	}

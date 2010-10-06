@@ -164,19 +164,17 @@ public class SGLL implements IGLL{
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		AbstractNode result = node.getResult();
 		
-		// Update results (if necessary).
-		for(int i = edgesMap.size() - 1; i >= 0; --i){
-			int startLocation = edgesMap.getKey(i);
-			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
-			
-			// Update one (because of sharing all will be updated).
-			AbstractStackNode edge = edgesPart.get(0);
-			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-			Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, startLocation);
-			edgePrefixes.add(prefix);
-			AbstractNode resultStore = edge.getResultStore();
-			resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
-		}
+		// Update one (because of sharing all will be updated).
+		ArrayList<Link> edgePrefixes = new ArrayList<Link>();
+		Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, location);
+		edgePrefixes.add(prefix);
+		
+		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+		ArrayList<AbstractStackNode> edgesPart = edgesMap.findValue(location);
+		AbstractStackNode edge = edgesPart.get(0);
+		
+		AbstractNode resultStore = levelResultStoreMap.get(edge.getIdentifier());
+		resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
 	}
 	
 	private void updateEdges(AbstractStackNode node){

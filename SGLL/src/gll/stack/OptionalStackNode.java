@@ -84,10 +84,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		result = resultStore;
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		return result;
-	}
-	
 	public AbstractStackNode[] getChildren(){
 		return children;
 	}

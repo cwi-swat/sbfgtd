@@ -86,10 +86,6 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		result = resultStore;
 	}
 	
-	public AbstractContainerNode getResultStore(){
-		return result;
-	}
-	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
