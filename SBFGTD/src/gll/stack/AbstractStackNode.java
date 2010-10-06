@@ -45,24 +45,6 @@ public abstract class AbstractStackNode{
 		this.isSeparator = original.isSeparator;
 	}
 	
-	protected AbstractStackNode(AbstractStackNode original, ArrayList<Link>[] prefixes){
-		super();
-		
-		id = original.id;
-		dot = original.dot;
-
-		next = original.next;
-		alternateNexts = original.alternateNexts;
-		edgesMap = original.edgesMap;
-		
-		prefixesMap = prefixes;
-		
-		startLocation = original.startLocation;
-
-		isEndNode = original.isEndNode;
-		isSeparator = original.isSeparator;
-	}
-	
 	// General.
 	public int getId(){
 		return id;
