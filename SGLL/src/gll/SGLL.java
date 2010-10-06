@@ -96,17 +96,21 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node){
+	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
 		int id = next.getId();
 		AbstractStackNode alternative = sharedNextNodes.get(id);
 		if(alternative != null){
-			alternative.updateNode(node);
+			alternative.updateNode(node, result);
 			
 			if(alternative.isEndNode()){
-				if(!alternative.isClean() && alternative.getStartLocation() == location){
-					if(alternative != node){ // List cycle fix.
-						// Encountered self recursive epsilon cycle; update the prefixes.
-						updatePrefixes(alternative, node);
+				if(result.isNullable() && node.getIdentifier() == next.getIdentifier()){
+					if(alternative.getId() != node.getId()){ // List cycle fix.
+						HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+						AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
+						if(resultStore != null){
+							// Encountered self recursive epsilon cycle; update the prefixes.
+							updatePrefixes(node, resultStore);
+						}
 					}
 				}
 			}
@@ -114,7 +118,7 @@ public class SGLL implements IGLL{
 		}
 		
 		next = next.getCleanCopy();
-		next.updateNode(node);
+		next.updateNode(node, result);
 		next.setStartLocation(location);
 		
 		if(!next.isMatchable()){ // Is non-terminal or list.
@@ -122,7 +126,6 @@ public class SGLL implements IGLL{
 			if(levelResultStoreMap != null){
 				AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
 				if(resultStore != null){ // Is nullable, add the known results.
-					next.setResultStore(resultStore);
 					stacksWithNonTerminalsToReduce.put(next);
 				}
 			}
@@ -148,7 +151,6 @@ public class SGLL implements IGLL{
 				if(levelResultStoreMap != null){
 					AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
 					if(resultStore != null){ // Is nullable, add the known results.
-						next.setResultStore(resultStore);
 						stacksWithNonTerminalsToReduce.put(next);
 					}
 				}
@@ -159,28 +161,25 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode next, AbstractStackNode node){
+	private void updatePrefixes(AbstractStackNode node, AbstractContainerNode resultStore){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
-		AbstractNode result = node.getResult();
 		
 		// Update one (because of sharing all will be updated).
 		ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-		Link prefix = constructPrefixesFor(edgesMap, prefixesMap, result, location);
+		Link prefix = constructPrefixesFor(edgesMap, prefixesMap, resultStore, location);
 		edgePrefixes.add(prefix);
 		
-		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 		ArrayList<AbstractStackNode> edgesPart = edgesMap.findValue(location);
 		AbstractStackNode edge = edgesPart.get(0);
 		
-		AbstractNode resultStore = levelResultStoreMap.get(edge.getIdentifier());
-		resultStore.addAlternative(new Link(edgePrefixes, next.getResult()));
+		HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(location);
+		levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, resultStore));
 	}
 	
-	private void updateEdges(AbstractStackNode node){
+	private void updateEdges(AbstractStackNode node, AbstractNode result){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
-		AbstractNode result = node.getResult();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
 			int startLocation = edgesMap.getKey(i);
@@ -189,7 +188,7 @@ public class SGLL implements IGLL{
 			AbstractStackNode edge = edgeList.get(0);
 			String identifier = edge.getIdentifier();
 			String nodeName = edge.getName();
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startLocation);
+			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
 			AbstractContainerNode resultStore = null;
 			if(levelResultStoreMap != null){
 				resultStore = levelResultStoreMap.get(identifier);
@@ -205,10 +204,6 @@ public class SGLL implements IGLL{
 				levelResultStoreMap.putUnsafe(identifier, resultStore);
 				resultStore.addAlternative(resultLink);
 				
-				if(!edge.isClean()){
-					edge = edge.getCleanCopyWithPrefix();
-				}
-				edge.setResultStore(resultStore);
 				stacksWithNonTerminalsToReduce.put(edge);
 				if(location == input.length && !edge.hasEdges()){
 					root = edge; // Root reached.
@@ -216,10 +211,6 @@ public class SGLL implements IGLL{
 				
 				for(int j = edgeList.size() - 1; j >= 1; --j){
 					edge = edgeList.get(j);
-					if(!edge.isClean()){
-						edge = edge.getCleanCopyWithPrefix();
-					}
-					edge.setResultStore(resultStore);
 					stacksWithNonTerminalsToReduce.put(edge);
 					if(location == input.length && !edge.hasEdges()){
 						root = edge; // Root reached.
@@ -229,9 +220,9 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void move(AbstractStackNode node){
+	private void move(AbstractStackNode node, AbstractNode result){
 		if(node.isEndNode()){
-			updateEdges(node);
+			updateEdges(node, result);
 		}
 		
 		if(node.hasNext()){
@@ -240,7 +231,7 @@ public class SGLL implements IGLL{
 			AbstractStackNode[] prod = node.getNext();
 			AbstractStackNode next = prod[nextDot];
 			next.setNext(prod);
-			next = updateNextNode(next, node);
+			next = updateNextNode(next, node, result);
 			
 			LinearIntegerKeyedMap<AbstractStackNode[]> alternateProds = node.getAlternateNexts();
 			if(alternateProds != null){
@@ -289,11 +280,14 @@ public class SGLL implements IGLL{
 	private void reduceTerminal(AbstractStackNode terminal){
 		if(!terminal.match(input)) return;
 		
-		move(terminal);
+		move(terminal, terminal.getResult());
 	}
 	
 	private void reduceNonTerminal(AbstractStackNode nonTerminal){
-		move(nonTerminal);
+		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(nonTerminal.getStartLocation());
+		AbstractNode result = levelResultStoreMap.get(nonTerminal.getIdentifier());
+		
+		move(nonTerminal, result);
 	}
 	
 	private void reduce(){
@@ -478,6 +472,8 @@ public class SGLL implements IGLL{
 		
 		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
 		
-		return root.getResult();
+		
+		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
+		return levelResultStoreMap.get(start);
 	}
 }

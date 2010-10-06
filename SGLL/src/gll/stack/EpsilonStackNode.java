@@ -1,15 +1,10 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.AbstractContainerNode;
 import gll.result.EpsilonNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class EpsilonStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
-	
-	private boolean isReduced;
 	
 	public EpsilonStackNode(int id, int dot){
 		super(id, dot);
@@ -17,10 +12,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	
 	private EpsilonStackNode(EpsilonStackNode original){
 		super(original);
-	}
-	
-	private EpsilonStackNode(EpsilonStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 	}
 	
 	public String getIdentifier(){
@@ -36,24 +27,11 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	}
 	
 	public boolean match(char[] input){
-		isReduced = true;
 		return true;
-	}
-	
-	public boolean isClean(){
-		return !isReduced;
 	}
 	
 	public AbstractStackNode getCleanCopy(){
 		return new EpsilonStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new EpsilonStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){

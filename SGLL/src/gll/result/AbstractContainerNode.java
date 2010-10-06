@@ -28,11 +28,11 @@ public abstract class AbstractContainerNode extends AbstractNode{
 		}
 	}
 	
-	protected boolean isNullable(){
+	public boolean isNullable(){
 		return isNullable;
 	}
 	
-	protected boolean isSeparator(){
+	public boolean isSeparator(){
 		return isSeparator;
 	}
 }

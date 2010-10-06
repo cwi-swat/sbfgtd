@@ -1,6 +1,5 @@
 package gll.stack;
 
-import gll.result.AbstractContainerNode;
 import gll.result.AbstractNode;
 import gll.result.struct.Link;
 import gll.util.ArrayList;
@@ -106,11 +105,7 @@ public abstract class AbstractStackNode{
 	public abstract boolean match(char[] input);
 	
 	// Sharing.
-	public abstract boolean isClean();
-	
 	public abstract AbstractStackNode getCleanCopy();
-	
-	public abstract AbstractStackNode getCleanCopyWithPrefix();
 	
 	public boolean isSimilar(AbstractStackNode node){
 		return (node.getId() == getId());
@@ -216,10 +211,9 @@ public abstract class AbstractStackNode{
 		prefixes.add(prefix);
 	}
 	
-	public void updateNode(AbstractStackNode predecessor){
+	public void updateNode(AbstractStackNode predecessor, AbstractNode result){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
-		AbstractNode result = predecessor.getResult();
 		
 		if(edgesMap == null){
 			edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>(edgesMapToAdd);
@@ -334,7 +328,5 @@ public abstract class AbstractStackNode{
 	public abstract AbstractStackNode[] getChildren();
 	
 	// Results.
-	public abstract void setResultStore(AbstractContainerNode resultStore);
-	
 	public abstract AbstractNode getResult();
 }

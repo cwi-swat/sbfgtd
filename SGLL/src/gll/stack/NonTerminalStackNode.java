@@ -1,14 +1,9 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.AbstractContainerNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class NonTerminalStackNode extends AbstractStackNode{
 	private final String nonTerminal;
-	
-	private AbstractContainerNode result;
 	
 	public NonTerminalStackNode(int id, int dot, String nonTerminal){
 		super(id, dot);
@@ -18,12 +13,6 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	
 	private NonTerminalStackNode(NonTerminalStackNode original){
 		super(original);
-
-		nonTerminal = original.nonTerminal;
-	}
-	
-	private NonTerminalStackNode(NonTerminalStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 
 		nonTerminal = original.nonTerminal;
 	}
@@ -44,20 +33,8 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isClean(){
-		return (result == null);
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new NonTerminalStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new NonTerminalStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		result = resultStore;
 	}
 	
 	public int getLength(){
@@ -69,7 +46,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	public String toString(){

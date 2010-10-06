@@ -1,10 +1,7 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.AbstractContainerNode;
 import gll.result.LiteralNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ciLiteral;
@@ -31,12 +28,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original){
 		super(original);
-
-		ciLiteral = original.ciLiteral;
-	}
-	
-	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 
 		ciLiteral = original.ciLiteral;
 	}
@@ -72,20 +63,8 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return true;
 	}
 	
-	public boolean isClean(){
-		return true;
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new CaseInsensitiveLiteralStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new CaseInsensitiveLiteralStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){

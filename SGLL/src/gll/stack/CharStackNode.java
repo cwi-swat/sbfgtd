@@ -2,9 +2,6 @@ package gll.stack;
 
 import gll.result.AbstractNode;
 import gll.result.CharNode;
-import gll.result.AbstractContainerNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class CharStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ranges;
@@ -25,15 +22,6 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	
 	private CharStackNode(CharStackNode original){
 		super(original);
-		
-		ranges = original.ranges;
-		characters = original.characters;
-		
-		production = original.production;
-	}
-	
-	private CharStackNode(CharStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 		
 		ranges = original.ranges;
 		characters = original.characters;
@@ -73,20 +61,8 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		return false;
 	}
 	
-	public boolean isClean(){
-		return true;
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new CharStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new CharStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){
