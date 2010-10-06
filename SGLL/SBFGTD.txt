@@ -1,0 +1,93 @@
+GSS:
+-Every production consists of a number of nodes with a unique id. (For example S ::= AB, A ::= a, B ::= b has the nodes S(-1), A(0), B(1), a(2) and b(3)).
+-Every node in the GSS is unique per start position (N).
+-Every node has one unique result per substring (start + end position) (N^2).
+-Every node has edges that point back to their 'parent(s)' (the node(s) that 'queued' / 'expected' it) (N).
+-Every node has a reference to the 'next' node in the production.
+-The recognizer is O(N^3) worst case (N nodes * N edges that are followed N times (once per substring); thus N * N * N).
+
+Parse forest:
+-'Deflattenized' (binarized).
+-Every result + prefixesList pair is unique.
+-Every prefix in the prefixesList represents a different parse of the same unique substring (start + end position).
+-Every result represents a unique substring (start + end position).
+-Every pair is identified by it's prefixesList's start position, result start position and result end position; the prefix end position and result start position are the same (naturally). Thus there are at most N^3 pairs in the resulting parse tree, making it O(N^3) worst case.
+
+----------------------
+
+Basic recognizer algorithm:
+1. Expand the left most node that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
+2. Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
+3. Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production their are part of where applicable, until no reductions are possible anymore.
+4. goto 1.
+
+PseudoCode:
+parse(){
+	toExpand.push('startNode');
+	expand();
+	
+	do{
+		reduce();
+		expand();
+	}while(notEmpty(todoList));
+}
+
+expand(){
+	while(notEmpty(toExpandList)){
+		node = toExpandList.pop();
+		
+		Node[] children = getChildrenFor(node);
+		for(childNode <- children){
+			if(expandedList.contains(childNode)){ // Sharing
+				expandedList.get(childNode).addEdge(node);
+			}else{
+				expandedList.add(childNode);
+				
+				if(isTerminal(childNode)){
+					todoList.push(childNode);
+				}else{
+					toExpandList.push(childNode);
+				}
+			}
+		}
+	}
+}
+
+reduce(){
+	while(!todoList.isEmpty()){
+		node = todoList.pop();
+		
+		if(node.hasEdges()){
+			for(parent <- node.getEdges()){
+				todoList.push(parent);
+			}
+		}else if(node.hasNext()){
+			next = node.getNext();
+			if(toExpand.contains(next)){ // Sharing
+				toExpandList.get(next).addEdges(node.getEdges());
+			}else{
+				toExpandList.push(next);
+				next.addEdges(node.getEdges());
+			}
+		}
+	}
+}
+
+Optimizations:
+-Make the algortihm breath first to make it level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in practice.
+-Match on entire literals instead of characters. This reduces stack activity and improves performance.
+-Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
+-Cache 'expected' children for every node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
+-Share prefixes of productions. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))).
+
+Extended features:
+-Lists are special-case GSS nodes that contain logic for stack expansion. (For example S ::= A* will queue A with a 'next' pointer to itself (sort of dynamicly growing production) and 'epsilon').
+-Separated lists are similar with separator nodes added in between (For example S ::= {A B}* results in queueing the 'cyclic production': A -> B -> A and 'epsilon').
+-Optionals are similar to lists, but only expect one thing + 'epsilon'.
+-Start-of-line, end-of-line and at-column stack nodes are also available. These don't consume any input, but work as a kind of restrictions.
+
+Filtering:
+-Follow restrictions: If the current node that is being reduced is followed by any of the follow restrictions the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
+-Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
+-Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E of the left side of the production).
+
