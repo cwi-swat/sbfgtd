@@ -152,7 +152,7 @@ public abstract class AbstractStackNode{
 		edgesMap = new LinearIntegerKeyedMap<ArrayList<AbstractStackNode>>();
 	}
 	
-	public void addEdge(AbstractStackNode edge){
+	public ArrayList<AbstractStackNode> addEdge(AbstractStackNode edge){
 		int startLocation = edge.getStartLocation();
 		
 		ArrayList<AbstractStackNode> edges = edgesMap.findValue(startLocation);
@@ -162,6 +162,12 @@ public abstract class AbstractStackNode{
 		}
 		
 		edges.add(edge);
+		
+		return edges;
+	}
+	
+	public void addEdges(ArrayList<AbstractStackNode> edges, int startLocation){
+		edgesMap.add(startLocation, edges);
 	}
 	
 	public void addEdgeWithPrefix(AbstractStackNode edge, Link prefix, int startLocation){
