@@ -18,11 +18,11 @@ public class CharNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	protected boolean isNullable(){
+	public boolean isNullable(){
 		return false;
 	}
 	
-	protected boolean isSeparator(){
+	public boolean isSeparator(){
 		return false;
 	}
 	

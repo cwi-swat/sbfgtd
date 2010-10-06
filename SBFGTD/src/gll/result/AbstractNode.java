@@ -11,9 +11,9 @@ public abstract class AbstractNode{
 	
 	public abstract void addAlternative(Link children);
 	
-	protected abstract boolean isNullable();
+	public abstract boolean isNullable();
 	
-	protected abstract boolean isSeparator();
+	public abstract boolean isSeparator();
 	
 	protected abstract String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark);
 	

@@ -1,10 +1,7 @@
 package gll.stack;
 
 import gll.result.AbstractNode;
-import gll.result.AbstractContainerNode;
 import gll.result.LiteralNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class LiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[] literal;
@@ -20,14 +17,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	
 	private LiteralStackNode(LiteralStackNode original){
 		super(original);
-
-		literal = original.literal;
-		
-		result = original.result;
-	}
-	
-	private LiteralStackNode(LiteralStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 
 		literal = original.literal;
 		
@@ -53,20 +42,8 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		return true;
 	}
 	
-	public boolean isClean(){
-		return true;
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new LiteralStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new LiteralStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		throw new UnsupportedOperationException();
 	}
 	
 	public int getLength(){

@@ -1,9 +1,6 @@
 package gll.stack;
 
-import gll.result.AbstractContainerNode;
 import gll.result.AbstractNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class SeparatedListStackNode extends AbstractStackNode implements IListStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
@@ -11,8 +8,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	private final String nodeName;
 
 	private final AbstractStackNode[] children;
-	
-	private AbstractContainerNode result;
 	
 	public SeparatedListStackNode(int id, int dot, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
 		super(id, dot);
@@ -24,14 +19,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	
 	private SeparatedListStackNode(SeparatedListStackNode original){
 		super(original);
-		
-		nodeName = original.nodeName;
-
-		children = original.children;
-	}
-	
-	private SeparatedListStackNode(SeparatedListStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 		
 		nodeName = original.nodeName;
 
@@ -81,20 +68,8 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isClean(){
-		return (result == null);
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new SeparatedListStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new SeparatedListStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		result = resultStore;
 	}
 	
 	public int getLength(){
@@ -106,7 +81,7 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	public String toString(){

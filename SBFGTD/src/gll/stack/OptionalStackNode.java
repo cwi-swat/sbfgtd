@@ -1,9 +1,6 @@
 package gll.stack;
 
-import gll.result.AbstractContainerNode;
 import gll.result.AbstractNode;
-import gll.result.struct.Link;
-import gll.util.ArrayList;
 
 public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
@@ -11,8 +8,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	private final AbstractStackNode[] children;
 	
 	private final String nodeName;
-	
-	private AbstractContainerNode result;
 	
 	public OptionalStackNode(int id, int dot, AbstractStackNode optional, String nodeName){
 		super(id, dot);
@@ -24,14 +19,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	private OptionalStackNode(OptionalStackNode original){
 		super(original);
-		
-		children = original.children;
-		
-		nodeName = original.nodeName;
-	}
-	
-	private OptionalStackNode(OptionalStackNode original, ArrayList<Link>[] prefixes){
-		super(original, prefixes);
 		
 		children = original.children;
 		
@@ -68,20 +55,8 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isClean(){
-		return (result == null);
-	}
-	
 	public AbstractStackNode getCleanCopy(){
 		return new OptionalStackNode(this);
-	}
-
-	public AbstractStackNode getCleanCopyWithPrefix(){
-		return new OptionalStackNode(this, prefixesMap);
-	}
-	
-	public void setResultStore(AbstractContainerNode resultStore){
-		result = resultStore;
 	}
 	
 	public AbstractStackNode[] getChildren(){
@@ -89,7 +64,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	public String toString(){
