@@ -65,6 +65,16 @@ public class RotatingQueue<E>{
 		return (nextPutIndex == ((getIndex + 1) & capacityMask));
 	}
 	
+	public E peek(){
+		if(isEmpty()) return null;
+		
+		return queue[(getIndex + 1) & capacityMask];
+	}
+	
+	public E peekUnsafe(){
+		return queue[(getIndex + 1) & capacityMask];
+	}
+	
 	public E get(){
 		if(isEmpty()) return null;
 		
@@ -75,7 +85,14 @@ public class RotatingQueue<E>{
 		return element;
 	}
 	
-	public E unsafeGet(){
+	public E getDirty(){
+		if(isEmpty()) return null;
+		
+		getIndex = (getIndex + 1) & capacityMask;
+		return queue[getIndex];
+	}
+	
+	public E getUnsafe(){
 		getIndex = (getIndex + 1) & capacityMask;
 		E element = queue[getIndex];
 		queue[getIndex] = null;
@@ -83,9 +100,19 @@ public class RotatingQueue<E>{
 		return element;
 	}
 	
+	public E getDirtyUnsafe(){
+		getIndex = (getIndex + 1) & capacityMask;
+		return queue[getIndex];
+	}
+	
 	public void clear(){
 		queue = (E[]) new Object[capacity];
 		
+		nextPutIndex = 1;
+		getIndex = 0;
+	}
+	
+	public void dirtyClear(){
 		nextPutIndex = 1;
 		getIndex = 0;
 	}
