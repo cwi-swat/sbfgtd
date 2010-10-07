@@ -8,38 +8,6 @@ GSS:
 
 -------------------------------------------------------------------------------------
 
-Parse forest:
--'Deflattenized' (binarized).
--Every result + prefixesList pair is unique.
--Every prefix in the prefixesList represents a different parse of the same unique substring (start + end position).
--Every result represents a unique substring (start + end position).
--All prefixes can be reused in every pair regardless of the result's end position.
--Every pair is identified by it's prefixesList's start position, result start position and result end position; the prefix end position and result start position are the same (naturally). Thus there are at most N^3 pairs in the resulting parse tree, making it O(N^3) worst case.
-
--------------------------------------------------------------------------------------
-
-Parse tree example:
-Grammar:
-S ::= AAAA | AAA | AA
-A ::= a | aa
-input = aaaa
-
-Alternatives for 'S0-4' (numbers indicate start and end position of the matched substring):
-A0-1 <- A1-2 <- A2-3 <- A3-4
- \- A1-3 <--\-----/----/
-A0-2 <-------\---/
-   \          \------- A2-4
-    \-----------------/
-
-Derivations:
-S(A(a),A(a),A(a),A(a))	A0-1 <- A1-2 <- A2-3 <- A3-4
-S(A(a),A(aa),A(a))	A0-1 <- A1-3 <- A3-4
-S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
-S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
-S(A(aa),A(aa))		A0-2 <- A2-4
-
--------------------------------------------------------------------------------------
-
 Basic recognizer algorithm:
 1. Expand the left most node that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
 2. Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
@@ -48,13 +16,15 @@ Basic recognizer algorithm:
 
 Recognizer pseudocode:
 parse(){
-	toExpand.push('startNode');
+	toExpandList.push('startNode');
 	expand();
 	
 	do{
 		reduce();
 		expand();
 	}while(notEmpty(todoList));
+	
+	if(notAtEOI()) parse error;
 }
 
 expand(){
@@ -63,15 +33,21 @@ expand(){
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
-			if(expandedList.contains(childNode)){ // Sharing
-				expandedList.get(childNode).addEdge(node);
+			if(reducedList.contains(childNode)){
+				if(reducedList.notContains(node)){
+					todoList.add(node);
+				}
 			}else{
-				expandedList.add(childNode);
-				
-				if(isTerminal(childNode)){
-					todoList.push(childNode);
+				if(expandedList.contains(childNode)){ // Sharing
+					expandedList.get(childNode).addEdge(node);
 				}else{
-					toExpandList.push(childNode);
+					expandedList.add(childNode);
+				
+					if(isTerminal(childNode)){
+						todoList.push(childNode);
+					}else{
+						toExpandList.push(childNode);
+					}
 				}
 			}
 		}
@@ -81,6 +57,7 @@ expand(){
 reduce(){
 	while(!todoList.isEmpty()){
 		node = todoList.pop();
+		reducedList.add(node);
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
@@ -98,17 +75,95 @@ reduce(){
 	}
 }
 
+Example trace:
+S ::= AB
+A ::= a
+B ::= b
+input = ab
+
+1. expand S
+2. expand A
+3. todo a
+4. reduce a and follow edge to A
+5. move from A to B
+6. expand B
+7. todo b
+8. reduce b follow edge to B
+9. reduce AB and follow edge to S
+10. reduce S
+11. done.
+
+
+Example trace 2:
+S ::= A
+A ::= Aa | a
+input = aaa
+
+1. expand S
+2. expand A
+3. expand A -> shared
+4. todo a
+5. reduce a and follow edge to A
+6. move from A to a
+7. todo a
+8. reduce Aa and follow edges to S and A
+9. parse for S is incomplete and is discarded
+10. move from A to a
+11. todo a
+12. reduce Aa and follow edges to S and A
+13. parse for S is complete, store as alternative.
+14. move from A to a
+15. todo a
+16. reduce Aa failed, since EOI has already been reached.
+17. done.
+
+-------------------------------------------------------------------------------------
+
+Parse forest:
+-'Deflattenized' (binarized).
+-Every result + prefixesList pair is unique.
+-Every prefix in the prefixesList represents a different parse of the same unique substring (start + end position).
+-Every result represents a unique substring (start + end position).
+-All prefixes can be reused in every pair regardless of the result's end position.
+-Every pair is identified by it's prefixesList's start position, result start position and result end position; the prefix end position and result start position are the same (naturally). Thus there are at most N^3 pairs in the resulting parse tree, making it O(N^3) worst case.
+
+-------------------------------------------------------------------------------------
+
+Parse tree example:
+Grammar:
+S ::= AAAA | AAA | AA
+A ::= a | aa
+input = aaaa
+
+Visual representation of the parse forest, showing all alternatives for 'S0-4' (numbers indicate start and end position of the matched substring):
+A0-1 <- A1-2 <- A2-3 <- A3-4
+ \- A1-3 <--\-----/----/
+A0-2 <-------\---/
+   \          \-------- A2-4
+    \------------------/
+
+Derivations (flattened version of the parse forest above):
+S(A(a),A(a),A(a),A(a))	A0-1 <- A1-2 <- A2-3 <- A3-4
+S(A(a),A(aa),A(a))	A0-1 <- A1-3 <- A3-4
+S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
+S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
+S(A(aa),A(aa))		A0-2 <- A2-4
+
 -------------------------------------------------------------------------------------
 
 Parser psuedocode:
 parse(){
-	toExpand.push('startNode');
+	toExpandList.push('startNode');
 	expand();
 	
 	do{
 		reduce();
 		expand();
 	}while(notEmpty(todoList));
+	
+	if(notAtEOI()) parse error;
+	
+	return findResultStore('startNode');
 }
 
 expand(){
@@ -117,15 +172,21 @@ expand(){
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
-			if(expandedList.contains(childNode)){ // Sharing
-				expandedList.get(childNode).addEdge(node);
+			if(reducedList.contains(childNode)){
+				if(reducedList.notContains(node)){
+					todoList.add(node);
+				}
 			}else{
-				expandedList.add(childNode);
-				
-				if(isTerminal(childNode)){
-					todoList.push(childNode);
+				if(expandedList.contains(childNode)){ // Sharing
+					expandedList.get(childNode).addEdge(node);
 				}else{
-					toExpandList.push(childNode);
+					expandedList.add(childNode);
+				
+					if(isTerminal(childNode)){
+						todoList.push(childNode);
+					}else{
+						toExpandList.push(childNode);
+					}
 				}
 			}
 		}
@@ -155,31 +216,32 @@ reduce(){
 }
 
 findResultStore(node){
-	return resultStores.findOrCreate(node.startLocation, node.name);
+	return resultStores.findOrCreate(node.startLocation, node.endLocation, node.name);
 }
 
-NOTE: algorithm / psuedocode was extracted from the actual implementation and has been made more generic. I'm currently unsure if there are any special cases missing (notably related to epsilons).
+NOTE: algorithm / psuedocode was extracted from the actual implementation and has been made more generic. I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion.
+
 -------------------------------------------------------------------------------------
 
 Optimizations:
--Make the algortihm breath first to make it level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.
+-Make the algortihm breadth first to make it level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.
 -Match on entire literals instead of characters. This reduces stack activity and improves performance.
--Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
+-Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
 -Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))).
 
 -------------------------------------------------------------------------------------
 
 Extended features:
--Lists are special-case GSS nodes that contain logic for stack expansion. (For example S ::= A* will queue A with a 'next' pointer to itself (sort of like a dynamicly growing production) and 'epsilon').
--Separated lists are similar with separator nodes added in between (For example S ::= {A B}* results in queueing the 'cyclic production': A0 -> B1 -> A0 and 'epsilon').
+-Lists are special-case GSS nodes that contain logic for stack expansion. (For example S ::= A* will queue A with a 'next' pointer to itself and 'epsilon'). So in a way, lists are implemented as dynamicly growing productions.
+-Separated lists are similar to non-separated lists, with separator nodes added in between (For example S ::= {A B}* results in queueing the 'cyclic production': A -> B -> A and 'epsilon').
 -Optionals are similar to lists, but only expect one 'child' + 'epsilon'.
 -Start-of-line, end-of-line and at-column stack nodes are also available. These don't consume any input, but work as a kind of restriction.
 
 -------------------------------------------------------------------------------------
 
 Filtering:
--Follow restrictions: If the current node being reduced is followed by any of the follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
+-Follow restrictions: If the current node being reduced is followed by any of its associated follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
 -Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
 -Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E of the left side of the production).
 
