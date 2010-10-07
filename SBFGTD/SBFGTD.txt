@@ -33,8 +33,8 @@ expand(){
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
-			if(reducedList.contains(childNode)){
-				if(reducedList.notContains(node)){
+			if(reducedList.contains(childNode)){ // Child already has results from difference path
+				if(reducedList.notContains(node)){ // Sharing
 					todoList.add(node);
 				}
 			}else{
@@ -82,40 +82,39 @@ B ::= b
 input = ab
 
 1. expand S
-2. expand A
-3. todo a
-4. reduce a and follow edge to A
-5. move from A to B
-6. expand B
-7. todo b
-8. reduce b follow edge to B
-9. reduce AB and follow edge to S
-10. reduce S
-11. done.
+2. expect AB
+3. expand A
+4. expect a
+5. reduce a and follow edge to A
+6. move from A to B
+7. expand B
+8. expect b
+9. reduce b follow edge to B
+10. reduce AB and follow edge to S
+11. reduce S
+12. done.
 
 
-Example trace 2:
+Example trace 2 (left recursive):
 S ::= A
 A ::= Aa | a
 input = aaa
 
 1. expand S
-2. expand A
-3. expand A -> shared
-4. todo a
-5. reduce a and follow edge to A
-6. move from A to a
-7. todo a
+2. expect A
+3. expand A
+4. expect Aa | a
+5. expand A -> A shared
+6. reduce a and follow edge to A
+7. move from A to a
 8. reduce Aa and follow edges to S and A
 9. parse for S is incomplete and is discarded
 10. move from A to a
-11. todo a
-12. reduce Aa and follow edges to S and A
-13. parse for S is complete, store as alternative.
-14. move from A to a
-15. todo a
-16. reduce Aa failed, since EOI has already been reached.
-17. done.
+11. reduce Aa and follow edges to S and A
+12. parse for S is complete.
+13. move from A to a
+14. reduce Aa failed, since EOI has already been reached.
+15. done.
 
 -------------------------------------------------------------------------------------
 
@@ -139,8 +138,8 @@ Visual representation of the parse forest, showing all alternatives for 'S0-4' (
 A0-1 <- A1-2 <- A2-3 <- A3-4
  \- A1-3 <--\-----/----/
 A0-2 <-------\---/
-   \          \-------- A2-4
-    \------------------/
+ \            \-------- A2-4
+  \---------------------/
 
 Derivations (flattened version of the parse forest above):
 S(A(a),A(a),A(a),A(a))	A0-1 <- A1-2 <- A2-3 <- A3-4
