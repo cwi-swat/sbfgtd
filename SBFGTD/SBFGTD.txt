@@ -246,3 +246,75 @@ Filtering:
 -Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
 -Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E of the left side of the production).
 
+-------------------------------------------------------------------------------------
+
+Benchmarks:
+
+Worst case:
+
+Recognizer:
+------------------------------------------
+Input chars	| Average Time	| Lowest Time
+------------------------------------------
+50		| ms	| ms
+100		| ms	| ms
+150		| ms	| ms
+200		| ms	| ms
+250		| ms	| ms
+300		| ms	| ms
+350		| ms	| ms
+400		| ms	| ms
+450		| ms	| ms
+500		| ms	| ms
+
+Parser:
+----------------------------------------------
+Input chars	| Average Time	| Lowest Time
+----------------------------------------------
+50		| 6 ms		| 0 ms
+100		| 36 ms		| 30 ms
+150		| 130 ms	| 130 ms
+200		| 332 ms	| 320 ms
+250		| 672 ms	| 660 ms
+300		| 1206 ms	| 1200 ms
+350		| 2018 ms	| 2010 ms
+400		| 3184 ms	| 3170 ms
+450		| 4776 ms	| 4750 ms
+500		| 6880 ms	| 6870 ms
+
+Grammar factoring & prefix sharing:
+This test tries to emulate a 'worst case' 'realistic' grammar in terms of size and type of productions. I.e. lots of left recursive stuff, but no ambiguous input.
+
+Grammar:
+S ::= A+
+E ::= E + E | E - E | E * E | E / E | E > E | ... 25 more like it ... | 1
+A ::= E | a
+input = a * 50000 | a * 100000 | a * 150000 | a * 200000
+
+Not left factored, not prefix shared; parse times:
+----------------------------------------------
+Input chars	| Average Time	| Lowest Time
+----------------------------------------------
+50000		| 423 ms	| 400 ms
+100000		| 786 ms	| 780 ms
+150000		| 1183 ms	| 1170 ms
+200000		| 1600 ms	| 1590 ms
+
+Left factored; parse times:
+----------------------------------------------
+Input chars	| Average Time	| Lowest Time
+----------------------------------------------
+50000		| 383 ms	| 380 ms
+100000		| 726 ms	| 720 ms
+150000		| 1090 ms	| 1080 ms
+200000		| 1443 ms	| 1440 ms
+
+Not left factored, prefix shared; parse times:
+----------------------------------------------
+Input chars	| Average Time	| Lowest Time
+----------------------------------------------
+50000		| 170 ms	| 160 ms
+100000		| 326 ms	| 320 ms
+150000		| 476 ms	| 470 ms
+200000		| 630 ms	| 630 ms
+

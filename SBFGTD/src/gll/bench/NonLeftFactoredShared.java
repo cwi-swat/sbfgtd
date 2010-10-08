@@ -1,5 +1,8 @@
 package gll.bench;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+
 import gll.SGLL;
 import gll.stack.AbstractStackNode;
 import gll.stack.ListStackNode;
@@ -144,17 +147,19 @@ public class NonLeftFactoredShared extends SGLL{
 	}
 	
 	private static void runTest(char[] input) throws Exception{
+		ThreadMXBean tmxb = ManagementFactory.getThreadMXBean();
+		
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
 		for(int i = ITERATIONS - 1; i >= 0; --i){
 			cleanup();
 			
-			long start = System.currentTimeMillis();
+			long start = tmxb.getCurrentThreadCpuTime();
 			NonLeftFactoredShared nlfs = new NonLeftFactoredShared(input);
 			nlfs.parse("S");
-			long end = System.currentTimeMillis();
+			long end = tmxb.getCurrentThreadCpuTime();
 			
-			long time = end - start;
+			long time = (end - start) / 1000000;
 			total += time;
 			lowest = (time < lowest) ? time : lowest;
 		}
