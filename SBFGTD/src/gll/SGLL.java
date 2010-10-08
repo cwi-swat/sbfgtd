@@ -234,7 +234,7 @@ public class SGLL implements IGLL{
 			next.setNext(prod);
 			next = updateNextNode(next, node, result);
 			
-			LinearIntegerKeyedMap<AbstractStackNode[]> alternateProds = node.getAlternateNexts();
+			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateNexts();
 			if(alternateProds != null){
 				int nextNextDot = nextDot + 1;
 				
@@ -247,7 +247,7 @@ public class SGLL implements IGLL{
 				ArrayList<Link>[] prefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateProds.size() - 1; i >= 0; --i){
-					prod = alternateProds.getValue(i);
+					prod = alternateProds.get(i);
 					AbstractStackNode alternativeNext = prod[nextDot];
 					int alternativeNextId = alternativeNext.getId();
 					

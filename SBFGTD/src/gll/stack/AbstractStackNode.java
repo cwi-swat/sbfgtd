@@ -10,7 +10,7 @@ public abstract class AbstractStackNode{
 	public final static int DEFAULT_LIST_EPSILON_ID = -2; // (0xeffffffe | 0x80000000)
 	
 	protected AbstractStackNode[] next;
-	protected LinearIntegerKeyedMap<AbstractStackNode[]> alternateNexts;
+	protected ArrayList<AbstractStackNode[]> alternateNexts;
 	protected LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
 	
@@ -107,9 +107,9 @@ public abstract class AbstractStackNode{
 			this.next = next;
 		}else{
 			if(alternateNexts == null){
-				alternateNexts = new LinearIntegerKeyedMap<AbstractStackNode[]>();
+				alternateNexts = new ArrayList<AbstractStackNode[]>();
 			}
-			alternateNexts.add(next[dot + 1].getId(), next);
+			alternateNexts.add(next);
 		}
 	}
 	
@@ -121,7 +121,7 @@ public abstract class AbstractStackNode{
 		return next;
 	}
 	
-	public LinearIntegerKeyedMap<AbstractStackNode[]> getAlternateNexts(){
+	public ArrayList<AbstractStackNode[]> getAlternateNexts(){
 		return alternateNexts;
 	}
 	
