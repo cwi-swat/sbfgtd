@@ -6,6 +6,9 @@ import gll.stack.ListStackNode;
 import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+
 public class LeftFactored extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 1, "E");
@@ -147,17 +150,19 @@ public class LeftFactored extends SGLL{
 	}
 	
 	private static void runTest(char[] input) throws Exception{
+		ThreadMXBean tmxb = ManagementFactory.getThreadMXBean();
+		
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
 		for(int i = ITERATIONS - 1; i >= 0; --i){
 			cleanup();
 			
-			long start = System.currentTimeMillis();
+			long start = tmxb.getCurrentThreadCpuTime();
 			LeftFactored lf = new LeftFactored(input);
 			lf.parse("S");
-			long end = System.currentTimeMillis();
+			long end = tmxb.getCurrentThreadCpuTime();
 			
-			long time = end - start;
+			long time = (end - start) / 1000000;
 			total += time;
 			lowest = (time < lowest) ? time : lowest;
 		}

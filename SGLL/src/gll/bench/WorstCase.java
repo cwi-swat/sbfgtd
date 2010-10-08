@@ -1,9 +1,12 @@
 package gll.bench;
 
 import gll.SGLL;
-import gll.stack.NonTerminalStackNode;
 import gll.stack.AbstractStackNode;
 import gll.stack.LiteralStackNode;
+import gll.stack.NonTerminalStackNode;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
 /*
 S ::= SSS | SS | a
@@ -50,17 +53,19 @@ public class WorstCase extends SGLL{
 	}
 	
 	private static void runTest(char[] input) throws Exception{
+		ThreadMXBean tmxb = ManagementFactory.getThreadMXBean();
+		
 		long total = 0;
 		long lowest = Long.MAX_VALUE;
 		for(int i = ITERATIONS - 1; i >= 0; --i){
 			cleanup();
 			
-			long start = System.currentTimeMillis();
+			long start = tmxb.getCurrentThreadCpuTime();
 			WorstCase wc = new WorstCase(input);
 			wc.parse("S");
-			long end = System.currentTimeMillis();
+			long end = tmxb.getCurrentThreadCpuTime();
 			
-			long time = end - start;
+			long time = (end - start) / 1000000;
 			total += time;
 			lowest = (time < lowest) ? time : lowest;
 			
