@@ -339,12 +339,9 @@ public class SGLL implements IGLL{
 	private void handleExpects(AbstractStackNode stackBeingWorkedOn){
 		sharedLastExpects.dirtyClear();
 		
-		int nrOfExpects = lastExpects.size();
-		ArrayList<AbstractStackNode> expects = new ArrayList<AbstractStackNode>(nrOfExpects);
-		
 		ArrayList<AbstractStackNode> cachedEdges = null;
 		
-		for(int i = nrOfExpects - 1; i >= 0; --i){
+		for(int i = lastExpects.size() - 1; i >= 0; --i){
 			AbstractStackNode[] expectedNodes = lastExpects.get(i);
 			
 			expectedNodes[expectedNodes.length - 1].markAsEndNode(); // Meh.
@@ -372,8 +369,6 @@ public class SGLL implements IGLL{
 			sharedLastExpects.add(firstId, first);
 			
 			stacksToExpand.add(first);
-			
-			expects.add(first);
 		}
 		
 		cachedEdgesForExpect.put(stackBeingWorkedOn.getName(), cachedEdges);
