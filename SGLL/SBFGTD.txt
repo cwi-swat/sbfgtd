@@ -61,7 +61,9 @@ reduce(){
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
-				todoList.push(parent);
+				if(todoList.notContains(parent)){ // Sharing
+					todoList.push(parent);
+				}
 			}
 		}else if(node.hasNext()){
 			next = node.next;
@@ -214,7 +216,9 @@ reduce(){
 		if(node.hasEdges()){
 			for(parent <- node.edges){
 				findResultStore(parent).addAlternative(node.prefixes, node.results);
-				todoList.push(parent);
+				if(todoList.notContains(parent)){ // Sharing
+					todoList.push(parent);
+				}
 			}
 		}else if(node.hasNext()){
 			next = node.next;
@@ -242,10 +246,9 @@ Optimizations:
 -Match on entire literals instead of characters. This reduces stack activity and improves performance.
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
 -Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
--Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results) This increases sharing in the resulting tree.
+-Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results). This increases sharing in the resulting tree and improves scaling.
+-The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This reduces scaling of the parser with respect to the number of different 'sorts' in the grammar from O(N^2) to O(N). (This optimization requires the previous optimization).
 -Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))).
-
--TODO Smart stuff with edges (recognizer is now O(N^2)?).
 
 -------------------------------------------------------------------------------------
 
@@ -258,6 +261,7 @@ Extended features:
 -------------------------------------------------------------------------------------
 
 Filtering:
+-Look-ahead: Prevents 'expects' from 'firing'. Currently one character, but has no limit.
 -Follow restrictions: If the current node being reduced is followed by any of its associated follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
 -Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
 -Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E of the left side of the production).
