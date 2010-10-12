@@ -1,10 +1,15 @@
+SBFGTD: 
+-Scannerless Binary Forest Generalized Top Down parser or, Scannerless Bloody Fast Generalized Top Down parser, whatevery suits you best; it's both true ;-). I tried to make the name more ambiguous and still make sense, but came up with nothing so far ....
+
+-------------------------------------------------------------------------------------
+
 GSS:
--Every production consists of a number of nodes with a unique id. (For example S ::= AB | BA, A ::= a, B ::= b has the nodes S(-1), A(0), B(1), B(2), A(3), a(4) and b(5)).
+-Every production consists of a number of nodes with a unique id. (For example S ::= AB | BA, A ::= a, B ::= b has the nodes S(-1), A(0), B(1), B(2), A(3), a(4) and b(5)). Every node must have a unique id, regardless whether or not the LHS's they are used in are completely or partially comparable.
 -Every node in the GSS is unique per start position (N).
 -Every node has one unique 'result' per substring (start + end position) (N^2).
 -Every node has edges that point back to their 'parent(s)' (the node(s) that 'queued' / 'expected' it) (N).
 -Every node has a reference to the 'next' node in the production.
--The recognizer is O(N^3) worst case (N nodes * N edges that are followed N times (once per substring); thus N * N * N).
+-The recognizer is O(N^3) worst case (N nodes * N edges that are followed N times (once per substring); thus N * (N * N)).
 
 -------------------------------------------------------------------------------------
 
@@ -118,17 +123,20 @@ input = aaa
 14. reduce Aa failed, since EOI has already been reached.
 15. done.
 
+TODO: Maybe add an illustration?
+
 -------------------------------------------------------------------------------------
 
 Parse forest:
 -Custom 'Deflattenized' / binarized format.
+-Consists of result nodes, prefixesLists and pairs of result nodes and prefixesLists.
 -Every result node + prefixesList pair is unique.
--Every prefixesList has a unique start and end position.
--Every prefix in the prefixesList represents a different parse of the substring the prefixesList denotes.
+-Every prefixesList represent all parses for a certain substring (start + end position).
+-Every prefix in the prefixesList represents a different parse of the substring the prefixesList denotes (start + end position).
 -Every result node represents a parse for a certain substring (start + end position).
 -All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.
 -Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
--The parse forest contains O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst case.
+-The parse forest contains O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst case (and me a genious) (see example further below).
 
 -------------------------------------------------------------------------------------
 
@@ -152,25 +160,35 @@ S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
 S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
 S(A(aa),A(aa))		A0-2 <- A2-4
 
+TODO: Add illustration of a parse forest.
+
 -------------------------------------------------------------------------------------
 
-Worst case grammar for worst case parse tree (to prove O(N^2) size):
+Worst case parse tree example (to prove O(N^2) size):
+
+Grammar:
 S ::= A | AA | AAA | AAAA | and so on ....
 A ::= epsilon | a | aa | aaa | aaaa | and so on ....
 input = a * 1 - a * 10
 
-input length	| Number of nodes	| Number of links	| / N^2		| Increase in nodes / links compared to N - 1
-0		| 1			| 1			| -		| -
-1		| 3			| 3			| 3		| 2
-2		| 6			| 6			| 1.5		| 3
-3		| 10			| 10			| 1.1111111...	| 4
-4		| 15			| 15			| 0.9375	| 5
-5		| 21			| 21			| 0.84		| 6
-6		| 28			| 28			| 0.7777777...	| 7
-7		| 36			| 36			| 0.7346938...	| 8
-8		| 45			| 45			| 0.703125	| 9
-9		| 55			| 55			| 0.6790123...	| 10
-10		| 66			| 66			| 0.66		| 11
+NOTE: For clarity's sake the numbers in the table have been 'normalized', in reality they will be a factor higher, since every 'node' in the grammar has a different 'kind' of prefix; here all A's are assumed to be the same.
+
+Input length	| Number of nodes	| Number of pairs / links	| / N^2		| Increase in nodes / links compared to N - 1
+0		| 1			| 1				| -		| -
+1		| 3			| 3				| 3		| 2
+2		| 6			| 6				| 1.5		| 3
+3		| 10			| 10				| 1.1111111...	| 4
+4		| 15			| 15				| 0.9375	| 5
+5		| 21			| 21				| 0.84		| 6
+6		| 28			| 28				| 0.7777777...	| 7
+7		| 36			| 36				| 0.7346938...	| 8
+8		| 45			| 45				| 0.703125	| 9
+9		| 55			| 55				| 0.6790123...	| 10
+10		| 66			| 66				| 0.66		| 11
+
+This worst case grammar clearly shows better then O(N^2) scaling. Adding recursion to the grammar increase the number of alternatives per substring by a factor and consequently has no impact on worst case behaviour.
+
+TODO: Improve example / explanation.
 
 -------------------------------------------------------------------------------------
 
@@ -249,13 +267,15 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 -------------------------------------------------------------------------------------
 
 Optimizations:
--Make the algortihm breadth first to make it level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.
+-Make the algortihm breadth first / level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.
 -Match on entire literals instead of characters. This reduces stack activity and improves performance.
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
--Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
+-Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N * (number of productions ^ 2). In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
 -Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results). This increases sharing in the resulting tree and improves scaling.
 -The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear. (This optimization requires the previous optimization).
--Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))).
+-Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))); this is done by simply giving both E's the same id and allowing every node to have more then one 'next' node.
+
+TODO: Add more explanation + examples for all of these.
 
 -------------------------------------------------------------------------------------
 
@@ -264,6 +284,8 @@ Extended features:
 -Separated lists are similar to non-separated lists, with separator nodes added in between (For example S ::= {A B}* results in queueing the 'cyclic production': A -> B -> A and 'epsilon').
 -Optionals are similar to lists, but only expect one 'child' + 'epsilon'.
 -Start-of-line, end-of-line and at-column stack nodes are also available. These don't consume any input, but work as a kind of restriction. In the resulting tree they are added as a 'special' kind of epsilon.
+
+TODO: Add examples / maybe some illustrations.
 
 -------------------------------------------------------------------------------------
 
@@ -275,7 +297,7 @@ Filtering:
 
 -------------------------------------------------------------------------------------
 
-Benchmarks:
+Benchmarks (of the fully optimized version):
 
 Worst case:
 S ::= SSS | SS | a
@@ -348,4 +370,6 @@ Input chars	| Average Time	| Lowest Time
 100000		| 326 ms	| 320 ms
 150000		| 476 ms	| 470 ms
 200000		| 630 ms	| 630 ms
+
+TODO: Add graphs for all of these.
 
