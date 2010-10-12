@@ -9,7 +9,7 @@ GSS:
 -------------------------------------------------------------------------------------
 
 Basic recognizer algorithm:
-1. Expand the left most node that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
+1. Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
 2. Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
 3. Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production they are part of where applicable, until no reductions are possible anymore.
 4. goto 1.
@@ -121,7 +121,7 @@ input = aaa
 -------------------------------------------------------------------------------------
 
 Parse forest:
--'Deflattenized' / binarized.
+-Custom 'Deflattenized' / binarized format.
 -Every result node + prefixesList pair is unique.
 -Every prefixesList has a unique start and end position.
 -Every prefix in the prefixesList represents a different parse of the substring the prefixesList denotes.
@@ -138,14 +138,14 @@ S ::= AAAA | AAA | AA
 A ::= a | aa
 input = aaaa
 
-Visual representation of the parse forest, showing all alternatives for 'S0-4' (numbers indicate start and end position of the matched substring):
+(Partial) visual representation of the parse forest, showing all alternatives for 'S0-4' (numbers indicate start and end position of the matched substring):
 A0-1 <- A1-2 <- A2-3 <- A3-4
  \- A1-3 <--\-----/----/
 A0-2 <-------\---/
  \            \-------- A2-4
   \---------------------/
 
-Derivations (flattened version of the parse forest above):
+(Complete) flattened version of the parse forest above (showing all derivations):
 S(A(a),A(a),A(a),A(a))	A0-1 <- A1-2 <- A2-3 <- A3-4
 S(A(a),A(aa),A(a))	A0-1 <- A1-3 <- A3-4
 S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
@@ -157,8 +157,9 @@ S(A(aa),A(aa))		A0-2 <- A2-4
 Worst case grammar for worst case parse tree (to prove O(N^2) size):
 S ::= A | AA | AAA | AAAA | and so on ....
 A ::= epsilon | a | aa | aaa | aaaa | and so on ....
+input = a * 1 - a * 10
 
-input length	| Number of nodes	| Number of links	| / N^2		| Increase in nodes / links compared to previous level
+input length	| Number of nodes	| Number of links	| / N^2		| Increase in nodes / links compared to N - 1
 0		| 1			| 1			| -		| -
 1		| 3			| 3			| 3		| 2
 2		| 6			| 6			| 1.5		| 3
@@ -228,7 +229,7 @@ reduce(){
 			}
 		}else if(node.hasNext()){
 			next = node.next;
-			if(toExpand.contains(next)){ // Sharing
+			if(toExpandList.contains(next)){ // Sharing
 				next = toExpandList.get(next);
 			}else{
 				toExpandList.push(next);
@@ -278,6 +279,7 @@ Benchmarks:
 
 Worst case:
 S ::= SSS | SS | a
+input = a * 50 - a * 500
 
 Recognizer:
 ------------------------------------------
@@ -316,8 +318,8 @@ This test tries to emulate a 'realistic' 'worst case' grammar in terms of size a
 
 Grammar:
 S ::= A+
-E ::= E + E | E - E | E * E | E / E | E > E | ... 25 more like it ... | 1
-A ::= E | a
+A ::= a | E
+E ::= 1 | E + E | E - E | E * E | E / E | E > E | ... 25 more like it ...
 input = a * 50000 | a * 100000 | a * 150000 | a * 200000
 
 Not left factored, not prefix shared; parse times:
