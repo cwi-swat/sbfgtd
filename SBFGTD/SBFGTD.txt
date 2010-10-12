@@ -22,7 +22,7 @@ parse(){
 	do{
 		reduce();
 		expand();
-	}while(notEmpty(todoList));
+	}while(notEmpty(toReduceList));
 	
 	if(notAtEOI()) parse error;
 }
@@ -35,7 +35,7 @@ expand(){
 		for(childNode <- children){
 			if(reducedList.contains(childNode)){ // Child already has results from difference path
 				if(reducedList.notContains(node)){ // Sharing
-					todoList.add(node);
+					toReduceList.add(node);
 				}
 			}else{
 				if(expandedList.contains(childNode)){ // Sharing
@@ -44,7 +44,7 @@ expand(){
 					expandedList.add(childNode);
 				
 					if(isTerminal(childNode)){
-						todoList.push(childNode);
+						toReduceList.push(childNode);
 					}else{
 						toExpandList.push(childNode);
 					}
@@ -55,14 +55,14 @@ expand(){
 }
 
 reduce(){
-	while(!todoList.isEmpty()){
-		node = todoList.pop();
+	while(!toReduceList.isEmpty()){
+		node = toReduceList.pop();
 		reducedList.add(node);
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
-				if(todoList.notContains(parent)){ // Sharing
-					todoList.push(parent);
+				if(toReduceList.notContains(parent)){ // Sharing
+					toReduceList.push(parent);
 				}
 			}
 		}else if(node.hasNext()){
@@ -130,19 +130,6 @@ Parse forest:
 -Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
 -The parse forest contains O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst case.
 
-TODO: give worst case example.
-
-Worst case grammar for worst case parse tree:
-S ::= A | AA | AAA | AAAA | and so on ....
-A ::= epsilon | a | aa | aaa | aaaa | and so on ....
-
-input length	| Number of nodes	| Number of links	| Increase in nodes / links compared to previous level
-0		| 1			| 1			| -
-1		| 3			| 3			| 2
-2		| 6			| 6			| 3
-3		| 10			| 10			| 4
-4		| 15			| 15			| 5
-
 -------------------------------------------------------------------------------------
 
 Parse tree example:
@@ -167,6 +154,25 @@ S(A(aa),A(aa))		A0-2 <- A2-4
 
 -------------------------------------------------------------------------------------
 
+Worst case grammar for worst case parse tree (to prove O(N^2) size):
+S ::= A | AA | AAA | AAAA | and so on ....
+A ::= epsilon | a | aa | aaa | aaaa | and so on ....
+
+input length	| Number of nodes	| Number of links	| / N^2		| Increase in nodes / links compared to previous level
+0		| 1			| 1			| -		| -
+1		| 3			| 3			| 3		| 2
+2		| 6			| 6			| 1.5		| 3
+3		| 10			| 10			| 1.1111111...	| 4
+4		| 15			| 15			| 0.9375	| 5
+5		| 21			| 21			| 0.84		| 6
+6		| 28			| 28			| 0.7777777...	| 7
+7		| 36			| 36			| 0.7346938...	| 8
+8		| 45			| 45			| 0.703125	| 9
+9		| 55			| 55			| 0.6790123...	| 10
+10		| 66			| 66			| 0.66		| 11
+
+-------------------------------------------------------------------------------------
+
 Parser psuedocode:
 parse(){
 	toExpandList.push('startNode');
@@ -175,7 +181,7 @@ parse(){
 	do{
 		reduce();
 		expand();
-	}while(notEmpty(todoList));
+	}while(notEmpty(toReduceList));
 	
 	if(notAtEOI()) parse error;
 	
@@ -190,7 +196,7 @@ expand(){
 		for(childNode <- children){
 			if(reducedList.contains(childNode)){
 				if(reducedList.notContains(node)){
-					todoList.add(node);
+					toReduceList.add(node);
 				}
 			}else{
 				if(expandedList.contains(childNode)){ // Sharing
@@ -199,7 +205,7 @@ expand(){
 					expandedList.add(childNode);
 				
 					if(isTerminal(childNode)){
-						todoList.push(childNode);
+						toReduceList.push(childNode);
 					}else{
 						toExpandList.push(childNode);
 					}
@@ -210,14 +216,14 @@ expand(){
 }
 
 reduce(){
-	while(!todoList.isEmpty()){
-		node = todoList.pop();
+	while(!toReduceList.isEmpty()){
+		node = toReduceList.pop();
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
 				findResultStore(parent).addAlternative(node.prefixes, node.results);
-				if(todoList.notContains(parent)){ // Sharing
-					todoList.push(parent);
+				if(toReduceList.notContains(parent)){ // Sharing
+					toReduceList.push(parent);
 				}
 			}
 		}else if(node.hasNext()){
@@ -247,7 +253,7 @@ Optimizations:
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
 -Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N^2 * number of productions. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
 -Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results). This increases sharing in the resulting tree and improves scaling.
--The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This reduces scaling of the parser with respect to the number of different 'sorts' in the grammar from O(N^2) to O(N). (This optimization requires the previous optimization).
+-The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear. (This optimization requires the previous optimization).
 -Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))).
 
 -------------------------------------------------------------------------------------
@@ -264,7 +270,7 @@ Filtering:
 -Look-ahead: Prevents 'expects' from 'firing'. Currently one character, but has no limit.
 -Follow restrictions: If the current node being reduced is followed by any of its associated follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
 -Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
--Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E of the left side of the production).
+-Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production).
 
 -------------------------------------------------------------------------------------
 
@@ -303,8 +309,10 @@ Input chars	| Average Time	| Lowest Time
 450		| 4776 ms	| 4750 ms
 500		| 6880 ms	| 6870 ms
 
+-------------------------------------------------------------------------------------
+
 Grammar factoring & prefix sharing:
-This test tries to emulate a 'worst case' 'realistic' grammar in terms of size and type of productions. I.e. lots of left recursive stuff, but no ambiguous input.
+This test tries to emulate a 'realistic' 'worst case' grammar in terms of size and type of productions. I.e. lots of left recursive stuff, but no ambiguous input.
 
 Grammar:
 S ::= A+
