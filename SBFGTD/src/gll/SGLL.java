@@ -122,6 +122,16 @@ public class SGLL implements IGLL{
 		next.updateNode(node, result);
 		next.setStartLocation(location);
 		
+		if(!next.isMatchable()){ // Is non-terminal or list.
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+			if(levelResultStoreMap != null){
+				AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
+				if(resultStore != null){ // Is nullable, queue for reduction.
+					stacksWithNonTerminalsToReduce.put(next, resultStore);
+				}
+			}
+		}
+		
 		sharedNextNodes.putUnsafe(id, next);
 		stacksToExpand.add(next);
 		return next;
@@ -136,6 +146,16 @@ public class SGLL implements IGLL{
 			next = next.getCleanCopy();
 			next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			next.setStartLocation(location);
+			
+			if(!next.isMatchable()){ // Is non-terminal or list.
+				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+				if(levelResultStoreMap != null){
+					AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
+					if(resultStore != null){ // Is nullable, queue for reduction.
+						stacksWithNonTerminalsToReduce.put(next, resultStore);
+					}
+				}
+			}
 			
 			sharedNextNodes.putUnsafe(id, next);
 			stacksToExpand.add(next);
@@ -361,14 +381,6 @@ public class SGLL implements IGLL{
 		}
 		
 		if(!node.isList()){
-			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(location);
-			if(levelResultStoreMap != null){
-				AbstractContainerNode resultStore = levelResultStoreMap.get(node.getIdentifier());
-				if(resultStore != null){
-					stacksWithNonTerminalsToReduce.put(node, resultStore);
-				}
-			}
-			
 			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
 				cachedEdges.add(node);
@@ -446,11 +458,9 @@ public class SGLL implements IGLL{
 		do{
 			findStacksToReduce();
 			
-			do{
-				reduce();
-				
-				expand();
-			}while(!stacksWithNonTerminalsToReduce.isEmpty());
+			reduce();
+			
+			expand();
 		}while(todoList.size() > 0);
 		
 		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
