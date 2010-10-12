@@ -8,8 +8,9 @@ import gll.stack.LiteralStackNode;
 import gll.stack.NonTerminalStackNode;
 
 /*
-S ::= AA
+S ::= AAB
 A ::= epsilon
+B ::= a
 */
 public class Epsilon extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");

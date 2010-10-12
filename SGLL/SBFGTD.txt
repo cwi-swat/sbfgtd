@@ -271,6 +271,7 @@ Filtering:
 Benchmarks:
 
 Worst case:
+S ::= SSS | SS | a
 
 Recognizer:
 ------------------------------------------
