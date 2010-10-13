@@ -186,7 +186,7 @@ Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> c
 9		| 29			| 110				| 57					| 196		| 29					| 2.419753086
 10		| 32			| 132				| 63					| 227		| 31					| 2.27
 
-This example clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
+This example clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links / pointers by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
 
 NOTE: GSS prefix sharing was enabled in this example; when disabled the number of pairs / links increases by 50%, since then there are 3, instead of 2 'nodes' that require prefixes.
 
@@ -339,7 +339,7 @@ Input chars	| Average Time	| Lowest Time
 450		| 4776 ms	| 4750 ms
 500		| 6880 ms	| 6870 ms
 
-TODO: Add graphs.
+TODO: Add graph.
 
 -------------------------------------------------------------------------------------
 
@@ -379,5 +379,5 @@ Input chars	| Average Time	| Lowest Time
 150000		| 476 ms	| 470 ms
 200000		| 630 ms	| 630 ms
 
-TODO: Add graphs for all of these.
+TODO: Add graph containing all of the above.
 
