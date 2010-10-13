@@ -74,7 +74,7 @@ reduce(){
 			next = node.next;
 			if(toExpand.contains(next)){ // Sharing
 				next = toExpandList.get(next);
-			}else{
+			}else if(expandedStore.notContains(next)){ // Sharing
 				toExpandList.push(next);
 			}
 			next.addEdges(node.edges);
@@ -128,7 +128,7 @@ TODO: Maybe add an illustration?
 -------------------------------------------------------------------------------------
 
 Parse forest:
--Custom 'Deflattenized' / binarized format.
+-Custom 'deflattenized' format (similar in intend as binarization).
 -Consists of result nodes, prefixesLists and pairs of result nodes and prefixesLists.
 -Every result node + prefixesList pair is unique.
 -Every prefixesList represent all parses for a certain substring (start + end position).
@@ -161,7 +161,7 @@ S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
 S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
 S(A(aa),A(aa))		A0-2 <- A2-4
 
-TODO: Add illustration of a parse forest.
+TODO: Chang into illustration of a parse forest and add more text.
 
 -------------------------------------------------------------------------------------
 
@@ -246,18 +246,20 @@ reduce(){
 			for(parent <- node.edges){
 				findResultStore(parent).addAlternative(node.prefixes, node.results);
 				if(toReduceList.notContains(parent)){ // Sharing
-					toReduceList.push(parent);
+					if(reducedStore.notContains(parent)){
+						toReduceList.push(parent);
+					}
 				}
 			}
 		}else if(node.hasNext()){
 			next = node.next;
 			if(toExpandList.contains(next)){ // Sharing
 				next = toExpandList.get(next);
-			}else{
+			}else if(expandedStore.notContains(next)){ // Sharing
 				toExpandList.push(next);
 			}
 			next.addEdges(node.edges);
-			next.constructPrefixes(node.prefixes, node.results);
+			next.updatePrefixes(node.prefixes, node.results);
 		}
 	}
 }
@@ -274,7 +276,7 @@ Optimizations:
 -Make the algortihm breadth first / level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.
 -Match on entire literals instead of characters. This reduces stack activity and improves performance.
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.
--Don't store results and prefixesLists on edges; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N * (number of productions ^ 2). In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
+-Don't store results on edges, but externally in a (temporary / reusable) per level store; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to N * number of productions instead of N * (number of productions ^ 2). In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to N * number of LHS's instead of N * number of productions (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
 -Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results). This increases sharing in the resulting tree and improves scaling.
 -The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear. (This optimization requires the previous optimization).
 -Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))); this is done by simply giving both E's the same id and allowing every node to have more then one 'next' node.
