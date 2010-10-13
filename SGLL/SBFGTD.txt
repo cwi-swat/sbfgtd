@@ -167,28 +167,27 @@ TODO: Add illustration of a parse forest.
 Worst case parse tree example (to prove O(N^2) size):
 
 Grammar:
-S ::= A | AA | AAA | AAAA | and so on ....
-A ::= epsilon | a | aa | aaa | aaaa | and so on ....
+S ::= SSS | SS | a | epsilon
 input = a * 1 - a * 10
 
-NOTE: For clarity's sake the numbers in the table have been 'normalized', in reality they will be a factor higher, since every 'node' in the grammar has a different 'kind' of prefix; here all A's are assumed to be the same.
+Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> child pointers	| Total		| Increment compared to previous level	| Total / N^2
+0		| 2			| 2				| 3					| 7		| -					| -
+1		| 5			| 6				| 8					| 19		| 12					| 19
+2		| 8			| 12				| 13					| 33		| 14					| 8.25
+3		| 11			| 20				| 18					| 49		| 16					| 5.444444444
+4		| 14			| 30				| 23					| 67		| 18					| 4.1875
+5		| 17			| 42				| 28					| 87		| 20					| 3.48
+6		| 20			| 56				| 33					| 109		| 22					| 3.027777778
+7		| 23			| 72				| 38					| 133		| 24					| 2.714285714
+8		| 26			| 90				| 43					| 159		| 26					| 2.484375
+9		| 29			| 110				| 48					| 187		| 28					| 2.308641975
+10		| 32			| 132				| 53					| 217		| 30					| 2.17
 
-Input length	| Number of nodes	| Number of pairs / links	| / N^2		| Increase in nodes / links compared to N - 1
-0		| 1			| 1				| -		| -
-1		| 3			| 3				| 3		| 2
-2		| 6			| 6				| 1.5		| 3
-3		| 10			| 10				| 1.1111111...	| 4
-4		| 15			| 15				| 0.9375	| 5
-5		| 21			| 21				| 0.84		| 6
-6		| 28			| 28				| 0.7777777...	| 7
-7		| 36			| 36				| 0.7346938...	| 8
-8		| 45			| 45				| 0.703125	| 9
-9		| 55			| 55				| 0.6790123...	| 10
-10		| 66			| 66				| 0.66		| 11
+This worst case grammar clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
 
-This worst case grammar clearly shows better then O(N^2) scaling. Adding recursion to the grammar increase the number of alternatives per substring by a factor and consequently has no impact on worst case behaviour.
+NOTE: GSS prefix sharing was enabled; when disabled the number of pairs / links would have been 50% higher, since there would be 3 instead of 2 'nodes' that require prefixes.
 
-TODO: Improve example / explanation.
+TODO: Improve explanation.
 
 -------------------------------------------------------------------------------------
 
