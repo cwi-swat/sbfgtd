@@ -101,6 +101,8 @@ public class SGLL implements IGLL{
 		int id = next.getId();
 		AbstractStackNode alternative = sharedNextNodes.get(id);
 		if(alternative != null){
+			alternative.updateNode(node, result);
+			
 			if(alternative.isEndNode()){
 				if(result.isEmpty() && !node.isMatchable() && !next.isMatchable() && node.getIdentifier() == next.getIdentifier()){
 					if(alternative.getId() != node.getId()){ // List cycle fix.
@@ -109,13 +111,10 @@ public class SGLL implements IGLL{
 						if(resultStore != null){
 							// Encountered self recursive epsilon cycle; update the prefixes.
 							updatePrefixes(node, resultStore);
-							
-							return alternative;
 						}
 					}
 				}
 			}
-			alternative.updateNode(node, result);
 			
 			return alternative;
 		}
@@ -166,19 +165,16 @@ public class SGLL implements IGLL{
 	
 	private void updatePrefixes(AbstractStackNode node, AbstractContainerNode resultStore){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
-		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
-		for(int i = edgesMap.size() - 1; i >= 0; --i){
-			int edgeStartLocation = edgesMap.getKey(i);
-			
+		ArrayList<AbstractStackNode> edgesPart = edgesMap.findValue(location);
+		if(edgesPart != null){
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-			Link prefix = constructPrefixesFor(prefixesMap, i, resultStore);
+			Link prefix = constructPrefixesFor(edgesMap, node.getPrefixesMap(), resultStore, location);
 			edgePrefixes.add(prefix);
 			
-			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(edgeStartLocation);
+			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(location);
 			levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, resultStore));
 		}
 	}
@@ -274,11 +270,12 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private Link constructPrefixesFor(ArrayList<Link>[] prefixesMap, int index, AbstractNode result){
+	private Link constructPrefixesFor(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap, AbstractNode result, int startLocation){
 		if(prefixesMap == null){
 			return new Link(null, result);
 		}
 		
+		int index = edgesMap.findKey(startLocation);
 		return new Link(prefixesMap[index], result);
 	}
 	
