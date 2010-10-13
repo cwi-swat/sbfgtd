@@ -1,5 +1,5 @@
 SBFGTD: 
--Scannerless Binary Forest Generalized Top Down parser or, Scannerless Bloody Fast Generalized Top Down parser, whatevery suits you best; it's both true ;-). I tried to make the name more ambiguous and still make sense, but came up with nothing so far ....
+-Scannerless Binary Forest Generalized Top Down parser, or Scannerless Bloody Fast Generalized Top Down parser, whatevery suits you best; it's both true ;-). I tried to make the name more ambiguous and still make sense, but came up with nothing so far ....
 
 -------------------------------------------------------------------------------------
 
@@ -38,15 +38,15 @@ expand(){
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
-			if(reducedList.contains(childNode)){ // Child already has results from difference path
-				if(reducedList.notContains(node)){ // Sharing
+			if(reducedStore.contains(childNode)){ // Child already has results from different path
+				if(toReduceList.notContains(node)){ // Sharing
 					toReduceList.add(node);
 				}
 			}else{
-				if(expandedList.contains(childNode)){ // Sharing
-					expandedList.get(childNode).addEdge(node);
+				if(expandedStore.contains(childNode)){ // Sharing
+					expandedStore.get(childNode).addEdge(node);
 				}else{
-					expandedList.add(childNode);
+					expandedStore.add(childNode);
 				
 					if(isTerminal(childNode)){
 						toReduceList.push(childNode);
@@ -62,7 +62,7 @@ expand(){
 reduce(){
 	while(!toReduceList.isEmpty()){
 		node = toReduceList.pop();
-		reducedList.add(node);
+		reducedStore.add(node);
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
@@ -136,7 +136,8 @@ Parse forest:
 -Every result node represents a parse for a certain substring (start + end position).
 -All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.
 -Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
--The parse forest contains O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst case (and me a genious) (see example further below).
+-The parse forest contains at most O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst case (and me a genious) (see example further below).
+-Additionally it is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
 
 -------------------------------------------------------------------------------------
 
@@ -185,7 +186,7 @@ Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> c
 
 This worst case grammar clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
 
-NOTE: GSS prefix sharing was enabled; when disabled the number of pairs / links would have been 50% higher, since there would be 3 instead of 2 'nodes' that require prefixes.
+NOTE: GSS prefix sharing was enabled; when disabled the number of pairs / links would have been 50% higher, since there would be 3, instead of 2 'nodes' that require prefixes.
 
 TODO: Improve explanation.
 
@@ -212,15 +213,16 @@ expand(){
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
-			if(reducedList.contains(childNode)){
-				if(reducedList.notContains(node)){
+			if(reducedStore.contains(childNode)){
+				findResultStore(node).addAlternative(childNode.prefixes, childNode.results);
+				if(toReduceList.notContains(node)){
 					toReduceList.add(node);
 				}
 			}else{
-				if(expandedList.contains(childNode)){ // Sharing
-					expandedList.get(childNode).addEdge(node);
+				if(expandedStore.contains(childNode)){ // Sharing
+					expandedStore.get(childNode).addEdge(node);
 				}else{
-					expandedList.add(childNode);
+					expandedStore.add(childNode);
 				
 					if(isTerminal(childNode)){
 						toReduceList.push(childNode);
@@ -236,6 +238,7 @@ expand(){
 reduce(){
 	while(!toReduceList.isEmpty()){
 		node = toReduceList.pop();
+		reducedStore.add(node);
 		
 		if(node.hasEdges()){
 			for(parent <- node.edges){
@@ -331,6 +334,8 @@ Input chars	| Average Time	| Lowest Time
 400		| 3184 ms	| 3170 ms
 450		| 4776 ms	| 4750 ms
 500		| 6880 ms	| 6870 ms
+
+TODO: Add graphs.
 
 -------------------------------------------------------------------------------------
 
