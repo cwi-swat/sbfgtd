@@ -14,7 +14,7 @@ public class EpsilonNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isNullable(){
+	public boolean isEmpty(){
 		return false;
 	}
 	

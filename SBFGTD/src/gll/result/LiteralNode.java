@@ -16,7 +16,7 @@ public class LiteralNode extends AbstractNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean isNullable(){
+	public boolean isEmpty(){
 		return false;
 	}
 	

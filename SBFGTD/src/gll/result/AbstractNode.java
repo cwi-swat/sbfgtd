@@ -11,7 +11,7 @@ public abstract class AbstractNode{
 	
 	public abstract void addAlternative(Link children);
 	
-	public abstract boolean isNullable();
+	public abstract boolean isEmpty();
 	
 	public abstract boolean isSeparator();
 	

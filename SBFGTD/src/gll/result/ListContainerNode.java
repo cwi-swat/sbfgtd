@@ -17,7 +17,7 @@ public class ListContainerNode extends AbstractContainerNode{
 		String result = childNode.print(stack, depth, cycleMark);
 		
 		ArrayList<AbstractNode> blackList = new ArrayList<AbstractNode>();
-		if(childNode.isNullable()){
+		if(childNode.isEmpty()){
 			String[] cycle = gatherCycle(child, new String[]{result}, stack, depth, cycleMark, blackList);
 			if(cycle != null){
 				StringBuilder buffer = new StringBuilder();
@@ -68,7 +68,7 @@ public class ListContainerNode extends AbstractContainerNode{
 			
 			String result = prefixNode.print(stack, depth, cycleMark);
 			
-			if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
+			if(prefixNode.isEmpty() && !prefixNode.isSeparator()){ // Possibly a cycle.
 				String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 				if(cycle != null){
 					String[] newPostFix = buildCycle(cycle, postFix, result);
@@ -113,7 +113,7 @@ public class ListContainerNode extends AbstractContainerNode{
 				
 				String result = prefixNode.print(stack, depth, cycleMark);
 				
-				if(prefixNode.isNullable() && !prefixNode.isSeparator()){ // Possibly a cycle.
+				if(prefixNode.isEmpty() && !prefixNode.isSeparator()){ // Possibly a cycle.
 					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
 					if(cycle != null){
 						String[] newPostFix = buildCycle(cycle, new String[]{}, result);
@@ -205,7 +205,7 @@ public class ListContainerNode extends AbstractContainerNode{
 					return postFix;
 				}
 				
-				if(prefixNode.isNullable()){
+				if(prefixNode.isEmpty()){
 					int length = postFix.length;
 					String[] newPostFix = new String[length + 1];
 					System.arraycopy(postFix, 0, newPostFix, 1, length);

@@ -28,7 +28,7 @@ public abstract class AbstractContainerNode extends AbstractNode{
 		}
 	}
 	
-	public boolean isNullable(){
+	public boolean isEmpty(){
 		return isNullable;
 	}
 	
