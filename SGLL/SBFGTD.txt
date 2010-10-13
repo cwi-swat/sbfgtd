@@ -27,19 +27,19 @@ parse(){
 	do{
 		reduce();
 		expand();
-	}while(notEmpty(toReduceList));
+	}while(toReduceList.notEmpty());
 	
 	if(notAtEOI()) parse error;
 }
 
 expand(){
-	while(notEmpty(toExpandList)){
+	while(toExpandList.notEmpty()){
 		node = toExpandList.pop();
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
 			if(reducedStore.contains(childNode)){ // Child already has results from different path
-				if(toReduceList.notContains(node)){ // Sharing
+				if(notAddedEarlierInThisLoop){ // Sharing
 					toReduceList.add(node);
 				}
 			}else{
@@ -48,7 +48,7 @@ expand(){
 				}else{
 					expandedStore.add(childNode);
 				
-					if(isTerminal(childNode)){
+					if(childNode.isTerminal()){
 						toReduceList.push(childNode);
 					}else{
 						toExpandList.push(childNode);
@@ -60,7 +60,7 @@ expand(){
 }
 
 reduce(){
-	while(!toReduceList.isEmpty()){
+	while(toReduceList.notEmpty()){
 		node = toReduceList.pop();
 		reducedStore.add(node);
 		
@@ -171,7 +171,9 @@ Grammar:
 S ::= SSS | SS | a | epsilon
 input = a * 1 - a * 10
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> child pointers	| Total		| Increment compared to previous level	| Total / N^2
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 0		| 2			| 2				| 3					| 7		| -					| -
 1		| 5			| 6				| 8					| 19		| 12					| 19
 2		| 8			| 12				| 13					| 33		| 14					| 8.25
@@ -184,9 +186,9 @@ Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> c
 9		| 29			| 110				| 48					| 187		| 28					| 2.308641975
 10		| 32			| 132				| 53					| 217		| 30					| 2.17
 
-This worst case grammar clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
+This example clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
 
-NOTE: GSS prefix sharing was enabled; when disabled the number of pairs / links would have been 50% higher, since there would be 3, instead of 2 'nodes' that require prefixes.
+NOTE: GSS prefix sharing was enabled in this example; when disabled the number of pairs / links increases by 50%, since then there are 3, instead of 2 'nodes' that require prefixes.
 
 TODO: Improve explanation.
 
@@ -200,7 +202,7 @@ parse(){
 	do{
 		reduce();
 		expand();
-	}while(notEmpty(toReduceList));
+	}while(toReduceList.notEmpty());
 	
 	if(notAtEOI()) parse error;
 	
@@ -208,14 +210,14 @@ parse(){
 }
 
 expand(){
-	while(notEmpty(toExpandList)){
+	while(toExpandList.notEmpty()){
 		node = toExpandList.pop();
 		
 		Node[] children = getChildrenFor(node);
 		for(childNode <- children){
 			if(reducedStore.contains(childNode)){
 				findResultStore(node).addAlternative(childNode.prefixes, childNode.results);
-				if(toReduceList.notContains(node)){
+				if(notAddedEarlierInThisLoop){ // Sharing
 					toReduceList.add(node);
 				}
 			}else{
@@ -224,7 +226,7 @@ expand(){
 				}else{
 					expandedStore.add(childNode);
 				
-					if(isTerminal(childNode)){
+					if(childNode.isTerminal()){
 						toReduceList.push(childNode);
 					}else{
 						toExpandList.push(childNode);
@@ -236,7 +238,7 @@ expand(){
 }
 
 reduce(){
-	while(!toReduceList.isEmpty()){
+	while(toReduceList.notEmpty()){
 		node = toReduceList.pop();
 		reducedStore.add(node);
 		
