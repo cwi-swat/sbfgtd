@@ -140,7 +140,7 @@ Parse forest:
 -Every result node represents a parse for a certain substring (start + end position).
 -All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.
 -Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
--The parse forest contains at most O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest O(N^2) worst-case (and me a genious) (see example further below).
+-The parse forest contains at most O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest ??? worst-case (see example further below). // TODO
 -Additionally it is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
 
 -------------------------------------------------------------------------------------
@@ -169,31 +169,28 @@ TODO: Chang into illustration of a parse forest and add more text.
 
 -------------------------------------------------------------------------------------
 
-Worst-case parse tree example (to prove O(N^2) size):
+Worst-case parse tree example:
 
 Grammar:
 S ::= SSS | SS | a | epsilon
 input = a * 1 - a * 10
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> child pointers	| Total		| Increment compared to previous level	| Total / N^2
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-0		| 2			| 2				| 3					| 7		| -					| -
-1		| 5			| 6				| 9					| 20		| 13					| 20
-2		| 8			| 12				| 15					| 35		| 15					| 8.75
-3		| 11			| 20				| 21					| 52		| 17					| 5.777777778
-4		| 14			| 30				| 27					| 71		| 19					| 4.4375
-5		| 17			| 42				| 33					| 92		| 21					| 3.68
-6		| 20			| 56				| 39					| 115		| 23					| 3.194444444
-7		| 23			| 72				| 45					| 140		| 25					| 2.857142857
-8		| 26			| 90				| 51					| 167		| 27					| 2.609375
-9		| 29			| 110				| 57					| 196		| 29					| 2.419753086
-10		| 32			| 132				| 63					| 227		| 31					| 2.27
+----------------------------------------------------------------------------------------------------------------------------------------------
+Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> child pointers	| Total		| Total / N^3
+----------------------------------------------------------------------------------------------------------------------------------------------
+0		| 2			| 2				| 3					| 7		| -
+1		| 5			| 9				| 9					| 23		| 23
+2		| 8			| 25				| 15					| 48		| 6
+3		| 11			| 55				| 21					| 87		| 3.222222222
+4		| 14			| 105				| 27					| 146		| 2.28125
+5		| 17			| 172				| 33					| 222		| 1.776
+6		| 20			| 274				| 39					| 333		| 1.541666667
+7		| 23			| 420				| 45					| 488		| 1.422740525
+8		| 26			| 620				| 51					| 697		| 1.361328125
+9		| 29			| 886				| 57					| 972		| 1.333333333
+10		| 32			| 1229				| 63					| 1324		| 1.324
 
-This worst-case example clearly shows better then O(N^2) scaling ((Total / N^2) gets lower as N increases). Adding more 'items' to the grammar may increase the number of nodes / links / pointers by a factor (depending on what you add), but it will have no effect on the worst-case space bound.
-
-NOTE: GSS prefix sharing was enabled in this example; when disabled the number of pairs / links increases by 50%, since then there are 3, instead of 2 'nodes' that require prefixes.
-
+TODO: Check data again.
 TODO: Improve explanation.
 
 -------------------------------------------------------------------------------------
