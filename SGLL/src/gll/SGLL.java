@@ -38,8 +38,6 @@ public class SGLL implements IGLL{
 	private int previousLocation;
 	private int location;
 	
-	private AbstractStackNode root;
-	
 	private final HashMap<String, Method> methodCache;
 	
 	public SGLL(char[] input){
@@ -207,16 +205,10 @@ public class SGLL implements IGLL{
 				resultStore.addAlternative(resultLink);
 				
 				stacksWithNonTerminalsToReduce.put(edge, resultStore);
-				if(location == input.length && !edge.hasEdges()){
-					root = edge; // Root reached.
-				}
 				
 				for(int j = edgeList.size() - 1; j >= 1; --j){
 					edge = edgeList.get(j);
 					stacksWithNonTerminalsToReduce.put(edge, resultStore);
-					if(location == input.length && !edge.hasEdges()){
-						root = edge; // Root reached.
-					}
 				}
 			}
 		}
@@ -464,9 +456,15 @@ public class SGLL implements IGLL{
 			expand();
 		}while(todoList.size() > 0);
 		
-		if(root == null) throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
-		
 		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
-		return levelResultStoreMap.get(start);
+		if(levelResultStoreMap != null){
+			AbstractContainerNode result = levelResultStoreMap.get(start);
+			if(result != null){
+				return result; // Success.
+			}
+		}
+		
+		// Parse error.
+		throw new RuntimeException("Parse Error before: "+(location == Integer.MAX_VALUE ? 0 : location));
 	}
 }
