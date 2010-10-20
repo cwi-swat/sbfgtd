@@ -159,19 +159,25 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode node, AbstractContainerNode resultStore){
+	private void updatePrefixes(AbstractStackNode node, AbstractContainerNode nextResultStore){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		
-		ArrayList<AbstractStackNode> edgesPart = edgesMap.findValue(location);
-		if(edgesPart != null){
+		String nodeName = node.getIdentifier();
+		
+		for(int i = edgesMap.size() - 1; i >= 0; --i){
+			int startPosition = edgesMap.getKey(i);
+			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
+			
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startPosition);
+			AbstractContainerNode nodeResultStore = levelResultStoreMap.get(nodeName);
+			
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-			Link prefix = constructPrefixesFor(edgesMap, node.getPrefixesMap(), resultStore, location);
+			Link prefix = constructPrefixesFor(edgesMap, node.getPrefixesMap(), nodeResultStore, startPosition);
 			edgePrefixes.add(prefix);
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-			levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, resultStore));
+			levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, nextResultStore));
 		}
 	}
 	
