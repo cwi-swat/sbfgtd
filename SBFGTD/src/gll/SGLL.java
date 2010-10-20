@@ -96,8 +96,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
-		int id = next.getId();
-		AbstractStackNode alternative = sharedNextNodes.get(id);
+		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			alternative.updateNode(node, result);
 			
@@ -131,14 +130,13 @@ public class SGLL implements IGLL{
 			}
 		}
 		
-		sharedNextNodes.putUnsafe(id, next);
+		sharedNextNodes.putUnsafe(next.getId(), next);
 		stacksToExpand.add(next);
 		return next;
 	}
 	
 	private void updateAlternativeNextNode(AbstractStackNode next, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		int id = next.getId();
-		AbstractStackNode alternative = sharedNextNodes.get(id);
+		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			alternative.updatePrefixSharedNode(edgesMap, prefixesMap);
 		}else{
@@ -156,7 +154,7 @@ public class SGLL implements IGLL{
 				}
 			}
 			
-			sharedNextNodes.putUnsafe(id, next);
+			sharedNextNodes.putUnsafe(next.getId(), next);
 			stacksToExpand.add(next);
 		}
 	}
@@ -172,7 +170,7 @@ public class SGLL implements IGLL{
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(location);
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 			levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, resultStore));
 		}
 	}
