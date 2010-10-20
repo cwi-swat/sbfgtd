@@ -140,8 +140,8 @@ Parse forest:
 -Every result node represents a parse for a certain substring (start + end position).
 -All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.
 -Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
--The parse forest contains at most O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists; making the parse forest ??? worst-case (see example further below). // TODO
--Additionally it is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
+-The parse forest contains at most O(N^2) result node's and O(N^2) prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most O(N^2) unique links from result nodes to prefixesLists. Every prefixesList can contain at most N different prefixes, making the parse forest O(N^3) worst-case (see example further below).
+-It is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
 
 -------------------------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
 S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
 S(A(aa),A(aa))		A0-2 <- A2-4
 
-TODO: Chang into illustration of a parse forest and add more text.
+TODO: Change into illustration of a parse forest and add more text.
 
 -------------------------------------------------------------------------------------
 
@@ -179,16 +179,16 @@ input = a * 1 - a * 10
 Input length	| Number of nodes	| Number of pairs / links	| Number of parent -> child pointers	| Total		| Total / N^3
 ----------------------------------------------------------------------------------------------------------------------------------------------
 0		| 2			| 2				| 3					| 7		| -
-1		| 5			| 9				| 9					| 23		| 23
-2		| 8			| 25				| 15					| 48		| 6
-3		| 11			| 55				| 21					| 87		| 3.222222222
-4		| 14			| 105				| 27					| 146		| 2.28125
-5		| 17			| 172				| 33					| 222		| 1.776
-6		| 20			| 274				| 39					| 333		| 1.541666667
-7		| 23			| 420				| 45					| 488		| 1.422740525
-8		| 26			| 620				| 51					| 697		| 1.361328125
-9		| 29			| 886				| 57					| 972		| 1.333333333
-10		| 32			| 1229				| 63					| 1324		| 1.324
+1		| 5			| 6				| 9					| 20		| 20
+2		| 8			| 13				| 15					| 36		| 4.5
+3		| 11			| 24				| 21					| 56		| 2.074074074
+4		| 14			| 40				| 27					| 81		| 1.265625
+5		| 17			| 62				| 33					| 112		| 0.896
+6		| 20			| 91				| 39					| 150		| 0.694444444
+7		| 23			| 128				| 45					| 196		| 0.571428571
+8		| 26			| 174				| 51					| 251		| 0.490234375
+9		| 29			| 230				| 57					| 316		| 0.433470508
+10		| 32			| 297				| 63					| 392		| 0.392
 
 TODO: Check data again.
 TODO: Improve explanation.
@@ -300,7 +300,7 @@ Filtering:
 -Look-ahead: Prevents 'expects' from 'firing'. Currently one character, but has no limit.
 -Follow restrictions: If the current node being reduced is followed by any of its associated follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
 -Rejects: Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
--Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production).
+-Priorities and associativity: Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production). NOTE: Disables certain optimizations and is a pain to do parse time.
 
 -------------------------------------------------------------------------------------
 
