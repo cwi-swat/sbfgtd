@@ -18,14 +18,14 @@
 
 \section{GSS}
 
--Every production consists of a number of nodes with a unique id. (For example S ::= AB | BA, A ::= a, B ::= b has the nodes S(-1), A(0), B(1), B(2), A(3), a(4) and b(5)). Every node must have a unique id, regardless whether or not the LHS's they are used in are completely or partially comparable.\\
+-Every production consists of a number of nodes with a unique id. (For example $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$ has the nodes $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5)). Every node must have a unique id, regardless whether or not the LHS's they are used in are completely or partially comparable.\\
 -Every node in the GSS is unique per start position ($N$).\\
 -Every node has one unique 'result' per substring (start + end position) $(N^{2})$.\\
 -Every node has edges that point back to their 'parent(s)' (the node(s) that 'queued' / 'expected' it) ($N$).\\
 -Every node has a reference to the 'next' node in the production.\\
 -The recognizer is $O(N^{3})$ worst-case ($N nodes * N edges that are followed N times$ (once per substring); thus $N * (N * N)$).\\
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 Basic recognizer algorithm:\\
 1. Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).\\
@@ -37,76 +37,76 @@ Basic recognizer algorithm:\\
 
 Recognizer pseudocode:
 parse(){
-	toExpandList.push('startNode');
-	expand();
-	
-	do{
-		reduce();
-		expand();
-	}while(toReduceList.notEmpty());
-	
-	if(notAtEOI()) parse error;
+  toExpandList.push('startNode');
+  expand();
+  
+  do{
+    reduce();
+    expand();
+  }while(toReduceList.notEmpty());
+  
+  if(notAtEOI()) parse error;
 }
 
 expand(){
-	while(toExpandList.notEmpty()){
-		node = toExpandList.pop();
-		
-		Node[] children = getChildrenFor(node);
-		for(childNode <- children){
-			if(reducedStore.contains(childNode)){ // Child already has results from different path
-				if(notAddedEarlierInThisLoop){ // Sharing
-					toReduceList.add(node);
-				}
-			}else{
-				if(expandedStore.contains(childNode)){ // Sharing
-					expandedStore.get(childNode).addEdge(node);
-				}else{
-					expandedStore.add(childNode);
-				
-					if(childNode.isTerminal()){
-						toReduceList.push(childNode);
-					}else{
-						toExpandList.push(childNode);
-					}
-				}
-			}
-		}
-	}
+  while(toExpandList.notEmpty()){
+    node = toExpandList.pop();
+    
+    Node[] children = getChildrenFor(node);
+    for(childNode <- children){
+      if(reducedStore.contains(childNode)){ // Child already has results from different path
+         if(notAddedEarlierInThisLoop){ // Sharing
+           toReduceList.add(node);
+         }
+      }else{
+        if(expandedStore.contains(childNode)){ // Sharing
+          expandedStore.get(childNode).addEdge(node);
+        }else{
+          expandedStore.add(childNode);
+          
+          if(childNode.isTerminal()){
+            toReduceList.push(childNode);
+          }else{
+            toExpandList.push(childNode);
+          }
+        }
+      }
+    }
+  }
 }
 
 reduce(){
-	while(toReduceList.notEmpty()){
-		node = toReduceList.pop();
-		reducedStore.add(node);
-		
-		if(node.hasEdges()){
-			for(parent <- node.edges){
-				if(toReduceList.notContains(parent)){ // Sharing
-					toReduceList.push(parent);
-				}
-			}
-		}else if(node.hasNext()){
-			next = node.next;
-			if(toExpand.contains(next)){ // Sharing
-				next = toExpandList.get(next);
-			}else if(expandedStore.notContains(next)){ // Sharing
-				toExpandList.push(next);
-			}
-			next.addEdges(node.edges);
-		}
-	}
+  while(toReduceList.notEmpty()){
+    node = toReduceList.pop();
+    reducedStore.add(node);
+    
+    if(node.hasEdges()){
+      for(parent <- node.edges){
+        if(toReduceList.notContains(parent)){ // Sharing
+          toReduceList.push(parent);
+        }
+      }
+    }else if(node.hasNext()){
+      next = node.next;
+      if(toExpand.contains(next)){ // Sharing
+        next = toExpandList.get(next);
+      }else if(expandedStore.notContains(next)){ // Sharing
+        toExpandList.push(next);
+      }
+      next.addEdges(node.edges);
+    }
+  }
 }
 \end{verbatim}
 
 NOTE: The 'stores' are multi-level structures, indexed by start and / or end position as well as node type; so sharing checks don't break the asymptote.\\
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 Example trace:
-S ::= AB
-A ::= a
-B ::= b
+$S\,::=\,AB$\\
+$A\,::=\,a$\\
+$B\,::=\,b$\\
 input = ab
 
 1. expand S
@@ -124,8 +124,8 @@ input = ab
 
 
 Example trace 2 (left recursive):
-S ::= A
-A ::= Aa | a
+$S\,::=\,A$\\
+$A\,::=\,Aa\,|\,a$\\
 input = aaa
 
 1. expand S
@@ -159,15 +159,15 @@ TODO: Maybe add an illustration?\\
 -The parse forest contains at most $O(N^{2})$ result node's and $O(N^{2})$ prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most $O(N^{2})$ unique links from result nodes to prefixesLists. Every prefixesList can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case (see example further below).\\
 -It is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.\\
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 Parse tree example:
 Grammar:
-S ::= AAAA | AAA | AA
-A ::= a | aa
+$S\,::=\,AAAA\,|\,AAA\,|\,AA$\\
+$A\,::=\,a\,|\,aa$
 input = aaaa
 
-(Partial) visual representation of the parse forest, showing all alternatives for 'S0-4' (numbers indicate start and end position of the matched substring):
+(Partial) visual representation of the parse forest, showing all alternatives for '$S$0-4' (numbers indicate start and end position of the matched substring):
 A0-1 <- A1-2 <- A2-3 <- A3-4
  \- A1-3 <--\-----/----/
 A0-2 <-------\---/
@@ -183,12 +183,12 @@ S(A(aa),A(aa))		A0-2 <- A2-4
 
 TODO: Change into illustration of a parse forest and add more text.\\
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 Worst-case parse tree example:\\
 
 Grammar:\\
-S ::= SSS | SS | a | epsilon\\
+$S\,::=\,SSS\,|\,SS\,|\,a\,|\,epsilon$\\
 input = a * 1 - a * 10\\
 
 \begin{tabular}{ | p{5em} | p{5em} | p{5em} | p{8em} | p{5em} | p{5em} |}
@@ -198,13 +198,13 @@ input = a * 1 - a * 10\\
   0 & 2 & 2 & 3 & 7 & - \\
   1 & 5 & 6 & 9 & 20 & 20 \\
   2 & 8 & 13 & 15 & 36 & 4.5 \\
-  3 & 11 & 24 & 21 & 56 & 2.074074074 \\
-  4 & 14 & 40 & 27 & 81 & 1.265625 \\
+  3 & 11 & 24 & 21 & 56 & 2.074 \\
+  4 & 14 & 40 & 27 & 81 & 1.265 \\
   5 & 17 & 62 & 33 & 112 & 0.896 \\
-  6 & 20 & 91 & 39 & 150 & 0.694444444 \\
-  7 & 23 & 128 & 45 & 196 & 0.571428571 \\
-  8 & 26 & 174 & 51 & 251 & 0.490234375 \\
-  9 & 29 & 230 & 57 & 316 & 0.433470508 \\
+  6 & 20 & 91 & 39 & 150 & 0.694 \\
+  7 & 23 & 128 & 45 & 196 & 0.571 \\
+  8 & 26 & 174 & 51 & 251 & 0.490 \\
+  9 & 29 & 230 & 57 & 316 & 0.433 \\
   10 & 32 & 297 & 63 & 392 & 0.392 \\
   \hline
 \end{tabular}
@@ -212,82 +212,82 @@ input = a * 1 - a * 10\\
 TODO: Check data again.\\
 TODO: Improve explanation.\\
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 \begin{verbatim}
 
 Parser psuedocode:
 parse(){
-	toExpandList.push('startNode');
-	expand();
-	
-	do{
-		reduce();
-		expand();
-	}while(toReduceList.notEmpty());
-	
-	if(notAtEOI()) parse error;
-	
-	return findResultStore('startNode');
+  toExpandList.push('startNode');
+  expand();
+  
+  do{
+    reduce();
+    expand();
+  }while(toReduceList.notEmpty());
+  
+  if(notAtEOI()) parse error;
+  
+  return findResultStore('startNode');
 }
 
 expand(){
-	while(toExpandList.notEmpty()){
-		node = toExpandList.pop();
-		
-		Node[] children = getChildrenFor(node);
-		for(childNode <- children){
-			if(reducedStore.contains(childNode)){
-				findResultStore(node).addAlternative(childNode.prefixes, childNode.results);
-				if(notAddedEarlierInThisLoop){ // Sharing
-					toReduceList.add(node);
-				}
-			}else{
-				if(expandedStore.contains(childNode)){ // Sharing
-					expandedStore.get(childNode).addEdge(node);
-				}else{
-					expandedStore.add(childNode);
-				
-					if(childNode.isTerminal()){
-						toReduceList.push(childNode);
-					}else{
-						toExpandList.push(childNode);
-					}
-				}
-			}
-		}
-	}
+  while(toExpandList.notEmpty()){
+    node = toExpandList.pop();
+    
+    Node[] children = getChildrenFor(node);
+    for(childNode <- children){
+      if(reducedStore.contains(childNode)){
+        findResultStore(node).addAlternative(childNode.prefixes, childNode.results);
+        if(notAddedEarlierInThisLoop){ // Sharing
+          toReduceList.add(node);
+        }
+      }else{
+        if(expandedStore.contains(childNode)){ // Sharing
+          expandedStore.get(childNode).addEdge(node);
+        }else{
+          expandedStore.add(childNode);
+          
+          if(childNode.isTerminal()){
+            toReduceList.push(childNode);
+          }else{
+            toExpandList.push(childNode);
+          }
+        }
+      }
+    }
+  }
 }
 
 reduce(){
-	while(toReduceList.notEmpty()){
-		node = toReduceList.pop();
-		reducedStore.add(node);
-		
-		if(node.hasEdges()){
-			for(parent <- node.edges){
-				findResultStore(parent).addAlternative(node.prefixes, node.results);
-				if(toReduceList.notContains(parent)){ // Sharing
-					if(reducedStore.notContains(parent)){
-						toReduceList.push(parent);
-					}
-				}
-			}
-		}else if(node.hasNext()){
-			next = node.next;
-			if(toExpandList.contains(next)){ // Sharing
-				next = toExpandList.get(next);
-			}else if(expandedStore.notContains(next)){ // Sharing
-				toExpandList.push(next);
-			}
-			next.addEdges(node.edges);
-			next.updatePrefixes(node.prefixes, node.results);
-		}
-	}
+  while(toReduceList.notEmpty()){
+    node = toReduceList.pop();
+    reducedStore.add(node);
+    
+    if(node.hasEdges()){
+      for(parent <- node.edges){
+        findResultStore(parent).addAlternative(node.prefixes, node.results);
+        if(toReduceList.notContains(parent)){ // Sharing
+          if(reducedStore.notContains(parent)){
+            toReduceList.push(parent);
+          }
+        }
+      }
+    }else if(node.hasNext()){
+      next = node.next;
+      if(toExpandList.contains(next)){ // Sharing
+        next = toExpandList.get(next);
+      }else if(expandedStore.notContains(next)){ // Sharing
+        toExpandList.push(next);
+      }
+      next.addEdges(node.edges);
+      next.updatePrefixes(node.prefixes, node.results);
+    }
+  }
 }
 
 findResultStore(node){
-	return resultStores.findOrCreate(node.startLocation, node.endLocation, node.name);
+  return resultStores.findOrCreate(node.startLocation, node.endLocation, node.name);
 }
 
 \end{verbatim}
@@ -299,10 +299,10 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 -Make the algortihm breadth first / level synchronized; this reduces the amount of resources needed to keep track of sharing and reduces maximum memory usage in the general case.\\
 -Match on entire literals instead of characters. This reduces stack activity and improves performance.\\
 -Cache 'queued' / 'expected' children for every type of node per level, to ensure linear scaling for non-left-factored grammars and to enable further optimization.\\
--Don't store results on edges, but externally in a (temporary / reusable) per level store; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to $N * numberOfProductions$ instead of $N * (numberOfProductions^{2})$. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to $N * numberOfLHS's$ instead of $N * numberOfProductions$ (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).\\
--Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "S ::= AB | CB, A ::= a, B ::= b, C ::= a" both B's can share results). This increases sharing in the resulting tree and improves scaling.\\
+-Don't store results on edges, but externally in a (temporary / reusable) per level store; this reduces memory usage, since edges can remain pointers. Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to $N * numberOfProductions$ instead of $N * (numberOfProductions^{2})$. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to $N * numberOfLHS$'s instead of $N * numberOfProductions$ (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).\\
+-Share results between nodes with the same 'name', representing the same substring, but with a different id. (For example in "$S\,::=\,AB\,|\,CB,\,A\,::=\,a,\,B\,::=\,b,\,C\,::=\,a$" both B's can share results). This increases sharing in the resulting tree and improves scaling.\\
 -The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear. (This optimization requires the previous optimization).\\
--Share 'prefixes' of productions in the GSS. (For example S ::= E + E | E - E both start with an E that matches the same substring(s), thus may as well be merged (into S ::= E (+ E | - E))); this is done by simply giving both E's the same id and allowing every node to have more then one 'next' node.\\
+-Share 'prefixes' of productions in the GSS. (For example $S\,::=\,E\,+\,E\,|\,E\,-\,E$ both start with an E that matches the same substring(s), thus may as well be merged (into $S\,::=\,E\,(+\,E\,|\,-\,E)$)); this is done by simply giving both $E$'s the same id and allowing every node to have more then one 'next' node.\\
 
 TODO: Add more explanation + examples for all of these.\\
 
@@ -310,7 +310,7 @@ TODO: Add more explanation + examples for all of these.\\
 \section{Benchmarks}
 
 Worst-case:\\
-S ::= SSS | SS | a\\
+$S\,::=\,SSS\,|\,SS\,|\,a$\\
 input = a * 50 - a * 500\\
 
 \begin{table}
@@ -357,15 +357,15 @@ input = a * 50 - a * 500\\
 
 TODO: Add graph.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------\\
 
 Grammar factoring and prefix sharing:\\
 This test tries to emulate a 'realistic' 'worst-case' grammar in terms of size and type of productions. I.e. lots of left recursive stuff, but no ambiguous input.\\
 
 Grammar:\\
-S ::= A+\\
-A ::= a | E\\
-E ::= 1 | E + E | E - E | E * E | E / E | E > E | ... 25 more like it ...\\
+$S\,::=\,A+$\\
+$A\,::=\,a\,|\,E$\\
+$E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = a * 50000 | a * 100000 | a * 150000 | a * 200000\\
 
 \begin{table}
