@@ -42,48 +42,53 @@ public class ListContainerNode extends AbstractContainerNode{
 	}
 	
 	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
-		ArrayList<Link> prefixes = child.prefixes;
-		if(prefixes == null){
-			gatheredAlternatives.add(postFix);
-			return;
-		}
-		
-		if(prefixes.size() == 1){
-			gatherUnambiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
-		}else{
-			gatherAmbiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
-		}
-	}
-	
-	private void gatherUnambiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
-		Link prefix = prefixes.get(0);
-		
-		if(prefix == null){
-			gatheredAlternatives.add(postFix);
-		}else{
-			AbstractNode prefixNode = prefix.node;
-			if(blackList.contains(prefixNode)){
+		do{
+			ArrayList<Link> prefixes = child.prefixes;
+			if(prefixes == null){
+				gatheredAlternatives.add(postFix);
 				return;
 			}
 			
-			String result = prefixNode.print(stack, depth, cycleMark);
-			
-			if(prefixNode.isEmpty() && !prefixNode.isSeparator()){ // Possibly a cycle.
-				String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
-				if(cycle != null){
-					String[] newPostFix = buildCycle(cycle, postFix, result);
-					
-					gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
+			if(prefixes.size() == 1){
+				Link prefix = prefixes.get(0);
+				
+				if(prefix == null){
+					gatheredAlternatives.add(postFix);
 					return;
 				}
+				
+				AbstractNode prefixNode = prefix.node;
+				if(blackList.contains(prefixNode)){
+					return;
+				}
+				
+				String result = prefixNode.print(stack, depth, cycleMark);
+				
+				if(prefixNode.isEmpty() && !prefixNode.isSeparator()){ // Possibly a cycle.
+					String[] cycle = gatherCycle(prefix, new String[]{result}, stack, depth, cycleMark, blackList);
+					if(cycle != null){
+						String[] newPostFix = buildCycle(cycle, postFix, result);
+						
+						child = prefix;
+						postFix = newPostFix;
+						continue;
+					}
+				}
+				
+				int length = postFix.length;
+				String[] newPostFix = new String[length + 1];
+				System.arraycopy(postFix, 0, newPostFix, 1, length);
+				newPostFix[0] = result;
+				
+				child = prefix;
+				postFix = newPostFix;
+				continue;
 			}
 			
-			int length = postFix.length;
-			String[] newPostFix = new String[length + 1];
-			System.arraycopy(postFix, 0, newPostFix, 1, length);
-			newPostFix[0] = result;
-			gatherProduction(prefix, newPostFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
-		}
+			gatherAmbiguousProduction(prefixes, postFix, gatheredAlternatives, stack, depth, cycleMark, blackList, sharedPrefixCache);
+			
+			break;
+		}while(true);
 	}
 	
 	private void gatherAmbiguousProduction(ArrayList<Link> prefixes, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList, HashMap<ArrayList<Link>, String> sharedPrefixCache){
