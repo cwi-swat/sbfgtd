@@ -177,7 +177,9 @@ public class SGLL implements IGLL{
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			levelResultStoreMap.get(edge.getIdentifier()).addAlternative(new Link(edgePrefixes, nextResultStore));
+			AbstractContainerNode resultStore = levelResultStoreMap.get(edge.getIdentifier());
+			if(resultStore == null) return;
+			resultStore.addAlternative(new Link(edgePrefixes, nextResultStore));
 		}
 	}
 	
