@@ -3,7 +3,7 @@
 \usepackage{array}
 
 %opening
-\title{SBFGTD}
+\title{Generalized Top Down Parsing In Cubic Time}
 \author{Arnold Lankamp}
 
 \begin{document}
@@ -12,26 +12,53 @@
 
 \begin{abstract}
 
--Scannerless Binary Forest Generalized Top Down parser, or Scannerless Bloody Fast Generalized Top Down parser, whatevery suits you best; it's both true ;-). I tried to make the name more ambiguous and still make sense, but came up with nothing so far ....\\
+In this article we will describe a generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, it likely wipes the floor with any other algorithm out there.
 
 \end{abstract}
 
-\section{GSS}
+\section{Introduction}
+
+If the abstract didn't catch your attention yet, here are some highlights:
+\begin{itemize}
+ \setlength{\itemsep}{1pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ \item Worst case cubic space and time bounds with respect to the length of the input.
+ \item Worst case linear scaling relative to the size of the grammar.
+ \item Generating or hand crafting the parser code is trivial.
+ \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
+ \item Low constant overhead.
+ \item No performance hit for rules that are not left factored.
+\end{itemize}
+We call our parser, the Scannerless Binary Forest Generalized Top Down Parser (SBFGTD) (BF also means Bloody Fast, in case your wondering why I put it in the abbreviation).
+
+\section{Recognizer}
+
+As is common in generalized parsing we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign them as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the left hand side of a production gets a unique identifier, regardless whether or not a comparable left hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly.\\
+Since the GSS only contains nodes that we expect to 'encounter', there are at most O(N) of them; one of every type per location in the input string. Each of these nodes contains edges back to their 'parents'. Each node only has one of these to each of it's possible parents, per level; since there are at most O(N) levels there are at most O(N) edges per node.
+
+// TODO Convert the rest into text.
 
 -Every production consists of a number of nodes with a unique id. (For example $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$ has the nodes $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5)). Every node must have a unique id, regardless whether or not the LHS's they are used in are completely or partially comparable.\\
 -Every node in the GSS is unique per start position ($N$).\\
 -Every node has one unique 'result' per substring (start + end position) $(N^{2})$.\\
 -Every node has edges that point back to their 'parent(s)' (the node(s) that 'queued' / 'expected' it) ($N$).\\
 -Every node has a reference to the 'next' node in the production.\\
--The recognizer is $O(N^{3})$ worst-case ($N nodes * N edges that are followed N times$ (once per substring); thus $N * (N * N)$).\\
+-The recognizer is $O(N^{3})$ worst-case ($N nodes * N edges that are followed N times$ (once per substring); thus $N * (N * N)$). (??? check)\\
 
 -------------------------------------------------------------------------------------\\
 
-Basic recognizer algorithm:\\
-1. Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).\\
-2. Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.\\
-3. Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production they are part of where applicable, until no reductions are possible anymore.\\
-4. goto 1.\\
+Basic recognizer algorithm:
+\begin{enumerate}
+ \setlength{\itemsep}{1pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ \item Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
+ \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
+ \item Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production they are part of where applicable, until no reductions are possible anymore.
+ \item goto 1.
+}{\end{enumerate}}
+
 
 \begin{verbatim}
 
@@ -54,7 +81,7 @@ expand(){
     
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
-      if(reducedStore.contains(childNode)){ // Child already has results from different path
+      if(reducedStore.contains(childNode)){ // Child already has results
          if(notAddedEarlierInThisLoop){ // Sharing
            toReduceList.add(node);
          }
@@ -320,15 +347,15 @@ input = a * 50 - a * 500\\
   Input chars & Average Time & Lowest Time \\
   \hline
   50 & 4 & 0 \\
-  100 & 20 & 20 \\
-  150 & 70 & 70 \\
-  200 & 190 & 190 \\
-  250 & 416 & 410 \\
-  300 & 800 & 800 \\
-  350 & 1404 & 1400 \\
-  400 & 2284 & 2280 \\
-  450 & 3524 & 3520 \\
-  500 & 5200 & 5200 \\
+  100 & 18 & 10 \\
+  150 & 60 & 60 \\
+  200 & 154 & 150 \\
+  250 & 322 & 320 \\
+  300 & 596 & 590 \\
+  350 & 996 & 990 \\
+  400 & 1534 & 1530 \\
+  450 & 2228 & 2220 \\
+  500 & 3090 & 3080 \\
   \hline
 \end{tabular}
 \caption{Recognizer}
