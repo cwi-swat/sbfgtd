@@ -1,5 +1,7 @@
 package gll.util;
 
+import java.util.Iterator;
+
 public class IntegerKeyedHashMap<V>{
 	private final static int DEFAULT_BIT_SIZE = 2;
 	
@@ -22,6 +24,19 @@ public class IntegerKeyedHashMap<V>{
 		
 		threshold = nrOfEntries;
 		load = 0;
+	}
+	
+	public IntegerKeyedHashMap(IntegerKeyedHashMap<V> integerKeyedHashMap){
+		super();
+		
+		hashMask = integerKeyedHashMap.hashMask;
+		bitSize = integerKeyedHashMap.bitSize;
+		
+		entries = (Entry<V>[]) new Entry[hashMask + 1];
+		System.arraycopy(integerKeyedHashMap.entries, 0, entries, 0, hashMask + 1);
+		
+		threshold = hashMask + 1;
+		load = integerKeyedHashMap.load;
 	}
 	
 	private void rehash(){
@@ -162,7 +177,7 @@ public class IntegerKeyedHashMap<V>{
 		load = 0;
 	}
 	
-	private static class Entry<V>{
+	public static class Entry<V>{
 		public final int key;
 		public V value;
 		public Entry<V> next;
@@ -173,6 +188,64 @@ public class IntegerKeyedHashMap<V>{
 			this.key = key;
 			this.value = value;
 			this.next = next;
+		}
+	}
+	
+	public Iterator<Entry<V>> iterator(){
+		return new EntryIterator<V>(this);
+	}
+	
+	private static class EntryIterator<V> implements Iterator<Entry<V>>{
+		private final Entry<V>[] data;
+		
+		private Entry<V> current;
+		private int index;
+		
+		public EntryIterator(IntegerKeyedHashMap<V> shareableValuesHashMap){
+			super();
+			
+			data = shareableValuesHashMap.entries;
+
+			index = data.length - 1;
+			current = new Entry<V>(-1, null, data[index]);
+			locateNext();
+		}
+		
+		private void locateNext(){
+			Entry<V> next = current.next;
+			if(next != null){
+				current = next;
+				return;
+			}
+			
+			for(int i = index - 1; i >= 0 ; i--){
+				Entry<V> entry = data[i];
+				if(entry != null){
+					current = entry;
+					index = i;
+					return;
+				}
+			}
+			
+			current = null;
+			index = 0;
+		}
+		
+		public boolean hasNext(){
+			return (current != null);
+		}
+		
+		public Entry<V> next(){
+			if(!hasNext()) throw new UnsupportedOperationException("There are no more elements in this iterator.");
+			
+			Entry<V> entry = current;
+			locateNext();
+			
+			return entry;
+		}
+		
+		public void remove(){
+			throw new UnsupportedOperationException("This iterator doesn't support removal.");
 		}
 	}
 }
