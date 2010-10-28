@@ -98,8 +98,6 @@ public class SGLL implements IGLL{
 	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
-			alternative.updateNode(node, result);
-			
 			if(alternative.isEndNode()){
 				if(result.isEmpty() && !node.isMatchable() && !next.isMatchable()){
 					if(alternative.getId() != node.getId()){ // List cycle fix.
@@ -108,10 +106,14 @@ public class SGLL implements IGLL{
 						if(resultStore != null){
 							// Encountered self recursive epsilon cycle; update the prefixes.
 							updatePrefixes(node, resultStore);
+							
+							return alternative;
 						}
 					}
 				}
 			}
+			
+			alternative.updateNode(node, result);
 			
 			return alternative;
 		}
