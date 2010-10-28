@@ -25,6 +25,7 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \setlength{\parsep}{0pt}
  \item Worst case cubic space and time bounds with respect to the length of the input.
  \item Worst case linear scaling relative to the size of the grammar.
+ \item Linear performance on LL(k) and LR(k) grammars.
  \item Generating or hand crafting the parser code is trivial.
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
  \item Low constant overhead.
@@ -35,16 +36,14 @@ We call our parser, the Scannerless Binary Forest Generalized Top Down Parser (S
 \section{Recognizer}
 
 As is common in generalized parsing we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign them as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the left hand side of a production gets a unique identifier, regardless whether or not a comparable left hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly.\\
-Since the GSS only contains nodes that we expect to 'encounter', there are at most O(N) of them; one of every type per location in the input string. Each of these nodes contains edges back to their 'parents'. Each node only has one of these to each of it's possible parents, per level; since there are at most O(N) levels there are at most O(N) edges per node.
+Since the GSS only contains nodes that we expect to 'encounter', there are at most O(N) of them; one of every type per location in the input string. Each of these nodes contains edges back to their 'parents'. A node only has one of these to each of it's possible parents, per level; since there are at most O(N) levels there are at most O(N) edges per node.
 
 // TODO Convert the rest into text.
 
--Every production consists of a number of nodes with a unique id. (For example $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$ has the nodes $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5)). Every node must have a unique id, regardless whether or not the LHS's they are used in are completely or partially comparable.\\
--Every node in the GSS is unique per start position ($N$).\\
--Every node has one unique 'result' per substring (start + end position) $(N^{2})$.\\
--Every node has edges that point back to their 'parent(s)' (the node(s) that 'queued' / 'expected' it) ($N$).\\
+
+-Every node 'matches' $N$ unique substrings (start + end position).\\
 -Every node has a reference to the 'next' node in the production.\\
--The recognizer is $O(N^{3})$ worst-case ($N nodes * N edges that are followed N times$ (once per substring); thus $N * (N * N)$). (??? check)\\
+-The recognizer is $O(N^{3})$ worst-case (TODO: Figure out why)\\
 
 -------------------------------------------------------------------------------------\\
 
