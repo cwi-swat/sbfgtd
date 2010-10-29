@@ -12,7 +12,7 @@
 
 \begin{abstract}
 
-In this article we will describe a generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, it likely wipes the floor with any other algorithm out there.
+In this article we will describe a generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation likely wipes the floor with any other parser out there.
 
 \end{abstract}
 
@@ -20,9 +20,10 @@ In this article we will describe a generalized top down parsing algorithm. Since
 
 If the abstract didn't catch your attention yet, here are some highlights:
 \begin{itemize}
- \setlength{\itemsep}{1pt}
+ \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
+
  \item Worst case cubic space and time bounds with respect to the length of the input.
  \item Worst case linear scaling relative to the size of the grammar.
  \item Linear performance on LL(k) and LR(k) grammars.
@@ -35,33 +36,28 @@ We call our parser, the Scannerless Binary Forest Generalized Top Down Parser (S
 
 \section{Recognizer}
 
-As is common in generalized parsing we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign them as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the left hand side of a production gets a unique identifier, regardless whether or not a comparable left hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly.\\
-Since the GSS only contains nodes that we expect to 'encounter', there are at most O(N) of them; one of every type per location in the input string. Each of these nodes contains edges back to their 'parents'. A node only has one of these to each of it's possible parents, per level; since there are at most O(N) levels there are at most O(N) edges per node.
+\subsection{GSS}
 
-// TODO Convert the rest into text.
+As is common in generalized parsing we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign them as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.\\
+Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Since a node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node. This means that the total algorithm becomes $O(N^3)$; in the worst case we follow $O(N^2)$ edges in total and after every reduction a sharing check may need to be done that completes in $O(N)$ time.\\
 
+\subsection{Basic algorithm}
 
--Every node 'matches' $N$ unique substrings (start + end position).\\
--Every node has a reference to the 'next' node in the production.\\
--The recognizer is $O(N^{3})$ worst-case (TODO: Figure out why)\\
-
--------------------------------------------------------------------------------------\\
-
-Basic recognizer algorithm:
 \begin{enumerate}
- \setlength{\itemsep}{1pt}
+ \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
+
  \item Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
  \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
  \item Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production they are part of where applicable, until no reductions are possible anymore.
  \item goto 1.
-}{\end{enumerate}}
+\end{enumerate}
 
+\subsection{Pseudocode}
 
+{\small
 \begin{verbatim}
-
-Recognizer pseudocode:
 parse(){
   toExpandList.push('startNode');
   expand();
@@ -124,51 +120,61 @@ reduce(){
   }
 }
 \end{verbatim}
+}
 
-NOTE: The 'stores' are multi-level structures, indexed by start and / or end position as well as node type; so sharing checks don't break the asymptote.\\
+\subsection{Example traces}
 
--------------------------------------------------------------------------------------\\
-
-Example trace:
+Strait forward:\\
 $S\,::=\,AB$\\
 $A\,::=\,a$\\
 $B\,::=\,b$\\
-input = ab
+input = ab\\
 
-1. expand S
-2. expect AB
-3. expand A
-4. expect a
-5. reduce a and follow edge to A
-6. move from A to B
-7. expand B
-8. expect b
-9. reduce b follow edge to B
-10. reduce AB and follow edge to S
-11. reduce S
-12. done.
+\begin{enumerate}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item expand S
+ \item expect AB
+ \item expand A
+ \item expect a
+ \item reduce a and follow edge to A
+ \item move from A to B
+ \item expand B
+ \item expect b
+ \item reduce b follow edge to B
+ \item reduce AB and follow edge to S
+ \item reduce S
+ \item done.
+\end{enumerate}
 
-
-Example trace 2 (left recursive):
+Left recursive:\\
 $S\,::=\,A$\\
 $A\,::=\,Aa\,|\,a$\\
-input = aaa
+input = aaa\\
 
-1. expand S
-2. expect A
-3. expand A
-4. expect Aa | a
-5. expand A -> A shared
-6. reduce a and follow edge to A
-7. move from A to a
-8. reduce Aa and follow edges to S and A
-9. parse for S is incomplete and is discarded
-10. move from A to a
-11. reduce Aa and follow edges to S and A
-12. parse for S is complete.
-13. move from A to a
-14. reduce Aa failed, since EOI has already been reached.
-15. done.
+\begin{enumerate}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item expand S
+ \item expect A
+ \item expand A
+ \item expect Aa | a
+ \item expand A -> A shared
+ \item reduce a and follow edge to A
+ \item move from A to a
+ \item reduce Aa and follow edges to S and A
+ \item parse for S is incomplete and is discarded
+ \item move from A to a
+ \item reduce Aa and follow edges to S and A
+ \item parse for S is complete.
+ \item move from A to a
+ \item reduce Aa failed, since EOI has already been reached.
+ \item done.
+\end{enumerate}
 
 TODO: Maybe add an illustration?\\
 
@@ -217,7 +223,7 @@ Grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,epsilon$\\
 input = a * 1 - a * 10\\
 
-\begin{tabular}{ | p{5em} | p{5em} | p{5em} | p{8em} | p{5em} | p{5em} |}
+\begin{tabular}{ | p{4em} | p{4em} | p{4em} | p{5em} | p{4em} | p{4em} |}
   \hline
   Input length & Number of nodes & Number of pairs / links & Number of parent to child pointers & Total & Total / $N^{3}$ \\
   \hline
@@ -240,6 +246,7 @@ TODO: Improve explanation.\\
 
 -------------------------------------------------------------------------------------\\
 
+{\small
 \begin{verbatim}
 
 Parser psuedocode:
@@ -264,7 +271,8 @@ expand(){
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
       if(reducedStore.contains(childNode)){
-        findResultStore(node).addAlternative(childNode.prefixes, childNode.results);
+        findResultStore(node).
+          addAlternative(childNode.prefixes, childNode.results);
         if(notAddedEarlierInThisLoop){ // Sharing
           toReduceList.add(node);
         }
@@ -292,7 +300,8 @@ reduce(){
     
     if(node.hasEdges()){
       for(parent <- node.edges){
-        findResultStore(parent).addAlternative(node.prefixes, node.results);
+        findResultStore(parent).
+          addAlternative(node.prefixes, node.results);
         if(toReduceList.notContains(parent)){ // Sharing
           if(reducedStore.notContains(parent)){
             toReduceList.push(parent);
@@ -313,10 +322,12 @@ reduce(){
 }
 
 findResultStore(node){
-  return resultStores.findOrCreate(node.startLocation, node.endLocation, node.name);
+  return resultStores.
+    findOrCreate(node.startLocation, node.endLocation, node.name);
 }
 
 \end{verbatim}
+
 
 NOTE: algorithm / psuedocode was reverse engineered from the actual implementation and has been made more generic. (I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion).\\
 
@@ -331,7 +342,6 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 -Share 'prefixes' of productions in the GSS. (For example $S\,::=\,E\,+\,E\,|\,E\,-\,E$ both start with an E that matches the same substring(s), thus may as well be merged (into $S\,::=\,E\,(+\,E\,|\,-\,E)$)); this is done by simply giving both $E$'s the same id and allowing every node to have more then one 'next' node.\\
 
 TODO: Add more explanation + examples for all of these.\\
-
 
 \section{Benchmarks}
 
