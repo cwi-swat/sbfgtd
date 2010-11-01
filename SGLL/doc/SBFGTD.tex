@@ -178,9 +178,11 @@ input = aaa\\
 
 TODO: Maybe add an illustration?\\
 
-\section{Parse forest}
+\section{Parser}
 
--Custom 'deflattenized' format (similar in intend as binarization).\\
+\subsection{Parse forest}
+
+-Custom 'deflattenized' format (similar in intent as binarization).\\
 -Consists of result nodes, prefixesLists and pairs of result nodes and prefixesLists.\\
 -Every result node + prefixesList pair is unique.\\
 -Every prefixesList represent all parses for a certain substring (start + end position).\\
@@ -191,7 +193,7 @@ TODO: Maybe add an illustration?\\
 -The parse forest contains at most $O(N^{2})$ result node's and $O(N^{2})$ prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most $O(N^{2})$ unique links from result nodes to prefixesLists. Every prefixesList can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case (see example further below).\\
 -It is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.\\
 
--------------------------------------------------------------------------------------\\
+\subsection{Example}
 
 Parse tree example:
 Grammar:
@@ -215,7 +217,7 @@ S(A(aa),A(aa))		A0-2 <- A2-4
 
 TODO: Change into illustration of a parse forest and add more text.\\
 
--------------------------------------------------------------------------------------\\
+\subsection{Worst case example}
 
 Worst-case parse tree example:\\
 
@@ -244,7 +246,7 @@ input = a * 1 - a * 10\\
 TODO: Check data again.\\
 TODO: Improve explanation.\\
 
--------------------------------------------------------------------------------------\\
+\subsection{Psuedocode}
 
 {\small
 \begin{verbatim}
@@ -327,6 +329,7 @@ findResultStore(node){
 }
 
 \end{verbatim}
+}
 
 
 NOTE: algorithm / psuedocode was reverse engineered from the actual implementation and has been made more generic. (I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion).\\
@@ -343,9 +346,28 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 
 TODO: Add more explanation + examples for all of these.\\
 
+\section{Filtering}
+
+\subsection{Look-ahead}
+
+-Prevents 'expects' from 'firing'. Currently one character, but has no limit.
+
+\subsection{Follow restrictions}
+
+-If the current node being reduced is followed by any of its associated follow restrictions, the reduction is not performed. Follow restrictions can be any IMatchable node (character / literal / ciliteral / start-of-line / end-of-line / at-column).
+
+\subsection{Rejects}
+
+-Any RHS can be marked as reject. If it 'returns a result', any alternatives for the corresponding LHS representing the same substring are then discarded.
+
+\subsection{Priorities and associativity}
+
+-Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production). NOTE: Disables certain optimizations and is a pain to do parse time.
+
 \section{Benchmarks}
 
-Worst-case:\\
+\subsection{Worst case}
+
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
 input = a * 50 - a * 500\\
 
@@ -391,11 +413,12 @@ input = a * 50 - a * 500\\
 \caption{Parser}
 \end{table}
 
+NOTE: Recognizer optimized for speed; parser for memory and speed (meaning it can be faster).
+
 TODO: Add graph.
 
--------------------------------------------------------------------------------------\\
+\subsection{Grammar factoring}
 
-Grammar factoring and prefix sharing:\\
 This test tries to emulate a 'realistic' 'worst-case' grammar in terms of size and type of productions. I.e. lots of left recursive stuff, but no ambiguous input.\\
 
 Grammar:\\
