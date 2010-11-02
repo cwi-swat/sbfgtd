@@ -105,9 +105,7 @@ public class SGLL implements IGLL{
 						AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
 						if(resultStore != null){
 							// Encountered self recursive epsilon cycle; update the prefixes.
-							updatePrefixes(node, resultStore);
-							
-							return alternative;
+							if(updatePrefixes(node, result, resultStore)) return alternative;
 						}
 					}
 				}
@@ -161,28 +159,28 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void updatePrefixes(AbstractStackNode node, AbstractContainerNode nextResultStore){
+	private boolean updatePrefixes(AbstractStackNode node, AbstractNode nodeResultStore, AbstractContainerNode nextResultStore){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
-		
-		String nodeName = node.getIdentifier();
+		ArrayList<Link>[] prefixes = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
 			int startPosition = edgesMap.getKey(i);
 			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
 			
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startPosition);
-			AbstractContainerNode nodeResultStore = levelResultStoreMap.get(nodeName);
 			
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-			Link prefix = constructPrefixesFor(edgesMap, node.getPrefixesMap(), nodeResultStore, startPosition);
+			Link prefix = constructPrefixesFor(edgesMap, prefixes, nodeResultStore, startPosition);
 			edgePrefixes.add(prefix);
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
 			AbstractContainerNode resultStore = levelResultStoreMap.get(edge.getIdentifier());
-			if(resultStore == null) return;
+			if(resultStore == null) return false;
 			resultStore.addAlternative(new Link(edgePrefixes, nextResultStore));
 		}
+		
+		return true;
 	}
 	
 	private void updateEdges(AbstractStackNode node, AbstractNode result){
