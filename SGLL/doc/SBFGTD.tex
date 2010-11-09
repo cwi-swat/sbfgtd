@@ -1,6 +1,8 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
 \setlength{\parindent}{0pt}
 
 %opening
@@ -131,7 +133,7 @@ To illustrate how the recognizer works, here are some example traces.
 $S\,::=\,AB$\\
 $A\,::=\,a$\\
 $B\,::=\,b$\\
-input = ab
+input = $ab$
 
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -155,7 +157,7 @@ input = ab
 \subsubsection{Left recursive}
 $S\,::=\,A$\\
 $A\,::=\,Aa\,|\,a$\\
-input = aaa
+input = $aaa$
 
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -165,8 +167,8 @@ input = aaa
  \item expand S
  \item expect A
  \item expand A
- \item expect Aa | a
- \item expand A -> A shared
+ \item expect Aa $|$ a
+ \item expand A $\Rightarrow$ A shared
  \item reduce a and follow edge to A
  \item move from A to a
  \item reduce Aa and follow edges to S and A
@@ -192,8 +194,10 @@ TODO: Maybe convert to illustrations?
 -Every prefix in the prefixesList represents a different parse of the substring the prefixesList denotes (start + end position).\\
 -Every result node represents a parse for a certain substring (start + end position).\\
 -All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.\\
--Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).\\
--The parse forest contains at most $O(N^{2})$ result node's and $O(N^{2})$ prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most $O(N^{2})$ unique links from result nodes to prefixesLists. Every prefixesList can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case (see example further below).\\
+-Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
+
+-The parse forest contains at most $O(N^{2})$ result node's and $O(N^{2})$ prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most $O(N^{2})$ unique links from result nodes to prefixesLists. Every prefixesList can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case (see example further below).
+
 -It is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
 
 \subsection{Example}
@@ -201,24 +205,28 @@ TODO: Maybe convert to illustrations?
 Parse tree example:
 Grammar:
 $S\,::=\,AAAA\,|\,AAA\,|\,AA$\\
-$A\,::=\,a\,|\,aa$
-input = aaaa
+$A\,::=\,a\,|\,aa$\\
+input = $aaaa$
 
-(Partial) visual representation of the parse forest, showing all alternatives for '$S$0-4' (numbers indicate start and end position of the matched substring):
-A0-1 <- A1-2 <- A2-3 <- A3-4
- \- A1-3 <--\-----/----/
-A0-2 <-------\---/
- \            \-------- A2-4
-  \---------------------/
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.2\textwidth]{a_aa-forest.png}
+\caption{(Partial) visual representation of the parse forest, showing all alternatives for '$S0$-$4$' (numbers indicate start and end position of the matched substring)}
+\end{figure}
 
-(Complete) flattened version of the parse forest above (showing all derivations):
-S(A(a),A(a),A(a),A(a))	A0-1 <- A1-2 <- A2-3 <- A3-4
-S(A(a),A(aa),A(a))	A0-1 <- A1-3 <- A3-4
-S(A(aa),A(a),A(a))	A0-2 <- A2-3 <- A3-4
-S(A(a),A(a),A(aa))	A0-1 <- A1-2 <- A2-4
-S(A(aa),A(aa))		A0-2 <- A2-4
-
-TODO: Change into illustration of a parse forest and add more text.
+\begin{table}[H]
+\centering
+\begin{tabular}{ p{15em} p{15em} }
+Derivation & Forest path\\
+\hline
+S(A(a),A(a),A(a),A(a)) & A0-1 $\leftarrow$ A1-2 $\leftarrow$ A2-3 $\leftarrow$ A3-4\\
+S(A(a),A(aa),A(a)) & A0-1 $\leftarrow$ A1-3 $\leftarrow$ A3-4\\
+S(A(aa),A(a),A(a)) & A0-2 $\leftarrow$ A2-3 $\leftarrow$ A3-4\\
+S(A(a),A(a),A(aa)) & A0-1 $\leftarrow$ A1-2 $\leftarrow$ A2-4\\
+S(A(aa),A(aa)) & A0-2 $\leftarrow$ A2-4
+\end{tabular}
+\caption{'Flattened' version of the parse forest}
+\end{table}
 
 \subsection{Worst case example}
 
@@ -226,9 +234,9 @@ Worst-case parse tree example:
 
 Grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,epsilon$\\
-input = a * 1 - a * 10
+input = $a\,*\,1\,-\,a\,*\,10$
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{4em} | p{4em} | p{4em} | p{5em} | p{4em} | p{4em} | }
   \hline
@@ -375,7 +383,7 @@ TODO: Check correctness.
 -Completely parse time.\\
 NOTE: Disables certain optimizations (hurts badly) and is a pain to implement.
 
-TODO: add examples for each type.
+TODO: add examples.
 
 \subsection{Actions}
 
@@ -387,9 +395,9 @@ TODO: add examples for each type.
 \subsection{Worst case}
 
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
-input = a * 50 - a * 500
+input = $a\,*\,50\,-\,a\,*\,500$
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline
@@ -410,7 +418,7 @@ input = a * 50 - a * 500
 \caption{Recognizer}
 \end{table}
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline
@@ -443,9 +451,9 @@ Grammar:\\
 $S\,::=\,A+$\\
 $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
-input = a * 50000 | a * 100000 | a * 150000 | a * 200000
+input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline
@@ -460,7 +468,7 @@ input = a * 50000 | a * 100000 | a * 150000 | a * 200000
 \caption{Not left factored, not prefix shared; parse times}
 \end{table}
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline
@@ -475,7 +483,7 @@ input = a * 50000 | a * 100000 | a * 150000 | a * 200000
 \caption{Left factored; parse times}
 \end{table}
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline

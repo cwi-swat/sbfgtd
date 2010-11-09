@@ -1,0 +1,13 @@
+digraph graphname{
+  "a\n3-4" -> "a\n2-3"
+  "a\n2-3" -> "a\n1-2"
+  "a\n1-2" -> "a\n0-1"
+  "aa\n2-4" -> "aa\n0-2"
+  "aa\n2-4" -> "a\n1-2"
+  "a\n3-4" -> "aa\n1-3"
+  "aa\n1-3" -> "a\n0-1"
+  "a\n2-3" -> "aa\n0-2"
+  
+  {rank=same "a\n3-4" "aa\n2-4"}
+  {rank=same "a\n0-1" "aa\n0-2"}
+}
