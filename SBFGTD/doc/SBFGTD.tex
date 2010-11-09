@@ -1,6 +1,7 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{array}
+\setlength{\parindent}{0pt}
 
 %opening
 \title{Generalized Top Down Parsing In Cubic Time}
@@ -124,7 +125,9 @@ reduce(){
 
 \subsection{Example traces}
 
-Strait forward:\\
+To illustrate how the recognizer works, here are some example traces.
+
+\subsubsection{Strait forward}
 $S\,::=\,AB$\\
 $A\,::=\,a$\\
 $B\,::=\,b$\\
@@ -149,7 +152,7 @@ input = ab
  \item done.
 \end{enumerate}
 
-Left recursive:\\
+\subsubsection{Left recursive}
 $S\,::=\,A$\\
 $A\,::=\,Aa\,|\,a$\\
 input = aaa
@@ -176,7 +179,7 @@ input = aaa
  \item done.
 \end{enumerate}
 
-TODO: Maybe add an illustration?
+TODO: Maybe convert to illustrations?
 
 \section{Parser}
 
@@ -371,6 +374,8 @@ TODO: Check correctness.
 -Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production).\\
 -Completely parse time.\\
 NOTE: Disables certain optimizations (hurts badly) and is a pain to implement.
+
+TODO: add examples for each type.
 
 \subsection{Actions}
 
