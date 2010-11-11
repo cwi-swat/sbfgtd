@@ -41,7 +41,8 @@ We call our parser, the Scannerless Binary Forest Generalized Top Down Parser (S
 
 \subsection{GSS}
 
-As is common in generalized parsing we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign them as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.\\
+As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.
+
 Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Since a node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node. This means that the total algorithm becomes $O(N^3)$; in the worst case we follow $O(N^2)$ edges in total ... TODO: figure out where the other $O(N)$ is.
 
 \subsection{Basic algorithm}
@@ -187,18 +188,13 @@ TODO: Maybe convert to illustrations?
 
 \subsection{Parse forest}
 
--Custom 'deflattenized' format (similar in intent as binarization).\\
--Consists of result nodes, prefixesLists and pairs of result nodes and prefixesLists.\\
--Every result node + prefixesList pair is unique.\\
--Every prefixesList represent all parses for a certain substring (start + end position).\\
--Every prefix in the prefixesList represents a different parse of the substring the prefixesList denotes (start + end position).\\
--Every result node represents a parse for a certain substring (start + end position).\\
--All prefixesLists used in combination with the same 'type' of result node are the same, regardless of the result's end position.\\
--Every pair is identified by it's prefixesList's start position, result node start position and result node end position; the prefix end position and result node start position are the same (naturally).
+To represent the parse forest we use a format that was especially designed for this parser, to ensure execution time remains within cubic time and space bounds. We call it 'deflattenized', for lack of a better description; it's intent is similar to binarization, but it's implementation is somewhat different.
 
--The parse forest contains at most $O(N^{2})$ result node's and $O(N^{2})$ prefixesLists. Since all prefixesLists are shared regardless of the result node's end position that they are matched to, there are at most $O(N^{2})$ unique links from result nodes to prefixesLists. Every prefixesList can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case (see example further below).
+Every node in the tree contains a 'result', which represents a substring for a certain terminal or non-terminal. These 'results' contains one or more references to alternative representations of the substring it denotes. Each node also contains a list of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through the prefixes of a node to the start, you get all alternatives for a certain production at a certain location.
 
--It is possible to output a flattened (unbound polynomial) version of the parse forest at the user's request.
+Every node in the tree is identified by the substring it represents and it's prefixes; naturally all of a nodes prefixes denote the same substring, which ends were the node starts. This means the parse forest contains at most $O(N^{2})$ nodes with one prefix list each. All prefix lists are shared regardless of the node's end position that they are matched to, so there are at most $O(N)$ of them. Every prefix list can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case. We'll look into this with more detail in the next section.
+
+Additionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. Pratically this will probably not happen; moreso since filtering can be completely done during parsing and flattening, making it unlikely that many ambiguities remain in the final tree. We'll discuss filtering later on in this document.
 
 \subsubsection{Example}
 
@@ -262,6 +258,8 @@ TODO: Check data again.\\
 TODO: Improve explanation.
 
 \subsection{Psuedocode}
+
+Augmenting our regonizer with parse tree construction code it trivial. Only a few minor adjustments are needed.
 
 {\small
 \begin{verbatim}
