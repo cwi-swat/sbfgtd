@@ -3,7 +3,6 @@
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{float}
-\setlength{\parindent}{0pt}
 
 %opening
 \title{Generalized Top Down Parsing In Cubic Time}
@@ -188,13 +187,13 @@ TODO: Maybe convert to illustrations?
 
 \subsection{Parse forest}
 
-To represent the parse forest we use a format that was especially designed for this parser, to ensure execution time remains within cubic time and space bounds. We call it 'deflattenized', for lack of a better description; it's intent is similar to binarization, but it's implementation is somewhat different.
+To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic time and space bounds. We call it 'deflattenized', for lack of a better description; it's intent is similar to binarization, but it's implementation is somewhat different.
 
-Every node in the tree contains a 'result', which represents a substring for a certain terminal or non-terminal. These 'results' contains one or more references to alternative representations of the substring it denotes. Each node also contains a list of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through the prefixes of a node to the start, you get all alternatives for a certain production at a certain location.
+The parse forest consists of nodes. Every node in the forest contains a 'result', which represents a substring for a certain terminal or non-terminal. In case of non-terminals, these 'results' contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through the prefixes of a node to the start, you'll get all alternatives for a certain production at a certain location.
 
-Every node in the tree is identified by the substring it represents and it's prefixes; naturally all of a nodes prefixes denote the same substring, which ends were the node starts. This means the parse forest contains at most $O(N^{2})$ nodes with one prefix list each. All prefix lists are shared regardless of the node's end position that they are matched to, so there are at most $O(N)$ of them. Every prefix list can contain at most $N$ different prefixes, making the parse forest $O(N^{3})$ worst-case. We'll look into this with more detail in the next section.
+Every node in the tree is identified by the substring it represents and it's prefixes; all the prefixes of a certain node denote the same substring, which end were the 'result' contained in the node starts. All prefix sets are shared regardless of the node's end position that they are matched to, so there are at most $O(N)$ of them. Every prefix set can contain up to $N$ different prefixes. Since there can be only one 'result' per substring, this means there are at most $O(N^{2})$ 'results'. Overall this makes the parse forest $O(N^{3})$ worst-case, since the number of unique nodes is limited to $O(N^{3})$. We'll look into this with more detail further on in this chapter.
 
-Additionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. Pratically this will probably not happen; moreso since filtering can be completely done during parsing and flattening, making it unlikely that many ambiguities remain in the final tree. We'll discuss filtering later on in this document.
+Additionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. Pratically this unlikely to happen; moreso since filtering can be completely done during parsing and flattening, making it improbable that many ambiguities remain in the final tree. We'll discuss filtering later on in this document.
 
 \subsubsection{Example}
 
@@ -206,8 +205,8 @@ input = $aaaa$
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.2\textwidth]{a_aa-forest.png}
-\caption{(Partial) visual representation of the parse forest, showing all alternatives for '$S0$-$4$' (numbers indicate start and end position of the matched substring)}
+\includegraphics[width=0.5\textwidth]{a_aa-forest.png}
+\caption{A partial visual representation of the parse forest, showing all alternatives for '$S0$-$4$'. The numbers indicate start and end position of the matched substring.}
 \end{figure}
 
 \begin{table}[H]

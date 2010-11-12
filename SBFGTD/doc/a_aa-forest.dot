@@ -1,13 +1,13 @@
 digraph graphname{
-  "a\n3-4" -> "a\n2-3"
-  "a\n2-3" -> "a\n1-2"
-  "a\n1-2" -> "a\n0-1"
-  "aa\n2-4" -> "aa\n0-2"
-  "aa\n2-4" -> "a\n1-2"
-  "a\n3-4" -> "aa\n1-3"
-  "aa\n1-3" -> "a\n0-1"
-  "a\n2-3" -> "aa\n0-2"
+  "A(a)\n2-3" -> "A(a)\n3-4" [arrowhead="none",arrowtail="normal"]
+  "A(a)\n1-2" -> "A(a)\n2-3" [arrowhead="none",arrowtail="normal"]
+  "A(a)\n0-1" -> "A(a)\n1-2" [arrowhead="none",arrowtail="normal"]
+  "A(aa)\n0-2" -> "A(aa)\n2-4" [arrowhead="none",arrowtail="normal"]
+  "A(a)\n1-2" -> "A(aa)\n2-4" [arrowhead="none",arrowtail="normal"]
+  "A(aa)\n1-3" -> "A(a)\n3-4" [arrowhead="none",arrowtail="normal"]
+  "A(a)\n0-1" -> "A(aa)\n1-3" [arrowhead="none",arrowtail="normal"]
+  "A(aa)\n0-2" -> "A(a)\n2-3" [arrowhead="none",arrowtail="normal"]
   
-  {rank=same "a\n3-4" "aa\n2-4"}
-  {rank=same "a\n0-1" "aa\n0-2"}
+  {rank=same "A(a)\n0-1" "A(a)\n1-2" "A(a)\n2-3" "A(a)\n3-4"}
+  {rank=same "A(aa)\n0-2" "A(aa)\n1-3" "A(aa)\n2-4"}
 }
