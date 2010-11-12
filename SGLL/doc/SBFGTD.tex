@@ -389,11 +389,7 @@ Clearly demonstrating quardratic behaviour. If we would remember what the edges 
 \end{enumerate}
 Now expanding clearly completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$. The major benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par; in other cases it may be close enough to remove it's necessity.
 
-
-
-// TODO 
-
--The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear.
+Finally, we can also gain something at the other end. The sharing check on nodes when reducing can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in its edge set. In case the node this edge points to has already been reduced in this level nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. This improves the performance of the parser by a factor, dependent on the definition of the rules in the grammar.
 
 \subsection{GSS}
 
