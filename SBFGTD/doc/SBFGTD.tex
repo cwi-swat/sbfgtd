@@ -62,26 +62,26 @@ Since the GSS only contains nodes that we expect to 'encounter', there are at mo
 {\small
 \begin{verbatim}
 parse(){
-  toExpandList.push('startNode');
+  toExpandSet.push('startNode');
   expand();
   
   do{
     reduce();
     expand();
-  }while(toReduceList.notEmpty());
+  }while(toReduceSet.notEmpty());
   
   if(notAtEOI()) parse error;
 }
 
 expand(){
-  while(toExpandList.notEmpty()){
-    node = toExpandList.pop();
+  while(toExpandSet.notEmpty()){
+    node = toExpandSet.pop();
     
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
       if(reducedStore.contains(childNode)){ // Child already has results
          if(notAddedEarlierInThisLoop){ // Sharing
-           toReduceList.add(node);
+           toReduceSet.add(node);
          }
       }else{
         if(expandedStore.contains(childNode)){ // Sharing
@@ -90,9 +90,9 @@ expand(){
           expandedStore.add(childNode);
           
           if(childNode.isTerminal()){
-            toReduceList.push(childNode);
+            toReduceSet.push(childNode);
           }else{
-            toExpandList.push(childNode);
+            toExpandSet.push(childNode);
           }
         }
       }
@@ -101,22 +101,22 @@ expand(){
 }
 
 reduce(){
-  while(toReduceList.notEmpty()){
-    node = toReduceList.pop();
+  while(toReduceSet.notEmpty()){
+    node = toReduceSet.pop();
     reducedStore.add(node);
     
     if(node.hasEdges()){
       for(parent <- node.edges){
-        if(toReduceList.notContains(parent)){ // Sharing
-          toReduceList.push(parent);
+        if(toReduceSet.notContains(parent)){ // Sharing
+          toReduceSet.push(parent);
         }
       }
     }else if(node.hasNext()){
       next = node.next;
       if(toExpand.contains(next)){ // Sharing
-        next = toExpandList.get(next);
+        next = toExpandSet.get(next);
       }else if(expandedStore.notContains(next)){ // Sharing
-        toExpandList.push(next);
+        toExpandSet.push(next);
       }
       next.addEdges(node.edges);
     }
@@ -262,13 +262,13 @@ Augmenting our regonizer with parse tree construction code it trivial. Only a fe
 
 Parser psuedocode:
 parse(){
-  toExpandList.push('startNode');
+  toExpandSet.push('startNode');
   expand();
   
   do{
     reduce();
     expand();
-  }while(toReduceList.notEmpty());
+  }while(toReduceSet.notEmpty());
   
   if(notAtEOI()) parse error;
   
@@ -276,8 +276,8 @@ parse(){
 }
 
 expand(){
-  while(toExpandList.notEmpty()){
-    node = toExpandList.pop();
+  while(toExpandSet.notEmpty()){
+    node = toExpandSet.pop();
     
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
@@ -285,7 +285,7 @@ expand(){
         findResultStore(node).
           addAlternative(childNode.prefixes, childNode.results);
         if(notAddedEarlierInThisLoop){ // Sharing
-          toReduceList.add(node);
+          toReduceSet.add(node);
         }
       }else{
         if(expandedStore.contains(childNode)){ // Sharing
@@ -294,9 +294,9 @@ expand(){
           expandedStore.add(childNode);
           
           if(childNode.isTerminal()){
-            toReduceList.push(childNode);
+            toReduceSet.push(childNode);
           }else{
-            toExpandList.push(childNode);
+            toExpandSet.push(childNode);
           }
         }
       }
@@ -305,26 +305,26 @@ expand(){
 }
 
 reduce(){
-  while(toReduceList.notEmpty()){
-    node = toReduceList.pop();
+  while(toReduceSet.notEmpty()){
+    node = toReduceSet.pop();
     reducedStore.add(node);
     
     if(node.hasEdges()){
       for(parent <- node.edges){
         findResultStore(parent).
           addAlternative(node.prefixes, node.results);
-        if(toReduceList.notContains(parent)){ // Sharing
+        if(toReduceSet.notContains(parent)){ // Sharing
           if(reducedStore.notContains(parent)){
-            toReduceList.push(parent);
+            toReduceSet.push(parent);
           }
         }
       }
     }else if(node.hasNext()){
       next = node.next;
-      if(toExpandList.contains(next)){ // Sharing
-        next = toExpandList.get(next);
+      if(toExpandSet.contains(next)){ // Sharing
+        next = toExpandSet.get(next);
       }else if(expandedStore.notContains(next)){ // Sharing
-        toExpandList.push(next);
+        toExpandSet.push(next);
       }
       next.addEdges(node.edges);
       next.updatePrefixes(node.prefixes, node.results);
@@ -344,67 +344,60 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 
 \section{Optimizations}
 
+\subsection{General}
+
 The basic algorithm is fairly strait forward and relatively simple to implement. The naïve implementation will respect worst-case cubic time and space bounds, however adaptations can be made to improve general case efficiency.
 
-First of all making the implementation breath first / level synchronized generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since much information is stored on a per-level basis we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
+Making the implementation breath first / level synchronized generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since much information is stored on a per-level basis we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
 
 Another minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
 
-// TODO
--Don't store results on edges, but externally in a (temporary / reusable) per level store; this reduces memory usage, since edges can remain pointers.
+\subsection{Edge related}
 
-A more substantial performance increase can be gained by caching 'expected children' for every type of node per level; this will ensure linear scaling for non-left-factored grammars and enables further optimization (which we'll get into later on in this section). The reason for this is the following; if we take the grammar: $S\,::=\,E,\,E\,::=\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,1$, we would expand it like this:
+Generally parsers store results on edges in the GSS; likely for convience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges amoung GSS nodes and it opens up numereous other interesting opportunities for optimization.
+
+First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rule: $E\,::=\,E\,+\,E\,|\,E\,-\,E$. The expansion at the first level would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item $S$(-1) $\rightarrow$ $E$(0)
- \item $E$(0) $\rightarrow$ $E$(1) + $E$(2)
- \item $E$(0) $\rightarrow$ $E$(3) - $E$(4)
- \item $E$(0) $\rightarrow$ $E$(5) * $E$(6)
- \item $E$(0) edges = {$E$(1) + $E$(2), $E$(3) - $E$(4), $E$(5) * $E$(6)}
- \item $E$(1) $\rightarrow$ $E$(1) + $E$(2)
- \item $E$(1) $\rightarrow$ $E$(3) - $E$(4)
- \item $E$(1) $\rightarrow$ $E$(5) * $E$(6)
- \item $E$(1) edges = {$E$(1) + $E$(2), $E$(3) - $E$(4), $E$(5) * $E$(6)}
- \item $E$(3) $\rightarrow$ $E$(1) + $E$(2)
- \item $E$(3) $\rightarrow$ $E$(3) - $E$(4)
- \item $E$(3) $\rightarrow$ $E$(5) * $E$(6)
- \item $E$(3) edges = {$E$(1) + $E$(2), $E$(3) - $E$(4), $E$(5) * $E$(6)}
- \item $E$(5) $\rightarrow$ $E$(1) + $E$(2)
- \item $E$(5) $\rightarrow$ $E$(3) - $E$(4)
- \item $E$(5) $\rightarrow$ $E$(5) * $E$(6)
- \item $E$(5) edges = {$E$(1) + $E$(2), $E$(3) - $E$(4), $E$(5) * $E$(6)}
+ \item $E$(0) $\rightarrow$ $E$(1) $+$ $E$(2)
+ \item $E$(1) edges = {$E$(0)}
+ \item $E$(0) $\rightarrow$ $E$(3) $-$ $E$(4)
+ \item $E$(3) edges = {$E$(0)}
+ \item $E$(1) $\rightarrow$ $E$(1) $+$ $E$(2)
+ \item $E$(1) edges = {$E$(0), $E$(1)}
+ \item $E$(1) $\rightarrow$ $E$(3) $-$ $E$(4)
+ \item $E$(3) edges = {$E$(0), $E$(1)}
+ \item $E$(3) $\rightarrow$ $E$(1) $+$ $E$(2)
+ \item $E$(1) edges = {$E$(0), $E$(1), $E$(3)}
+ \item $E$(3) $\rightarrow$ $E$(3) $-$ $E$(4)
+ \item $E$(3) edges = {$E$(0), $E$(1), $E$(3)}
 \end{enumerate}
-Clearly demonstrating quardratic behaviour. If we would remember what $E$(0) was expanded to, we can reuse it's list of edges for $E$(1), $E$(3) and $E$(5); making the expand look like this:
+Clearly demonstrating quardratic behaviour. If we would remember what the edges set of one $E$, we can reuse it for any other $E$ in the same level and update it with additional edges by reference; this is possible since nodes are guaranteed to have the same edges if they are 'expected' by the same 'parent(s)'. This will make the expansion look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item $S$(-1) $\rightarrow$ E(0)
- \item $E$(0) $\rightarrow$ $E$(1) + $E$(2)
- \item $E$(0) $\rightarrow$ $E$(3) - $E$(4)
- \item $E$(0) $\rightarrow$ $E$(5) * $E$(6)
- \item $E$(0) edges = {$E$(1) + $E$(2), $E$(3) - $E$(4), $E$(5) * $E$(6)}
- \item $E$ expand = $E$(0) edges
- \item $E$(1) $\rightarrow$ $E$ expand
- \item $E$(3) $\rightarrow$ $E$ expand
- \item $E$(5) $\rightarrow$ $E$ expand
+ \item $E$(0) $\rightarrow$ $E$(1) $+$ $E$(2)
+ \item $E$(0) $\rightarrow$ $E$(3) $-$ $E$(4)
+ \item $E$ edges = {$E$(0)}
+ \item $E$(1) $\Rightarrow$ $E$ edges += $E$(1)
+ \item $E$(3) $\Rightarrow$ $E$ edges += $E$(3)
 \end{enumerate}
-Now expanding clearly completes in linear time.
+Now expanding clearly completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$. The major benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par; in other cases it may be close enough to remove it's necessity.
 
 
 
-// TODO
--Additionally edges can be shared between different nodes, since often nodes are guaranteed to (either partially or entirely) have the same edges, since they are always 'queued' / 'expected' by the same 'parent(s)'. The number of edges can be reduced to $N\,*\,numberOfProductions$ instead of $N\,*\,(numberOfProductions^{2})$. In absence of a priority system that restricts 'parent' / 'child' relations, the number of edges can even be reduced to $N\,*\,numberOfLHS$'s instead of $N\,*\,numberOfProductions$ (with as positive side effect that the parser for any grammar becomes as fast as it's left-factored counterpart (if implemented properly)).
+// TODO 
 
--The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear. (This optimization requires the previous optimization).
+-The sharing check on 'parents' when reducing can be eliminated. Since every parent of the same 'type' always has exactly the same children for the same position, it is sufficient to just follow the edges of the first child and only add the results to the 'result store' of the parent(s) for all following children. This changes the scaling of the parser with respect to the number of different 'sorts' in the grammar from quadratic to linear.
+
+\subsection{GSS}
 
 -Share 'prefixes' of productions in the GSS. (For example $S\,::=\,E\,+\,E\,|\,E\,-\,E$ both start with an E that matches the same substring(s), thus may as well be merged (into $S\,::=\,E\,(+\,E\,|\,-\,E)$)); this is done by simply giving both $E$'s the same id and allowing every node to have more then one 'next' node.
-
-TODO: Add more explanation + examples for all of these.
 
 \section{Filtering}
 
