@@ -40,7 +40,7 @@ We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or
 
 \subsection{GSS}
 
-As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.
+As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.
 
 Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Since a node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node. This means that the total algorithm becomes $O(N^3)$; in the worst case we follow $O(N^2)$ edges in total ... TODO: figure out where the other $O(N)$ is.
 
@@ -393,7 +393,7 @@ Finally, we can also gain something at the other end. The 'is reduced' check on 
 
 \subsection{GSS}
 
--Share 'prefixes' of productions in the GSS. (For example $S\,::=\,E\,+\,E\,|\,E\,-\,E$ both start with an E that matches the same substring(s), thus may as well be merged (into $S\,::=\,E\,(+\,E\,|\,-\,E)$)); this is done by simply giving both $E$'s the same id and allowing every node to have more then one 'next' node.
+In many grammars productions exist that start with the same symbols. There is no reason why we would have do duplicate work for these symbols. For example, if we take the grammar: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s of the left of the productions match the same substring(s), thus these two productions may as well be merged into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to allow this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s, the desired result is achieved. This optimization ensures we can recognize / parser LR(k) grammars in linear time.
 
 \section{Filtering}
 
