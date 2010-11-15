@@ -34,7 +34,7 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Low constant overhead.
  \item No performance hit for rules that are not left factored.
 \end{itemize}
-We call our parser, the Scannerless Binary Forest Generalized Top Down Parser (SBFGTD) (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation).
+We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation).
 
 \section{Recognizer}
 
@@ -107,7 +107,8 @@ reduce(){
     
     if(node.hasEdges()){
       for(parent <- node.edges){
-        if(toReduceSet.notContains(parent)){ // Sharing
+        if(toReduceSet.notContains(parent) &&
+            reducedStore.notContains(parent)){ // Sharing (is reduced)
           toReduceSet.push(parent);
         }
       }
@@ -283,7 +284,7 @@ expand(){
     for(childNode <- children){
       if(reducedStore.contains(childNode)){
         findResultStore(node).
-          addAlternative(childNode.prefixes, childNode.results);
+            addAlternative(childNode.prefixes, childNode.results);
         if(notAddedEarlierInThisLoop){ // Sharing
           toReduceSet.add(node);
         }
@@ -312,11 +313,10 @@ reduce(){
     if(node.hasEdges()){
       for(parent <- node.edges){
         findResultStore(parent).
-          addAlternative(node.prefixes, node.results);
-        if(toReduceSet.notContains(parent)){ // Sharing
-          if(reducedStore.notContains(parent)){
-            toReduceSet.push(parent);
-          }
+            addAlternative(node.prefixes, node.results);
+        if(toReduceSet.notContains(parent) &&
+            reducedStore.notContains(parent)){ // Sharing (is reduced)
+          toReduceSet.push(parent);
         }
       }
     }else if(node.hasNext()){
@@ -389,7 +389,7 @@ Clearly demonstrating quardratic behaviour. If we would remember what the edges 
 \end{enumerate}
 Now expanding clearly completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$. The major benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par; in other cases it may be close enough to remove it's necessity.
 
-Finally, we can also gain something at the other end. The sharing check on nodes when reducing can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in its edge set. In case the node this edge points to has already been reduced in this level nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. This improves the performance of the parser by a factor, dependent on the definition of the rules in the grammar.
+Finally, we can also gain something at the other end. The 'is reduced' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
 \subsection{GSS}
 
