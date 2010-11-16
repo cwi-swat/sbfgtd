@@ -38,6 +38,8 @@ We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or
 
 \section{Recognizer}
 
+TODO: Write chapter introduction.
+
 \subsection{GSS}
 
 As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.
@@ -126,9 +128,9 @@ reduce(){
 \end{verbatim}
 }
 
-\subsection{Parser code}
+\subsection{From grammar to code}
 
-Writing or generating the parser code is relatively strait forward. All that it needs is a direct translation from the grammar rules to either code or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each non-terminal. In case we are generating code, this would mean that one function per non-terminal is needed, which contains logic that informs the recognizer / parser about what alternatives should be expected.
+Writing or generating the recognizer / parser code is relatively strait forward. All that it needs is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each non-terminal. In case we are generating code, this would mean that one function per non-terminal is needed, which contains logic that informs the recognizer / parser about what alternatives should be expected.
 
 Since the mapping between the original grammar and the code or table is one-on-one, it is even possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
 
@@ -350,13 +352,15 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 
 \section{Optimizations}
 
-\subsection{General}
-
 The basic algorithm is fairly strait forward and relatively simple to implement. The naïve implementation will respect worst-case cubic time and space bounds, however adaptations can be made to improve general case efficiency.
+
+\subsection{General}
 
 Making the implementation breath first / level synchronized generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since much information is stored on a per-level basis we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
 
 Another minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
+
+A more obivious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited, by theoretical of practical constraints.
 
 \subsection{Edge related}
 
@@ -403,9 +407,7 @@ In many grammars productions exist that start with the same symbols. There is no
 
 \section{Filtering}
 
-\subsection{Look-ahead}
-
--Prevents 'expects' from 'firing'. Currently one character, but has no limit.
+TODO: Write chapter introduction.
 
 \subsection{Follow restrictions}
 
@@ -431,6 +433,8 @@ TODO: add examples.
 -Can be used for disambiguation, amoung other things.
 
 \section{Benchmarks}
+
+TODO: Write chapter introduction.
 
 \subsection{Worst case}
 
