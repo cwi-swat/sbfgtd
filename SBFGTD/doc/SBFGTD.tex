@@ -126,6 +126,12 @@ reduce(){
 \end{verbatim}
 }
 
+\subsection{Parser code}
+
+Writing or generating the parser code is relatively strait forward. All that it needs is a direct translation from the grammar rules to either code or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each non-terminal. In case we are generating code, this would mean that one function per non-terminal is needed, which contains logic that informs the recognizer / parser about what alternatives should be expected.
+
+Since the mapping between the original grammar and the code or table is one-on-one, it is even possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
+
 \subsection{Example traces}
 
 To illustrate how the recognizer works, here are some example traces.
@@ -393,7 +399,7 @@ Finally, we can also gain something at the other end. The 'is reduced' check on 
 
 \subsection{GSS}
 
-In many grammars productions exist that start with the same symbols. There is no reason why we would have do duplicate work for these symbols. For example, if we take the grammar: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s of the left of the productions match the same substring(s), thus these two productions may as well be merged into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to allow this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s, the desired result is achieved. This optimization ensures we can recognize / parser LR(k) grammars in linear time.
+In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the shared prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be shared, regardless whether or not it already has been shared with another rule. This optimization ensures we can recognize and parse LR(k) grammars in linear time.
 
 \section{Filtering}
 
