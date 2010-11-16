@@ -441,51 +441,13 @@ TODO: Write chapter introduction.
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
 input = $a\,*\,50\,-\,a\,*\,500$
 
-\begin{table}[H]
+\begin{figure}[H]
 \centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Average Time & Lowest Time \\
-  \hline
-  50 & 4 & 0 \\
-  100 & 18 & 10 \\
-  150 & 60 & 60 \\
-  200 & 154 & 150 \\
-  250 & 322 & 320 \\
-  300 & 596 & 590 \\
-  350 & 996 & 990 \\
-  400 & 1534 & 1530 \\
-  450 & 2228 & 2220 \\
-  500 & 3090 & 3080 \\
-  \hline
-\end{tabular}
-\caption{Recognizer}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Average Time & Lowest Time \\
-  \hline
-  50 & 6 & 0 \\
-  100 & 36 & 30 \\
-  150 & 130 & 130 \\
-  200 & 332 & 320 \\
-  250 & 672 & 660 \\
-  300 & 1206 & 1200 \\
-  350 & 2018 & 2010 \\
-  400 & 3184 & 3170 \\
-  450 & 4776 & 4750 \\
-  500 & 6880 & 6870 \\
-  \hline
-\end{tabular}
-\caption{Parser}
-\end{table}
+\includegraphics[width=1\textwidth]{worst-case.png}
+\caption{Worst-case recognizer and parse times.}
+\end{figure}
 
 NOTE: Recognizer optimized for speed; parser for memory and speed (meaning it can be faster).
-
-TODO: Add graph.
 
 \subsection{Grammar factoring}
 
@@ -497,51 +459,10 @@ $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
 
-\begin{table}[H]
+\begin{figure}[H]
 \centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Average Time & Lowest Time \\
-  \hline
-  50000 & 423 & 400 \\
-  100000 & 786 & 780 \\
-  150000 & 1183 & 1170 \\
-  200000 & 1600 & 1590 \\
-  \hline
-\end{tabular}
-\caption{Not left factored, not prefix shared; parse times}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Average Time & Lowest Time \\
-  \hline
-  50000 & 383 & 380 \\
-  100000 & 726 & 720 \\
-  150000 & 1090 & 1080 \\
-  200000 & 1443 & 1440 \\
-  \hline
-\end{tabular}
-\caption{Left factored; parse times}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Average Time & Lowest Time \\
-  \hline
-  50000 & 170 & 160 \\
-  100000 & 326 & 320 \\
-  150000 & 476 & 470 \\
-  200000 & 630 & 630 \\
-  \hline
-\end{tabular}
-\caption{Not left factored, prefix shared; parse times}
-\end{table}
-
-TODO: Add graph containing all of the above.
+\includegraphics[width=1\textwidth]{grammar-factoring.png}
+\caption{Grammar factoring related parse time scaling; without look-ahead.}
+\end{figure}
 
 \end{document}
