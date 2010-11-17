@@ -29,10 +29,10 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Worst case cubic space and time bounds with respect to the length of the input.
  \item Worst case linear scaling relative to the size of the grammar.
  \item Linear performance on LL(k) and LR(k) grammars.
+ \item No performance hit for rules that are not left factored.
  \item Generating or hand crafting the parser code is trivial.
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
  \item Low constant overhead.
- \item No performance hit for rules that are not left factored.
 \end{itemize}
 We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation).
 
@@ -44,7 +44,7 @@ TODO: Write chapter introduction.
 
 As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. So for for example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every terminal and non-terminal on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs again in another position in the grammar. These identifiers are needed to handle sharing in the GSS correctly. Each stack node consists of this identifier, edges back to their 'parents' and information about it's 'right neighbour' in the production, so we know where to go next.
 
-Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Since a node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node. This means that the total algorithm becomes $O(N^3)$; in the worst case we follow $O(N^2)$ edges in total ... TODO: figure out where the other $O(N)$ is.
+Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Since a node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node. This means that the total algorithm becomes $O(N^3)$. In the worst case there are $N$ times $O(N)$ nodes that match a substring that ends in the current level; when moving to the 'next' node in the production all edges of these nodes need to be carried over, this time this operation needs to complete is equal to the number of levels before the current position (so $N$ at most), hense $O(N)\,*\,N\,*\,N\,=\,O(N^3)$.
 
 \subsection{Basic algorithm}
 
@@ -352,7 +352,7 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 
 \section{Optimizations}
 
-The basic algorithm is fairly strait forward and relatively simple to implement. The naïve implementation will respect worst-case cubic time and space bounds, however adaptations can be made to improve general case efficiency.
+The basic algorithm is fairly strait forward and relatively simple to implement. The naïve implementation will respect worst-case cubic time and space bounds, however adaptations can be made to improve its overall efficiency.
 
 \subsection{General}
 
@@ -364,7 +364,7 @@ A more obivious optimization is adding support for look-ahead filtering. Simply 
 
 \subsection{Edge related}
 
-Generally parsers store results on edges in the GSS; likely for convience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
+Generally parsers store results on edges in the GSS; likely for convenience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
 
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rule: $E\,::=\,E\,+\,E\,|\,E\,-\,E$. The expansion at the first level would look like this:
 \begin{enumerate}
@@ -397,13 +397,13 @@ Clearly demonstrating quardratic behaviour. If we would remember what the edges 
  \item $E$(1) $\Rightarrow$ $E$ edges += $E$(1)
  \item $E$(3) $\Rightarrow$ $E$ edges += $E$(3)
 \end{enumerate}
-Now expanding clearly completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$. The major benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par; in other cases it may be close enough to remove it's necessity.
+Now expanding clearly completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove it's necessity.
 
 Finally, we can also gain something at the other end. The 'is reduced' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
 \subsection{GSS}
 
-In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the shared prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be shared, regardless whether or not it already has been shared with another rule. This optimization ensures we can recognize and parse LR(k) grammars in linear time.
+In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the shared prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be shared, regardless whether or not it already has been shared with another rule. This optimization ensures we can recognize and parse LR(k) grammars using just one stack, thus in linear time.
 
 \section{Filtering}
 
@@ -479,7 +479,7 @@ $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
 
--Cleanrly shows linear scaling regardless of what the grammar looks like.
+-Clearly shows linear scaling regardless of what the grammar looks like.
 
 \begin{figure}[H]
 \centering
