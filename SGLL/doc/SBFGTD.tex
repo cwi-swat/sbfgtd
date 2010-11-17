@@ -488,13 +488,13 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 \subsection{Grammar factoring}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting too look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version.
-
-Grammar:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting too look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version. The original grammar is the following:\\
 $S\,::=\,A+$\\
 $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
+
+It contains lots of left-recursion and one non-ambiguous path. So one would expect 
 
 -Clearly shows linear scaling regardless of what the grammar looks like.
 
