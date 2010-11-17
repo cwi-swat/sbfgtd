@@ -364,7 +364,7 @@ A more obivious optimization is adding support for look-ahead filtering. Simply 
 
 \subsection{Edge related}
 
-Generally parsers store results on edges in the GSS; likely for convience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges amoung GSS nodes and it opens up numereous other interesting opportunities for optimization.
+Generally parsers store results on edges in the GSS; likely for convience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
 
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rule: $E\,::=\,E\,+\,E\,|\,E\,-\,E$. The expansion at the first level would look like this:
 \begin{enumerate}
@@ -417,22 +417,19 @@ Follow restrictions are trivial to implement. They work as a kind of look-ahead 
 
 Any alternative can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. Rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of the rejected alternative's edge is already reduced. This is the reason why it's not completely at parse time.
 
-Reject alternatives may be nested, however they are not allowed to be ambiguous / cyclic, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A\,|\,B,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,A(r)\,|\,a$. The reject edges are marked with $(r)$. Now the order in which reductions are done determines the final parse result. We could follow the edge from $A$ to $B$ first and reject $B$; since $B$ is rejected it won't be reduced, so $A$ won't be rejected as we don't follow the edge from $B$ to $A$ and we end up with $S(A(a))$. On the other hand the opposite may happen and we'd end up with $S(B(a))$. So in practice it may, or may not do what you intended.
+Reject alternatives may be nested, however they are not allowed to be cyclic, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A\,|\,B,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,A(r)\,|\,a$. The reject edges are marked with $(r)$. The order in which reductions are done will determine the final parse result. For example, we could follow the edge from $A$ to $B$ first and reject $B$; since $B$ is rejected it won't be reduced, so $A$ won't be rejected as we don't follow the edge from $B$ to $A$ and we end up with $S(A(a))$. On the other hand the opposite may happen and we'd end up with $S(B(a))$. So in practice it may, or may not do what you intended.
 
-TODO: Check, consider, rewrite and such.
+TODO: Check, consider, rewrite and such; there may be something wrong with rejects in certain cases in the current implementation (i.e. nested rejects that contains subtrees that have an alternative path to an ambiguous reject higher up in the tree may show unwanted behaviour).
 
 \subsection{Priorities and associativity}
 
--Are implemented as 'don't nest' relations. (For example E ::= E * E > E + E means that E + E can't be a child of E * E, similarly S ::= E + E {left} means that E + E can't be a child of the E on the left side of the production).\\
--Completely parse time.\\
-NOTE: Disables certain optimizations (hurts badly) and is a pain to implement.
+Priorities and associativity restrictions are implemented as 'don't nest' relation. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, this means that the production $E\,+\,E$ can't be a child of the production $E\,*\,E$ on either side of the production. Similarly $E\,::=\,E\,+\,E\,\{left\}$ means that the production $E\,+\,E$ can't be a child of itself on the left side of the production; similarly for $\{right\}$, but the other way around. If declared as $\{nonassoc\}$ it can't be nested on either side of itself.
 
-TODO: add examples.
+The current implementation handles priority and associativity filtering completely at parse time. While reducing it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it's stored in a result node that is identified by the sort name of the node the edge points to and the key that indicates which other non-terminals with the same sort name have the same set of 'don't nest' relations. This is done to preserve sharing in the resulting tree. For example consider the following grammar rule: $E\,::=\,E(1)\,*\,E(2)\,\{left\}\,>\,(E(3)\,+\,E(4)\,|\,E(5)\,-\,E(6))\{left\}$. Here $E(3)$ and $E(5)$ would share the same result nodes while parsing, just as $E(4)$ and $E(6)$, since their 'don't nest' relations are identical.
 
 \subsection{Actions}
 
--Every sort can have a action associated with it.\\
--Can be used for disambiguation, amoung other things.
+Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities or filter alternatives that can't be disambiguated using priorities. I won't go into detail about this feature, since it's not an integral part of the parser, but more of a post-parse filter.
 
 \section{Benchmarks}
 
@@ -481,6 +478,8 @@ $S\,::=\,A+$\\
 $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
+
+-Cleanrly shows linear scaling regardless of what the grammar looks like.
 
 \begin{figure}[H]
 \centering
