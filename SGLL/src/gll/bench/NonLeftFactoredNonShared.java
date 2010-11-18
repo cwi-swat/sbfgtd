@@ -70,6 +70,7 @@ public class NonLeftFactoredNonShared extends SGLL{
 	private final static AbstractStackNode NONTERMINAL_E57 = new NonTerminalStackNode(57, 2, "E");
 	private final static AbstractStackNode NONTERMINAL_E58 = new NonTerminalStackNode(58, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E59 = new NonTerminalStackNode(59, 2, "E");
+	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
 	
 	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(100, 1, "@".toCharArray());
 	private final static AbstractStackNode LITERAL_1 = new LiteralStackNode(101, 1, "-".toCharArray());
@@ -105,9 +106,7 @@ public class NonLeftFactoredNonShared extends SGLL{
 	
 	private final static AbstractStackNode NONTERMINAL_A999 = new NonTerminalStackNode(999, 0, "A");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_A999, "A+", true);
-	
-	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
-	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 1, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 0, new char[]{'a'});
 	
 	private NonLeftFactoredNonShared(char[] input){
 		super(input);
@@ -118,7 +117,8 @@ public class NonLeftFactoredNonShared extends SGLL{
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_E10000, LITERAL_a99999);
+		expect(NONTERMINAL_E10000);
+		expect(LITERAL_a99999);
 	}
 	
 	public void E(){
@@ -161,8 +161,7 @@ public class NonLeftFactoredNonShared extends SGLL{
 	private static char[] createInput(int size){
 		char[] input = new char[size];
 		for(int i = size - 1; i >= 0; --i){
-			if((i % 2) == 0) input[i] = '1';
-			else input[i] = 'a';
+			input[i] = 'a';
 		}
 		return input;
 	}
@@ -198,7 +197,7 @@ public class NonLeftFactoredNonShared extends SGLL{
 	
 	public static void main(String[] args) throws Exception{
 		// Warmup.
-		char[] input = createInput(6);
+		char[] input = createInput(5);
 		
 		for(int i = 9999; i >= 0; --i){
 			NonLeftFactoredNonShared nlfns = new NonLeftFactoredNonShared(input);
