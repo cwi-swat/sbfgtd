@@ -78,7 +78,7 @@ public class LeftFactored extends SGLL{
 	
 	private final static AbstractStackNode NONTERMINAL_A999 = new NonTerminalStackNode(999, 0, "A");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_A999, "A+", true);
-	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 1, new char[]{'a'});
+	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 0, new char[]{'a'});
 	
 	private LeftFactored(char[] input){
 		super(input);
@@ -89,7 +89,8 @@ public class LeftFactored extends SGLL{
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_E10000, LITERAL_a99999);
+		expect(NONTERMINAL_E10000);
+		expect(LITERAL_a99999);
 	}
 	
 	public void E(){
@@ -134,8 +135,7 @@ public class LeftFactored extends SGLL{
 	private static char[] createInput(int size){
 		char[] input = new char[size];
 		for(int i = size - 1; i >= 0; --i){
-			if((i % 2) == 0) input[i] = '1';
-			else input[i] = 'a';
+			input[i] = 'a';
 		}
 		return input;
 	}
@@ -171,7 +171,7 @@ public class LeftFactored extends SGLL{
 	
 	public static void main(String[] args) throws Exception{
 		// Warmup.
-		char[] input = createInput(6);
+		char[] input = createInput(5);
 		
 		for(int i = 9999; i >= 0; --i){
 			LeftFactored lf = new LeftFactored(input);
