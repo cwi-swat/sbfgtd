@@ -3,6 +3,7 @@
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{color}
 
 %opening
 \title{Generalized Top Down Parsing In Cubic Time}
@@ -26,11 +27,11 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
 
- \item Worst case cubic space and time bounds with respect to the length of the input.
- \item Worst case linear scaling relative to the size of the grammar.
+ \item Worst-case cubic space and time bounds with respect to the length of the input string.
+ \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on LL(k) and LR(k) grammars.
- \item No performance hit for rules that are not left factored.
- \item Generating or hand crafting the parser code is trivial.
+ \item No noticable performance hit for rules that are not left factored.
+ \item Generating or hand crafting the recognizer / parser code is trivial.
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
  \item Low constant overhead.
 \end{itemize}
@@ -190,7 +191,8 @@ input = $aaa$
  \item done.
 \end{enumerate}
 
-TODO: Maybe convert to illustrations?
+TODO: Maybe convert to illustrations?\\
+TODO: Add some text around it.
 
 \section{Parser}
 
@@ -206,8 +208,7 @@ Additionally it is possible to output a flattened version of the parse forest at
 
 \subsubsection{Example}
 
-Parse tree example:
-Grammar:
+To give an idea of what the parse forest would look like we will give an example using the following grammar:
 $S\,::=\,AAAA\,|\,AAA\,|\,AA$\\
 $A\,::=\,a\,|\,aa$\\
 input = $aaaa$
@@ -217,6 +218,10 @@ input = $aaaa$
 \includegraphics[width=0.5\textwidth]{a_aa-forest.png}
 \caption{A partial visual representation of the parse forest, showing all alternatives for '$S0$-$4$'. The numbers indicate start and end position of the matched substring.}
 \end{figure}
+
+Here we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,AAAA\,|\,AAA\,|\,AA$ are stored in memory. Also note how nodes with the same start position have the same set of pointer associated with them, as indicated at the start of this chapter.
+
+To show how we can obtain all possible derivations from this parse forest, we will list them in the table below; which relates each path through the forest to a derivation.
 
 \begin{table}[H]
 \centering
@@ -234,9 +239,9 @@ S(A(aa),A(aa)) & $A0$-$2$ $\leftarrow$ $A2$-$4$
 
 \subsubsection{Worst case example}
 
-Worst-case parse tree example:
+We've already theoreticly proven that the parse forest will be $O(N^{3})$ in the worst-case. In this section we will show that in practice this is indeed the case.
 
-Grammar:\\
+Here is an overview of the parse forest's statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
 input = $a\,*\,1\,-\,a\,*\,10$
 
@@ -262,14 +267,16 @@ input = $a\,*\,1\,-\,a\,*\,10$
 \caption{Worst-case parse tree data}
 \end{table}
 
+Related to the length of the input string, the number of nodes scales worse then $O(N^{2})$ but better then $O(N^{3})$.
+
+TODO: Extend explanation somehow.
+
 \subsection{Psuedocode}
 
 Augmenting our regonizer with parse tree construction code it trivial. Only a few minor adjustments are needed.
 
 {\small
 \begin{verbatim}
-
-Parser psuedocode:
 parse(){
   toExpandSet.push('startNode');
   expand();
@@ -344,9 +351,10 @@ findResultStore(node){
   return resultStores.
     findOrCreate(node.startLocation, node.endLocation, node.name);
 }
-
 \end{verbatim}
 }
+
+TODO: highlight additions, so it's easy to see where the changes are.
 
 NOTE: algorithm / psuedocode was reverse engineered from the actual implementation and has been made more generic. (I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion).
 
@@ -407,7 +415,9 @@ In many grammars productions exist that start with the same symbols. There is no
 
 \section{Filtering}
 
-TODO: Write chapter introduction.
+TODO: Write chapter introduction.\\
+-Needed for disambiguation.\\
+-Optional.
 
 \subsection{Follow restrictions}
 
@@ -415,7 +425,7 @@ Follow restrictions are trivial to implement. They work as a kind of look-ahead 
 
 \subsection{Rejects}
 
-Any alternative can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. Rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of the rejected alternative's edge is already reduced. This is the reason why it's not completely at parse time.
+Any alternative can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. Rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
 
 Reject alternatives may be nested, however they are not allowed to be cyclic, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A\,|\,B,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,A(r)\,|\,a$. The reject edges are marked with $(r)$. The order in which reductions are done will determine the final parse result. For example, we could follow the edge from $A$ to $B$ first and reject $B$; since $B$ is rejected it won't be reduced, so $A$ won't be rejected as we don't follow the edge from $B$ to $A$ and we end up with $S(A(a))$. On the other hand the opposite may happen and we'd end up with $S(B(a))$. So in practice it may, or may not do what you intended.
 
@@ -423,7 +433,7 @@ TODO: Check, consider, rewrite and such; there may be something wrong with rejec
 
 \subsection{Priorities and associativity}
 
-Priorities and associativity restrictions are implemented as 'don't nest' relation. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, this means that the production $E\,+\,E$ can't be a child of the production $E\,*\,E$ on either side of the production. Similarly $E\,::=\,E\,+\,E\,\{left\}$ means that the production $E\,+\,E$ can't be a child of itself on the left side of the production; similarly for $\{right\}$, but the other way around. If declared as $\{nonassoc\}$ it can't be nested on either side of itself.
+Priorities and associativity restrictions are implemented as 'don't nest' relation. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, this means that the production $E\,+\,E$ can't be a child of $E\,*\,E$ on either side of the production. Similarly $E\,::=\,E\,+\,E\,\{left\}$ means that the production $E\,+\,E$ can't be a child of itself on the right side of the production; similarly for $\{right\}$, but the other way around. If declared as $\{nonassoc\}$ it can't be nested on either side of itself.
 
 The current implementation handles priority and associativity filtering completely at parse time. While reducing it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it's stored in a result node that is identified by the sort name of the node the edge points to and the key that indicates which other non-terminals with the same sort name have the same set of 'don't nest' relations. This is done to preserve sharing in the resulting tree. For example consider the following grammar rule: $E\,::=\,E(1)\,*\,E(2)\,\{left\}\,>\,(E(3)\,+\,E(4)\,|\,E(5)\,-\,E(6))\{left\}$. Here $E(3)$ and $E(5)$ would share the same result nodes while parsing, just as $E(4)$ and $E(6)$, since their 'don't nest' relations are identical.
 
@@ -486,6 +496,10 @@ input = $a\,*\,50\,-\,a\,*\,500$
 
 Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible). Regardless of this, it clearly demonstates (close to) cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
+\subsection{LL and LR performance}
+
+TODO: Show linear performance on LL and LR grammars.
+
 \subsection{Grammar factoring}
 
 Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting too look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version. The original grammar is the following:\\
@@ -496,7 +510,8 @@ input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
 
 It contains lots of left-recursion and one non-ambiguous path. So one would expect non-linear performance in this case. However, as can be seen in the graph below this is not the case. Performance seems to scale perfectly linear regardless of how the grammar is factored.
 
-TODO: Change grammar and text. Bottom up (GLR) parsers are likely also linear on this one.
+TODO: Change grammar and text; bottom up (GLR) parsers are likely also linear on this one.
+
 TODO: Highlight differences between different kinds of factoring.
 
 \begin{figure}[H]
@@ -504,5 +519,19 @@ TODO: Highlight differences between different kinds of factoring.
 \includegraphics[scale=0.5]{grammar-factoring.png}
 \caption{Grammar factoring related parse time scaling; without look-ahead.}
 \end{figure}
+
+\section{Future work}
+
+TODO: Hmm, I'll have to think about this one.
+
+\section{Conclusion}
+
+TODO: Write.\\
+-Repeat statements from the introduction and acknowledge we proved them.\\
+-Damn we're fast.
+
+\section{References}
+
+TODO: Find some, so we can relate it to other stuff; not basing anything on existing work makes this hard ....
 
 \end{document}
