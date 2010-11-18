@@ -35,6 +35,6 @@ public class Ambiguous3 extends SGLL{
 		AbstractNode result = a3.parse("S");
 		System.out.println(result);
 		
-		System.out.println("[S(A(a),A(aa)),S(A(aa),A(a))] <- good");
+		System.out.println("[S(A(aa),A(a)),S(A(a),A(aa))] <- good");
 	}
 }
