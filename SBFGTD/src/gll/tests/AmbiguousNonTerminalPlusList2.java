@@ -36,6 +36,6 @@ public class AmbiguousNonTerminalPlusList2 extends SGLL{
 		AbstractNode result = nrpl2.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A(a),A(aa)),A+([A+(A(aa)),A+(A(a),A(a))],A(a))]) <- good");
+		System.out.println("S([A+([A+(A(a),A(a)),A+(A(aa))],A(a)),A+(A(a),A(aa))]) <- good");
 	}
 }

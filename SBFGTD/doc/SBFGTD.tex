@@ -494,9 +494,10 @@ $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
 
-It contains lots of left-recursion and one non-ambiguous path. So one would expect 
+It contains lots of left-recursion and one non-ambiguous path. So one would expect non-linear performance in this case. However, as can be seen in the graph below this is not the case. Performance seems to scale perfectly linear regardless of how the grammar is factored.
 
--Clearly shows linear scaling regardless of what the grammar looks like.
+TODO: Change grammar and text. Bottom up (GLR) parsers are likely also linear on this one.
+TODO: Highlight differences between different kinds of factoring.
 
 \begin{figure}[H]
 \centering

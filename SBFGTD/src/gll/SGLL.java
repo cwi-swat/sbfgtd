@@ -19,11 +19,11 @@ import java.lang.reflect.Method;
 public class SGLL implements IGLL{
 	private final char[] input;
 	
-	private final ArrayList<AbstractStackNode> todoList;
+	private final RotatingQueue<AbstractStackNode>[] todoLists;
 	
 	// Updatable
 	private final ArrayList<AbstractStackNode> stacksToExpand;
-	private final RotatingQueue<AbstractStackNode> stacksWithTerminalsToReduce;
+	private RotatingQueue<AbstractStackNode> stacksWithTerminalsToReduce;
 	private final DoubleRotatingQueue<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
@@ -45,7 +45,7 @@ public class SGLL implements IGLL{
 		
 		this.input = input;
 		
-		todoList = new ArrayList<AbstractStackNode>();
+		todoLists = (RotatingQueue<AbstractStackNode>[]) new RotatingQueue[input.length + 1];
 		
 		stacksToExpand = new ArrayList<AbstractStackNode>();
 		stacksWithTerminalsToReduce = new RotatingQueue<AbstractStackNode>();
@@ -297,8 +297,6 @@ public class SGLL implements IGLL{
 		while(!stacksWithTerminalsToReduce.isEmpty()){
 			AbstractStackNode terminal = stacksWithTerminalsToReduce.getDirtyUnsafe();
 			reduceTerminal(terminal);
-
-			todoList.remove(terminal);
 		}
 		
 		// Reduce non-terminals.
@@ -307,23 +305,39 @@ public class SGLL implements IGLL{
 		}
 	}
 	
-	private void findStacksToReduce(){
-		// Find the stacks that will progress the least.
-		int closestNextLocation = Integer.MAX_VALUE;
-		for(int i = todoList.size() - 1; i >= 0; --i){
-			AbstractStackNode node = todoList.get(i);
-			int nextLocation = node.getStartLocation() + node.getLength();
-			if(nextLocation < closestNextLocation){
-				stacksWithTerminalsToReduce.clear();
-				stacksWithTerminalsToReduce.put(node);
-				closestNextLocation = nextLocation;
-			}else if(nextLocation == closestNextLocation){
-				stacksWithTerminalsToReduce.put(node);
+	private boolean findFirstStackToReduce(){
+		for(int i = location; i < todoLists.length; ++i){
+			RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[i];
+			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
+				stacksWithTerminalsToReduce = terminalsTodo;
+				
+				previousLocation = location;
+				location = i;
+				return true;
 			}
 		}
+		return false;
+	}
+	
+	private boolean findStacksToReduce(){
+		RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[location];
+		if(!terminalsTodo.isEmpty()){
+			previousLocation = location;
+			return true;
+		}
 		
-		previousLocation = location;
-		location = closestNextLocation;
+		for(int i = location + 1; i < todoLists.length; ++i){
+			terminalsTodo = todoLists[i];
+			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
+				stacksWithTerminalsToReduce = terminalsTodo;
+				
+				previousLocation = location;
+				location = i;
+				todoLists[previousLocation] = null;
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean shareListNode(int id, AbstractStackNode stack){
@@ -375,7 +389,15 @@ public class SGLL implements IGLL{
 	
 	private void expandStack(AbstractStackNode node){
 		if(node.isMatchable()){
-			if((location + node.getLength()) <= input.length) todoList.add(node);
+			int endLocation = location + node.getLength();
+			if(endLocation <= input.length){
+				RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[endLocation];
+				if(terminalsTodo == null){
+					terminalsTodo = new RotatingQueue<AbstractStackNode>();
+					todoLists[endLocation] = terminalsTodo;
+				}
+				terminalsTodo.put(node);
+			}
 			return;
 		}
 		
@@ -454,13 +476,12 @@ public class SGLL implements IGLL{
 		stacksToExpand.add(rootNode);
 		expand();
 		
+		findFirstStackToReduce();
 		do{
-			findStacksToReduce();
-			
 			reduce();
 			
 			expand();
-		}while(todoList.size() > 0);
+		}while(findStacksToReduce());
 		
 		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
 		if(levelResultStoreMap != null){

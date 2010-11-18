@@ -41,6 +41,6 @@ public class Ambiguous2 extends SGLL{
 		AbstractNode result = a2.parse("S");
 		System.out.println(result);
 		
-		System.out.println("[S(bab),S(A(B(b)),ab)] <- good");
+		System.out.println("[S(A(B(b)),ab),S(bab)] <- good");
 	}
 }

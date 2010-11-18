@@ -50,6 +50,6 @@ public class Ambiguous8 extends SGLL{
 		AbstractNode result = a8.parse("S");
 		System.out.println(result);
 		
-		System.out.println("[S(A(a),B(a)),S(A(a),C(a))] <- good");
+		System.out.println("[S(A(a),C(a)),S(A(a),B(a))] <- good");
 	}
 }
