@@ -225,7 +225,7 @@ Optionally it is possible to output a flattened version of the parse forest at t
 \subsubsection{Example}
 
 To give an idea of what the parse forest would look like we will give an example using the following grammar:\\
-$S\,::=\,AA\,|\,AAA\,|\,AAAA$\\
+$S\,::=\,A+$\\
 $A\,::=\,a\,|\,aa$\\
 input = $aaaa$
 
@@ -235,7 +235,7 @@ input = $aaaa$
 \caption{A partial visual representation of the parse forest, showing all alternatives for '$S0$-$4$'. The numbers indicate start and end position of the matched substring.}
 \end{figure}
 
-In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,AAAA\,|\,AAA\,|\,AA$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
+In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,A+$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
 
 To show how we can obtain all possible derivations from this parse forest, we will list them in the table below; which relates each path through the forest to a derivation.
 
@@ -244,14 +244,16 @@ To show how we can obtain all possible derivations from this parse forest, we wi
 \begin{tabular}{ p{15em} p{15em} }
 Derivation & Forest path\\
 \hline
-S(A(a),A(a),A(a),A(a)) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A(a),A(aa),A(a)) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A(a),A(a),A(aa)) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
-S(A(aa),A(aa)) & $A0$-$2$ $\leftarrow$ $A2$-$4$
+S(A+(A(a),A(a),A(a),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
+S(A+(A(a),A(a),A(aa))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
+S(A+(A(a),A(aa),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
+S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
+S(A+(A(aa),A(aa))) & $A0$-$2$ $\leftarrow$ $A2$-$4$
 \end{tabular}
 \caption{'Flattened' version of the parse forest}
 \end{table}
+
+NOTE: Using lists before they are used is sub-optimal. It's not required to understand how they work to be able to interpret this example, but I'd prefer using something else for clarity's sake instead.
 
 \subsubsection{Worst case example}
 
@@ -503,7 +505,7 @@ The current implementation handles priority and associativity filtering complete
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities or filter alternatives that can't be disambiguated using priorities. I won't go into detail about this feature, since it's not an integral part of the parser, but more olike a post-parse filter.
+Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities or filter alternatives that can't be disambiguated using priorities. I won't go into detail about this feature, since it's not an integral part of the parser, but more like a post-parse filter.
 
 \section{Benchmarks}
 
@@ -529,7 +531,7 @@ Measurements are listed in terms of CPU-time (system + user time) and are gather
 
 The obvious candidate for a benchmark is the following worst-case grammar:
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
-input = $a\,*\,50\,-\,a\,*\,500$
+input = $a\,*\,50$ to $a\,*\,500$
 
 \begin{table}[H]
 \centering
@@ -570,7 +572,7 @@ Apart from worst-case behaviour in terms of the number of ambiguous parse result
 $S\,::=\,A+$\\
 $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
-input = $a\,*\,50000\,|\,a\,*\,100000\,|\,a\,*\,150000\,|\,a\,*\,200000$
+input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
 
 It contains lots of left-recursion and one non-ambiguous path. So one would expect non-linear performance in this case. However, as can be seen in the graph below this is not the case. Performance seems to scale perfectly linear regardless of how the grammar is factored.
 
