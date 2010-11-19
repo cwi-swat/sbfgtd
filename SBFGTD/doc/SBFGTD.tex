@@ -4,6 +4,9 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{color}
+\usepackage{alltt}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
 
 %opening
 \title{Generalized Top Down Parsing In Cubic Time}
@@ -87,7 +90,7 @@ expand(){
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
       if(reducedStore.contains(childNode)){ // Child already has results
-         if(notAddedEarlierInThisLoop){ // Sharing
+         if(notAddedEarlierInThisExpandLoop){ // Sharing
            toReduceSet.add(node);
          }
       }else{
@@ -286,88 +289,86 @@ TODO: Extend explanation somehow.
 
 \subsection{Psuedocode}
 
-Augmenting our recognizer with parse tree construction code it trivial. Only a few minor adjustments are needed.
+Augmenting our recognizer with parse tree construction code it trivial. Only a few minor adjustments are needed. Additions are highlighted in red.
 
 {\small
-\begin{verbatim}
-parse(){
+\begin{alltt}
+parse()\{
   toExpandSet.push('startNode');
   expand();
   
-  do{
+  do\{
     reduce();
     expand();
-  }while(toReduceSet.notEmpty());
+  \}while(toReduceSet.notEmpty());
   
   if(notAtEOI()) parse error;
-  
-  return findResultStore('startNode');
-}
+  \textcolor{red}{
+  return findResultStore('startNode');}
+\}
 
-expand(){
-  while(toExpandSet.notEmpty()){
+expand()\{
+  while(toExpandSet.notEmpty())\{
     node = toExpandSet.pop();
     
     Node[] children = getChildrenFor(node);
-    for(childNode <- children){
-      if(reducedStore.contains(childNode)){
+    for(childNode <- children)\{
+      if(reducedStore.contains(childNode))\{\textcolor{red}{
         findResultStore(node).
-            addAlternative(childNode.prefixes, childNode.results);
-        if(notAddedEarlierInThisLoop){ // Sharing
+            addAlternative(childNode.prefixes, childNode.results);}
+        if(notAddedEarlierInThisExpandLoop)\{ // Sharing
           toReduceSet.add(node);
-        }
-      }else{
-        if(expandedStore.contains(childNode)){ // Sharing
+        \}
+      \}else\{
+        if(expandedStore.contains(childNode))\{ // Sharing
           expandedStore.get(childNode).addEdge(node);
-        }else{
+        \}else\{
           expandedStore.add(childNode);
           
-          if(childNode.isTerminal()){
+          if(childNode.isTerminal())\{
             toReduceSet.push(childNode);
-          }else{
+          \}else\{
             toExpandSet.push(childNode);
-          }
-        }
-      }
-    }
-  }
-}
+          \}
+        \}
+      \}
+    \}
+  \}
+\}
 
-reduce(){
-  while(toReduceSet.notEmpty()){
+reduce()\{
+  while(toReduceSet.notEmpty())\{
     node = toReduceSet.pop();
     reducedStore.add(node);
     
-    if(node.lastInProduction()){
-      for(parent <- node.edges){
+    if(node.lastInProduction())\{
+      for(parent <- node.edges)\{\textcolor{red}{
         findResultStore(parent).
-            addAlternative(node.prefixes, node.results);
+            addAlternative(node.prefixes, node.results);}
         if(toReduceSet.notContains(parent) &&
-            reducedStore.notContains(parent)){ // Sharing (is reduced)
+            reducedStore.notContains(parent))\{ // Sharing (is reduced)
           toReduceSet.push(parent);
-        }
-      }
-    }else if(node.hasNext()){
+        \}
+      \}
+    \}else if(node.hasNext())\{
       next = node.next;
-      if(toExpandSet.contains(next)){ // Sharing
+      if(toExpandSet.contains(next))\{ // Sharing
         next = toExpandSet.get(next);
-      }else if(expandedStore.notContains(next)){ // Sharing
+      \}else if(expandedStore.notContains(next))\{ // Sharing
         toExpandSet.push(next);
-      }
-      next.addEdges(node.edges);
-      next.updatePrefixes(node.prefixes, node.results);
-    }
-  }
-}
-
-findResultStore(node){
+      \}
+      next.addEdges(node.edges);\textcolor{red}{
+      next.updatePrefixes(node.prefixes, node.results);}
+    \}
+  \}
+\}
+\textcolor{red}{
+findResultStore(node)\{
   return resultStores.
     findOrCreate(node.startLocation, node.endLocation, node.name);
+\}}
+\end{alltt}
 }
-\end{verbatim}
-}
-
-TODO: highlight additions, so it's easy to see where the changes are.
 
 NOTE: algorithm / psuedocode was reverse engineered from the actual implementation and has been made more generic. (I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion).
 
@@ -563,8 +564,7 @@ TODO: Highlight differences between different kinds of factoring.
 
 \section{Future work}
 
-TODO: Hmm, I'll have to think about this one, I'm kind of done.\\
--Making a $O(N^2)$ recognizer or something :P? If only we could do edge merging faster, or solve it differently so it's not necessary ....
+TODO: Hmm, I'll have to think about this one, I'm kind of done.
 
 \section{Conclusion}
 
