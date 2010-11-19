@@ -232,7 +232,7 @@ input = $aaaa$
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{a_aa-forest.png}
-\caption{A partial visual representation of the parse forest, showing all alternatives for '$S0$-$4$'. The numbers indicate start and end position of the matched substring.}
+\caption{A partial visual representation of the parse forest, showing all alternatives for $A+$ for the substring from 0 to 4. The numbers indicate start and end position of the matched substring.}
 \end{figure}
 
 In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,A+$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
@@ -471,9 +471,9 @@ Finally, we can also gain something at the other end. The 'is reduced' check on 
 
 \subsection{GSS}
 
-In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the shared prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be shared, regardless whether or not it already has been shared with another rule. This optimization ensures we can recognize and parse LR(k) grammars using just one stack, thus in linear time without any overhead.
+In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be merged, regardless whether or not it already has been merged with another rule. This optimization ensures we can recognize and parse LR(k) grammars using just one stack, thus in linear time without any overhead.
 
-TODO: Explain why sharing more then just the prefix isn't possible.
+One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we won't elaborate on here) and opportunities to apply this optimization hardly ever occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we'd shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we'd also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \section{Filtering}
 
@@ -564,7 +564,8 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 \subsection{LL and LR performance}
 
-TODO: Show linear performance on LL and LR grammars.
+TODO: Show linear performance on LL and LR grammars.\\
+Using realistic cases would be nice.
 
 \subsection{Grammar factoring}
 
