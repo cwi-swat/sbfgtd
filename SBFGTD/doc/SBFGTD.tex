@@ -375,17 +375,25 @@ NOTE: algorithm / psuedocode was reverse engineered from the actual implementati
 \subsection{Correctness}
 
 TODO: Prove.\\
--Hidden right recursion is problematic, the rest is fairly obvious.
+-Hidden right recursion is problematic, but handled correctly, the rest is fairly obvious.
 
 \section{Extended capabilities}
 
-TODO: Write chapter introduction.\\
--Usefull.\\
--Optional.
+To improve the usefulness of the parser on real grammar a few additions were made. Namely support for lists, optionals and certain non-context free features was added. In this chapter we will discuss their implementation.
 
 \subsection{Lists}
 
--Lists, separated lists and optionals.
+List, separated lists and optionals are handled in a similar way, because in essense they are the same, but their semantics are slightly different; separated lists are just lists with extra symbols between their elements and optionals are star-lists with one element at most; from here on out will refer to all of these simply at 'lists'.
+
+Often lists are implemented by adding extra 'virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a normal grammar if we add the rule $A+\,::=\,AA+\,|\,A$. This advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list back, which may not be what we wanted. Additionally, because an extra rule is inserted we need more GSS nodes to be able to parse the list.
+
+Our approach involves special casing the handling of lists, by introducing additional kinds of GSS nodes that contain knowledge about how they need to be expanded.  For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a 'next' point to itself and is marked as last node in the 'production'. One could view this construction as a GSS node with a kind of dynamicly growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
+
+TODO: Add star-list GSS illustration.
+
+These list children can be shared just like any other GSS node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
+
+Exactly the same principle is used for separated lists an optionals. We won't go into detail on those, since one can easily imagine how this works.
 
 \subsection{Non-context free}
 
@@ -405,7 +413,7 @@ A more obivious optimization is adding support for look-ahead filtering. Simply 
 
 \subsection{Edge related}
 
-Generally parsers store results on edges in the GSS; likely for convenience reasons. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
+Generally parsers store results on edges in the GSS. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
 
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E(0)$\\
