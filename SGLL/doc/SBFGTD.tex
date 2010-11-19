@@ -395,9 +395,19 @@ These list children can be shared just like any other GSS node. Nothing special 
 
 Exactly the same principle is used for separated lists an optionals. We won't go into detail on those, since one can easily imagine how this works.
 
-\subsection{Non-context free}
+\subsection{Location}
 
--Start-of-line, end-of-line and at-column 'epsilons'.
+Similar to how lists are implemented, there are also specialized GSS nodes for location related indicators. We have the following variaties:
+\begin{enumerate}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item Start-of-line
+ \item End-of-line
+ \item At-column($X$); where $X$ indicates the column number
+\end{enumerate}
+Basically these are epsilons that only match when we are at a specific location in the input. So they don't consume input and they are not context free. However they can be useful when parsing certain languages nonetheless.
 
 \section{Optimizations}
 
