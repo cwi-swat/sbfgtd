@@ -54,7 +54,7 @@ As is common in generalized parsing, we use a kind of Graph Structured Stack (GS
 
 Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Each node only has one edge to each of it's possible parents per level and there are $O(N)$ levels, there are at most $O(N)$ edges per node.  In the worst case there are $N$ times $O(N)$ nodes that match a substring that ends in the current level; when moving to the 'next' node in the production all edges of these nodes need to be carried over; since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before the current position (so $N$ at most). This means that the total algorithm becomes $O(N^3)$.
 
-TODO: Add reduce stats.
+TODO: Add reduce stats (should be $O(N^2)$).
 
 \subsection{Basic algorithm}
 
@@ -216,7 +216,7 @@ To represent the parse forest we use a format that was especially designed for t
 
 The parse forest consists of nodes. Every node in the forest contains a 'result', which represents a substring for a certain symbol. In case this symbols is a non-terminal, this 'result' contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you'll get all alternatives for a this production at a certain location.
 
-Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^{2})$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^{2})$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location in the input string. The number of unique nodes is determined by multiplying the number of 'results' by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^{3})$, making the parse forest $O(N^{3})$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location in the input string. The number of unique nodes is determined by multiplying the number of 'results' by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
 
 We'll look into wost-case behaviour with more detail further on in this chapter.
 
@@ -259,7 +259,7 @@ NOTE: Using lists before they are used is sub-optimal. It's not required to unde
 
 \subsubsection{Worst case example}
 
-We've already theoreticly proven that the parse forest will be $O(N^{3})$ in the worst-case. In this section we will show that in practice this is indeed the case.
+We've already theoreticly proven that the parse forest will be $O(N^3)$ in the worst-case. In this section we will show that in practice this is indeed the case.
 
 Here is an overview of the parse forest's statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
@@ -269,7 +269,7 @@ input = $a\,*\,1$ to $a\,*\,10$
 \centering
 \begin{tabular}{ | p{6em} | p{4em} | p{5em} | p{4em} | p{5em} | }
   \hline
-  Input length & Results & Prefix sets & Nodes & Nodes / $N^{3}$ \\
+  Input length & Results & Prefix sets & Nodes & Nodes / $N^3$ \\
   \hline
   0 & 1 & 2 & 2 & - \\
   1 & 4 & 6 & 6 & 6 \\
@@ -463,7 +463,7 @@ Clearly demonstrating quardratic behaviour. If we would remember what the edges 
  \item $E$(1) $\Rightarrow$ $E$ edges += $E$(1)
  \item $E$(3) $\Rightarrow$ $E$ edges += $E$(3)
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^{2}$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove it's necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove it's necessity.
 
 Finally, we can also gain something at the other end. The 'is reduced' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
