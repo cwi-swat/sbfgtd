@@ -20,6 +20,8 @@
 
 In this article we will describe a generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performes excellent.
 
+TODO We need some more text here.
+
 \end{abstract}
 
 \section{Introduction}
@@ -44,7 +46,7 @@ TODO: Motivation.
 
 \section{Recognizer}
 
-TODO: Write chapter introduction.
+First we will discuss the algorithm for the recognizer, for simplicities sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
 \subsection{GSS}
 
@@ -136,11 +138,9 @@ reduce(){
 \end{verbatim}
 }
 
-TODO: Check correctness of code.
-
 \subsection{Correctness}
 
-TODO: Prove.
+TODO: Prove.\\
 -Conceptually easy to get your head around.
 
 \subsection{From grammar to code}
@@ -216,7 +216,9 @@ To represent the parse forest we use a format that was especially designed for t
 
 The parse forest consists of nodes. Every node in the forest contains a 'result', which represents a substring for a certain symbol. In case this symbols is a non-terminal, this 'result' contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you'll get all alternatives for a this production at a certain location.
 
-Every node in the tree is identified by the substring it represents and its prefixes; all the prefixes of a certain node denote the same substring, which ends were the 'result' contained in the node starts. All prefix sets are shared regardless of the node's end position that they are matched to, so there are at most $O(N)$ of these sets. Every prefix set can contain up to $N$ different prefixes. Since there can be only one 'result' per substring, this means there are at most $O(N^{2})$ 'results'. Overall this makes the parse forest $O(N^{3})$ worst-case, since the number of unique nodes is determined by multiplying the number of 'results' by the number of prefix sets, hense the number of unique nodes is limited to $O(N^{3})$. We'll look into this with more detail further on in this chapter.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^{2})$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^{2})$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location in the input string. The number of unique nodes is determined by multiplying the number of 'results' by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^{3})$, making the parse forest $O(N^{3})$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
+
+We'll look into wost-case behaviour with more detail further on in this chapter.
 
 \subsubsection{Flattening}
 
@@ -261,33 +263,31 @@ We've already theoreticly proven that the parse forest will be $O(N^{3})$ in the
 
 Here is an overview of the parse forest's statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
-input = $a\,*\,1\,-\,a\,*\,10$
+input = $a\,*\,1$ to $a\,*\,10$
 
 \begin{table}[H]
 \centering
-\begin{tabular}{ | p{6em} | p{4em} | p{4em} | p{4em} | p{3em} | p{5em} | }
+\begin{tabular}{ | p{6em} | p{4em} | p{5em} | p{4em} | p{5em} | }
   \hline
-  Input length & Results & Nodes & Pointers & Total & Total / $N^{3}$ \\
+  Input length & Results & Prefix sets & Nodes & Nodes / $N^{3}$ \\
   \hline
-  0 & 2 & 2 & 3 & 7 & - \\
-  1 & 5 & 6 & 9 & 20 & 20 \\
-  2 & 8 & 13 & 15 & 36 & 4.5 \\
-  3 & 11 & 24 & 21 & 56 & 2.074 \\
-  4 & 14 & 40 & 27 & 81 & 1.265 \\
-  5 & 17 & 62 & 33 & 112 & 0.896 \\
-  6 & 20 & 91 & 39 & 150 & 0.694 \\
-  7 & 23 & 128 & 45 & 196 & 0.571 \\
-  8 & 26 & 174 & 51 & 251 & 0.490 \\
-  9 & 29 & 230 & 57 & 316 & 0.433 \\
-  10 & 32 & 297 & 63 & 392 & 0.392 \\
+  0 & 1 & 2 & 2 & - \\
+  1 & 4 & 6 & 6 & 6 \\
+  2 & 7 & 12 & 13 & 1.625 \\
+  3 & 11 & 20 & 24 & 0.889 \\
+  4 & 16 & 30 & 40 & 0.625 \\
+  5 & 22 & 42 & 62 & 0.496 \\
+  6 & 29 & 56 & 91 & 0.421 \\
+  7 & 37 & 72 & 128 & 0.373 \\
+  8 & 46 & 90 & 174 & 0.34 \\
+  9 & 56 & 110 & 230 & 0.316 \\
+  10 & 67 & 132 & 297 & 0.297 \\
   \hline
 \end{tabular}
 \caption{Worst-case parse tree data}
 \end{table}
 
-Related to the length of the input string, the number of nodes scales better then $O(N^{3})$.
-
-TODO: Extend explanation somehow.
+In the table above we can clearly see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N + 1$ for every extra character in the input string. The number of prefix sets scales in a similar way, although there are roughly twice as much of them in comparison to results, since both the second and the third $S$ in $SSS$ need a prefix. As can be observed, the number of nodes remains within cubic bounds for this worst-case example.
 
 \subsection{Psuedocode}
 
@@ -372,12 +372,10 @@ findResultStore(node)\{
 \end{alltt}
 }
 
-NOTE: algorithm / psuedocode was reverse engineered from the actual implementation and has been made more generic. (I'm currently unsure whether or not I accidentially ommitted any special cases in the conversion).
-
 \subsection{Correctness}
 
 TODO: Prove.\\
--Hidden right recursion is problematic, but handled correctly, the rest is fairly obvious.
+-Hidden right recursion is problematic, but handled correctly; the rest is fairly obvious.
 
 \section{Extended capabilities}
 
@@ -477,25 +475,23 @@ One may wonder why merging anything other then the prefixes of productions is no
 
 \section{Filtering}
 
-TODO: Write chapter introduction.\\
--Needed for disambiguation.\\
--It's optional.
+As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features we have implemented to filter these trees. These features are all optional and have no dependencies on eachother.
 
 \subsection{Follow restrictions}
 
-Follow restrictions are trivial to implement. They work as a kind of look-ahead after the production; if the production we are trying to reduce matches the specified character(s) after the current location in the input, the reduce fails.
+Follow restrictions work as a kind of look-ahead after the production; if the production we are trying to reduce matches the specified character(s) after the current location in the input, the reduce fails. They are mainly, though not exclusively, used to indicate eagerness.
 
-TODO: Explain its purpose (eat stuff).
+As one can imagine, this feature is trivial to implement.
 
 \subsection{Rejects}
+
+Reject filtering is intended for the removal to trees that are not considered to be correct at a certain location in the grammar. One could think of things like using it to filter alternatives for identifiers that match keywords, for example.
 
 Any alternative of a production can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. Rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
 
 Reject alternatives may be nested, however they are not allowed to be cyclic, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A\,|\,B,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,A(r)\,|\,a$. The reject edges are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edge from $A$ to $B$ first and reject $B$; since $B$ is rejected it won't be reduced, so $A$ won't be rejected as we don't follow the edge from $B$ to $A$ and we end up with $S(A(a))$. On the other hand the opposite may happen and we'd end up with $S(B(a))$. So in practice it may, or may not do what you intended.
 
-TODO: Check, consider, rewrite and such; there may be something wrong with rejects in certain cases in the current implementation (i.e. nested rejects that contains subtrees that have an alternative path to an ambiguous reject higher up in the tree may show unwanted behaviour).
-
-TODO: Explain its purpose (restrict usage of keywords for example).
+TODO: Check, consider, rewrite and such; there may be something wrong with rejects in certain cases in the current implementation (i.e. nested rejects that contains subtrees that have an alternative path to an ambiguous reject higher up in the tree may show unwanted behaviour. A special case I know, I know, it may still be wrong though).
 
 \subsection{Priorities and associativity}
 
@@ -565,7 +561,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 \subsection{LL and LR performance}
 
 TODO: Show linear performance on LL and LR grammars.\\
-Using realistic cases would be nice.
+-Using realistic cases would be nice.
 
 \subsection{Grammar factoring}
 
