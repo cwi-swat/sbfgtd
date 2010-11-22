@@ -18,9 +18,9 @@
 
 \begin{abstract}
 
-In this article we will describe a generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performes excellent.
+In this article we will describe our generalized top down parsing algorithm. Since it's top down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
 
-TODO We need some more text here.
+TODO: We need some more text here.
 
 \end{abstract}
 
@@ -42,7 +42,9 @@ If the abstract didn't catch your attention yet, here are some highlights:
 \end{itemize}
 We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation).
 
-TODO: Motivation.
+TODO: Motivation.\\
+-Easier to comprehend, since it's top-down; which is more in-line with human thinking. (Why do we want this?)\\
+-Top-down is considered to be too slow in general, so noone really uses it.
 
 \section{Recognizer}
 
@@ -52,9 +54,9 @@ First we will discuss the algorithm for the recognizer, for simplicity's sake. F
 
 As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. For example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every symbol on the right hand side of a production gets a unique identifier, regardless whether or not a comparable right hand side occurs elsewhere in the grammar. These identifiers are needed to be able to handle the sharing of GSS nodes correctly. Each stack node consists of this identifier, edges back to their 'parents' in the graph and information about its 'right neighbour' in the production, so we know where to go next.
 
-Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Each node only has one edge to each of it's possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends in the current level. When moving to the 'next' node in the production all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before the current position (so $N$ at most). This means that the total algorithm becomes $O(N^3)$ worst-case.
+Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Each node only has one edge to each of it's possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends in the 'current' level. When moving to the 'next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the 'current' level (so $N$ at most). This means that the total algorithm becomes $O(N^3)$ worst-case.
 
-Reducing consumes $O(N^2)$ time at most in the worst-case, since each of the $O(N^2)$ edges will only be followed once and the check whether or not the 'parent' still needs to be reduced, is an operation that completes in $O(1)$ time.
+Reducing consumes $O(N^2)$ time at most in the worst-case, since each of the $O(N^2)$ edges will only be followed once and the check whether or not each of the 'parents' still needs to be reduced, is an operation that completes in $O(1)$ time.
 
 \subsection{Basic algorithm}
 
@@ -376,7 +378,7 @@ findResultStore(node)\{
 \subsection{Correctness}
 
 TODO: Prove.\\
--Hidden right recursion is problematic, but handled correctly; the rest is fairly obvious.
+-Hidden right recursion is problematic, but handled correctly by our implementation; the rest is fairly obvious.
 
 \section{Extended capabilities}
 
