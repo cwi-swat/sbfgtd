@@ -278,8 +278,6 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduceTerminal(AbstractStackNode terminal){
-		if(!terminal.match(input)) return;
-		
 		move(terminal, terminal.getResult());
 	}
 	
@@ -391,6 +389,8 @@ public class SGLL implements IGLL{
 		if(node.isMatchable()){
 			int endLocation = location + node.getLength();
 			if(endLocation <= input.length){
+				if(!node.match(input)) return; // Discard if it didn't match.
+				
 				RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[endLocation];
 				if(terminalsTodo == null){
 					terminalsTodo = new RotatingQueue<AbstractStackNode>();
