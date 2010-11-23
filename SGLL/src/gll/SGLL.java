@@ -35,8 +35,8 @@ public class SGLL implements IGLL{
 	
 	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
 	
-	private int previousLocation;
 	private int location;
+	private boolean shiftedLevel;
 	
 	private final HashMap<String, Method> methodCache;
 	
@@ -60,8 +60,8 @@ public class SGLL implements IGLL{
 		
 		resultStoreCache = new IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>>();
 		
-		previousLocation = -1;
 		location = 0;
+		shiftedLevel = false;
 		
 		methodCache = new HashMap<String, Method>();
 	}
@@ -286,7 +286,7 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduce(){
-		if(previousLocation != location){ // Epsilon fix.
+		if(shiftedLevel){ // Epsilon fix.
 			sharedNextNodes.clear();
 			resultStoreCache.clear();
 		}
@@ -309,8 +309,8 @@ public class SGLL implements IGLL{
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
-				previousLocation = location;
 				location = i;
+				shiftedLevel = (location != 0);
 				return true;
 			}
 		}
@@ -320,7 +320,7 @@ public class SGLL implements IGLL{
 	private boolean findStacksToReduce(){
 		RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[location];
 		if(!terminalsTodo.isEmpty()){
-			previousLocation = location;
+			shiftedLevel = false;
 			return true;
 		}
 		
@@ -329,9 +329,9 @@ public class SGLL implements IGLL{
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
-				previousLocation = location;
+				todoLists[location] = null;
 				location = i;
-				todoLists[previousLocation] = null;
+				shiftedLevel = true;
 				return true;
 			}
 		}
@@ -439,9 +439,10 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expand(){
-		if(previousLocation != location){
+		if(shiftedLevel){
 			cachedEdgesForExpect.clear();
 		}
+		
 		while(stacksToExpand.size() > 0){
 			lastExpects.dirtyClear();
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
