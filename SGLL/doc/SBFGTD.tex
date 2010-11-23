@@ -230,7 +230,7 @@ Optionally it is possible to output a flattened version of the parse forest at t
 \subsubsection{Example}
 
 To give an idea of what the parse forest would look like we will give an example using the following grammar:\\
-$S\,::=\,A+$\\
+$S\,::=\,AAA$\\
 $A\,::=\,a\,|\,aa$\\
 input = $aaaa$
 
@@ -249,16 +249,12 @@ To show how we can obtain all possible derivations from this parse forest, we wi
 \begin{tabular}{ p{15em} p{15em} }
 Derivation & Forest path\\
 \hline
-S(A+(A(a),A(a),A(a),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
 S(A+(A(a),A(a),A(aa))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
 S(A+(A(a),A(aa),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A+(A(aa),A(aa))) & $A0$-$2$ $\leftarrow$ $A2$-$4$
+S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \end{tabular}
 \caption{'Flattened' version of the parse forest}
 \end{table}
-
-NOTE: Using lists before they are used is sub-optimal. It's not required to understand how they work to be able to interpret this example, but I'd prefer using something else for clarity's sake instead.
 
 \subsubsection{Worst case example}
 
