@@ -52,9 +52,9 @@ First we will discuss the algorithm for the recognizer, for simplicity's sake. F
 
 \subsection{GSS}
 
-As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. For example; if we would have the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every symbol on the right-hand-side of a production gets a unique identifier, regardless whether or not a comparable right-hand-side occurs elsewhere in the grammar. These identifiers are needed to be able to handle the sharing of GSS nodes correctly. Each stack node consists of this identifier, edges back to their 'parents' in the graph and information about its 'right neighbour' in the production, so we know where to go next.
+As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every symbol in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $S$(-1), $A$(0), $B$(1), $B$(2), $A$(3), $a$(4) and $b$(5). Every symbol on the right-hand-side of a production gets a unique identifier, regardless whether or not a comparable right-hand-side occurs elsewhere in the grammar. These identifiers are needed to be able to handle the sharing of GSS nodes correctly. Each stack node consists of this identifier, edges back to their 'parents' in the graph and information about its 'right neighbour' in the production, so we know where to go next.
 
-Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Each node only has one edge to each of it's possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends in the 'current' level. When moving to the 'next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the 'current' level (so $N$ at most). This means that the total algorithm becomes $O(N^3)$ worst-case.
+Since the GSS only contains nodes that we expect to 'encounter', there are at most $O(N)$ of them; one of every type per location in the input string. Each node only has one edge to each of it's possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the 'current' level. When moving to the 'next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the 'current' level (so $N$ at most). This means that the total algorithm becomes $O(N^3)$ worst-case.
 
 Reducing consumes $O(N^2)$ time at most in the worst-case, since each of the $O(N^2)$ edges will only be followed once and the check whether or not each of the 'parents' still needs to be reduced, is an operation that completes in $O(1)$ time.
 
@@ -150,7 +150,7 @@ TODO: Prove.\\
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively strait forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal, which contains logic that informs the recognizer / parser about what alternatives should be expected.
 
-Since the mapping between the original grammar and the code or table is one-on-one, it is even possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
+Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
 
 \subsection{Example traces}
 
@@ -217,19 +217,19 @@ TODO: Add some text around it.
 
 To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic time and space bounds. We call it 'deflattenized', for lack of a better description; it's intent is similar to binarization, but it's implementation is somewhat different.
 
-The parse forest consists of nodes. Every node in the forest contains a 'result', which represents a substring for a certain symbol. In case this symbol is a non-terminal, this 'result' contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you'll get all alternatives for a this production at a certain location.
+The parse forest consists of nodes. Every node in the forest contains a result, which represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you'll get all alternatives for a this production at a certain location.
 
-Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location in the input string. The number of unique nodes is determined by multiplying the number of 'results' by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
 
 We'll look into wost-case behaviour with more detail further on in this chapter.
 
 \subsubsection{Flattening}
 
-Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. In practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree. We'll discuss filtering later on in this document.
+Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. In practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We'll discuss filtering later on in this document.
 
 \subsubsection{Example}
 
-To give an idea of what the parse forest would look like we will give an example using the following grammar:\\
+To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
 $S\,::=\,AAA$\\
 $A\,::=\,a\,|\,aa$\\
 input = $aaaa$
@@ -237,10 +237,10 @@ input = $aaaa$
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{a_aa-forest.png}
-\caption{A partial visual representation of the parse forest, showing all alternatives for $A+$ for the substring from 0 to 4. The numbers indicate start and end position of the matched substring.}
+\caption{A partial visual representation of the parse forest, showing all alternatives for $AAA$ for the substring from 0 to 4. The numbers indicate start and end position of the matched substring.}
 \end{figure}
 
-In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,A+$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
+In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,AAA$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
 
 To show how we can obtain all possible derivations from this parse forest, we will list them in the table below; which relates each path through the forest to a derivation.
 
@@ -290,7 +290,7 @@ In the table above we can clearly see how the different components in the parse 
 
 \subsection{Psuedocode}
 
-Augmenting our recognizer with parse tree construction code it trivial. Only a few minor adjustments are needed. Additions are highlighted in red.
+Augmenting our recognizer with parse tree construction code it trivial. Only a few minor adjustments are needed. Additions are highlighted in italic.
 
 {\small
 \begin{alltt}
@@ -304,7 +304,7 @@ parse()\{
   \}while(toReduceSet.notEmpty());
   
   if(notAtEOI()) parse error;
-  \textcolor{red}{
+  \textit{
   return findResultStore('startNode');}
 \}
 
@@ -314,7 +314,7 @@ expand()\{
     
     Node[] children = getChildrenFor(node);
     for(childNode <- children)\{
-      if(reducedStore.contains(childNode))\{\textcolor{red}{
+      if(reducedStore.contains(childNode))\{\textit{
         findResultStore(node).
             addAlternative(childNode.prefixes, childNode.results);}
         if(notAddedEarlierInThisExpandLoop)\{ // Sharing
@@ -343,7 +343,7 @@ reduce()\{
     reducedStore.add(node);
     
     if(node.lastInProduction())\{
-      for(parent <- node.edges)\{\textcolor{red}{
+      for(parent <- node.edges)\{\textit{
         findResultStore(parent).
             addAlternative(node.prefixes, node.results);}
         if(toReduceSet.notContains(parent) &&
@@ -358,12 +358,12 @@ reduce()\{
       \}else if(expandedStore.notContains(next))\{ // Sharing
         toExpandSet.push(next);
       \}
-      next.addEdges(node.edges);\textcolor{red}{
+      next.addEdges(node.edges);{\bf
       next.updatePrefixes(node.prefixes, node.results);}
     \}
   \}
 \}
-\textcolor{red}{
+\textit{
 findResultStore(node)\{
   return resultStores.
     findOrCreate(node.startLocation, node.endLocation, node.name);
@@ -378,13 +378,13 @@ TODO: Prove.\\
 
 \section{Extended capabilities}
 
-To improve the usefulness of the parser on real grammar a few additions were made. Namely support for lists, optionals and certain non-context free features was added. In this chapter we will discuss their implementation.
+To improve the usefulness of the parser on real grammar a few additions were made. Namely support for lists, optionals and certain non-context-free features is added. In this chapter we will discuss their implementation.
 
 \subsection{Lists}
 
 List, separated lists and optionals are handled in a similar way, because in essense they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are star-lists with one element at most; from here on out we will refer to all of these simply as 'lists'.
 
-Often lists are implemented by adding extra 'virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a 'normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, which may not be what we wanted. Additionally, because an extra rule is inserted we need more GSS nodes to be able to parse the list.
+Often lists are implemented by adding extra 'virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a 'normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more GSS nodes to be able to parse the list.
 
 Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a 'next' point to itself and is marked as last node in the 'production' (see figure below). One could view this construction as a GSS node with a kind of dynamicly growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
@@ -418,16 +418,20 @@ The basic algorithm is fairly strait forward and relatively simple to implement.
 
 \subsection{General}
 
-Making the implementation breath first generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since most information is stored on a per-level basis, we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
+\subsubsection{Breadth-first}
+Making the implementation breadth first generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since most information is stored on a per-level basis, we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
 
+\subsubsection{Matching}
 Another minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
 
+\subsubsection{Look-ahead}
 A more obivious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by theoretical of practical constraints.
 
 \subsection{Edge related}
 
 Generally parsers store results on edges in the GSS. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
 
+\subsubsection{Expansion}
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E(0)$\\
 $E\,::=\,E(1)\,+\,E(2)\,|\,E(3)\,-\,E(4)$.\\
@@ -464,6 +468,7 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
 \end{enumerate}
 Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove it's necessity.
 
+\subsubsection{Reduction}
 Finally, we can also gain something at the other end. The 'is reduced' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
 \subsection{GSS}
