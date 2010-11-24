@@ -357,7 +357,7 @@ reduce()\{
       \}else if(expandedStore.notContains(next))\{ // Sharing
         toExpandSet.push(next);
       \}
-      next.addEdges(node.edges);{\bf
+      next.addEdges(node.edges);\textit{
       next.updatePrefixes(node.prefixes, node.results);}
     \}
   \}
@@ -519,7 +519,7 @@ Benchmarks were executed on a machine with the following specifications:
  Memory & 8 GB DDR-800 \\
  OS & Fedora Core 12 \\
  JRE & Sun 1.6.0\_13 (32-bit) \\
- JRE options & -Xmx1g \\
+ JRE options & -Xmx1700m \\
  \hline
 \end{tabular}
 \end{table}
