@@ -65,7 +65,7 @@ As is common in generalized parsing, we use a kind of Graph Structured Stack (GS
  \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that don't.
  \item Reduce the nodes on all stacks that matched something and have them queue the 'next' node in the production they are part of where applicable, until no reductions are possible anymore.
  \item If there are nodes queued for expansion go to 1.
- \item If the end of the input has been reached and we have at least one derivation for one of the start symbols we are successful; otherwise parsing failed.
+ \item If the end of the input has been reached and we have at least one derivation for one of the start symbols we are successful; otherwise recognizing failed.
 \end{enumerate}
 
 \subsection{Pseudocode}
@@ -81,12 +81,12 @@ parse(){
     expand();
   }while(toReduceSet.notEmpty());
   
-  if(notAtEOI()) parse error;
+  if(endOfInputHasNotBeenReached()) error;
 }
 \end{verbatim}
 }
 
-TODO: Explain.
+This is the main loop of the recognizer. It alternates between expanding and reducing, until there is nothing left to be done. Once we exit the loop we check whether or not we reached the end of the input. If we did, we recognized at least one complete derivation and are thus successful, otherwise we encountered an error.
 
 {\small
 \begin{verbatim}
@@ -97,19 +97,19 @@ expand(){
     Node[] children = getChildrenFor(node);
     for(childNode <- children){
       if(reducedStore.contains(childNode)){ // Child already has results
-         if(notAddedEarlierInThisExpandLoop){ // Sharing
+         if(toReduceSet.notContains(node)){ // Sharing
            toReduceSet.add(node);
          }
       }else{
-        if(expandedStore.contains(childNode)){ // Sharing
-          expandedStore.get(childNode).addEdge(node);
-        }else{
-          expandedStore.add(childNode);
-          
-          if(childNode.isTerminal()){
+        if(childNode.isTerminal()){
             toReduceSet.add(childNode);
+        }else{
+          if(expandedStore.contains(childNode)){ // Sharing
+            expandedStore.get(childNode).addEdge(node);
           }else{
             toExpandSet.add(childNode);
+            
+            expandedStore.add(childNode);
           }
         }
       }
@@ -119,7 +119,9 @@ expand(){
 \end{verbatim}
 }
 
-TODO: Explain.
+This is the expand loop of the recognizer. We take one node from the {\bf toExpandSet} and add its non-terminal 'children' to the {\bf toExpandSet}, in case they haven't been expanded or been queued for expansion before; nodes that have been expanded before will be in the {\bf expandedStore}. And its terminal 'children' to the {\bf toReduceSet}. The exception to this is, when we encounter a 'child' that already has been reduced; which we check by looking in the {\bf reducedStore}. If this is the case we queue the node we are currently handling for reduction by putting it in the {\bf toReduceSet} (if not done so already). We keep iterating until the {\bf toExpandSet} is empty.
+
+Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 {\small
 \begin{verbatim}
@@ -161,7 +163,7 @@ TODO: Prove.\\
 
 \subsection{From grammar to code}
 
-Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal, which contains logic that informs the recognizer / parser about what alternatives should be expected.
+Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal, which contains logic that informs the recognizer about what alternatives should be expected.
 
 Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
 
@@ -282,7 +284,7 @@ parse()\{
     expand();
   \}while(toReduceSet.notEmpty());
   
-  if(notAtEOI()) parse error;
+  if(endOfInputHasNotBeenReached()) error;
   \textit{
   return findResultStore('startNode');}
 \}
@@ -302,19 +304,19 @@ expand()\{
       if(reducedStore.contains(childNode))\{\textit{
         findResultStore(node).
             addAlternative(childNode.prefixes, childNode.results);}
-        if(notAddedEarlierInThisExpandLoop)\{ // Sharing
+        if(toReduceSet.notContains(node))\{ // Sharing
           toReduceSet.add(node);
         \}
       \}else\{
-        if(expandedStore.contains(childNode))\{ // Sharing
-          expandedStore.get(childNode).addEdge(node);
-        \}else\{
-          expandedStore.add(childNode);
-          
-          if(childNode.isTerminal())\{
+        if(childNode.isTerminal())\{
             toReduceSet.add(childNode);
+        \}else\{
+          if(expandedStore.contains(childNode))\{ // Sharing
+            expandedStore.get(childNode).addEdge(node);
           \}else\{
             toExpandSet.add(childNode);
+            
+            expandedStore.add(childNode);
           \}
         \}
       \}
@@ -378,7 +380,7 @@ TODO: Prove.\\
 -Hidden right recursion is problematic, but handled correctly by our implementation; the rest is fairly obvious.
 
 \subsection{Worst-case complexity}
-Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hense the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
 
 \subsubsection{Flattening}
 Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. In practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We'll discuss filtering later on in this document.
