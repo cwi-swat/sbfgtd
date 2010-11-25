@@ -251,7 +251,7 @@ input = $aaaa$
 \caption{A partial visual representation of the parse forest, showing all alternatives for $AAA$ for the substring from 0 to 4. The numbers indicate start and end position of the matched substring.}
 \end{figure}
 
-In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,AAA$ are stored in memory. Also note how nodes with the same start position have the same set of pointers associated with them, as indicated at the start of this chapter.
+In the figure above we see a section of the parse forest. It illustrates how the results of the production $S\,::=\,AAA$ are stored in memory. Also note how nodes with the same start position have the same set of prefixes associated with them, as indicated at the start of this chapter.
 
 To show how we can obtain all possible derivations from this parse forest, we will list them in the table below; which relates each path through the forest to a derivation.
 
@@ -269,7 +269,7 @@ S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 
 \subsection{Psuedocode}
 
-Augmenting our recognizer with parse tree construction code it trivial. Only a few minor adjustments are needed. Additions are highlighted in italic.
+Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Additions are highlighted in italic.
 
 {\small
 \begin{alltt}
@@ -419,7 +419,7 @@ input = $a * 1$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \caption{Worst-case parse tree data}
 \end{table}
 
-In the table above we can clearly see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N + 1$ for every extra character in the input string. The number of prefix sets scales in a similar way, although there are roughly twice as many of them in comparison to results, since both the second and the third $S$ in $SSS$ need a prefix. As can be observed, the number of nodes remains within cubic bounds for this worst-case example.
+In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N + 1$ for every extra character in the input string. The number of prefix sets scales in a similar way, although there are roughly twice as many of them in comparison to results, since both the second and the third $S$ in $SSS$ need a prefix. As can be observed, the number of nodes remains within cubic bounds for this worst-case example.
 
 \section{Extended capabilities}
 
@@ -431,7 +431,7 @@ List, separated lists and optionals are handled in a similar way, because in ess
 
 Often lists are implemented by adding extra 'virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a 'normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more GSS nodes to be able to parse the list.
 
-Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a 'next' point to itself and is marked as last node in the 'production' (see figure below). One could view this construction as a GSS node with a kind of dynamicly growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
+Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a 'next' point to itself and is marked as last node in the 'production' (see figure below). One could view this construction as a GSS node with a kind of dynamicaly growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
 \begin{figure}[H]
 \centering
@@ -441,11 +441,11 @@ Our approach involves special casing the handling of lists, by introducing addit
 
 These list children can be shared just like any other GSS node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
 
-Exactly the same principle is used for separated lists an optionals. We won't go into detail on those, since one can easily imagine how this works.
+Exactly the same principle is used for separated lists and optionals. We won't go into detail on those, since one can easily imagine how those work.
 
 \subsection{Location}
 
-Similar to how lists are implemented, there are also specialized GSS nodes for location related indicators. We have the following variaties:
+Similar to how lists are implemented, there are also specialized GSS nodes for location related indicators. We have the following varieties:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -470,7 +470,7 @@ Making the implementation breadth first generally reduces resource usage. This i
 Another minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
 
 \subsubsection{Look-ahead}
-A more obivious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by theoretical of practical constraints.
+A more obvious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by theoretical or practical constraints.
 
 \subsection{Edge related}
 
@@ -479,7 +479,7 @@ Generally parsers store results on edges in the GSS. If we would refrain from do
 \subsubsection{Expansion}
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Namely, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E$\\
-$E\,::=\,E\,+\,E\,|\,E\,-\,E$.\\
+$E\,::=\,E + E\,|\,E - E$.\\
 The expansion at the first level would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -511,7 +511,7 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
  \item $.E+E$ $\Rightarrow$ $E$ edges += $.E+E$
  \item $.E-E$ $\Rightarrow$ $E$ edges += $.E-E$
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove it's necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One additional benefit is, that this optimization lessens the need for left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set to edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (wherever possible), we would still gain something.
 
@@ -524,9 +524,11 @@ In many grammars productions exist that start with the same symbols. There is no
 
 One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we won't elaborate on here) and opportunities to apply this optimization hardly ever occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we'd shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we'd also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
+TODO: Change stuff to items.
+
 \section{Filtering}
 
-As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features we have implemented to filter these trees. These features are all optional and have no dependencies on eachother.
+As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features we have implemented to filter the trees in this forest. These features are all optional and have no dependencies on eachother.
 
 \subsection{Follow restrictions}
 
@@ -536,7 +538,7 @@ As one can imagine, this feature is trivial to implement.
 
 \subsection{Rejects}
 
-Reject filtering is intended for the removal to trees that are not considered to be correct at a certain location in the grammar. One could think of things like using it to filter alternatives for identifiers that match keywords, for example.
+Reject filtering is intended for the removal of trees that are not considered to be correct at a certain location in the grammar. One could think of using it to filter alternatives for identifiers that match keywords, for example.
 
 Any alternative of a production can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. Rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
 
@@ -556,7 +558,7 @@ Each grammar rule can have a number of actions associated with it. These actions
 
 \section{Benchmarks}
 
-In this chapter we will have a look at the performance of you current implementation of the algorithm.
+In this chapter we will have a look at the performance of the current implementation of the algorithm.
 
 Benchmarks were executed on a machine with the following specifications:
 \begin{table}[H]
@@ -616,7 +618,7 @@ TODO: Show linear performance on LL and LR grammars.\\
 
 \subsection{Grammar factoring}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting too look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version. The original grammar is the following:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version. The original grammar is the following:\\
 $S\,::=\,A+$\\
 $A\,::=\,a\,|\,E$\\
 $E\,::=\,1\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
