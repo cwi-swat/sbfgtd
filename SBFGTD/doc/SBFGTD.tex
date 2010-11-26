@@ -121,7 +121,7 @@ expand(){
 
 This is the expand loop of the recognizer. We take one node from the {\bf toExpandSet} and add its non-terminal 'children' to the {\bf toExpandSet}, in case they haven't been expanded or been queued for expansion before; nodes that have been expanded before will be in the {\bf expandedStore}. Its terminal 'children' will be added to the {\bf toReduceSet}. The exception to this is, when we encounter a 'child' that already has been reduced; which we check by looking in the {\bf reducedStore}. If this is the case we queue the node we are currently handling for reduction by putting it in the {\bf toReduceSet} (if not done so already). We keep iterating until the {\bf toExpandSet} is empty.
 
-Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time). Otherwise it is not possible to guarantee worst-case cubic time complexity.
+Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 {\small
 \begin{verbatim}
@@ -153,7 +153,11 @@ reduce(){
 \end{verbatim}
 }
 
-TODO: Explain.
+This is the reduce loop of the recognizer. We take one node from the {\bf toReduceSet} and put it in the {\bf reducedStore} to indicate it should not be reduced again; each node is only allowed to get reduced once. In case the node we are reducing is a terminal, we need to check whether or not it matches the substring in the input it is associated with; if this is not the case we discard the node.
+
+After this two things can happen, either the node we are reducing is the last node in a production or it isn't. In case it is, we follow it's edges and queue the nodes that have not been reduced yet to the {\bf toReduceSet}. If the node isn't the last node in the production it is a part of, we queue it's 'right neighbour' in the production for expansion, if not done so already. ............ update edges .....
+
+TODO: Fix edge problem in this non-breadth first version.
 
 \subsection{Correctness}
 
@@ -193,7 +197,7 @@ input = $ab$
  \item reduce $b.$ follow edge to $A.B$
  \item reduce $AB.$ and follow edge to $.S$
  \item reduce $S.$
- \item done.
+ \item done
 \end{enumerate}
 
 \subsubsection{Left recursive}
@@ -218,10 +222,10 @@ input = $aaa$
  \item parse for $S.$ is incomplete and is discarded
  \item move from $.Aa$ to $A.a$
  \item reduce $Aa.$ and follow edges to $.S$ and $.Aa$
- \item parse for $S.$ is complete.
+ \item parse for $S.$ is complete
  \item move from $.Aa$ to $A.a$
- \item reduce $Aa.$ failed, since EOI has already been reached.
- \item done.
+ \item reduce $Aa.$ failed, since EOI has already been reached
+ \item done
 \end{enumerate}
 
 TODO: Maybe convert to illustrations?\\
@@ -483,7 +487,7 @@ Generally parsers store results on edges in the GSS. If we would refrain from do
 \subsubsection{Expansion}
 First of all, by caching 'expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E$\\
-$E\,::=\,E + E\,|\,E - E$.\\
+$E\,::=\,E + E\,|\,E - E$\\
 The expansion at the first level would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
