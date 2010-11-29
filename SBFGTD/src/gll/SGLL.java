@@ -317,14 +317,13 @@ public class SGLL implements IGLL{
 	}
 	
 	private boolean findStacksToReduce(){
-		RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[location];
-		if(!terminalsTodo.isEmpty()){
+		if(!stacksWithTerminalsToReduce.isEmpty()){
 			shiftedLevel = false;
 			return true;
 		}
 		
 		for(int i = location + 1; i < todoLists.length; ++i){
-			terminalsTodo = todoLists[i];
+			RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
