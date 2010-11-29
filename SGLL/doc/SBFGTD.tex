@@ -76,41 +76,40 @@ parse(){
   toExpandSet.add('startNode');
   expand();
   
-  do{
+  while(hasMoreStacksToReduce()){
+    toReduceSet = getStacksToReduce();
+    if(shiftedLevel){ // Nullable related sharing
+      expandedStore.clear();
+      expandedSet.clear();
+      resultStoreMap.clear();
+    }
     reduce();
     expand();
-  }while(toReduceSet.notEmpty());
+  }
   
   if(endOfInputHasNotBeenReached()) error;
 }
 \end{verbatim}
 }
 
-This is the main loop of the recognizer. It alternates between expanding and reducing, until there is nothing left to be done. Once we exit the loop we check whether or not we reached the end of the input. If we did, we recognized at least one complete derivation and are thus successful, otherwise we encountered an error.
+TODO: Explain.
 
 {\small
 \begin{verbatim}
 expand(){
-  while(toExpandSet.notEmpty()){
-    node = toExpandSet.pop();
-    
-    Node[] children = getChildrenFor(node);
-    for(childNode <- children){
-      if(reducedStore.contains(childNode)){ // Child already has results
-         if(toReduceSet.notContains(node)){ // Sharing
-           toReduceSet.add(node);
-         }
-      }else{
-        if(childNode.isTerminal()){
-            toReduceSet.add(childNode);
+  while(node <- toExpandSet){
+    if(node.isTerminal()){
+      if(node.match(input)){
+        toReduceSet.add(node);
+      }
+    }else{
+      expandedSet.add(node);
+      for(childNode <- getChildrenFor(node)){
+        if(expandedSet.contains(childNode)){
+          INode sharedChildNode = expandedSet.get(childNode);
+          sharedChildNode.addEdge(node);
         }else{
-          if(expandedStore.contains(childNode)){ // Sharing
-            expandedStore.get(childNode).addEdge(node);
-          }else{
-            toExpandSet.add(childNode);
-            
-            expandedStore.add(childNode);
-          }
+          toExpandSet.add(childNode);
         }
       }
     }
@@ -119,31 +118,28 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop of the recognizer. We take one node from the {\bf toExpandSet} and add its non-terminal 'children' to the {\bf toExpandSet}, in case they haven't been expanded or been queued for expansion before; nodes that have been expanded before will be in the {\bf expandedStore}. Its terminal 'children' will be added to the {\bf toReduceSet}. The exception to this is, when we encounter a 'child' that already has been reduced; which we check by looking in the {\bf reducedStore}. If this is the case we queue the node we are currently handling for reduction by putting it in the {\bf toReduceSet} (if not done so already). We keep iterating until the {\bf toExpandSet} is empty.
+TODO: Explain.
+
 
 Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 {\small
 \begin{verbatim}
 reduce(){
-  while(toReduceSet.notEmpty()){
-    node = toReduceSet.pop();
+  while(node <- toReduceSet){
     reducedStore.add(node);
-    
-    if(node.isTerminal() && !node.matches()) continue;
-    
     if(node.lastInProduction()){
       for(parent <- node.edges){
         if(toReduceSet.notContains(parent) &&
-            reducedStore.notContains(parent)){ // Sharing (is reduced)
+            reducedStore.notContains(parent)){ // Sharing
           toReduceSet.add(parent);
         }
       }
     }else if(node.hasNext()){
       next = node.next;
-      if(toExpand.contains(next)){ // Sharing
-        next = toExpandSet.get(next);
-      }else if(expandedStore.notContains(next)){ // Sharing
+      if(expandedStore.notContains(next)){ // Sharing
+        next = expandedStore.get(next);
+      }else{
         toExpandSet.add(next);
       }
       next.addEdges(node.edges);
@@ -153,11 +149,7 @@ reduce(){
 \end{verbatim}
 }
 
-This is the reduce loop of the recognizer. We take one node from the {\bf toReduceSet} and put it in the {\bf reducedStore} to indicate it should not be reduced again; each node is only allowed to get reduced once. In case the node we are reducing is a terminal, we need to check whether or not it matches the substring in the input it is associated with; if this is not the case we discard the node.
-
-After this two things can happen, either the node we are reducing is the last node in a production or it isn't. In case it is, we follow it's edges and queue the nodes that have not been reduced yet to the {\bf toReduceSet}. If the node isn't the last node in the production it is a part of, we queue it's 'right neighbour' in the production for expansion, if not done so already. ............ update edges .....
-
-TODO: Fix edge problem in this non-breadth first version.
+TODO: Explain.
 
 \subsection{Correctness}
 
@@ -283,10 +275,16 @@ parse()\{
   toExpandSet.add('startNode');
   expand();
   
-  do\{
+  while(hasMoreStacksToReduce())\{
+    toReduceSet = getStacksToReduce();
+    if(shiftedLevel)\{ // Nullable related sharing
+      expandedStore.clear();
+      expandedSet.clear();
+      resultStoreMap.clear();
+    \}
     reduce();
     expand();
-  \}while(toReduceSet.notEmpty());
+  \}
   
   if(endOfInputHasNotBeenReached()) error;
   \textit{
@@ -300,28 +298,19 @@ TODO: Explain changes.
 {\small
 \begin{alltt}
 expand()\{
-  while(toExpandSet.notEmpty())\{
-    node = toExpandSet.pop();
-    
-    Node[] children = getChildrenFor(node);
-    for(childNode <- children)\{
-      if(reducedStore.contains(childNode))\{\textit{
-        findResultStore(node).
-            addAlternative(childNode.prefixes, childNode.results);}
-        if(toReduceSet.notContains(node))\{ // Sharing
-          toReduceSet.add(node);
-        \}
-      \}else\{
-        if(childNode.isTerminal())\{
-            toReduceSet.add(childNode);
+  while(node <- toExpandSet)\{
+    if(node.isTerminal())\{
+      if(node.match(input))\{
+        toReduceSet.add(node);
+      \}
+    \}else\{
+      expandedSet.add(node);
+      for(childNode <- getChildrenFor(node))\{
+        if(expandedSet.contains(childNode))\{
+          INode sharedChildNode = expandedSet.get(childNode);
+          sharedChildNode.addEdge(node);
         \}else\{
-          if(expandedStore.contains(childNode))\{ // Sharing
-            expandedStore.get(childNode).addEdge(node);
-          \}else\{
-            toExpandSet.add(childNode);
-            
-            expandedStore.add(childNode);
-          \}
+          toExpandSet.add(childNode);
         \}
       \}
     \}
@@ -330,31 +319,27 @@ expand()\{
 \end{alltt}
 }
 
-TODO: Explain changes.
+TODO: Explain no changes.
 
 {\small
 \begin{alltt}
 reduce()\{
-  while(toReduceSet.notEmpty())\{
-    node = toReduceSet.pop();
+  while(node <- toReduceSet)\{
     reducedStore.add(node);
-    
-    if(node.isTerminal() && !node.matches()) continue;
-    
     if(node.lastInProduction())\{
       for(parent <- node.edges)\{\textit{
         findResultStore(parent).
             addAlternative(node.prefixes, node.results);}
         if(toReduceSet.notContains(parent) &&
-            reducedStore.notContains(parent))\{ // Sharing (is reduced)
+            reducedStore.notContains(parent))\{ // Sharing
           toReduceSet.add(parent);
         \}
       \}
     \}else if(node.hasNext())\{
       next = node.next;
-      if(toExpandSet.contains(next))\{ // Sharing
-        next = toExpandSet.get(next);
-      \}else if(expandedStore.notContains(next))\{ // Sharing
+      if(expandedStore.notContains(next))\{ // Sharing
+        next = expandedStore.get(next);
+      \}else\{
         toExpandSet.add(next);
       \}
       next.addEdges(node.edges);\textit{
