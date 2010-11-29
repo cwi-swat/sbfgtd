@@ -100,7 +100,7 @@ public class SGLL implements IGLL{
 		if(alternative != null){
 			if(alternative.isEndNode()){
 				if(result.isEmpty() && !node.isMatchable() && !next.isMatchable()){
-					if(alternative.getId() != next.getId()){ // List cycle fix.
+					if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
 						HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 						AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
 						if(resultStore != null){
@@ -286,11 +286,6 @@ public class SGLL implements IGLL{
 	}
 	
 	private void reduce(){
-		if(shiftedLevel){ // Epsilon fix.
-			sharedNextNodes.clear();
-			resultStoreCache.clear();
-		}
-		
 		// Reduce terminals.
 		while(!stacksWithTerminalsToReduce.isEmpty()){
 			reduceTerminal(stacksWithTerminalsToReduce.getDirtyUnsafe());
@@ -437,10 +432,6 @@ public class SGLL implements IGLL{
 	}
 	
 	private void expand(){
-		if(shiftedLevel){
-			cachedEdgesForExpect.clear();
-		}
-		
 		while(stacksToExpand.size() > 0){
 			lastExpects.dirtyClear();
 			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
@@ -477,6 +468,12 @@ public class SGLL implements IGLL{
 		
 		findFirstStackToReduce();
 		do{
+			if(shiftedLevel){ // Nullable fix.
+				sharedNextNodes.clear();
+				resultStoreCache.clear();
+				cachedEdgesForExpect.clear();
+			}
+			
 			reduce();
 			
 			expand();
