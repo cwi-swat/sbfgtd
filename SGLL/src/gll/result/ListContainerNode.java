@@ -133,7 +133,7 @@ public class ListContainerNode extends AbstractContainerNode{
 		}
 		
 		int nrOfGatheredPrefixes = gatheredPrefixes.size();
-		if(nrOfGatheredPrefixes ==  0) return;
+		if(nrOfGatheredPrefixes == 0) return;
 		
 		if(nrOfGatheredPrefixes == 1){
 			String[] prefixAlternative = gatheredPrefixes.get(0);

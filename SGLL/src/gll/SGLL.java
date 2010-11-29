@@ -100,7 +100,7 @@ public class SGLL implements IGLL{
 		if(alternative != null){
 			if(alternative.isEndNode()){
 				if(result.isEmpty() && !node.isMatchable() && !next.isMatchable()){
-					if(alternative.getId() != node.getId()){ // List cycle fix.
+					if(alternative.getId() != next.getId()){ // List cycle fix.
 						HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 						AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
 						if(resultStore != null){
@@ -293,8 +293,7 @@ public class SGLL implements IGLL{
 		
 		// Reduce terminals.
 		while(!stacksWithTerminalsToReduce.isEmpty()){
-			AbstractStackNode terminal = stacksWithTerminalsToReduce.getDirtyUnsafe();
-			reduceTerminal(terminal);
+			reduceTerminal(stacksWithTerminalsToReduce.getDirtyUnsafe());
 		}
 		
 		// Reduce non-terminals.
