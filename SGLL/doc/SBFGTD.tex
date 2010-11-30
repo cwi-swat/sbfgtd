@@ -72,14 +72,13 @@ As is common in generalized parsing, we use a kind of Graph Structured Stack (GS
 
 {\small
 \begin{verbatim}
-parse(){
+main(){
   toExpandSet.add('startNode');
   expand();
   
   while(hasMoreStacksToReduce()){
     toReduceSet = getStacksToReduce();
     if(shiftedLevel){ // Nullable related sharing
-      expandedStore.clear();
       expandedSet.clear();
       reducedStore.clear();
     }
@@ -93,7 +92,7 @@ parse(){
 \end{verbatim}
 }
 
-This is the main function of the parser. It starts with building the stacks for the first level, by queuing the 'start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This check is necessary to be able to handle epsilons / nullables properly.
+This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the 'start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This check is necessary to be able to handle epsilons / nullables properly.
 
 {\small
 \begin{verbatim}
@@ -152,7 +151,9 @@ reduce(){
 
 This is the reduce loop. It will iterate until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
 
-Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
+Note that the {\bf reducedStore} needs to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
+
+TODO: Explain reducedStore a bit better.
 
 \subsection{Correctness}
 
@@ -270,20 +271,19 @@ S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 
 \subsection{Psuedocode}
 
-Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes, are highlighted in italic.
+Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italic.
 
 {\small
 \begin{alltt}
-parse()\{
+main()\{
   toExpandSet.add('startNode');
   expand();
   
   while(hasMoreStacksToReduce())\{
     toReduceSet = getStacksToReduce();
     if(shiftedLevel)\{ // Nullable related sharing
-      expandedStore.clear();
       expandedSet.clear();\textit{
-      resultStores.clear();}
+      resultStore.clear();}
     \}
     
     reduce();
@@ -292,12 +292,12 @@ parse()\{
   
   if(endOfInputHasNotBeenReached()) error;
   \textit{
-  return resultStores('startNode');}
+  return resultStore.get('startNode');}
 \}
 \end{alltt}
 }
 
-TODO: Explain changes.
+The only things that need to be changed in the main function to transform the recognizer into a parser are the returning of the final result (if not in error) and replacing the {\bf reducedStore} by {\bf resultStore}. The {\bf resultStore} is similar to the {\bf reducedStore}, except that it also contains the result associated with the non-terminals in the store.
 
 {\small
 \begin{alltt}
@@ -324,17 +324,17 @@ expand()\{
 \end{alltt}
 }
 
-TODO: Explain no changes.
+The expansion code does not need to change in any way, since it doesn't deal with parse results.
 
 {\small
 \begin{alltt}
 reduce()\{
   while(node <- toReduceSet)\{
     if(node.lastInProduction())\{\textit{
-      if(resultStores.contains(node.edges.getOne()))\{
-        resultStore = resultStores.get(node.edges.getOne());
+      if(resultStore.contains(node.edges.getOne()))\{
+        result = resultStore.get(node.edges.getOne());
       \}else\{
-        resultStore = createResultStore(node.edges.getOne());
+        result = createResult(node.edges.getOne());
         
         for(parent <- node.edges)\{
           if(toReduceSet.notContains(parent))\{ // Sharing (reduce check)
@@ -342,13 +342,13 @@ reduce()\{
           \}
         \}
       \}
-      resultStore.
-              addAlternative(node.prefixes, node.results);}
+      result.
+          addAlternative(node.prefixes, node.results);}
     \}else if(node.hasNext())\{
       next = node.next;
       
-      if(expandedStore.notContains(next))\{ // Sharing
-        next = expandedStore.get(next);
+      if(expandedSet.notContains(next))\{ // Sharing
+        next = expandedSet.get(next);
       \}else\{
         toExpandSet.add(next);
       \}
@@ -361,7 +361,22 @@ reduce()\{
 }
 
 TODO: Explain changes.\\
+-Replaced reducedStore by resultStore.\\
+-Update prefixes.\\
+--Hidden right nullable handling.\\
 -ResultStore.get() = sort + start location.
+
+{\small
+\begin{alltt}
+\textit{createResult(node)\{
+  result = allocateResult(node.name, node.startLocation);
+  resultStore.add(result);
+\}}
+\end{alltt}
+}
+
+TODO: Explain.\\
+Note: Is this necessary to have?
 
 \subsection{Correctness}
 
