@@ -126,14 +126,14 @@ This is the expand loop. It will iterate until there are no more stacks queued f
 reduce(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
-      if(reducedStore.notContains(node)){
-        for(parent <- node.edges){
+      for(parent <- node.edges){
+        if(reducedStore.notContains(node)){
           if(toReduceSet.notContains(parent)){ // Sharing (reduce check)
             toReduceSet.add(parent);
           }
+          
+          reducedStore.add(node);
         }
-        
-        reducedStore.add(node);
       }
     }else if(node.hasNext()){
       next = node.next;
@@ -152,9 +152,11 @@ reduce(){
 
 This is the reduce loop. It will iterate until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
 
-Note that the {\bf reducedStore} needs to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
+The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the start position of the node and the second layer by the sort name of the non-terminal in the node. Since the recognizer algorithm assumes it is level synchronized, the {\bf reducedStore} can contain a variant for every non-terminal for each possible substrings up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have of haven't been reduced yet.
 
-TODO: Explain reducedStore a bit better.
+Note that the first layer of the {\bf reducedStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
+
+TODO: Look into reduce check 1 and fix if necessary.
 
 \subsection{Correctness}
 
@@ -332,19 +334,18 @@ The expansion code does not need to change in any way, since it doesn't deal wit
 reduce()\{
   while(node <- toReduceSet)\{
     if(node.lastInProduction())\{\textit{
-      if(resultStore.contains(node.edges.getOne()))\{
-        result = resultStore.get(node.edges.getOne());
-      \}else\{
-        result = createResult(node.edges.getOne());
-        
-        for(parent <- node.edges)\{
+      for(parent <- node.edges)\{
+        if(resultStore.contains(node.edges.getOne()))\{
+          result = resultStore.get(node.edges.getOne());
+        \}else\{
+          result = createResult(node.edges.getOne());
           if(toReduceSet.notContains(parent))\{ // Sharing (reduce check)
             toReduceSet.add(parent);
           \}
         \}
+        result.
+            addAlternative(node.prefixes, node.results);}
       \}
-      result.
-          addAlternative(node.prefixes, node.results);}
     \}else if(node.hasNext())\{
       next = node.next;
       
@@ -360,6 +361,8 @@ reduce()\{
 \}
 \end{alltt}
 }
+
+TODO: Look into reduce check 1 and fix if necessary.
 
 TODO: Explain changes.\\
 -Replaced reducedStore by resultStore.\\
@@ -429,6 +432,8 @@ input = $a * 1$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N + 1$ for every extra character in the input string. The number of prefix sets scales in a similar way, although there are roughly twice as many of them in comparison to results, since both the second and the third $S$ in $SSS$ need a prefix. As can be observed, the number of nodes remains within cubic bounds for this worst-case example.
 
 Note however that GSS prefix-sharing was enabled while gathering the statistics for this example (see section \ref{sec:prefixSharing}). Without this optimization the number of prefixes would have been $50\%$ higher and the number of nodes $2/3$ higher.
+
+TODO: Convert to $S ::= SSS | SS | a$.
 
 \section{Extended capabilities}
 
