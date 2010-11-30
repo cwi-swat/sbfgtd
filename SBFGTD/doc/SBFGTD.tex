@@ -120,7 +120,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion if not done so already. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Also we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
+This is the expand loop. It will iterate until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Additionally we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
 {\small
 \begin{verbatim}
@@ -131,15 +131,15 @@ reduce(){
       
       for(parent <- node.edges){
         if(toReduceSet.notContains(parent) &&
-            reducedStore.notContains(parent)){ // Sharing
+            reducedStore.notContains(parent)){ // Sharing (reduce check)
           toReduceSet.add(parent);
         }
       }
     }else if(node.hasNext()){
       next = node.next;
       
-      if(expandedStore.notContains(next)){ // Sharing
-        next = expandedStore.get(next);
+      if(toExpandSet.notContains(next)){ // Sharing
+        next = toExpandSet.get(next);
       }else{
         toExpandSet.add(next);
       }
@@ -150,7 +150,7 @@ reduce(){
 \end{verbatim}
 }
 
-TODO: Explain.
+This is the reduce loop. It will iterate until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
 
 Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
@@ -270,7 +270,7 @@ S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 
 \subsection{Psuedocode}
 
-Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. The additions are highlighted in italic.
+Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes, are highlighted in italic.
 
 {\small
 \begin{alltt}
