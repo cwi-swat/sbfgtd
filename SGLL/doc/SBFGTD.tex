@@ -81,8 +81,9 @@ parse(){
     if(shiftedLevel){ // Nullable related sharing
       expandedStore.clear();
       expandedSet.clear();
-      resultStoreMap.clear();
+      reducedStore.clear();
     }
+    
     reduce();
     expand();
   }
@@ -92,7 +93,7 @@ parse(){
 \end{verbatim}
 }
 
-TODO: Explain.
+This is the main function of the parser. It starts with building the stacks for the first level, by queuing the 'start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This check is necessary to be able to handle epsilons / nullables properly.
 
 {\small
 \begin{verbatim}
@@ -104,6 +105,7 @@ expand(){
       }
     }else{
       expandedSet.add(node);
+      
       for(childNode <- getChildrenFor(node)){
         if(expandedSet.contains(childNode)){
           INode sharedChildNode = expandedSet.get(childNode);
@@ -120,15 +122,15 @@ expand(){
 
 TODO: Explain.
 
-
 Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 {\small
 \begin{verbatim}
 reduce(){
   while(node <- toReduceSet){
-    reducedStore.add(node);
     if(node.lastInProduction()){
+      reducedStore.add(node);
+      
       for(parent <- node.edges){
         if(toReduceSet.notContains(parent) &&
             reducedStore.notContains(parent)){ // Sharing
@@ -137,6 +139,7 @@ reduce(){
       }
     }else if(node.hasNext()){
       next = node.next;
+      
       if(expandedStore.notContains(next)){ // Sharing
         next = expandedStore.get(next);
       }else{
@@ -279,16 +282,17 @@ parse()\{
     toReduceSet = getStacksToReduce();
     if(shiftedLevel)\{ // Nullable related sharing
       expandedStore.clear();
-      expandedSet.clear();
-      resultStoreMap.clear();
+      expandedSet.clear();\textit{
+      resultStores.clear();}
     \}
+    
     reduce();
     expand();
   \}
   
   if(endOfInputHasNotBeenReached()) error;
   \textit{
-  return findResultStore('startNode');}
+  return resultStores('startNode');}
 \}
 \end{alltt}
 }
@@ -305,6 +309,7 @@ expand()\{
       \}
     \}else\{
       expandedSet.add(node);
+      
       for(childNode <- getChildrenFor(node))\{
         if(expandedSet.contains(childNode))\{
           INode sharedChildNode = expandedSet.get(childNode);
@@ -325,18 +330,24 @@ TODO: Explain no changes.
 \begin{alltt}
 reduce()\{
   while(node <- toReduceSet)\{
-    reducedStore.add(node);
-    if(node.lastInProduction())\{
-      for(parent <- node.edges)\{\textit{
-        findResultStore(parent).
-            addAlternative(node.prefixes, node.results);}
-        if(toReduceSet.notContains(parent) &&
-            reducedStore.notContains(parent))\{ // Sharing
-          toReduceSet.add(parent);
+    if(node.lastInProduction())\{\textit{
+      if(resultStores.contains(node.edges.getOne()))\{
+        resultStore = resultStores.get(node.edges.getOne());
+      \}else\{
+        resultStore = createResultStore(node.edges.getOne());
+        
+        for(parent <- node.edges)\{
+          if(toReduceSet.notContains(parent) &&\textit{
+              resultStores.notContains(parent)})\{ // Sharing
+            toReduceSet.add(parent);
+          \}
         \}
       \}
+      resultStore.
+              addAlternative(node.prefixes, node.results);}
     \}else if(node.hasNext())\{
       next = node.next;
+      
       if(expandedStore.notContains(next))\{ // Sharing
         next = expandedStore.get(next);
       \}else\{
@@ -350,18 +361,8 @@ reduce()\{
 \end{alltt}
 }
 
-TODO: Explain changes.
-
-{\small
-\begin{alltt}
-\textit{findResultStore(node)\{
-  return resultStores.
-    findOrCreate(node.startLocation, node.endLocation, node.name);
-\}}
-\end{alltt}
-}
-
-TODO: Explain.
+TODO: Explain changes.\\
+-ResultStore.get() = sort + start location.
 
 \subsection{Correctness}
 
@@ -456,11 +457,8 @@ The basic algorithm is fairly straight forward and relatively simple to implemen
 
 \subsection{General}
 
-\subsubsection{Breadth-first}
-Making the implementation breadth first generally reduces resource usage. This is because it enables us to determine when certain data is no longer necessary and can be discarded. Additionally, since most information is stored on a per-level basis, we can exploit the assumption that we are level synchronized to our advantage. For example, the memory used for stacks that died off can be reclaimed and reused and sharing and such can be handled slightly more efficiently.
-
 \subsubsection{Matching}
-Another minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
+A minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
 
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by theoretical or practical constraints.
