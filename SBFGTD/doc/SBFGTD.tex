@@ -106,13 +106,13 @@ expand(){
     }else{
       expandedSet.add(node);
       
-      for(childNode <- getChildrenFor(node)){
+      for(childNode <- getChildren(node)){
         if(expandedSet.contains(childNode)){
-          INode sharedChildNode = expandedSet.get(childNode);
-          sharedChildNode.addEdge(node);
+          childNode = expandedSet.get(childNode);
         }else{
           toExpandSet.add(childNode);
         }
+        childNode.addEdge(node);
       }
     }
   }
@@ -120,9 +120,7 @@ expand(){
 \end{verbatim}
 }
 
-TODO: Explain.
-
-Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
+This is the expand loop. It will iterate until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion if not done so already. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Also we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
 {\small
 \begin{verbatim}
@@ -153,6 +151,8 @@ reduce(){
 }
 
 TODO: Explain.
+
+Note that the 'stores' need to be implemented as an array or table that has a set of non-terminals associated with every index in the input string (with O(1) look-up time for the array / table). Otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 \subsection{Correctness}
 
@@ -310,13 +310,13 @@ expand()\{
     \}else\{
       expandedSet.add(node);
       
-      for(childNode <- getChildrenFor(node))\{
+      for(childNode <- getChildren(node))\{
         if(expandedSet.contains(childNode))\{
-          INode sharedChildNode = expandedSet.get(childNode);
-          sharedChildNode.addEdge(node);
+          childNode = expandedSet.get(childNode);
         \}else\{
           toExpandSet.add(childNode);
         \}
+        childNode.addEdge(node);
       \}
     \}
   \}
@@ -337,8 +337,7 @@ reduce()\{
         resultStore = createResultStore(node.edges.getOne());
         
         for(parent <- node.edges)\{
-          if(toReduceSet.notContains(parent) &&\textit{
-              resultStores.notContains(parent)})\{ // Sharing
+          if(toReduceSet.notContains(parent))\{ // Sharing (reduce check)
             toReduceSet.add(parent);
           \}
         \}
@@ -507,7 +506,7 @@ Now expansion completes in linear time. An additional benefit is that all the ed
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set to edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
 
 \subsubsection{Reduction}
-Finally, we can also gain something at the other end. The 'is reduced' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
+Finally, we can also gain something at the other end. The 'reduce check' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
 \subsection{GSS}
 \label{sec:prefixSharing}
