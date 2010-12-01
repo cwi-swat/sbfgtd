@@ -126,10 +126,12 @@ This is the expand loop. It will iterate until there are no more stacks queued f
 reduce(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
-      for(parent <- node.edges){
-        if(reducedStore.notContains(node)){
-          if(toReduceSet.notContains(parent)){ // Sharing (reduce check)
-            toReduceSet.add(parent);
+      for(edgeLevel <- node.edgesPerLevel){
+        if(reducedStore.notContains(edgeLevel.getOne())){
+          for(edges <- edgeLevel){
+            if(toReduceSet.notContains(parent)){ // Sharing (reduceCheck)
+              toReduceSet.add(parent);
+            }
           }
           
           reducedStore.add(node);
@@ -156,7 +158,8 @@ The {\bf reducedStore} is a dual layered data structure. The first layer is inde
 
 Note that the first layer of the {\bf reducedStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
 
-TODO: Look into reduce check 1 and fix if necessary.
+TODO: Look into edgesLevel.\\
+TODO: Look into necessity of reduce check.
 
 \subsection{Correctness}
 
@@ -333,14 +336,16 @@ The expansion code does not need to change in any way, since it doesn't deal wit
 \begin{alltt}
 reduce()\{
   while(node <- toReduceSet)\{
-    if(node.lastInProduction())\{\textit{
-      for(parent <- node.edges)\{
-        if(resultStore.contains(node.edges.getOne()))\{
-          result = resultStore.get(node.edges.getOne());
+    if(node.lastInProduction())\{
+      for(edgesLevel <- node.edgesPerLevel)\{\textit{
+        if(resultStore.contains(edgesLevel.getOne()))\{
+          result = resultStore.get(edgesLevel.getOne());
         \}else\{
-          result = createResult(node.edges.getOne());
-          if(toReduceSet.notContains(parent))\{ // Sharing (reduce check)
-            toReduceSet.add(parent);
+          result = createResult(edgesLevel.getOne());
+          for(edges <- edgesLevel)\{
+            if(toReduceSet.notContains(parent))\{ // Sharing (reduceCheck)
+              toReduceSet.add(parent);
+            \}
           \}
         \}
         result.
@@ -362,7 +367,8 @@ reduce()\{
 \end{alltt}
 }
 
-TODO: Look into reduce check 1 and fix if necessary.
+TODO: Look into edgesLevel.\\
+TODO: Look into necessity of reduce check.
 
 TODO: Explain changes.\\
 -Replaced reducedStore by resultStore.\\
@@ -529,6 +535,8 @@ Also note that this optimization is not only useful in case we have numereous no
 \subsubsection{Reduction}
 Finally, we can also gain something at the other end. The 'reduce check' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
 
+TODO: Look into this. May need to be changed or removed.
+
 \subsection{GSS}
 \label{sec:prefixSharing}
 
@@ -621,6 +629,8 @@ input = $a\,*\,50$ to $a\,*\,500$
 
 Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible). Regardless of this, it clearly demonstates (close to) cubic worst-case behaviour, as expected (close to, since we can't eliminate JVM interference completely). Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
+TODO: Change graph lines, so they are distict when printed in black an white.
+
 \subsection{LL and LR performance}
 
 TODO: Show linear performance on LL and LR grammars.\\
@@ -645,6 +655,8 @@ TODO: Highlight differences between different kinds of factoring.
 \includegraphics[scale=0.5]{grammar-factoring.png}
 \caption{Grammar factoring related parse time scaling; without look-ahead.}
 \end{figure}
+
+TODO: Change graph lines, so they are distict when printed in black an white.
 
 \section{Prototype}
 
