@@ -9,7 +9,7 @@
 \usepackage{ae,aecompl}
 
 %opening
-\title{Generalized Top Down Parsing In Cubic Time}
+\title{General Top Down Parsing In Cubic Time}
 \author{Arnold Lankamp}
 
 \begin{document}
@@ -40,11 +40,11 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
  \item Low constant overhead.
 \end{itemize}
-We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation).
+We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation ;-)).
 
 TODO: Motivation.\\
 -Easier to comprehend, since it's top-down; which is more in-line with human thinking. (Why do we want this?)\\
--Top-down is considered to be too slow in general, so it's fairly unpopular.
+-Top-down is considered to be too slow in general (usually uses backtracking, which doesn't scale well; additionally non-left-factored grammar don't perform well with this), so it's fairly unpopular.
 
 \section{Recognizer}
 
@@ -119,7 +119,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Additionally we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Additionally we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
 {\small
 \begin{verbatim}
@@ -129,9 +129,7 @@ reduce(){
       for(edgeLevel <- node.edgesPerLevel){
         if(reducedStore.notContains(edgeLevel.getOne())){
           for(edges <- edgeLevel){
-            if(toReduceSet.notContains(parent)){ // Sharing (reduceCheck)
-              toReduceSet.add(parent);
-            }
+            toReduceSet.add(parent);
           }
           
           reducedStore.add(node);
@@ -152,14 +150,13 @@ reduce(){
 \end{verbatim}
 }
 
-This is the reduce loop. It will iterate until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
+This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
+
+The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if the nodes the edges point to have been reduced yet or not. If a node hasn't been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we don't. This works since every node containing a non-terminal of the same sort always has exactly the same parents in the same level. Note that for the recognizer this behaviour is not a necessity, but an optimization (Which improves performance by a factor between one and the number of non-terminals in the grammar). However for the parser this behaviour is required to achieve proper sharing in the resulting trees (in an uncomplicated and fast way).
 
 The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the start position of the node and the second layer by the sort name of the non-terminal in the node. Since the recognizer algorithm assumes it is level synchronized, the {\bf reducedStore} can contain a variant for every non-terminal for each possible substrings up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have of haven't been reduced yet.
 
 Note that the first layer of the {\bf reducedStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
-
-TODO: Look into edgesLevel.\\
-TODO: Look into necessity of reduce check.
 
 \subsection{Correctness}
 
@@ -343,9 +340,7 @@ reduce()\{
         \}else\{
           result = createResult(edgesLevel.getOne());
           for(edges <- edgesLevel)\{
-            if(toReduceSet.notContains(parent))\{ // Sharing (reduceCheck)
-              toReduceSet.add(parent);
-            \}
+            toReduceSet.add(parent);
           \}
         \}
         result.
@@ -439,7 +434,8 @@ In the table above we can see how the different components in the parse forest i
 
 Note however that GSS prefix-sharing was enabled while gathering the statistics for this example (see section \ref{sec:prefixSharing}). Without this optimization the number of prefixes would have been $50\%$ higher and the number of nodes $2/3$ higher.
 
-TODO: Convert to $S ::= SSS | SS | a$.
+TODO: Convert to $S ::= SSS | SS | a$.\\
+TODO: Check data again, since it seems off.
 
 \section{Extended capabilities}
 
@@ -531,11 +527,6 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
 Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. The main benefit is, that this optimization lessens the need for the left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set to edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
-
-\subsubsection{Reduction}
-Finally, we can also gain something at the other end. The 'reduce check' check on nodes can be eliminated. Since every GSS node of the same 'sort' always has exactly the same children if they are in the same level, it is sufficient to initially just follow the first edge in an edge set. In case the node this edge points to has already been reduced in this level, nothing needs to be done (except record the alternative, in case we're parsing and not just recognizing); otherwise all other edges need to be followed as normally would have been the case. Since this guarantees a node can never be queued for reduction more then once, we can remove the check. This improves performance by a factor between one and the number of non-terminals in the grammar.
-
-TODO: Look into this. May need to be changed or removed.
 
 \subsection{GSS}
 \label{sec:prefixSharing}
