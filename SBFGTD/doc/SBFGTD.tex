@@ -362,11 +362,9 @@ reduce()\{
 \end{alltt}
 }
 
-TODO: Look into edgesLevel.\\
-TODO: Look into necessity of reduce check.
-
 TODO: Explain changes.\\
 -Replaced reducedStore by resultStore.\\
+--Edge levels = one result per level.\\
 -Update prefixes.\\
 --Hidden right nullable handling.\\
 -ResultStore.get() = sort + start location.
@@ -398,44 +396,39 @@ Optionally it is possible to output a flattened version of the parse forest at t
 We've already theoreticly proven that the parse forest will be $O(N^3)$ in the worst-case. In this section we will show that in practice this is indeed the case.
 
 Here is an overview of the parse forest's statistics for the following grammar:\\
-$S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
+$S\,::=\,SSS\,|\,SS\,|\,a$\\
 input = $a * 1$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
 \begin{table}[H]
 \centering
-\begin{tabular}{ | p{6em} | p{4em} | p{5em} | p{4em} | p{5em} | }
+\begin{tabular}{ | p{6em} | p{4em} | p{4em} | p{4em} | }
   \hline
-  Input length & Results & Prefix sets & Nodes & Nodes / $N^3$ \\
+  Input length & Results & Prefixes & Nodes \\
   \hline
-  0 & 1 & 2 & 2 & - \\
-  1 & 4 & 6 & 6 & 6 \\
-  2 & 7 & 12 & 13 & 1.625 \\
-  3 & 11 & 20 & 24 & 0.889 \\
-  4 & 16 & 30 & 40 & 0.625 \\
-  5 & 22 & 42 & 62 & 0.496 \\
-  6 & 29 & 56 & 91 & 0.421 \\
-  7 & 37 & 72 & 128 & 0.373 \\
-  8 & 46 & 90 & 174 & 0.34 \\
-  9 & 56 & 110 & 230 & 0.316 \\
-  10 & 67 & 132 & 297 & 0.297 \\
+  2 & 3 & 1 & 2 \\
+  3 & 6 & 4 & 8 \\
+  4 & 10 & 10 & 20 \\
+  5 & 15 & 20 & 40 \\
+  6 & 21 & 35 & 70 \\
+  7 & 28 & 56 & 102 \\
+  8 & 36 & 84 & 168 \\
+  9 & 45 & 120 & 240 \\
+  10 & 55 & 165 & 330 \\
   \hline
-  50 & 1327 & 2652 & 23477 & 0.188 \\
-  100 & 5152 & 10302 & 176952 & 0.177 \\
-  200 & 20302 & 40602 & 1373902 & 0.172 \\
-  300 & 45452 & 90902 & 4590852 & 0.170 \\
-  400 & 80602 & 161202 & 10827802 & 0.169 \\
-  500 & 125752 & 251502 & 21084752 & 0.169 \\
+  50 & 1275 & 20825 & 41650 \\
+  100 & 5050 & 166650 & 333300 \\
+  200 & 20100 & 1333300 & 2666600 \\
+  300 & 45150 & 4499950 & 8999900 \\
+  400 & 80200 & 10666600 & 21333200 \\
+  500 & 125250 & 20833250 & 41666500 \\
   \hline
 \end{tabular}
 \caption{Worst-case parse tree data}
 \end{table}
 
-In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N + 1$ for every extra character in the input string. The number of prefix sets scales in a similar way, although there are roughly twice as many of them in comparison to results, since both the second and the third $S$ in $SSS$ need a prefix. As can be observed, the number of nodes remains within cubic bounds for this worst-case example.
+In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N$ for every extra character in the input string. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
-Note however that GSS prefix-sharing was enabled while gathering the statistics for this example (see section \ref{sec:prefixSharing}). Without this optimization the number of prefixes would have been $50\%$ higher and the number of nodes $2/3$ higher.
-
-TODO: Convert to $S ::= SSS | SS | a$.\\
-TODO: Check data again, since it seems off.
+Note however that GSS prefix-sharing was enabled while gathering the statistics for this example (see section \ref{sec:prefixSharing}). Without this optimization the number of prefixes and nodes would have been higher.
 
 \section{Extended capabilities}
 

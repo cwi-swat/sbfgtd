@@ -147,7 +147,7 @@ S5-6 -> S6-7
 2
 Results: 3
 Prefixes: 1
-Node: 3
+Node: 2
 
 3
 Results: 6
@@ -157,84 +157,84 @@ Node: 8
 4
 Results: 10
 Prefixes: 10
-Node: 18
+Node: 20
 
 5
 Results: 15
 Prefixes: 20
-Node: 35
+Node: 40
 
 6
 Results: 21
 Prefixes: 35
-Node: 61
+Node: 70
 
 7
 Results: 28
 Prefixes: 56
-Node: 98
+Node: 102
 
 8
 Results: 36
 Prefixes: 84
-Node: 148
+Node: 168
 
 9
 Results: 45
 Prefixes: 120
-Node: 213
+Node: 240
 
 10
 Results: 55
 Prefixes: 165
-Node: 295
+Node: 330
 
 50
 Results: 1275
 Prefixes: 20825
-Node: 40475
+Node: 41650
 
 100
 Results: 5050
 Prefixes: 166650
-Node: 328450
+Node: 333300
 
 150
 Results: 11325
 Prefixes: 562475
-Node: 1113925
+Node: 1124950
 
 200
 Results: 20100
 Prefixes: 1333300
-Node: 2646900
+Node: 2666600
 
 250
 Results: 31375
 Prefixes: 2604125
-Node: 5177375
+Node: 5208250
 
 300
 Results: 45150
 Prefixes: 4499950
-Node: 8955350
+Node: 8999900
 
 350
 Results: 61425
 Prefixes: 7145775
-Node: 14230825
+Node: 14291550
 
 400
 Results: 80200
 Prefixes: 10666600
-Node: 21253800
+Node: 21333200
 
 450
 Results: 101475
 Prefixes: 15187425
-Node: 30274275
+Node: 30374850
 
 500
 Results: 125250
 Prefixes: 20833250
-Node: 41542250
+Node: 41666500
