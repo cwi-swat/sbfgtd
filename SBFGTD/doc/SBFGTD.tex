@@ -9,7 +9,7 @@
 \usepackage{ae,aecompl}
 
 %opening
-\title{General Top Down Parsing In Cubic Time}
+\title{Context Free General Top Down Parsing In Cubic Time}
 \author{Arnold Lankamp}
 
 \begin{document}
@@ -18,9 +18,9 @@
 
 \begin{abstract}
 
-In this article we will describe our general top down parsing algorithm. Since it's top-down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
+In this article we will describe our general top down parsing algorithm. Since it's top-down it will be easier for a human to comprehend. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
 
-TODO: We need some more text here.
+TODO: Rewrite this stuff and add some more text here.
 
 \end{abstract}
 
@@ -432,7 +432,7 @@ Note that GSS prefix-sharing was enabled while gathering the statistics for this
 
 \section{Extended capabilities}
 
-To improve the usefulness of the parser on real grammar a few additional features were added. Namely support for lists, optionals and certain non-context-free features is added. In this chapter we will discuss their implementation.
+To improve the usefulness of the parser on real grammar a few additional features were added. Namely support for lists, optionals and location related features is added. In this chapter we will discuss their implementation.
 
 \subsection{Lists}
 
@@ -464,7 +464,7 @@ Similar to how lists are implemented, there are also specialized GSS nodes for l
  \item End-of-line
  \item At-column($X$); where $X$ indicates the column number
 \end{enumerate}
-Basically these are epsilons that only match when we are at a specific location in the input. So they don't consume input and they are not context free. However they can be useful when parsing certain languages nonetheless.
+Basically these are epsilons that only match when we are at a specific location in the input. So they don't consume input and act more like filters then anything else. They can be very useful when parsing certain languages.
 
 \section{Optimizations}
 
