@@ -161,7 +161,8 @@ Note that the first layer of the {\bf reducedStore} needs to be implemented as a
 \subsection{Correctness}
 
 TODO: Prove.\\
--Conceptually easy to get your head around.\\
+-Conceptually fairly easy to get your head around.\\
+-Breadth-first is required for correctness.\\
 -Discuss terminalization of left-recursive rules.
 
 \subsection{From grammar to code}
@@ -385,7 +386,7 @@ TODO: Prove.\\
 -Hidden right recursion is problematic, but handled correctly by our implementation; the rest is fairly obvious.
 
 \subsection{Worst-case complexity}
-Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to, to improve efficiency; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
 
 \subsubsection{Flattening}
 Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally this parse forest will be unbound polynomial in size in the worst-case. In practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We'll discuss filtering later on in this document.
@@ -395,7 +396,7 @@ We've already theoreticly proven that the parse forest will be $O(N^3)$ in the w
 
 Here is an overview of the parse forest's statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
-input = $a * 1$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
+input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
 \begin{table}[H]
 \centering
@@ -542,9 +543,9 @@ Reject filtering is intended for the removal of trees that are not considered to
 
 Any alternative of a production can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
 
-Reject alternatives can't be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A\,|\,B,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,A(r)\,|\,a$. The reject edges are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edge from $A$ to $B$ first and reject $B$; since $B$ is rejected it won't be reduced, so $A$ won't be rejected as we don't follow the edge from $B$ to $A$ and we end up with $S(A(a))$. On the other hand the opposite may happen and we'd end up with $S(B(a))$. So in practice it may, or may not do what you intended.
+Reject alternatives can't be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S ::= A(r) | a, A ::= B(r) | a, B ::= a$. The reject edges are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edges from $a$ to $A$ and then from $A(r)$ to $S$. This will cause $S$ to be rejected, failing the parse. On the other hand, if we would have followed the edge from $a$ to $B$ first and then from $B(r)$ to $A$ we would end up with a successful parse, since the alternative $S ::= A(r)$ gets rejected, preventing any of its edges from being followed. So if one writes a grammar to contains nested rejects it may, or may not do what was intended.
 
-TODO: Rejects can't be nested. Change example above to a non-cyclic one to support this.
+It is possible to resolve this problem, however this would require a second pass over the tree. Additionally it would prevent us from being able to remove parses that will be filtered in the end, before exploring them further. So it would impact performance in more then one way.
 
 \subsection{Priorities and associativity}
 
