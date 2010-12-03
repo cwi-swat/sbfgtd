@@ -18,7 +18,7 @@
 
 \begin{abstract}
 
-In this article we will describe our generalized top down parsing algorithm. Since it's top-down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
+In this article we will describe our general top down parsing algorithm. Since it's top-down it will be easier for a human to understand. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
 
 TODO: We need some more text here.
 
@@ -40,11 +40,12 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
  \item Low constant overhead.
 \end{itemize}
-We call our parser, the Scannerless Binary Forest Generalized Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation ;-)).
 
-TODO: Motivation.\\
--Easier to comprehend, since it's top-down; which is more in-line with human thinking. (Why do we want this?)\\
--Top-down is considered to be too slow in general (usually uses backtracking, which doesn't scale well; additionally non-left-factored grammar don't perform well with this), so it's fairly unpopular.
+For out parser chose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage easier, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, like is necessary when generating parse tables.
+
+However, general top-down parsers do have the image of being slower then general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization.
+
+We call our parser, the Scannerless Binary Forest General Top Down Parser or SBFGTD (BF also means Bloody Fast, in case your wondering why it was put in the abbreviation ;-)).
 
 \section{Recognizer}
 
@@ -52,7 +53,7 @@ First we will discuss the algorithm for the recognizer, for simplicity's sake. F
 
 \subsection{GSS}
 
-As is common in generalized parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of GSS nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their 'parents' in the graph, information about its 'right neighbour' in the production and the location in the input string it is associated with.
+As is common in general parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of GSS nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their 'parents' in the graph, information about its 'right neighbour' in the production and the location in the input string it is associated with.
 
 \subsection{Basic algorithm}
 
@@ -614,8 +615,6 @@ input = $a\,*\,50$ to $a\,*\,500$
 
 Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible). Regardless of this, it clearly demonstates (close to) cubic worst-case behaviour, as expected (close to, since we can't eliminate JVM interference completely). Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
-TODO: Change graph lines, so they are distict when printed in black an white.
-
 \subsection{LL and LR performance}
 
 TODO: Show linear performance on LL and LR grammars.\\
@@ -640,8 +639,6 @@ TODO: Highlight differences between different kinds of factoring.
 \includegraphics[scale=0.5]{grammar-factoring.png}
 \caption{Grammar factoring related parse time scaling; without look-ahead.}
 \end{figure}
-
-TODO: Change graph lines, so they are distict when printed in black an white.
 
 \section{Prototype}
 
