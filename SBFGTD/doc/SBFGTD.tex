@@ -552,6 +552,8 @@ Priorities and associativity restrictions are implemented as 'don't nest' relati
 
 The current implementation handles priority and associativity filtering completely at parse time. While reducing it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it's stored in a result node that is identified by the sort name of the non-terminal of the node the edge points to and the key that indicates which other non-terminals with the same sort name have the same set of 'don't nest' relations. This is done to preserve sharing in the resulting tree. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here $.E + E$ and $.E - E$ would share the same result nodes while parsing, just as $E+.E$ and $E-.E$, since their 'don't nest' relations are identical.
 
+The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance.
+
 \subsection{Actions}
 
 Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities (like C typedefs) or filter alternatives that can't be disambiguated using priorities. I won't go into detail about this feature, since it's not an integral part of the parser, but more like a post-parse filter.
@@ -646,7 +648,7 @@ TODO: Write chapter introduction.
 
 \subsection{Design}
 
-TODO: Write.
+TODO: Write.\\
 -Core.\\
 -Stack.\\
 --Stack nodes.\\
@@ -669,6 +671,11 @@ TODO: Write.\\
 
 \section{References}
 
-TODO: Find some, so we can relate it to other stuff. Not basing anything on existing work makes this hard ....
+TODO: Find some, so we can relate it to other stuff. Not basing anything on existing work makes this hard ....\\
+-Earley?\\
+-GLL?\\
+-SPPF?\\
+-LL \& LR?\\
+-Pre-existing filtering techniques?
 
 \end{document}
