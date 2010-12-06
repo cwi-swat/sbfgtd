@@ -517,11 +517,9 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
  \item $.E+E$ $\Rightarrow$ $E$ edges += $.E+E$
  \item $.E-E$ $\Rightarrow$ $E$ edges += $.E-E$
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. The main benefit is, that this optimization lessens the need for the left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally, without sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. The main benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
-
-TODO: Reword edge count stuff (note w/o sharing $N^2$; worst-case lower for expected, not for non-first nodes).
 
 \subsection{GSS}
 \label{sec:prefixSharing}
