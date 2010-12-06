@@ -1,7 +1,7 @@
 digraph graphname{
-  "&epsilon;" -> "A*"
-  "A" -> "A*"
-  "A" -> "A" [style = "dotted"]
+  ".&epsilon;" -> ".A*"
+  ".A" -> ".A*"
+  ".A" -> ".A" [style = "dotted"]
   
-  {rank=min "A*"}
+  {rank=min ".A*"}
 }

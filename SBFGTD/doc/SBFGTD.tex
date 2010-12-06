@@ -41,7 +41,7 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Low constant overhead.
 \end{itemize}
 
-For out parser chose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage easier, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, like is necessary when generating parse tables.
+For out parser chose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables.
 
 However, general top-down parsers do have the image of being slower then general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization.
 
@@ -93,7 +93,7 @@ main(){
 \end{verbatim}
 }
 
-This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the 'start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This check is necessary to be able to handle epsilons / nullables properly.
+This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the 'start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This behaviour is necessary to be able to handle epsilons / nullables properly.
 
 {\small
 \begin{verbatim}
@@ -120,7 +120,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input; if it does, it is added to the {\bf toReduceSet}. Otherwise, if the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Additionally we will need to add the edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input. If it matches, it is added to the {\bf toReduceSet};, otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its 'children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and won't be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
 {\small
 \begin{verbatim}
@@ -153,7 +153,7 @@ reduce(){
 
 This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's 'parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the 'next' node in the production and queue this 'next' node for expansion and transfer all edges from this node to the next. In case the 'next' node has already been scheduled for expansion we need to retrieve the equivalent 'next' node from the {\bf toExpandSet} and add the edges to that node instead.
 
-The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if the nodes the edges point to have been reduced yet or not. If a node hasn't been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we don't. This works since every node containing a non-terminal of the same sort always has exactly the same parents in the same level. Note that for the recognizer this behaviour is not a necessity, but an optimization (Which improves performance by a factor between one and the number of non-terminals in the grammar). However for the parser this behaviour is required to achieve proper sharing in the resulting trees (in an uncomplicated and fast way).
+The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if the node this edge points to has been reduced yet or not. If a node hasn't been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we don't. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same parents in the same level. Note that for the recognizer this behaviour is not a necessity, but an optimization (which improves reduce performance by a factor between one and the number of non-terminals in the grammar). However for the parser this behaviour is required to achieve proper sharing in the resulting trees (in an uncomplicated and fast way).
 
 The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the {\bf start position} of the node and the second layer by the sort name of the non-terminal in the node. Since the recognizer algorithm assumes it is level synchronized, the {\bf reducedStore} can contain a variant for every non-terminal for each possible substrings up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have of haven't been reduced yet.
 
@@ -168,9 +168,9 @@ TODO: Prove.\\
 
 \subsection{From grammar to code}
 
-Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal, which contains logic that informs the recognizer about what alternatives should be expected.
+Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
 
-Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists.
+Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you'd want to know why something doesn't match at a certain position, you can just go through it with a debugger to see what happens (your degree of success naturally depends on the amount of stacks that are alive at the moment you're trying to observe, but at least the possibility to do so exists).
 
 \subsection{Example traces}
 
@@ -271,7 +271,7 @@ S(A+(A(a),A(a),A(aa))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
 S(A+(A(a),A(aa),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
 S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \end{tabular}
-\caption{'Flattened' version of the parse forest}
+\caption{A flattened representation of the parse forest, listing all derivations.}
 \end{table}
 
 \subsection{Psuedocode}
@@ -302,7 +302,7 @@ main()\{
 \end{alltt}
 }
 
-The only things that need to be changed in the main function to transform the recognizer into a parser are the returning of the final result (if not in error) and replacing the {\bf reducedStore} by {\bf resultStore}. The {\bf resultStore} is similar to the {\bf reducedStore}, except that it also contains the result associated with the non-terminals in the store.
+The only things that need to be changed in the main function to transform the recognizer into a parser are the returning of the final result (if not in error) and replacing the {\bf reducedStore} by {\bf resultStore}. The {\bf resultStore} is similar to the {\bf reducedStore}, except that it also contains the result associated with the non-terminal sorts in the store.
 
 {\small
 \begin{alltt}
@@ -329,7 +329,7 @@ expand()\{
 \end{alltt}
 }
 
-The expansion code does not need to change in any way, since it doesn't deal with parse results.
+The expansion code does not need to change in any way, since it doesn't deal with parse results. But we still list it here for completeness.
 
 {\small
 \begin{alltt}
@@ -366,7 +366,7 @@ reduce()\{
 
 The reduce code does need to be modified. Basically two things need to be added.
 
-First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the sorts in the store.
+First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
 Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node.
 
@@ -379,7 +379,7 @@ Secondly we need to add {\bf prefixes} to the nodes that are being queued for ex
 \end{alltt}
 }
 
-We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered datastructure, where the first layer is indexed using the {\bf start position} and the second layer by the {\bf sort} non-terminal the node represents.
+We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and non-terminal {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered datastructure, where the first layer is indexed using the {\bf start position} of the node and the second layer by the non-terminal {\bf sort} the node represents.
 
 \subsection{Correctness}
 
@@ -426,13 +426,13 @@ input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \caption{Worst-case parse tree data}
 \end{table}
 
-In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N$ for every extra character in the input string. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
+In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. The number of results increases by $N$ for every extra character in the input string. The number of results is always equal to the number of different substrings in the input. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
 Note that GSS prefix-sharing was enabled while gathering the statistics for this example (see section \ref{sec:prefixSharing}). Without this optimization the number of prefixes and nodes would have been higher.
 
 \section{Extended capabilities}
 
-To improve the usefulness of the parser on real grammar a few additional features were added. Namely support for lists, optionals and location related features is added. In this chapter we will discuss their implementation.
+To improve the usefulness of the parser on real grammars a few additional features were added. Namely support for lists, optionals and location related features is added. In this chapter we will discuss how these features can be intergrated into our algorithm and implementation.
 
 \subsection{Lists}
 
@@ -445,7 +445,7 @@ Our approach involves special casing the handling of lists, by introducing addit
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{star-list.png}
-\caption{GSS representation of a expanded star-list; the solid arrows represent edges and the dotted arrows 'next pointers'.}
+\caption{GSS representation of a expanded star-list; the solid arrows represent edges and the dotted arrows 'next pointers' in the production.}
 \end{figure}
 
 These list children can be shared just like any other GSS node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
@@ -473,10 +473,10 @@ The basic algorithm is fairly straight forward and relatively simple to implemen
 \subsection{General}
 
 \subsubsection{Matching}
-A minor performance improvement can be made by matching on entire literals at once, instead of on characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
+A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
 
 \subsubsection{Look-ahead}
-A more obvious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by theoretical or practical constraints.
+A more obvious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we don't need to expect it. The number of characters we look ahead is not limited by any theoretical or practical constraints.
 
 \subsection{Edge related}
 
@@ -519,16 +519,16 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
 \end{enumerate}
 Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. The main benefit is, that this optimization lessens the need for the left-factoring of grammars. In absence of look-ahead filtering performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
-Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set to edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
+Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
+
+TODO: Reword edge count stuff (note w/o sharing $N^2$; worst-case lower for expected, not for non-first nodes).
 
 \subsection{GSS}
 \label{sec:prefixSharing}
 
 In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one 'next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be merged, regardless whether or not it already has been merged with another rule. This optimization ensures we can recognize and parse LR(k) grammars using just one stack, thus in linear time without any overhead.
 
-One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we won't elaborate on here) and opportunities to apply this optimization hardly ever occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we'd shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we'd also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
-
-TODO: Change stuff to items maybe?
+One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we won't elaborate on here) and opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we'd shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we'd also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \section{Filtering}
 
@@ -540,11 +540,11 @@ Follow restrictions work as a kind of look-ahead after the production; if the pr
 
 \subsection{Rejects}
 
-Reject filtering is intended for the removal of trees that are not considered to be correct at a certain location in the grammar. One could think of using it to filter alternatives for identifiers that match keywords, for example.
+Reject filtering is intended for the removal of trees that are not considered to be correct at a certain location in the grammar. One could think of using it for things like filtering alternatives for identifiers that match keywords in the language, for example.
 
-Any alternative of a production can be marked as reject. It this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
+Any alternative of a production can be marked as reject. If this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it's not completely done at parse time.
 
-Reject alternatives can't be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A(r)\,|\,a,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,a$. The reject edges are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edges from $.a$ to $.A$ and then from $.A(r)$ to $.S$. This will cause $S.$ to be rejected, failing the parse. On the other hand, if we would have followed the edge from $.a$ to $.B$ first and then from $.B(r)$ to $.A$ we would end up with a successful parse, since the alternative $S ::= A(r)$ gets rejected, preventing the edge from $.A(r)$ to $.S$ from being followed. So if one writes a grammar to contains nested rejects it may, or may not do what was intended.
+Reject alternatives can't be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A(r)\,|\,a,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,a$. The reject edges are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edges from $.a$ to $.A$ and then from $.A(r)$ to $.S$. This will cause $S.$ to be rejected, failing the parse. On the other hand, if we would have followed the edge from $.a$ to $.B$ first and then from $.B(r)$ to $.A$ we would end up with a successful parse, since $A$ gets rejected, preventing the edge from $.A(r)$ to $.S$ from being followed. So if one writes a grammar to contains nested rejects it may, or may not do what was intended.
 
 It is possible to resolve this problem, however this would require a second pass over the tree. Additionally it would prevent us from being able to remove parses that will be filtered in the end, before exploring them further. So it would impact performance in more then one way.
 
@@ -552,7 +552,7 @@ It is possible to resolve this problem, however this would require a second pass
 
 Priorities and associativity restrictions are implemented as 'don't nest' relations. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, this means that the production $E\,+\,E$ can't be a child of $E\,*\,E$ on either side of the production. $E\,::=\,E\,+\,E\,\{left\}$ on the other hand means that the production $E\,+\,E$ only can't be a child of itself on the right side of the production; similarly for $\{right\}$, but the other way around. If declared as $\{nonassoc\}$ it can't be nested on either side of itself.
 
-The current implementation handles priority and associativity filtering completely at parse time. While reducing it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it's stored in a result node that is identified by the sort name of the non-terminal of the node the edge points to and the key that indicates which other non-terminals with the same sort name have the same set of 'don't nest' relations. This is done to preserve sharing in the resulting tree. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here $.E + E$ and $.E - E$ would share the same result nodes while parsing, just as $E+.E$ and $E-.E$, since their 'don't nest' relations are identical.
+The current implementation handles priority and associativity filtering completely at parse time. While reducing, it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it's stored in a result node that is identified by the sort name of the non-terminal of the node the edge points to and the set of 'don't nest' relations associated with this node. This is because the result needs to be shared between all non-terminals with the same sort and 'don't nest' relations. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here $.E + E$ and $.E - E$ would share the same result nodes while parsing, just as $E+.E$ and $E-.E$, since their 'don't nest' relations are identical.
 
 The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance.
 
@@ -613,7 +613,7 @@ input = $a\,*\,50$ to $a\,*\,500$
 \caption{Worst-case recognizer and parser performance scaling.}
 \end{figure}
 
-Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible). Regardless of this, it clearly demonstates (close to) cubic worst-case behaviour, as expected (close to, since we can't eliminate JVM interference completely). Looking at the times, our implementation seems very efficient in worst-case scenarios.
+Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of increased memory footprint). Regardless of this, our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
 \subsection{LL and LR performance}
 
