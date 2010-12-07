@@ -36,9 +36,9 @@ If the abstract didn't catch your attention yet, here are some highlights:
  \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on LL(k) and LR(k) grammars.
  \item No significant performance hit for rules that are not left factored.
+ \item Low stack activity.
  \item Generating or hand crafting the recognizer / parser code is trivial.
  \item Parse traces are easy to follow; using a debugger to step through the parse process can actually be informative.
- \item Low constant overhead.
 \end{itemize}
 
 For out parser chose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables.
@@ -174,12 +174,7 @@ We'd end up with the following GSS:
 \end{figure}
 As you can see there a cycle was added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
-
-
-TODO: Prove.\\
--Conceptually fairly easy to get your head around.\\
--Breadth-first is required for correctness.\\
--Discuss terminalization of left-recursive rules.
+Another requirement of the algorithm, of which the reason may not be immidiately obivious, is that it needs to be level synchronized. We will demonstrate why it is more complicated to get the depth-first sibling of this algorithm working correctly, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we don't progress further; this node needs to be shared, since we shouldn't do duplicate work for it. However, if we stop now we will lose a derivation and (if we'd use a different grammar) potentially cause recognition to fail, since we then wouldn't reduce $S(S(aa),S(a),S(a))$ at this location. This problem could be solved by tracing forward through the production, gathering the missing derivation(s) and executing reductions where necessary. In our opinion this is to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility to this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We'll cover this in section \ref{sec:parserCorrectness}.
 
 \subsection{From grammar to code}
 
@@ -398,6 +393,7 @@ Secondly we need to add {\bf prefixes} to the nodes that are being queued for ex
 We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and non-terminal {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered datastructure, where the first layer is indexed using the {\bf start position} of the node and the second layer by the non-terminal {\bf sort} the node represents.
 
 \subsection{Correctness}
+\label{sec:parserCorrectness}
 
 TODO: Prove.\\
 -Hidden right recursion is problematic, but handled correctly by our implementation; the rest is fairly obvious.
