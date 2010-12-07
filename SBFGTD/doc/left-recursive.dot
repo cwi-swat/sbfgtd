@@ -1,0 +1,11 @@
+digraph graphname{
+  ".A" -> ".S"
+  ".A" -> ".Aa" [arrowhead=none,arrowtail=normal]
+  ".Aa" -> ".Aa"
+  ".a" -> ".A"
+  ".a" -> ".Aa"
+  
+  {rank=min ".S"}
+  {rank=same ".A" ".Aa"}
+  {rank=max ".a"}
+}
