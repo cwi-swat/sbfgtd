@@ -163,7 +163,7 @@ Note that the first layer of the {\bf reducedStore} needs to be implemented as a
 
 Proving something correct is complicated, so I'm not going to attempt that. Instead I'll go into detail on some special cases that deserve some attention.
 
-First of all, left recursion. Normal top-down parsers can't handle grammar rules containing left recursion. Because we introduce sharing into the GSS we automatically terminalize all these rules. For example, if we take the grammar:\\
+First of all, left recursion. Normal top-down parsers can't handle grammar rules containing left recursion. Because we introduce sharing into the GSS we automatically terminalize all these rules; fixing this issue. For example, if we take the grammar:\\
 $S ::= A$\\
 $A ::= Aa | a$\\
 We'd end up with the following GSS:
@@ -172,6 +172,8 @@ We'd end up with the following GSS:
 \includegraphics[scale=0.5]{left-recursive.png}
 \caption{GSS representation of a left-recursive grammar.}
 \end{figure}
+As you can see there a cycle was added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
+
 
 
 TODO: Prove.\\
@@ -215,6 +217,7 @@ input = $ab$
 \end{enumerate}
 
 \subsubsection{Left recursive}
+\label{sec:tracesLeftRecusive}
 $S\,::=\,A$\\
 $A\,::=\,Aa\,|\,a$\\
 input = $aaa$
