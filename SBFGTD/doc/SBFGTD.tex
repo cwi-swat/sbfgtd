@@ -18,9 +18,9 @@
 
 \begin{abstract}
 
-In this article we will describe our general top down parsing algorithm. Since it is top-down it will be easier for a human to comprehend. Additionally we will also demonstrate that, in terms of efficiency, our implementation performs excellent.
+In this article we will describe our general top down parsing algorithm. Our intent with this algorithm was to develop something that is both easy to understand and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to graps what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
 
-TODO: Rewrite this stuff and add some more text here.
+It sounds fairly ambitious, however in our opinion we nailed it. We created a general top-down parsing algorithm, that can compete with any other parsing algorithm out there in terms of performance.
 
 \end{abstract}
 
@@ -31,7 +31,7 @@ If the abstract did not catch your attention yet, here are some highlights:
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
-
+ 
  \item Worst-case cubic space and time bounds with respect to the length of the input string.
  \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on LL(k) and LR(k) grammars.
