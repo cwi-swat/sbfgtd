@@ -45,7 +45,7 @@ For out parser chose for a top down approach, as it is more in-line with human t
 
 However, general top-down parsers do have the image of being slower then general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization.
 
-We call our parser, the Scannerless Binary Forest General Top Down Parser or SBFGTD.
+We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
 \section{Recognizer}
 
@@ -591,11 +591,11 @@ Benchmarks were executed on a machine with the following specifications:
 \centering
 \begin{tabular}{ | p{6em} | p{9em} | }
  \hline
- CPU & Q6600 \\
+ CPU & Intel Q6600 \\
  Memory & 8 GB DDR-800 \\
  OS & Fedora Core 12 \\
  JRE & Sun 1.6.0\_13 (32-bit) \\
- JRE options & -Xmx1700m \\
+ JRE options & -Xmx1800m \\
  \hline
 \end{tabular}
 \end{table}
