@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -12,7 +12,7 @@ S ::= aO? | aA
 O ::= A
 A ::= a
 */
-public class Optional3 extends SBFGTD{
+public class Optional3 extends SGTDBF{
 	private final static AbstractStackNode LITERAL_a0 = new LiteralStackNode(0, 0, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a1 = new LiteralStackNode(1, 0, new char[]{'a'});
 	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 0, new char[]{'a'});

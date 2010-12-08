@@ -16,7 +16,7 @@ import gtd.util.RotatingQueue;
 
 import java.lang.reflect.Method;
 
-public class SBFGTD implements IGTD{
+public class SGTDBF implements IGTD{
 	private final char[] input;
 	
 	private final RotatingQueue<AbstractStackNode>[] todoLists;
@@ -40,7 +40,7 @@ public class SBFGTD implements IGTD{
 	
 	private final HashMap<String, Method> methodCache;
 	
-	public SBFGTD(char[] input){
+	public SGTDBF(char[] input){
 		super();
 		
 		this.input = input;

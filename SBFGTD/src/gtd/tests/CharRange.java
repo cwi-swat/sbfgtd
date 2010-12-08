@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharStackNode;
@@ -8,7 +8,7 @@ import gtd.stack.CharStackNode;
 /*
 S ::= [a-z]
 */
-public class CharRange extends SBFGTD{
+public class CharRange extends SGTDBF{
 	private final static AbstractStackNode CHAR_a0 = new CharStackNode(0, 0, "[a-z]", new char[][]{{'a','z'}}, new char[]{});
 	
 	public CharRange(char[] input){

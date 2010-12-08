@@ -3,13 +3,13 @@ package gtd.bench;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.ListStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
 
-public class NonLeftFactoredShared extends SBFGTD{
+public class NonLeftFactoredShared extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 2, "E");
 	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, 2, "E");

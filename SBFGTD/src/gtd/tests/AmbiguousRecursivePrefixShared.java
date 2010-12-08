@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -11,7 +11,7 @@ S ::= SSS | SS | a
 
 NOTE: This test, tests prefix sharing.
 */
-public class AmbiguousRecursivePrefixShared extends SBFGTD{
+public class AmbiguousRecursivePrefixShared extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, 2, "S");

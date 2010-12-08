@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -12,7 +12,7 @@ E ::= E + E | E * E | 1
 
 NOTE: This test, tests prefix sharing.
 */
-public class Ambiguous9 extends SBFGTD{
+public class Ambiguous9 extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E2 = new NonTerminalStackNode(2, 2, "E");

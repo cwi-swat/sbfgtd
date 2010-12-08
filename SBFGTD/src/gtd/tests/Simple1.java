@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -10,7 +10,7 @@ import gtd.stack.NonTerminalStackNode;
 S ::= Ab
 A ::= aa
 */
-public class Simple1 extends SBFGTD{
+public class Simple1 extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
 	private final static AbstractStackNode LITERAL_aa1 = new LiteralStackNode(1, 0, new char[]{'a','a'});
 	private final static AbstractStackNode LITERAL_b2 = new LiteralStackNode(2, 1, new char[]{'b'});

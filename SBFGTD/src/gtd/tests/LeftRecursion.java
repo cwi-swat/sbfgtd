@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -10,7 +10,7 @@ import gtd.stack.NonTerminalStackNode;
 S ::= A
 A ::= Aa | a
 */
-public class LeftRecursion extends SBFGTD{
+public class LeftRecursion extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
 	private final static AbstractStackNode NONTERMINAL_A1 = new NonTerminalStackNode(1, 0, "A");
 	private final static AbstractStackNode LITERAL_a2 = new LiteralStackNode(2, 1, new char[]{'a'});

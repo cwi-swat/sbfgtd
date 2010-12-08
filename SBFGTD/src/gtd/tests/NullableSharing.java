@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -11,7 +11,7 @@ import gtd.stack.NonTerminalStackNode;
 * N ::= A
 * A ::= epsilon
 */
-public class NullableSharing extends SBFGTD{
+public class NullableSharing extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
 	private final static AbstractStackNode NONTERMINAL_N1 = new NonTerminalStackNode(1, 0, "N");
 	private final static AbstractStackNode NONTERMINAL_N2 = new NonTerminalStackNode(2, 1, "N");

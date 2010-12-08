@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.ListStackNode;
@@ -12,7 +12,7 @@ import gtd.stack.NonTerminalStackNode;
 * A ::= a
 * B ::= b
 */
-public class ListOverlap extends SBFGTD{
+public class ListOverlap extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
 	private final static AbstractStackNode NONTERMINAL_B1 = new NonTerminalStackNode(1, 0, "B");
 	private final static AbstractStackNode NONTERMINAL_A2 = new NonTerminalStackNode(2, 0, "A");

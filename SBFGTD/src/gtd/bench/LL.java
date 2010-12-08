@@ -1,6 +1,6 @@
 package gtd.bench;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
@@ -8,7 +8,7 @@ import gtd.stack.NonTerminalStackNode;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
-public class LL extends SBFGTD{
+public class LL extends SGTDBF{
 	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(0, 0, "a".toCharArray());
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode LITERAL_2 = new LiteralStackNode(2, 2, "b".toCharArray());

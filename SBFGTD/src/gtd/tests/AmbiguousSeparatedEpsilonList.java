@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -13,7 +13,7 @@ import gtd.stack.SeparatedListStackNode;
 * A ::= a | epsilon
 * SEP ::= epsilon
 */
-public class AmbiguousSeparatedEpsilonList extends SBFGTD{
+public class AmbiguousSeparatedEpsilonList extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_A0 = new NonTerminalStackNode(0, 0, "A");
 	private final static AbstractStackNode NONTERMINAL_SEP1 = new NonTerminalStackNode(1, 1, "SEP");
 	private final static AbstractStackNode LIST2 = new SeparatedListStackNode(2, 0, NONTERMINAL_A0, new AbstractStackNode[]{NONTERMINAL_SEP1}, "(ASEP)+", true);

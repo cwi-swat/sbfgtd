@@ -1,6 +1,6 @@
 package gtd.tests;
 
-import gtd.SBFGTD;
+import gtd.SGTDBF;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CaseInsensitiveLiteralStackNode;
@@ -10,7 +10,7 @@ S ::= ci(bla)
 
 NOTE: ci(*) means whatever * represents is Case Insensitive.
 */
-public class CILiteral extends SBFGTD{
+public class CILiteral extends SGTDBF{
 	private final static AbstractStackNode LITERAL_bla0 = new CaseInsensitiveLiteralStackNode(0, 0, new char[]{'b','l','a'});
 	
 	public CILiteral(char[] input){
