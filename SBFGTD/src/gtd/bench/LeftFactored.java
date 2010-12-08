@@ -42,7 +42,7 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E57 = new NonTerminalStackNode(57, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E59 = new NonTerminalStackNode(59, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
-	private final static AbstractStackNode NONTERMINAL_E100000 = new NonTerminalStackNode(100000, 1, "E");
+	private final static AbstractStackNode NONTERMINAL_Ep100000 = new NonTerminalStackNode(100000, 1, "Ep");
 	
 	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(100, 0, "@".toCharArray());
 	private final static AbstractStackNode LITERAL_1 = new LiteralStackNode(101, 0, "-".toCharArray());
@@ -76,9 +76,7 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode LITERAL_29 = new LiteralStackNode(129, 0, "#".toCharArray());
 	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, 0, "1".toCharArray());
 	
-	private final static AbstractStackNode NONTERMINAL_A999 = new NonTerminalStackNode(999, 0, "A");
-	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_A999, "A+", true);
-	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 0, new char[]{'a'});
+	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
 	
 	private LeftFactored(char[] input){
 		super(input);
@@ -88,14 +86,13 @@ public class LeftFactored extends SGTDBF{
 		expect(LIST9999);
 	}
 	
-	public void A(){
-		expect(NONTERMINAL_E10000);
-		expect(LITERAL_a99999);
+	public void E(){
+		expect(NONTERMINAL_E0, NONTERMINAL_Ep100000);
+		
+		expect(LITERAL_1000);
 	}
 	
-	public void E(){
-		expect(NONTERMINAL_E0, NONTERMINAL_E100000);
-		
+	public void Ep(){
 		expect(LITERAL_0, NONTERMINAL_E1);
 		expect(LITERAL_1, NONTERMINAL_E3);
 		expect(LITERAL_2, NONTERMINAL_E5);
@@ -126,8 +123,6 @@ public class LeftFactored extends SGTDBF{
 		expect(LITERAL_27, NONTERMINAL_E55);
 		expect(LITERAL_28, NONTERMINAL_E57);
 		expect(LITERAL_29, NONTERMINAL_E59);
-		
-		expect(LITERAL_1000);
 	}
 	
 	private final static int ITERATIONS = 3;
@@ -135,7 +130,7 @@ public class LeftFactored extends SGTDBF{
 	private static char[] createInput(int size){
 		char[] input = new char[size];
 		for(int i = size - 1; i >= 0; --i){
-			input[i] = 'a';
+			input[i] = '1';
 		}
 		return input;
 	}

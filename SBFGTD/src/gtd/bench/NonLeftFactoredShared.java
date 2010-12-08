@@ -75,9 +75,7 @@ public class NonLeftFactoredShared extends SGTDBF{
 	private final static AbstractStackNode LITERAL_29 = new LiteralStackNode(129, 1, "#".toCharArray());
 	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, 0, "1".toCharArray());
 	
-	private final static AbstractStackNode NONTERMINAL_A999 = new NonTerminalStackNode(999, 0, "A");
-	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_A999, "A+", true);
-	private final static AbstractStackNode LITERAL_a99999 = new LiteralStackNode(99999, 0, new char[]{'a'});
+	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
 	
 	private NonLeftFactoredShared(char[] input){
 		super(input);
@@ -85,11 +83,6 @@ public class NonLeftFactoredShared extends SGTDBF{
 	
 	public void S(){
 		expect(LIST9999);
-	}
-	
-	public void A(){
-		expect(NONTERMINAL_E10000);
-		expect(LITERAL_a99999);
 	}
 	
 	public void E(){
@@ -132,7 +125,7 @@ public class NonLeftFactoredShared extends SGTDBF{
 	private static char[] createInput(int size){
 		char[] input = new char[size];
 		for(int i = size - 1; i >= 0; --i){
-			input[i] = 'a';
+			input[i] = '1';
 		}
 		return input;
 	}
