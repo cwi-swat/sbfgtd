@@ -479,11 +479,13 @@ public class SGTDBF implements IGTD{
 			expand();
 		}while(findStacksToReduce());
 		
-		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
-		if(levelResultStoreMap != null){
-			AbstractContainerNode result = levelResultStoreMap.get(start);
-			if(result != null){
-				return result; // Success.
+		if(location == input.length){
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
+			if(levelResultStoreMap != null){
+				AbstractContainerNode result = levelResultStoreMap.get(start);
+				if(result != null){
+					return result; // Success.
+				}
 			}
 		}
 		
