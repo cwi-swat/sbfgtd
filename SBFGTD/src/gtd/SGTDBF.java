@@ -228,12 +228,12 @@ public class SGTDBF implements IGTD{
 		if(node.hasNext()){
 			int nextDot = node.getDot() + 1;
 
-			AbstractStackNode[] prod = node.getNext();
+			AbstractStackNode[] prod = node.getProduction();
 			AbstractStackNode next = prod[nextDot];
-			next.setNext(prod);
+			next.setProduction(prod);
 			next = updateNextNode(next, node, result);
 			
-			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateNexts();
+			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
 				int nextNextDot = nextDot + 1;
 				
@@ -247,21 +247,20 @@ public class SGTDBF implements IGTD{
 				
 				for(int i = alternateProds.size() - 1; i >= 0; --i){
 					prod = alternateProds.get(i);
+					if(nextDot == prod.length) continue;
 					AbstractStackNode alternativeNext = prod[nextDot];
 					int alternativeNextId = alternativeNext.getId();
 					
 					AbstractStackNode sharedNext = sharedPrefixNext.findValue(alternativeNextId);
 					if(sharedNext == null){
-						alternativeNext.setNext(prod);
+						alternativeNext.setProduction(prod);
 						updateAlternativeNextNode(alternativeNext, edgesMap, prefixesMap);
 						
 						sharedPrefixNext.add(alternativeNextId, alternativeNext);
 					}else if(nextNextDot < prod.length){
-						if(sharedNext.hasNext()){
-							sharedNext.addNext(prod);
-						}else{
-							sharedNext.setNext(prod);
-						}
+						if(alternativeNext.isEndNode()) sharedNext.markAsEndNode();
+						
+						sharedNext.addProduction(prod);
 					}
 				}
 			}
@@ -356,13 +355,14 @@ public class SGTDBF implements IGTD{
 			int firstId = first.getId();
 			AbstractStackNode sharedNode;
 			if((sharedNode = sharedLastExpects.findValue(firstId)) != null){
-				sharedNode.addNext(expectedNodes);
+				sharedNode.addProduction(expectedNodes);
+				if(expectedNodes.length == 1) sharedNode.markAsEndNode();
 				continue;
 			}
 			
 			first = first.getCleanCopy();
 			first.setStartLocation(location);
-			first.setNext(expectedNodes);
+			first.setProduction(expectedNodes);
 			first.initEdges();
 			if(cachedEdges == null){
 				cachedEdges = first.addEdge(stackBeingWorkedOn);
@@ -461,6 +461,7 @@ public class SGTDBF implements IGTD{
 	public AbstractNode parse(String start){
 		// Initialize.
 		AbstractStackNode rootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
+		rootNode.setProduction(new AbstractStackNode[]{rootNode});
 		rootNode.initEdges();
 		rootNode.setStartLocation(0);
 		stacksToExpand.add(rootNode);

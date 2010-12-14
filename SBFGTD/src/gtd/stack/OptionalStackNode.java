@@ -27,9 +27,11 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	private AbstractStackNode[] generateChildren(AbstractStackNode optional){
 		AbstractStackNode child = optional.getCleanCopy();
+		child.setProduction(new AbstractStackNode[]{child});
 		child.markAsEndNode();
 		
 		AbstractStackNode empty = EMPTY.getCleanCopy();
+		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
 		return new AbstractStackNode[]{child, empty};

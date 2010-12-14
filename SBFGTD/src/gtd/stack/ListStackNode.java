@@ -29,13 +29,14 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		AbstractStackNode listNode = child.getCleanCopy();
 		listNode.markAsEndNode();
 		listNode.setStartLocation(startLocation);
-		listNode.setNext(new AbstractStackNode[]{listNode, listNode});
+		listNode.setProduction(new AbstractStackNode[]{listNode, listNode});
 		
 		if(isPlusList){
 			return new AbstractStackNode[]{listNode};
 		}
 		
 		AbstractStackNode empty = EMPTY.getCleanCopy();
+		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
 		return new AbstractStackNode[]{listNode, empty};
