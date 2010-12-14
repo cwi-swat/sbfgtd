@@ -1,21 +1,21 @@
-SDF2 (1 char look-ahead, no prefix sharing; parsing + filtering + flattening)
+SDF2 (1 char look-ahead; parsing + filtering + flattening)
 
 Sdf2.def
-Average: 82ms
-Lowest: 70ms
-220170 - 257914 character/sec
+Average: 77ms
+Lowest: 60ms
+234467 - 300900 character/sec
 
 Java.def
-Average: 138ms
-Lowest: 130ms
-224514 - 238330 character/sec
+Average: 133ms
+Lowest: 120ms
+232954 - 258191 character/sec
 
 C.def
-Average: 46ms
+Average: 43ms
 Lowest: 40ms
-229391 - 263800 character/sec
+245395 - 263800 character/sec
 
 ATerms.def
-Average: 12ms
+Average: 11ms
 Lowest: 10ms
-199416 - 239300 character/sec
+217545 - 239300 character/sec
