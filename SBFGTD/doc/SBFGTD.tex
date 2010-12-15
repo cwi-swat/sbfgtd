@@ -681,11 +681,11 @@ To validate our algorithm we made a parser implementation in Java. In this chapt
 \subsection{Design}
 
 TODO: Write.\\
--Core.\\
--Stack.\\
---Stack nodes.\\
--Result.\\
---Result nodes.
+1. Core.\\
+2. Stack.\\
+2.1. Stack nodes.\\
+3. Result.\\
+3.1. Result nodes.
 
 \subsection{Implementation}
 
@@ -693,7 +693,16 @@ TODO: Write.
 
 \section{Future work}
 
-TODO: Hmm, I will have to think about this one, I am kind of done.
+TODO: Write.\\
+1. Matching can be handled more efficiently.\\
+2. Prefix sharing can be implemented more efficiently by moving more logic to the generator and modifying the implementation slightly.\\
+3. We can extract information from the generated code to build and cache a table with `sort -> (alteratives + look-aheads)' mappings instead of calling methods, handling look-ahead and rebuilding stuff all the time.\\
+3.1. Prefix sharing can be done in a better way; the parser can compute it while building the mentioned table.\\
+3.2. Nullable trees could be pre-computed or dynamically cached in this table.\\
+3.3. Priority / associativity filtering can be encoded in this table, giving a major performance boost.\\
+3.4. Some rejects can be statically computed and encoded in this table as `k' look-ahead things which dynamically prevent queueing for certain nodes (think of rejected keywords and such).
+
+NOTE: These are paritially algorithmic and partially implementation related improvements.
 
 \section{Conclusion}
 
