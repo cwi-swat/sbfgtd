@@ -248,6 +248,8 @@ As one can see, when expanding $.A$ for the second time (at 5), sharing is detec
 
 \subsection{Worst-case complexity}
 
+We are designing a parsing algorithm that is intented to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
+
 Since the GSS only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
 
 Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N^2)$ edges is associated with one reduction. The check whether or not each of the `parents' still needs to be reduced, is an operation that completes in $O(1)$ time. However we do need to visit the edge to this `parent' to be able to determine who this parent is. This happens $N$ times per edge at most. So each edge is visited $O(N^3)$ time at most.
@@ -408,6 +410,8 @@ Since the conversion of our recognizer to a parser is so trivial, the parser is 
 The reason for complications related to hidden right recursion is that multiple iterations within the same level are possible. This could cause results to `go missing'. The only thing that needs to be done to fix this, is to check whether or not the next node is the last node in the production and is a nullable with results, in case the current node is also a nullable. If this is the case we need to construct the necessary result nodes and add them to their corresponding parents. This is a fairly general description of how to solve it, since the best way to handle this issue may differ per implementation. All that is needed is that the implementor is aware of this issue and takes it under consideration.
 
 \subsection{Worst-case complexity}
+We already looked at the worst-case behaviour of the recognizer and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
+
 Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different nodes at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and memory usage in the general case.
 
 \subsubsection{Flattening}
@@ -514,7 +518,6 @@ First of all, by caching `expected children' for every type of node per level a 
 $S\,::=\,E$\\
 $E\,::=\,E + E\,|\,E - E$\\
 The expansion at the first level would look like this:
-\pagebreak
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -585,7 +588,7 @@ The current implementation handles priority and associativity filtering complete
 
 The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance.
 
-There is a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{edgeVisitOptimization}, since we now always need to visit each of the node's outgoing edges at every reduction to check whether or not the nesting is allowed. There is a tradeoff here and it will depend on the grammar whether or not the loss of this optimization can be compensated by what we gain by doing priority and associativity filtering at parse time, opposed to implementing it as a post-parse filter. In our opinion this should be the case for most 'real' grammars.
+There is a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{edgeVisitOptimization}, since we now always need to visit each of the node's outgoing edges at every reduction to check whether or not the nesting is allowed. There is a tradeoff here and it will depend on the grammar whether or not the loss of this optimization can be compensated by what we gain by doing priority and associativity filtering at parse time, opposed to implementing it as a post-parse filter. In our opinion this should be the case for most `real' grammars.
 
 \subsection{Actions}
 
@@ -668,7 +671,8 @@ The non-factored prefix-shared and the left-factored versions of the grammar per
 \subsection{LL and LR performance}
 
 TODO: Show linear performance on LL and LR grammars.\\
--Using realistic cases would be nice (Java, C, ...?).
+-Using realistic cases would be nice (Java, C, ...?).\\
+-SDF parse speed: 230K to 300K char/sec if filtering and flattening are included, 360K to 530K char/sec without filtering and flattening. (SGLR is about 1.6 times as slow in this case). (I estimate a C implementation of this parsing algorithm would get around 1M char/sec with filtering and well over 1.5M char/sec without filtering, on this particular grammar).
 
 \section{Prototype}
 
@@ -702,6 +706,7 @@ TODO: Find some, so we can relate it to other stuff. Not basing anything on exis
 -GLL?\\
 -SPPF?\\
 -LL \& LR?\\
+-GLR?\\
 -Pre-existing filtering techniques?
 
 \end{document}
