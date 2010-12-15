@@ -3,25 +3,25 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.CharNode;
 
-public final class CharStackNode extends AbstractStackNode implements IMatchableStackNode{
-	private final char character;
+public final class CharRangeStackNode extends AbstractStackNode implements IMatchableStackNode{
+	private final char[][] ranges;
 	
 	private final String production;
 	
 	private AbstractNode result;
 	
-	public CharStackNode(int id, int dot, String production, char character){
+	public CharRangeStackNode(int id, int dot, String production, char[][] ranges){
 		super(id, dot);
 		
 		this.production = production;
-		
-		this.character = character;
+
+		this.ranges = ranges;
 	}
 	
-	private CharStackNode(CharStackNode original){
+	private CharRangeStackNode(CharRangeStackNode original){
 		super(original);
 		
-		character = original.character;
+		ranges = original.ranges;
 		
 		production = original.production;
 	}
@@ -40,15 +40,18 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	
 	public boolean match(char[] input){
 		char next = input[startLocation];
-		if(next == character){
-			result = new CharNode(production, next);
-			return true;
+		for(int i = ranges.length - 1; i >= 0; --i){
+			char[] range = ranges[i];
+			if(next >= range[0] && next <= range[1]){
+				result = new CharNode(production, next);
+				return true;
+			}
 		}
 		return false;
 	}
 	
 	public AbstractStackNode getCleanCopy(){
-		return new CharStackNode(this);
+		return new CharRangeStackNode(this);
 	}
 	
 	public int getLength(){
