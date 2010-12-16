@@ -100,7 +100,7 @@ This is the main function of the recognizer. It starts with building the stacks 
 \begin{verbatim}
 expand(){
   while(node <- toExpandSet){
-    if(node.isTerminal()){
+    if(node.isTerminalOrEpsilon()){
       if(node.match(input)){
         toReduceSet.add(node);
       }
@@ -121,7 +121,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input. If it matches, it is added to the {\bf toReduceSet}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to the {\bf toReduceSet}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
 {\small
 \begin{verbatim}
@@ -327,7 +327,7 @@ The only things that need to be changed in the main function to transform the re
 \begin{alltt}
 expand()\{
   while(node <- toExpandSet)\{
-    if(node.isTerminal())\{
+    if(node.isTerminalOrEpsilon())\{
       if(node.match(input))\{
         toReduceSet.add(node);
       \}
