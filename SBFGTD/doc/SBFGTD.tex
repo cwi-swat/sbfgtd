@@ -18,7 +18,7 @@
 
 \begin{abstract}
 
-In this article we will describe our general top down parsing algorithm. Our intent with this algorithm was to develop something that is both easy to comprehend and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to grasp what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
+In this article we will describe our general top down parsing algorithm. Our intent with this algorithm is to develop something that is both easy to comprehend and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to grasp what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
 
 It sounds fairly ambitious, however we managed it. We created an easily understandable general top-down parsing algorithm, that can compete with any other parsing algorithm out there in terms of scalability.
 
@@ -41,9 +41,9 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Parse traces are easy to visualize.
 \end{itemize}
 
-For out parser chose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could.
+For our parsing algorithm we choose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could.
 
-However, general top-down parsers do have the image of being slower then general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization.
+However, general top-down parsers do have the image of being slower than general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization. Our algorithm and implementation do not suffer from any of these problems.
 
 We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
@@ -69,6 +69,7 @@ As is common in general parsing, we use a kind of Graph Structured Stack (GSS). 
  \item If the end of the input has been reached and we have at least one derivation for one of the start symbols we are successful; otherwise recognizing failed.
 \end{enumerate}
 
+\pagebreak
 \subsection{Pseudocode}
 
 {\small
@@ -122,7 +123,6 @@ expand(){
 
 This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal it needs to match the input. If it matches, it is added to the {\bf toReduceSet}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node.
 
-\pagebreak
 {\small
 \begin{verbatim}
 reduce(){
@@ -156,7 +156,7 @@ This is the reduce loop. It will iterate over the {\bf toReduceSet} until there 
 
 The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if the node this edge points to has been reduced yet or not. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same parents in the same level. Note that for the recognizer this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar). However for the parser this behaviour is required to achieve proper sharing in the resulting trees (in an uncomplicated and fast way).
 
-The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the {\bf start position} of the node and the second layer by the sort name of the non-terminal in the node. Since the recognizer algorithm assumes it is level synchronized, the {\bf reducedStore} can contain a variant for every non-terminal for each possible substrings up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have of have not been reduced yet.
+The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the {\bf start position} of the node and the second layer by the sort name of the non-terminal in the node. Since the recognizer algorithm assumes it is level synchronized, the {\bf reducedStore} can contain a variant for every non-terminal for each possible substring up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have or have not been reduced yet.
 
 Note that the first layer of the {\bf reducedStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
 
@@ -173,13 +173,13 @@ We would expand these rules in the following way:
 \includegraphics[scale=0.5]{left-recursive.png}
 \caption{GSS representation of a expanded left-recursive grammar.}
 \end{figure}
-As you can see there a cycle was added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
+As you can see a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
-Another requirement of the algorithm, of which the reason may not be immidiately obivious, is that it needs to be level synchronized. We will demonstrate why it is more complicated to get a depth-first sibling of this algorithm working correctly, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour. This problem could be solved by tracing forward through the production, gathering the missing derivation(s) and executing reductions where necessary. In our opinion this is to complicated and, above all, unnecessary. Besides that, it is also significantly slower, because of all the extra work involved. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility to this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
+Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why it is more complicated to get a depth-first sibling of this algorithm working correctly, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour. This problem could be solved by tracing forward through the production, gathering the missing derivation(s) and executing reductions where necessary. In our opinion this is to complicated and, above all, unnecessary. Besides that, it is also significantly slower, because of all the extra work involved. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility to this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
 
 \subsection{From grammar to code}
 
-Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or some kind of table like data structure. Basically it just needs to know what alternatives are associated with a each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
+Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
 
 Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens (your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, but at least the possibility to do so exists).
 
@@ -250,9 +250,9 @@ As one can see, when expanding $.A$ for the second time (at 5), sharing is detec
 
 We are designing a parsing algorithm that is intented to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
 
-Since the GSS only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
+Since the GSS only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, so there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
 
-Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N^2)$ edges is associated with one reduction. The check whether or not each of the `parents' still needs to be reduced, is an operation that completes in $O(1)$ time. However we do need to visit the edge to this `parent' to be able to determine who this parent is. This happens $N$ times per edge at most. So each edge is visited $O(N^3)$ time at most.
+Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N^2)$ edges is associated with one reduction. The check whether or not each of the parents still needs to be reduced, is an operation that completes in $O(1)$ time. However we do need to visit the edge to this parent to be able to determine who this parent is. This happens $N$ times per edge at most. So each edge is visited $O(N^3)$ time at most.
 
 This means that the algorithm remains within cubic time bounds in worst-case scenarios.
 
@@ -262,7 +262,7 @@ This means that the algorithm remains within cubic time bounds in worst-case sce
 
 To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic time and space bounds. We call it `deflattenized', for lack of a better description. While its intent is similar to binarization, its implementation is somewhat different.
 
-The parse forest consists of nodes. Every node in the forest contains a result, which represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contain one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you will get all alternatives for a this production at a certain location.
+The parse forest consists of nodes. Every node in the forest contains a result, which represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contains one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you will get all alternatives for this production at a certain location.
 
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
@@ -285,9 +285,9 @@ To show how we can obtain all possible derivations from this parse forest, we wi
 \begin{tabular}{ p{15em} p{15em} }
 Derivation & Forest path\\
 \hline
-S(A+(A(a),A(a),A(aa))) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
-S(A+(A(a),A(aa),A(a))) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
-S(A+(A(aa),A(a),A(a))) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
+S(A(a),A(a),A(aa)) & $A0$-$1$ $\leftarrow$ $A1$-$2$ $\leftarrow$ $A2$-$4$\\
+S(A(a),A(aa),A(a)) & $A0$-$1$ $\leftarrow$ $A1$-$3$ $\leftarrow$ $A3$-$4$\\
+S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \end{tabular}
 \caption{A flattened representation of the parse forest, listing all derivations.}
 \end{table}
