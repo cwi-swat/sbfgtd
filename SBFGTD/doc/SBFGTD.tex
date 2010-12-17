@@ -676,7 +676,11 @@ TODO: Show linear performance on LL and LR grammars.\\
 
 \section{Prototype}
 
-To validate our algorithm we made a parser implementation in Java. In this chapter we will discuss its overall design and implementation.
+The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm. By using this approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
+
+The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
+
+In this chapter we will give an overview of the final implementation of the mentioned prototype.
 
 \subsection{Design}
 
@@ -706,7 +710,7 @@ NOTE: These are paritially algorithmic and partially implementation related impr
 
 \section{Conclusion}
 
-In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a parsing algorithm that is both easy to comprehend and scales well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution.
+In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution.
 
 \section{References}
 
