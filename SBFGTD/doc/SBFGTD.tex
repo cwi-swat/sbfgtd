@@ -502,7 +502,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 \subsection{General}
 
 \subsubsection{Matching}
-A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity.
+A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along almost completely.
 
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead filtering. Simply by adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. The number of characters we look ahead is not limited by any theoretical or practical constraints.
@@ -676,7 +676,7 @@ TODO: Show linear performance on LL and LR grammars.\\
 
 \section{Prototype}
 
-The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm. By using this approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
+The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm, until it matched our requirements. By using this approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
 
 The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
