@@ -54,7 +54,7 @@ First we will discuss the algorithm for the recognizer, for simplicity's sake. F
 
 \subsection{GSS}
 
-As is common in general parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of GSS nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with.
+As is common in general parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of GSS nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with. Each stack node is unique for each identifier, location combination.
 
 \subsection{Basic algorithm}
 
