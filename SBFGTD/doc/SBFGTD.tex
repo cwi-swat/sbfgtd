@@ -36,6 +36,7 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on LL and LR grammars.
  \item No significant performance hit for rules that are not left factored.
+ \item No penalty for being scannerless.
  \item Low stack activity.
  \item Generating or hand crafting the recognizer / parser code is trivial.
  \item Parse traces are easy to visualize.
@@ -510,7 +511,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 \subsection{General}
 
 \subsubsection{Matching}
-A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along almost completely.
+A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely.
 
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead filtering. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. The number of characters we look ahead is not limited by any theoretical or practical constraints.
