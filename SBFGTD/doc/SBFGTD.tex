@@ -636,7 +636,7 @@ input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 \centering
 \begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
   \hline
-  Input chars & Recognize Time & Parse Time \\
+  Input chars & Recognize time & Parse time \\
   \hline
   50 & 4 & 6 \\
   100 & 18 & 36 \\
@@ -680,11 +680,33 @@ Note that the parser is about twice as slow on the non-factored version of the g
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. One of the reasons that the parser using the left-factored version of the grammar performs slightly better is that the refactoring removes all ambiguities from the grammar, giving it a minor advantage. Additionally, our implementation needs to do a little extra work to detect the sharing. Note however that it is possible to construct an implementation of our parsing algorithm that does not suffer from this overhead.
 
+\pagebreak
 \subsection{LL and LR performance}
 
 TODO: Show linear performance on LL and LR grammars.\\
--Using realistic cases would be nice (Java, C, ...?).\\
--SDF parse speed: 230K to 300K char/sec if filtering and flattening are included, 360K to 530K char/sec without filtering and flattening. (SGLR is about 1.6 times as slow in this case). (I estimate a C implementation of this parsing algorithm would get around 1M char/sec with filtering and well over 1.5M char/sec without filtering, on this particular grammar).
+TODO: Add text.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ | p{5em} | p{5em} | p{6em} | p{10em} |}
+  \hline
+  Filename & Input & Throughput & Throughput including\\
+   & characters & (char/sec) & filtering \& flattening\\
+   & & & (char/sec)\\
+  \hline
+  ATerm.def & 2393 & 341857 & 217545\\
+  C.def & 10552 & 363862 & 245395\\
+  SDF2.def & 18054 & 368448 & 234467\\
+  Java.def & 30983 & 360267 & 232954\\
+  \hline
+\end{tabular}
+\caption{Average parser throughput.}
+\end{table}
+
+-Note: SGLR is about 1.6 times as slow in this case (as a comparison).\\
+-I estimate a C implementation of this parsing algorithm would get around 1M char/sec with filtering and well over 1.5M char/sec without filtering, on this particular grammar.
+
+-Adding more cases would be nice (Java, C, ...?).
 
 \section{Prototype}
 
@@ -711,7 +733,6 @@ TODO: Write.
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We won't go into detail, but just list a number of ideas instead.
 
-\pagebreak
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
