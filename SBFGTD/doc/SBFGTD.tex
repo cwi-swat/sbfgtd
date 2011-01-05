@@ -166,7 +166,7 @@ Note that the first layer of the {\bf reducedStore} needs to be implemented as a
 In this section we will go into detail on some special cases that deserve some extra attention.
 
 \subsubsection{Left recursion}
-First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the GSS cyles will be introduced, causing us to automatically terminalize all these rules, preventing this undesirable behaviour from manifesting. By terminalizing we mean that each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
+First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the GSS cyles will be added, causing automatic terminalization of all these rules, preventing this undesirable behaviour from manifesting. By terminalization we mean that each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
 $S ::= A$\\
 $A ::= Aa\,|\,a$\\
 We would expand these rules in the following way:
