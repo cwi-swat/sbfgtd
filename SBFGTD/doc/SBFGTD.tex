@@ -476,7 +476,7 @@ List, separated lists and optionals are handled in a similar way, because in ess
 
 Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more GSS nodes to be able to parse the list.
 
-Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a GSS node with a kind of dynamicaly growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
+Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a GSS node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
 \begin{figure}[H]
 \centering
@@ -709,16 +709,21 @@ TODO: Write.
 
 \section{Future work}
 
-TODO: Write.\\
-1. Matching can be handled more efficiently.\\
-2. Prefix sharing can be implemented more efficiently by moving more logic to the generator and modifying the implementation slightly.\\
-3. We can extract information from the generated code to build and cache a table with `sort -> (alteratives + look-aheads)' mappings instead of calling methods, handling look-ahead and rebuilding stuff all the time.\\
-3.1. Prefix sharing can be done in a better way; the parser can compute it while building the mentioned table.\\
-3.2. Nullable trees could be pre-computed or dynamically cached in this table.\\
-3.3. Priority / associativity filtering can be encoded in this table, giving a major performance boost.\\
-3.4. Some rejects can be statically computed and encoded in this table as `k' look-ahead things which dynamically prevent queueing for certain nodes (think of rejected keywords and such).
+Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We won't go into detail, but just list a number of ideas instead.
 
-NOTE: These are paritially algorithmic and partially implementation related improvements.
+\pagebreak
+\begin{enumerate}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item Matching can be handled more efficiently (more bottom-up like, so we `touch' less terminals).
+ \item Prefix sharing can be implemented more efficiently by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
+ \item We can build and cache a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
+ \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency.
+ \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
+ \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
+\end{enumerate}
 
 \section{Conclusion}
 
