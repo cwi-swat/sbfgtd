@@ -192,7 +192,6 @@ Since the mapping between the original grammar and the code or table is one-on-o
 
 To illustrate how the recognizer works in action, we constructed some example traces using various grammars to give an impression.
 
-\pagebreak
 \subsubsection{Straight forward}
 First we will take a look at a simple non-ambiguous grammar:\\
 $S\,::=\,AB$\\
@@ -518,6 +517,9 @@ A minor performance improvement can be made by matching on entire literals at on
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead filtering. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. The number of characters we look ahead is not limited by any theoretical or practical constraints.
 
+\subsubsection{Breadth-first}
+Finally we would like to note that (eventhough it is mandatory for the correctness of our algorithm) a breadth-first general parsing algorithm, or breadth-first implementation of a general parsing algorithm is generally more efficient then a depth-first version. This is because recognizing / parsing can be approached in a level synchronized way, which enables the possibility of handling certain things more efficiently; this mainly has a positive effect on memory usage.
+
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
@@ -609,7 +611,7 @@ Each grammar rule can have a number of actions associated with it. These actions
 
 \section{Benchmarks}
 
-In this chapter we will have a look at the performance of the current implementation of the algorithm.
+In this chapter we will have a look at the performance of the current Java implementation of our algorithm.
 
 Benchmarks were executed on a machine with the following specifications:
 \begin{table}[H]
@@ -627,7 +629,6 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
-\pagebreak
 \subsection{Worst case}
 
 The obvious candidate for a benchmark is the following worst-case grammar:
@@ -682,12 +683,11 @@ Note that the parser is about twice as slow on the non-factored non-prefix-share
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. One of the reasons that the parser using the left-factored version of the grammar performs slightly better is that the refactoring removes all ambiguities from the grammar, giving it a minor advantage. Additionally, our implementation needs to do a little extra work to detect the sharing. Note however that it is possible to construct an implementation of our parsing algorithm that does not suffer from this overhead.
 
-\pagebreak
 \subsection{Realistic cases}
 
 Benchmarks on artificial grammars are nice for getting a point across or to indicate certain guarantees can be met, however they generally do not offer any insight about performance in realistic cases. Here we will list a number of statistics related to parsing actual source files.
 
-Note that, for now, we just list SDF2 files; a mildly ambiguous grammar definition format. In the future more results will be added for other languages.
+Note that, for now, we just list SDF2 files; a grammar definition format which is mildly ambiguous before filtering. In the future more results will be added for other languages.
 
 \begin{table}[H]
 \centering
@@ -706,15 +706,17 @@ Note that, for now, we just list SDF2 files; a mildly ambiguous grammar definiti
 \caption{Average parser throughput.}
 \end{table}
 
-Take into account that our current implementation is written in Java. If we would re-implement it in C, a three to five fold performance increase is to be expected. Putting our throughput around 1 million characters per second, while having all filters enabled, in the SDF2 case.
+One does have to take into account that our current implementation is written in Java. If we would re-implement it in C, a performance increase of at least three to five fold is to be expected. Putting our throughput at around 1 million characters per second, while having all filters enabled, in the SDF2 case.
 
-Compared to the parser we previously used, a C implementation of Scannerless GLR, we achieved a performance gain of roughly 40\% (i.e. our implementation parses the same file in 0.6 the amount of time).
+Regardless of this, compared to the parser we previously used, a C implementation of scannerless GLR, we achieved a performance gain of roughly 40\% (i.e. our implementation parses the same file in 0.6 the amount of time), in this specific case.
 
 \section{Prototype}
 
 The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm, until it matched our requirements. By using this approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
 
 The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
+
+Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes is harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
 \section{Future work}
 
@@ -732,6 +734,8 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
 \end{enumerate}
+
+Finally, it would be interesting to create a C implementation of our parsing algorithm, to be able to make a performance comparison with general parser implementations of other algorithms. We expect to do fairly well in such a comparison.
 
 \section{Conclusion}
 
