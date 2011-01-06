@@ -35,7 +35,7 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Worst-case cubic space and time bounds with respect to the length of the input string.
  \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on LL and LR grammars.
- \item No significant performance hit for rules that are not left factored.
+ \item No performance hit for rules that are not left factored.
  \item No penalty for being scannerless.
  \item Low stack activity.
  \item Generating or hand crafting the recognizer / parser code is trivial.
@@ -663,7 +663,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 \subsection{Grammar factoring}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored version, a left-factored version and a prefix-shared version. The original grammar is the following:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored non-prefix-shared version, a non-factored prefix-shared version and a left-factored version. The original grammar is the following:\\
 $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
@@ -676,7 +676,7 @@ It contains lots of left-recursion and is highly ambiguous; the input, on the ot
 \caption{Grammar factoring related parse time scaling; without look-ahead.}
 \end{figure}
 
-Note that the parser is about twice as slow on the non-factored version of the grammar. This is because both the number of GSS nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{sec:nodeExpansionOptimization}.
+Note that the parser is about twice as slow on the non-factored non-prefix-shared version of the grammar. This is because both the number of GSS nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{sec:nodeExpansionOptimization}.
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. One of the reasons that the parser using the left-factored version of the grammar performs slightly better is that the refactoring removes all ambiguities from the grammar, giving it a minor advantage. Additionally, our implementation needs to do a little extra work to detect the sharing. Note however that it is possible to construct an implementation of our parsing algorithm that does not suffer from this overhead.
 
