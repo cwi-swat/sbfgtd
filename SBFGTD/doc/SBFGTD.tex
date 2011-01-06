@@ -18,9 +18,9 @@
 
 \begin{abstract}
 
-In this article we will describe our general top down parsing algorithm. Our intent with this algorithm is to develop something that is both easy to comprehend and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to grasp what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
+In this article we will describe our general top-down parsing algorithm. Our intent with this algorithm is to develop something that is both easy to comprehend and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to grasp what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
 
-It sounds fairly ambitious, however we managed it. We created an easily understandable general top-down parsing algorithm, that can compete with any other general parsing algorithm out there in terms of scalability and performance.
+It sounds fairly ambitious, however we managed it. We created an easily understandable general parsing algorithm, that can compete with any other general parsing algorithm out there in terms of scalability and performance.
 
 \end{abstract}
 
@@ -42,7 +42,7 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Parse traces are easy to visualize.
 \end{itemize}
 
-For our parsing algorithm we choose for a top down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could.
+For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could.
 
 However, general top-down parsers do have the image of being slower than general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization. Our algorithm and implementation do not suffer from any of these problems.
 
@@ -216,7 +216,7 @@ input = $ab$
  \item reduce $S.$
  \item done
 \end{enumerate}
-This one is easy to follow and doesn't really need any additional explanation.
+This one is easy to follow and does not really need any additional explanation.
 
 \subsubsection{Left recursive}
 \label{sec:tracesLeftRecusive}
@@ -716,7 +716,7 @@ The main purpose of this project has always been to create a working, usable gen
 
 \section{Future work}
 
-Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We won't go into detail, but just list a number of ideas instead.
+Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
 
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
