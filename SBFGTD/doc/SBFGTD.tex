@@ -694,12 +694,12 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $100000$ character intervals.
 
-We compared our performance results with JavaCup, which was used in combination with JFlex. We chose for JavaCup, since it is one of the more widely known and used LALR parsers that is written in Java.
+We compared our performance results with JavaCup, which was used in combination with JFlex. We selected JavaCup, since it is one of the more widely known and used parser generators that produce LALR parsers in Java.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{vsLALR.png}
-\caption{A performance comparison with a LALR parser.}
+\caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
 As expected JavaCup performs a lot better. However only by a factor of three, which is fairly reasonable, all things considered.
