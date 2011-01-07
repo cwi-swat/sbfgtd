@@ -10,7 +10,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
 public class LeftFactored extends SGTDBF{
-	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E5 = new NonTerminalStackNode(5, 1, "E");
@@ -41,9 +40,6 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E55 = new NonTerminalStackNode(55, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E57 = new NonTerminalStackNode(57, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E59 = new NonTerminalStackNode(59, 1, "E");
-	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
-	private final static AbstractStackNode NONTERMINAL_Ep100000 = new NonTerminalStackNode(100000, 1, "Ep");
-	
 	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(100, 0, "@".toCharArray());
 	private final static AbstractStackNode LITERAL_1 = new LiteralStackNode(101, 0, "-".toCharArray());
 	private final static AbstractStackNode LITERAL_2 = new LiteralStackNode(102, 0, "_".toCharArray());
@@ -74,55 +70,93 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode LITERAL_27 = new LiteralStackNode(127, 0, "%".toCharArray());
 	private final static AbstractStackNode LITERAL_28 = new LiteralStackNode(128, 0, "$".toCharArray());
 	private final static AbstractStackNode LITERAL_29 = new LiteralStackNode(129, 0, "#".toCharArray());
-	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, 0, "1".toCharArray());
-	
+	private final static AbstractStackNode[] Ep_0E = new AbstractStackNode[]{LITERAL_0, NONTERMINAL_E1};
+	private final static AbstractStackNode[] Ep_1E = new AbstractStackNode[]{LITERAL_1, NONTERMINAL_E3};
+	private final static AbstractStackNode[] Ep_2E = new AbstractStackNode[]{LITERAL_2, NONTERMINAL_E5};
+	private final static AbstractStackNode[] Ep_3E = new AbstractStackNode[]{LITERAL_3, NONTERMINAL_E7};
+	private final static AbstractStackNode[] Ep_4E = new AbstractStackNode[]{LITERAL_4, NONTERMINAL_E9};
+	private final static AbstractStackNode[] Ep_5E = new AbstractStackNode[]{LITERAL_5, NONTERMINAL_E11};
+	private final static AbstractStackNode[] Ep_6E = new AbstractStackNode[]{LITERAL_6, NONTERMINAL_E13};
+	private final static AbstractStackNode[] Ep_7E = new AbstractStackNode[]{LITERAL_7, NONTERMINAL_E15};
+	private final static AbstractStackNode[] Ep_8E = new AbstractStackNode[]{LITERAL_8, NONTERMINAL_E17};
+	private final static AbstractStackNode[] Ep_9E = new AbstractStackNode[]{LITERAL_9, NONTERMINAL_E19};
+	private final static AbstractStackNode[] Ep_10E = new AbstractStackNode[]{LITERAL_10, NONTERMINAL_E21};
+	private final static AbstractStackNode[] Ep_11E = new AbstractStackNode[]{LITERAL_11, NONTERMINAL_E23};
+	private final static AbstractStackNode[] Ep_12E = new AbstractStackNode[]{LITERAL_12, NONTERMINAL_E25};
+	private final static AbstractStackNode[] Ep_13E = new AbstractStackNode[]{LITERAL_13, NONTERMINAL_E27};
+	private final static AbstractStackNode[] Ep_14E = new AbstractStackNode[]{LITERAL_14, NONTERMINAL_E29};
+	private final static AbstractStackNode[] Ep_15E = new AbstractStackNode[]{LITERAL_15, NONTERMINAL_E31};
+	private final static AbstractStackNode[] Ep_16E = new AbstractStackNode[]{LITERAL_16, NONTERMINAL_E33};
+	private final static AbstractStackNode[] Ep_17E = new AbstractStackNode[]{LITERAL_17, NONTERMINAL_E35};
+	private final static AbstractStackNode[] Ep_18E = new AbstractStackNode[]{LITERAL_18, NONTERMINAL_E37};
+	private final static AbstractStackNode[] Ep_19E = new AbstractStackNode[]{LITERAL_19, NONTERMINAL_E39};
+	private final static AbstractStackNode[] Ep_20E = new AbstractStackNode[]{LITERAL_20, NONTERMINAL_E41};
+	private final static AbstractStackNode[] Ep_21E = new AbstractStackNode[]{LITERAL_21, NONTERMINAL_E43};
+	private final static AbstractStackNode[] Ep_22E = new AbstractStackNode[]{LITERAL_22, NONTERMINAL_E45};
+	private final static AbstractStackNode[] Ep_23E = new AbstractStackNode[]{LITERAL_23, NONTERMINAL_E47};
+	private final static AbstractStackNode[] Ep_24E = new AbstractStackNode[]{LITERAL_24, NONTERMINAL_E49};
+	private final static AbstractStackNode[] Ep_25E = new AbstractStackNode[]{LITERAL_25, NONTERMINAL_E51};
+	private final static AbstractStackNode[] Ep_26E = new AbstractStackNode[]{LITERAL_26, NONTERMINAL_E53};
+	private final static AbstractStackNode[] Ep_27E = new AbstractStackNode[]{LITERAL_27, NONTERMINAL_E55};
+	private final static AbstractStackNode[] Ep_28E = new AbstractStackNode[]{LITERAL_28, NONTERMINAL_E57};
+	private final static AbstractStackNode[] Ep_29E = new AbstractStackNode[]{LITERAL_29, NONTERMINAL_E59};
+
+	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
+	private final static AbstractStackNode NONTERMINAL_Ep100000 = new NonTerminalStackNode(100000, 1, "Ep");
+	private final static AbstractStackNode[] E_EEp = new AbstractStackNode[]{NONTERMINAL_E0, NONTERMINAL_Ep100000};
+
+	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
+	private final static AbstractStackNode[] LST9999 = new AbstractStackNode[]{LIST9999};
+	
+	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, 0, "1".toCharArray());
+	private final static AbstractStackNode[] L1000 = new AbstractStackNode[]{LITERAL_1000};
 	
 	private LeftFactored(char[] input){
 		super(input);
 	}
 	
 	public void S(){
-		expect(LIST9999);
+		expect(LST9999);
 	}
 	
 	public void E(){
-		expect(NONTERMINAL_E0, NONTERMINAL_Ep100000);
+		expect(E_EEp);
 		
-		expect(LITERAL_1000);
+		expect(L1000);
 	}
 	
 	public void Ep(){
-		expect(LITERAL_0, NONTERMINAL_E1);
-		expect(LITERAL_1, NONTERMINAL_E3);
-		expect(LITERAL_2, NONTERMINAL_E5);
-		expect(LITERAL_3, NONTERMINAL_E7);
-		expect(LITERAL_4, NONTERMINAL_E9);
-		expect(LITERAL_5, NONTERMINAL_E11);
-		expect(LITERAL_6, NONTERMINAL_E13);
-		expect(LITERAL_7, NONTERMINAL_E15);
-		expect(LITERAL_8, NONTERMINAL_E17);
-		expect(LITERAL_9, NONTERMINAL_E19);
-		expect(LITERAL_10, NONTERMINAL_E21);
-		expect(LITERAL_11, NONTERMINAL_E23);
-		expect(LITERAL_12, NONTERMINAL_E25);
-		expect(LITERAL_13, NONTERMINAL_E27);
-		expect(LITERAL_14, NONTERMINAL_E29);
-		expect(LITERAL_15, NONTERMINAL_E31);
-		expect(LITERAL_16, NONTERMINAL_E33);
-		expect(LITERAL_17, NONTERMINAL_E35);
-		expect(LITERAL_18, NONTERMINAL_E37);
-		expect(LITERAL_19, NONTERMINAL_E39);
-		expect(LITERAL_20, NONTERMINAL_E41);
-		expect(LITERAL_21, NONTERMINAL_E43);
-		expect(LITERAL_22, NONTERMINAL_E45);
-		expect(LITERAL_23, NONTERMINAL_E47);
-		expect(LITERAL_24, NONTERMINAL_E49);
-		expect(LITERAL_25, NONTERMINAL_E51);
-		expect(LITERAL_26, NONTERMINAL_E53);
-		expect(LITERAL_27, NONTERMINAL_E55);
-		expect(LITERAL_28, NONTERMINAL_E57);
-		expect(LITERAL_29, NONTERMINAL_E59);
+		expect(Ep_0E);
+		expect(Ep_1E);
+		expect(Ep_2E);
+		expect(Ep_3E);
+		expect(Ep_4E);
+		expect(Ep_5E);
+		expect(Ep_6E);
+		expect(Ep_7E);
+		expect(Ep_8E);
+		expect(Ep_9E);
+		expect(Ep_10E);
+		expect(Ep_11E);
+		expect(Ep_12E);
+		expect(Ep_13E);
+		expect(Ep_14E);
+		expect(Ep_15E);
+		expect(Ep_16E);
+		expect(Ep_17E);
+		expect(Ep_18E);
+		expect(Ep_19E);
+		expect(Ep_20E);
+		expect(Ep_21E);
+		expect(Ep_22E);
+		expect(Ep_23E);
+		expect(Ep_24E);
+		expect(Ep_25E);
+		expect(Ep_26E);
+		expect(Ep_27E);
+		expect(Ep_28E);
+		expect(Ep_29E);
 	}
 	
 	private final static int ITERATIONS = 3;
