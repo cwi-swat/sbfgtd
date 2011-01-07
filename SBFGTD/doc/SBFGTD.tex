@@ -424,7 +424,7 @@ We already looked at the worst-case behaviour of the recognizer and proved that 
 Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. So there are at most $O(N^3)$ prefixes. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different results at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and decrease memory usage.
 
 \subsubsection{Flattening}
-Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. In practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering later on in this document.
+Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{sec:filtering}.
 
 \subsubsection{Worst-case statistics}
 We have already theoreticly proven that the recognizer / parser will be $O(N^3)$ in the worst-case. In this section we will show that in practice this is indeed the case.
@@ -578,6 +578,7 @@ In many grammars productions exist that start with the same symbols. There is no
 One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \section{Filtering}
+\label{sec:filtering}
 
 As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features we have implemented to filter the trees in this forest. These features are all optional and have no dependencies on eachother.
 
@@ -690,9 +691,10 @@ We also liked to know how we compare when pinned against non-general parsers, si
 We used the following basic LR grammar for our benchmark:\\
 $S ::= E$\\
 $E ::= E + F\,|\,F$\\
-$F ::= a\,|\,(\,E\,)$
+$F ::= a\,|\,(\,E\,)$\\
+input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $100000$ character intervals.
 
-We compared our performance results with JavaCup, which was used in combination with JFlex. We chose for JavaCup, since it is one of the best known and widely used LALR parsers that is written in Java.
+We compared our performance results with JavaCup, which was used in combination with JFlex. We chose for JavaCup, since it is one of the more widely known and used LALR parsers that is written in Java.
 
 \begin{figure}[H]
 \centering
@@ -764,13 +766,13 @@ In this article we described our parsing algorithm, discussed optimizations that
 \pagebreak
 \section{References}
 
-TODO: Find some, so we can relate it to other stuff. Not basing anything on existing work makes this hard ....\\
--GSS?\\
--Earley?\\
--GLL?\\
--SPPF?\\
--LL \& LR?\\
--GLR?\\
--Pre-existing filtering techniques?
+TODO:\\
+-GSS\\
+-LL\\
+-LR\\
+-GLR\\
+-SGLR\\
+-JFlex\\
+-JavaCup
 
 \end{document}
