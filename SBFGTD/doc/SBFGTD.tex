@@ -166,7 +166,7 @@ Note that the first layer of the {\bf reducedStore} needs to be implemented as a
 In this section we will go into detail on some special cases that deserve some extra attention.
 
 \subsubsection{Left recursion}
-First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the GSS cyles will be added, causing automatic terminalization of all these rules, preventing this undesirable behaviour from manifesting. By terminalization we mean that each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
+First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the GSS, which leads to automatic terminalization of all these rules, this undesirable behaviour is prevented from manifesting. By terminalization we mean that the expansion phase converges to a point at which each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
 $S ::= A$\\
 $A ::= Aa\,|\,a$\\
 We would expand these rules in the following way:
@@ -175,7 +175,7 @@ We would expand these rules in the following way:
 \includegraphics[scale=0.5]{left-recursive.png}
 \caption{GSS representation of an expanded left-recursive grammar.}
 \end{figure}
-As you can see a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
+As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Breadth-first vs depth-first}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why it is more complicated to get a depth-first sibling of this algorithm working correctly and why it would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
