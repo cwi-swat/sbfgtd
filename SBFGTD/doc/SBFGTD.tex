@@ -515,7 +515,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely.
 
 \subsubsection{Look-ahead}
-A more obvious optimization is adding support for look-ahead filtering. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. The number of characters we look ahead is not limited by any theoretical or practical constraints.
+A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. Additionally it will make recognizing / parsing for LL(k) and LR(k) grammars deterministic.
 
 \subsubsection{Breadth-first}
 Finally we would like to note that (eventhough it is mandatory for the correctness of our algorithm) a breadth-first general parsing algorithm, or breadth-first implementation of a general parsing algorithm is generally more efficient then a depth-first version. This is because recognizing / parsing can be approached in a level synchronized way, which enables the possibility of handling certain things more efficiently; this mainly has a positive effect on memory usage.
