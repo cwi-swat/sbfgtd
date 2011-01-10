@@ -45,6 +45,10 @@ public class RunAll{
 		Ambiguous9.main(args);
 		System.out.println();
 		
+		System.out.println("BrokenInDepthFirst:");
+		BrokenInDepthFirst.main(args);
+		System.out.println();
+		
 		System.out.println("RightRecursion:");
 		RightRecursion.main(args);
 		System.out.println();
