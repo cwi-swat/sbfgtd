@@ -67,7 +67,7 @@ As is common in general parsing, we use a kind of Graph Structured Stack (GSS). 
  \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that do not.
  \item Reduce the nodes on all stacks that matched something and have them queue the `next' node in the production they are part of where applicable, until no reductions are possible anymore.
  \item If there are nodes queued for expansion go to 1.
- \item If the end of the input has been reached, there are no more nodes queued for matching / reducing and we have at least one derivation for one of the start symbols we are successful; otherwise recognizing failed.
+ \item If the end of the input has been reached and we have at least one derivation for one of the start symbols we are successful; otherwise recognition failed.
 \end{enumerate}
 
 \pagebreak
