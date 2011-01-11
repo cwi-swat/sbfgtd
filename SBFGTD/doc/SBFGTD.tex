@@ -178,9 +178,11 @@ We would expand these rules in the following way:
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Breadth-first vs depth-first}
-Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why it is more complicated to get a depth-first sibling of this algorithm working correctly and why it would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
+Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
 
-This problem could be solved by tracing forward through the production, gathering any potential missing derivation(s) and executing reductions where necessary. However this would cause the algortihm to become worst-case unbound polynomial in time. In our opinion the solution for this problem is both to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility of this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
+This problem could be solved by tracing forward through the production, gathering any potential missing derivation(s) and executing reductions where necessary. However this would cause the algortihm to become unbound polynomial in time, since it would lead us to `touch' nodes $N^{(productionLength+1)}$ times in the worst-case.
+
+In our opinion the solution for this problem is both to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility of this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
 
 \subsection{From grammar to code}
 
@@ -266,11 +268,12 @@ This means that the algorithm remains within cubic time bounds in worst-case sce
 
 \subsection{Parse forest}
 
-To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic time and space bounds. We call it `deflattenized', for lack of a better description. While its intent is similar to binarization, its implementation is somewhat different.
+To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic space and time bounds. We call it `deflattenized', for lack of a better description. While its intent is similar to binarized SPPFs, its implementation is somewhat different.
 
-The parse forest consists of nodes. Every node in the forest contains a result, which represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contains one or more references to alternative representations of the substring it denotes. Each node also contains a set of prefixes. A prefix only consists of a reference to a node. If you trace all possible paths through this representation of a production to the start, you will get all alternatives for this production at a certain location.
+The parse forest consists of nodes. Every node in the forest contains a result and a set of prefixes. Each results represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contains one or more references to alternative representations of the substring it denotes. If the symbol is a terminal, it will just represent that specific terminal. The set of prefixes contained in the node hold all possible alternatives for the preceding item in the production. (Naturally this set is empty for the node containing results for the first item in the production). A prefix only consists of a reference to a node. If one traces all possible paths through this representation of a production to the start, you will get all alternatives for this production of the substring it represents.
 
-\pagebreak
+Note however, that the parser forest contains an exact representation of what the parser recognized. This means it can contains cycles.
+
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
 $S\,::=\,AAA$\\
@@ -515,7 +518,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely.
 
 \subsubsection{Look-ahead}
-A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. Additionally it will make recognizing / parsing deterministic for LL(k) and LR(k) grammars.
+A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. Additionally it will make recognizing / parsing deterministic for LL(k) grammars. When the prefix-sharing optimization (see section \ref{sec:prefixSharing}) is enabled, this will also be the case for LR(k) grammars.
 
 \subsubsection{Breadth-first}
 Finally we would like to note that (eventhough it is mandatory for the correctness of our algorithm) a breadth-first general parsing algorithm, or breadth-first implementation of a general parsing algorithm is generally more efficient then a depth-first version. This is because recognizing / parsing can be approached in a level synchronized way, which enables the possibility of handling certain things more efficiently; this mainly has a positive effect on memory usage.
@@ -523,7 +526,7 @@ Finally we would like to note that (eventhough it is mandatory for the correctne
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
-Generally parsers store results on edges in the GSS. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other interesting opportunities for optimization.
+Generally parsers store results on edges in the GSS. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other opportunities for optimization.
 
 \subsubsection{Expansion}
 \label{sec:nodeExpansionOptimization}
@@ -561,7 +564,7 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
  \item $.E+E$ $\Rightarrow$ $E$ edges += $.E+E$
  \item $.E-E$ $\Rightarrow$ $E$ edges += $.E-E$
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfUniqueLHS's}$. Originally, without sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfSorts}$. Originally, without sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
 
@@ -608,7 +611,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities (like C typedefs) or filter alternatives that cannot be disambiguated using priorities. I will not go into detail about this feature, since it is not an integral part of the parser, but more like a post-parse filter.
+Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities (like C typedefs) or filter alternatives that cannot be disambiguated using priorities. I will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of action into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements of the user. However their implementation is not trivial, because of their interaction with ambiguities.
 
 \section{Benchmarks}
 
@@ -663,6 +666,7 @@ input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 \caption{Worst-case recognizer and parser performance scaling.}
 \end{figure}
 
+\pagebreak
 Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of increased memory footprint). Regardless of this, our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
 \subsection{Grammar factoring}
@@ -748,9 +752,9 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item Matching can be handled more efficiently (more bottom-up like, so we `touch' less terminals).
+ \item Matching could be handled more efficiently (more bottom-up like, so we `touch' less terminals).
  \item Prefix sharing can be implemented more efficiently by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
- \item We can build and cache a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
+ \item We can pre-construct a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
  \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
@@ -770,9 +774,11 @@ TODO:\\
 -GSS\\
 -LL\\
 -LR\\
+-SPPF (and binarized)\\
 -GLR\\
--SGLR\\
+-SGLR (and ASF+SDF-Meta)\\
 -JFlex\\
--JavaCup
+-JavaCup\\
+-SDF2
 
 \end{document}
