@@ -250,7 +250,7 @@ input = $aaa$
  \item parse for $S.$ is complete
  \item move from $.Aa$ to $A.a$; $A.a$ does not match since EOI has already been reached
 \end{enumerate}
-As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the GSS. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each 'iteration' and ultimately consuming all of them.
+As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the GSS. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each `iteration' and ultimately consuming all of them.
 
 \subsection{Worst-case complexity}
 
@@ -424,13 +424,10 @@ We already looked at the worst-case behaviour of the recognizer and proved that 
 
 Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. So there are at most $O(N^3)$ prefixes. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different results at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and decreases memory usage.
 
-\subsubsection{Flattening}
-Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{sec:filtering}.
-
 \subsubsection{Worst-case statistics}
 We have already theoreticly proven that the recognizer / parser will be $O(N^3)$ in the worst-case. In this section we will show that in practice this is indeed the case.
 
-Here is an overview of the most relevant parser statistics for the following grammar:\\
+We will give an overview of the most relevant parser statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
 input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
@@ -468,6 +465,11 @@ The number of GSS nodes and number of edges scale linear with respect to the len
 
 Looking at the parse tree related statistics we can see that the number of results increases by $N$ for every extra character in the input string. The number of results is always equal to the number of different substrings in the input. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
+\subsubsection{Flattening}
+Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{sec:filtering}.
+
+One might wonder why, in case one flattens the parse forest afterwards, using the `deflattenized' as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use the `deflattenized' representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars unfeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is possible is because of the stravation of incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
+
 \section{Extended capabilities}
 
 To improve the usefulness of the parser on real grammars a few additional features were added. Namely support for lists, optionals and location related features is added. In this chapter we will discuss how these features can be intergrated into our algorithm and implementation.
@@ -486,7 +488,6 @@ Our approach involves special casing the handling of lists, by introducing addit
 \caption{GSS representation of a expanded star-list; the solid arrows represent edges and the dotted arrows `next pointers' in the production.}
 \end{figure}
 
-\pagebreak
 These list children can be shared just like any other GSS node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
 
 Exactly the same principle is used for separated lists and optionals. We will not go into detail on those, since one can easily imagine how these work.
@@ -551,6 +552,7 @@ The expansion at the first level would look like this:
  \item $.E-E$ edges = \{$.E$, $.E+E$, $.E-E$\}
 \end{enumerate}
 This example clearly demonstrates quardratic behaviour. If we would cache the edges set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same `parent(s)'. This will make the expansion look like this:
+\pagebreak
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -664,7 +666,6 @@ input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 \caption{Worst-case recognizer and parser performance scaling.}
 \end{figure}
 
-\pagebreak
 Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of increased memory footprint). Regardless of this, our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
 \subsection{Grammar factoring}
@@ -729,6 +730,7 @@ Note that, for now, we just list SDF2 files; a grammar definition format which i
 \caption{Average parser throughput.}
 \end{table}
 
+\pagebreak
 One does have to take into account that our current implementation is written in Java. If we would re-implement it in C, a performance increase of at least three to five fold is to be expected. Putting our throughput at around 1 million characters per second, while having all filters enabled, in the SDF2 case.
 
 Regardless of this, compared to the parser we previously used, a C implementation of scannerless GLR, we achieved a performance gain of roughly 40\% (i.e. our implementation parses the same file in 0.6 the amount of time), in this specific case.
@@ -741,6 +743,7 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes is harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
+\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
