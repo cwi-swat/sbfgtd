@@ -216,8 +216,7 @@ input = $ab$
  \item expect $.b$, $.b$ matches
  \item reduce $b.$ follow edge to $A.B$
  \item reduce $AB.$ and follow edge to $.S$
- \item reduce $S.$
- \item done
+ \item parse for $S.$ is complete 
 \end{enumerate}
 This one is easy to follow and does not really need any additional explanation.
 
@@ -250,7 +249,6 @@ input = $aaa$
  \item reduce $A.$ and follow edges to $.S$
  \item parse for $S.$ is complete
  \item move from $.Aa$ to $A.a$; $A.a$ does not match since EOI has already been reached
- \item done
 \end{enumerate}
 As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the GSS. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each 'iteration' and ultimately consuming all of them.
 
