@@ -177,6 +177,10 @@ We would expand these rules in the following way:
 \end{figure}
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
+\subsubsection{Cycles}
+TODO: Add text.\\
+-Sharing fixes everything.
+
 \subsubsection{Breadth-first vs depth-first}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
 
@@ -686,7 +690,9 @@ It contains lots of left-recursion and is highly ambiguous; the input, on the ot
 
 Note that the parser is about twice as slow on the non-factored non-prefix-shared version of the grammar. This is because both the number of GSS nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
-The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, the refactoring of the grammar also removes all ambiguities from it. Counterary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
+The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs better is that our current implementation needs to do a extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. This is also the reason that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars, as the refactoring of the grammar removes all ambiguities from it.
+
+TODO: Add look-ahead filtered left-factored version and fix the text accordingly (shared version will be equivalent in speed and deterministic).
 
 \subsection{Versus non-general}
 
@@ -754,10 +760,10 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item Matching could be handled more efficiently (more bottom-up like, so we `touch' less terminals).
  \item Prefix sharing can be implemented more efficiently by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
  \item We can pre-construct a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
  \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency.
+ \item Matching could be handled more efficiently (more bottom-up like, so we `touch' less terminals).
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
