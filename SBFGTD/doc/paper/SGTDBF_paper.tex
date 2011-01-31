@@ -1,0 +1,172 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{color}
+\usepackage{alltt}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+
+%opening
+\title{Context Free General Top Down Parsing in Cubic Time}
+\author{Arnold Lankamp}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+
+Highlight advantages.\\
+Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with LL and LR, easy to visualize and so on ....
+
+\section{Recognizer}
+
+Dicuss recognizer first, then parser.
+
+\subsection{Parallel LL}
+
+Split stack for each alternative.
+
+\subsection{Sharing}
+
+Fix unbound polynomial behaviour.\\
+Fix LL shortcomings.
+
+\subsubsection{Graph}
+
+GSS like.\\
+Each node has an id, edges and an optional next node.
+
+\subsubsection{Left recursion}
+
+Sharing fixes the looping behaviour of LL.
+
+\subsubsection{Cycles}
+
+Sharing fixes cycle looping.
+
+\subsubsection{Breadth-first vs depth-first}
+
+Depth-first is broken, we need to sync on the input.
+
+\subsubsection{Worst-case complexity}
+
+$O(N^3)$ at most.
+
+\subsection{Psuedocode}
+
+Expand.\\
+Reduce.\\
+Main loop.
+
+\section{Parser}
+
+Recognizer simple to modify.\\
+Will explain how.\\
+But talk about forest representation first.
+
+\subsection{Parse forest}
+
+Parse forest must be cubic to maintain $O(N^3)$ scalability guarantee.\\
+Has results, prefixes and nodes.
+
+\subsection{Recognizer augmentation}
+
+Easy.\\
+Add prefixes to graph nodes.\\
+Create results during reductions.
+
+\subsubsection{Cycles}
+
+Cycle in Graph, means cycle in forest as well; so no problem.
+
+\subsubsection{Hidden right recursion}
+
+Fixable problem; just deal with it.\\
+Caused by nullables and multiple iterations in the recognizer to handle them.
+
+\subsubsection{Psuedocode}
+
+Expand (same).\\
+Reduce.\\
+Main loop.\\
+Result creation.
+
+\subsection{Worst-case complexity}
+
+Forest is $O(N^3)$ in size at most.
+
+\subsubsection{Statistics}
+
+Worst-case stats Graph and forest.
+
+\section{Optimizations}
+
+Make the performance acceptable.
+
+\subsection{Look-ahead}
+
+Makes LL(k) and LR(k) grammars deterministic.
+
+\subsection{Edge optimizations}
+
+Sharing needs caring.
+
+\subsubsection{Expansion}
+
+Makes performance linear with respect to the size of the grammar, regardless of what it looks like (i.e. recursion and such).
+
+\subsubsection{Reduction}
+
+Lowers edge visits to a 'perfect' level.
+
+\subsection{Prefix sharing}
+
+Makes performance linear for LR grammars.
+
+\section{Benchmarks}
+
+Show off.
+
+\subsection{Worst-case}
+
+Fast $O(N^3)$ parsing.
+
+\subsection{Grammar factoring}
+
+Linear all around.
+
+\subsection{Realistic cases}
+
+C, Java and such would be nice.
+
+\section{Discussion}
+
+We're better and so on ....
+
+\section{Future Work}
+
+\begin{itemize}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item Filtering
+ \item More optimizations
+\end{itemize}
+
+\section{Conclusion}
+
+Fast, scalable, simple, good error messages, easy to visualize, perfect ....
+
+\section{References}
+
+Nah, did it all myself.
+
+\end{document}

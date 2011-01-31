@@ -749,7 +749,7 @@ Our first implementation is written in Java. The reason we chose this language f
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
 
-\begin{enumerate}
+\begin{itemize}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
@@ -761,7 +761,7 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
-\end{enumerate}
+\end{itemize}
 
 Finally, it would be interesting to create a C implementation of our parsing algorithm, both to see how far we can push the parser's throughput and to be able to make a broader and more accurate performance comparison with implementations of other (general) parsing algorithms. We expect to do fairly well in such a showdown.
 
