@@ -52,9 +52,9 @@ We call our parser, the Scannerless General Top Down Binary Forest Parser or SGT
 
 First we will discuss the algorithm for the recognizer, for simplicity's sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
-\subsection{GSS}
+\subsection{Graph}
 
-As is common in general parsing, we use a kind of Graph Structured Stack (GSS). In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of GSS nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with. Each stack node is unique for each identifier, location combination.
+To represent the parallel stacks we use a directed cyclic graph, acustom to GLR's Graph Structured Stack. In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of graph nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with. Each stack node is unique for each identifier, location combination.
 
 \subsection{Basic algorithm}
 
@@ -79,15 +79,16 @@ main(){
   toExpandSet.add('startNode');
   expand();
   
-  while(hasMoreStacksToReduce()){
-    toReduceSet = getStacksToReduce();
-    if(shiftedLevel){ // Nullable related sharing
-      expandedSet.clear();
-      reducedStore.clear();
-    }
+  while(hasMoreStacksToReduce(toReduceStore)){
+    toReduceSet = getStacksToReduce(toReduceStore);
+    // Nullable related sharing
+    expandedSet.clear();
+    reducedStore.clear();
     
-    reduce();
-    expand();
+    do{
+       reduce();
+       expand();
+    }while(isNotEmpty(toReduceSet));
   }
   
   if(endOfInputHasNotBeenReached()) error;
@@ -95,7 +96,9 @@ main(){
 \end{verbatim}
 }
 
-This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the `start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This behaviour is necessary to be able to handle nullables properly.
+This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the `start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we get the appropriate {\bf toReduceSet} from the {\bf toReduceStore}. The {\bf toReduceStore} is a collection that contains one {\bf toReduceSet} for each level. At the end of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This behaviour is necessary to be able to handle nullables properly.
+
+Also note that after each iteration all graph nodes that are no longer reachable through any of the nodes in the {\bf toReduceStore}, can be discarded.
 
 {\small
 \begin{verbatim}
@@ -103,7 +106,7 @@ expand(){
   while(node <- toExpandSet){
     if(node.isTerminalOrEpsilon()){
       if(node.match(input)){
-        toReduceSet.add(node);
+        toReduceStore.add(node);
       }
     }else{
       expandedSet.add(node);
@@ -122,7 +125,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to the {\bf toReduceSet}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node, for sharing purposes.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node, for sharing purposes.
 
 {\small
 \begin{verbatim}
@@ -166,16 +169,19 @@ Note that the first layer of the {\bf reducedStore} needs to be implemented as a
 In this section we will go into detail on some special cases that deserve some extra attention.
 
 \subsubsection{Left recursion}
-First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the GSS, which leads to automatic terminalization of all these rules, this undesirable behaviour is prevented from manifesting. By terminalization we mean that the expansion phase converges to a point at which each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
+First of all, left recursion. Normal top-down parsers cannot handle grammar rules containing left recursion, since they can keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the graph, which leads to automatic terminalization of all these rules, this undesirable behaviour is prevented from manifesting. By terminalization we mean that the expansion phase converges to a point at which each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
 $S ::= A$\\
 $A ::= Aa\,|\,a$\\
 We would expand these rules in the following way:
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{left-recursive.png}
-\caption{GSS representation of an expanded left-recursive grammar.}
+\caption{Graph representation of an expanded left-recursive grammar.}
 \end{figure}
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
+
+\subsubsection{Cycles}
+Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reduction for each node once.
 
 \subsubsection{Breadth-first vs depth-first}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
@@ -184,6 +190,7 @@ This problem could be solved by tracing forward through the production, gatherin
 
 In our opinion the solution for this problem is both to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility of this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
 
+\pagebreak
 \subsection{From grammar to code}
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
@@ -220,6 +227,7 @@ input = $ab$
 \end{enumerate}
 This one is easy to follow and does not really need any additional explanation.
 
+\pagebreak
 \subsubsection{Left recursive}
 \label{sec:tracesLeftRecusive}
 Next up is a grammar containing a left-recursive rule:\\
@@ -250,14 +258,14 @@ input = $aaa$
  \item parse for $S.$ is complete
  \item move from $.Aa$ to $A.a$; $A.a$ does not match since EOI has already been reached
 \end{enumerate}
-As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the GSS. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each `iteration' and ultimately consuming all of them.
+As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the graph. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each `iteration' and ultimately consuming all of them.
 
 \subsection{Worst-case complexity}
 \label{subsec:recognizerComplexity}
 
 We are designing a parsing algorithm that is intented to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
 
-Since the GSS only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, so there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
+Since the graph only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, so there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
 
 Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N^2)$ edges is associated with one reduction. The check whether or not each of the parents still needs to be reduced, is an operation that completes in $O(1)$ time. However we do need to visit the edge to this parent to be able to determine who this parent is. This happens $N$ times per edge at most. So each edge is visited $O(N^3)$ times at most.
 
@@ -305,7 +313,6 @@ S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 
 Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italic.
 
-\pagebreak
 {\small
 \begin{alltt}
 main()\{
@@ -314,13 +321,14 @@ main()\{
   
   while(hasMoreStacksToReduce())\{
     toReduceSet = getStacksToReduce();
-    if(shiftedLevel)\{ // Nullable related sharing
-      expandedSet.clear();\textit{
-      resultStore.clear();}
-    \}
+    // Nullable related sharing
+    expandedSet.clear();
+    reducedStore.clear();
     
-    reduce();
-    expand();
+    do\{
+       reduce();
+       expand();
+    \}while(isNotEmpty(toReduceSet));
   \}
   
   if(endOfInputHasNotBeenReached()) error;
@@ -332,13 +340,14 @@ main()\{
 
 The only things that need to be changed in the main function to transform the recognizer into a parser are the returning of the final result (if not in error) and replacing the {\bf reducedStore} by {\bf resultStore}. The {\bf resultStore} is similar to the {\bf reducedStore}, except that it also contains the result associated with the non-terminal sorts in the store.
 
+\pagebreak
 {\small
 \begin{alltt}
 expand()\{
   while(node <- toExpandSet)\{
     if(node.isTerminalOrEpsilon())\{
       if(node.match(input))\{
-        toReduceSet.add(node);
+        toReduceStore.add(node);
       \}
     \}else\{
       expandedSet.add(node);
@@ -359,7 +368,6 @@ expand()\{
 
 The expansion code does not need to change in any way, since it does not deal with parse results. But we still list it here for completeness.
 
-\pagebreak
 {\small
 \begin{alltt}
 reduce()\{
@@ -397,7 +405,7 @@ The reduce code does need to be modified. Basically two things need to be added.
 
 First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
-Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to GSS nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the GSS nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production.
+Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production.
 
 {\small
 \begin{alltt}
@@ -409,7 +417,6 @@ Secondly we need to add {\bf prefixes} to the nodes that are being queued for ex
 \end{alltt}
 }
 
-\pagebreak
 We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and non-terminal {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered datastructure, where the first layer is indexed using the {\bf start position} of the node and the second layer by the non-terminal {\bf sort} the node represents.
 
 \subsection{Correctness}
@@ -436,7 +443,7 @@ input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \centering
 \begin{tabular}{ | p{7ex} | p{7ex} | p{7ex} | p{10ex} | p{8ex} | p{10ex} | p{10ex} | }
   \hline
-  Input & GSS & Edges & Edge & Results & Prefixes & Forest \\
+  Input & Graph & Edges & Edge & Results & Prefixes & Forest \\
   length & nodes & & visits & & & nodes \\
   \hline
   2 & 9 & 7 & 6 & 3 & 1 & 2 \\
@@ -460,9 +467,9 @@ input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \caption{Worst-case parser statistics (for the fully optimized version).}
 \end{table}
 
-In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably edge sharing (\ref{sec:edgeOptimizations}) and GSS prefix-sharing (\ref{sec:prefixSharing}).
+In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably edge sharing (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
 
-The number of GSS nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of result nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to concieve.
+The number of graph nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of result nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to concieve.
 
 Looking at the parse tree related statistics we can see that the number of results increases by $N$ for every extra character in the input string. Which is because the number of results is equal to the number of different substrings in the input, in this case. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
@@ -479,23 +486,23 @@ To improve the usefulness of the parser on real grammars a few additional featur
 
 List, separated lists and optionals are handled in a similar way, because in essense they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are star-lists with one element at most; from here on out we will refer to all of these simply as `lists'.
 
-Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more GSS nodes to be able to parse the list.
+Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
 
-Our approach involves special casing the handling of lists, by introducing additional types of GSS nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal GSS node; this $A$ GSS node has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a GSS node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
+Our approach involves special casing the handling of lists, by introducing additional types of graph nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal graph node; this $A$ graph node has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a graph node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{star-list.png}
-\caption{GSS representation of a expanded star-list; the solid arrows represent edges and the dotted arrows `next pointers' in the production.}
+\caption{Graph representation of a expanded star-list; the solid arrows represent edges and the dotted arrows `next pointers' in the production.}
 \end{figure}
 
-These list children can be shared just like any other GSS node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
+These list children can be shared just like any other graph node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
 
 Exactly the same principle is used for separated lists and optionals. We will not go into detail on those, since one can easily imagine how these work.
 
 \subsection{Location}
 
-Similar to how lists are implemented, there are also specialized GSS nodes for location related indicators. We have the following varieties:
+Similar to how lists are implemented, there are also specialized graph nodes for location related indicators. We have the following varieties:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -515,7 +522,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 \subsection{General}
 
 \subsubsection{Matching}
-A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary GSS nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely.
+A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary graph nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely.
 
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. This both improves performance and will make recognizing / parsing deterministic for LL(k) grammars. When the prefix-sharing optimization (see section \ref{sec:prefixSharing}) is enabled, this will also be the case for LR(k) grammars.
@@ -526,13 +533,14 @@ Finally we would like to note that (eventhough it is mandatory for the correctne
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
-Generally parsers store results on edges in the GSS. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among GSS nodes and it opens up numereous other opportunities for optimization.
+Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among graph nodes and it opens up numereous other opportunities for optimization.
 
 \subsubsection{Expansion}
 \label{subsec:nodeExpansionOptimization}
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E$\\
 $E\,::=\,E + E\,|\,E - E$\\
+\pagebreak
 The expansion at the first level would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -553,7 +561,6 @@ The expansion at the first level would look like this:
  \item $.E-E$ edges = \{$.E$, $.E+E$, $.E-E$\}
 \end{enumerate}
 This example clearly demonstrates quardratic behaviour. If we would cache the edges set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same `parent(s)'. This will make the expansion look like this:
-\pagebreak
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -571,13 +578,13 @@ Also note that this optimization is not only useful in case we have numereous no
 
 \subsubsection{Reduction}
 \label{subsec:edgeVisitOptimization}
-As mentioned before, since every GSS node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the alternative's results, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly.
+As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the alternative's results, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly.
 
-\subsection{GSS}
+\subsection{Graph}
 
 \subsubsection{Prefix sharing}
 \label{sec:prefixSharing}
-In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the GSS to have more then one `next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be merged, regardless whether or not it already has been merged with another rule. This optimization ensures we can recognize and parse LR grammars in linear time. The reason for this is that there will always be one stack at most on which things match, all alternative stacks are guaranteed to die of after visiting each level, thus each visit of a level completes in $O(1)$ time; this leads to the conclusion that the total recognize / parse time for any LR grammar will be $O(N)$, where $N$ is the length of the input.
+In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the graph to have more then one `next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as a rule's prefix overlaps with another rule it can be merged, regardless whether or not it already has been merged with another rule. This optimization ensures we can recognize and parse LR grammars in linear time. The reason for this is that there will always be one stack at most on which things match, all alternative stacks are guaranteed to die of after visiting each level, thus each visit of a level completes in $O(1)$ time; this leads to the conclusion that the total recognize / parse time for any LR grammar will be $O(N)$, where $N$ is the length of the input.
 
 One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
@@ -594,7 +601,7 @@ Follow restrictions work as a kind of look-ahead after the production; if the pr
 
 Reject filtering is intended for the removal of trees that are not considered to be correct at a certain location in the grammar. One could think of using it for things like filtering alternatives for identifiers that match keywords in the language, for example.
 
-Any alternative of a production can be marked as reject. If this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially removed from the GSS at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it is not completely done at parse time.
+Any alternative of a production can be marked as reject. If this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially removed from the graph at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case the node at the end of a rejected alternative's edge is already reduced. This is the reason why it is not completely done at parse time.
 
 In our current implementation reject rules cannot be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A(r)\,|\,a,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,a$. The reject alternatives are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edges from $.a$ to $.A$ and then from $.A(r)$ to $.S$. This will cause $S.$ to be rejected, failing the parse. On the other hand, if we would have followed the edge from $.a$ to $.B$ first and then from $.B(r)$ to $.A$ we would end up with a successful parse, since $A$ gets rejected, preventing the edge from $.A(r)$ to $.S$ from being followed. So if one writes a grammar that contains nested rejects it may, or may not do what was intended.
 
@@ -634,6 +641,7 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
+\pagebreak
 \subsection{Worst case}
 
 The obvious candidate for a benchmark is the following worst-case grammar:
@@ -684,7 +692,7 @@ It contains lots of left-recursion and is highly ambiguous; the input, on the ot
 \caption{Grammar factoring related parse time scaling; without look-ahead filtering.}
 \end{figure}
 
-Note that the parser is about twice as slow on the non-factored non-prefix-shared version of the grammar. This is because both the number of GSS nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
+Note that the parser is about twice as slow on the non-factored non-prefix-shared version of the grammar. This is because both the number of graph nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, the refactoring of the grammar also removes all ambiguities from it. Counterary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
 
@@ -706,7 +714,7 @@ We compared our performance results with JavaCup, which was used in combination 
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
-As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input about three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a GSS, since we need to be fully general, instead of the application's stack.
+As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input about three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack.
 
 \subsection{Realistic cases}
 
@@ -731,7 +739,6 @@ Note that, for now, we just list SDF2 files; a grammar definition format which i
 \caption{Average parser throughput.}
 \end{table}
 
-\pagebreak
 One does have to take into account that our current implementation is written in Java. If we would re-implement it in C, a performance increase of at least three to five fold is to be expected. Putting our throughput at around 1 million characters per second, while having all filters enabled, in the SDF2 case.
 
 Regardless of this, compared to the parser we previously used, a C implementation of scannerless GLR, we achieved a performance gain of roughly 40\% (i.e. our implementation parses the same file in 0.6 the amount of time), in this specific case.
@@ -744,7 +751,6 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
-\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
