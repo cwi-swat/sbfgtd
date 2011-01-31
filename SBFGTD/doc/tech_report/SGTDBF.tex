@@ -706,7 +706,7 @@ We compared our performance results with JavaCup, which was used in combination 
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
-As expected JavaCup performs better. For this specific grammar, JavaCup parses the given input about three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a GSS, since we need to be fully general, instead of the application's stack.
+As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input about three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a GSS, since we need to be fully general, instead of the application's stack.
 
 \subsection{Realistic cases}
 
@@ -742,7 +742,7 @@ The development of this algorithm was approached in a rather unorthodox way. Rat
 
 The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
-Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes is harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
+Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
 \pagebreak
 \section{Future work}
