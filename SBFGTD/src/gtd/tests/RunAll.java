@@ -146,5 +146,15 @@ public class RunAll{
 		System.out.println("ListOverlap:");
 		ListOverlap.main(args);
 		System.out.println();
+		
+		System.out.println("HiddenLeftRecursionEmpty:");
+		HiddenLeftRecursionEmpty.main(args);
+		System.out.println();
+		System.out.println("HiddenLeftRecursionNonEmpty:");
+		HiddenLeftRecursionNonEmpty.main(args);
+		System.out.println();
+		System.out.println("HiddenLeftRecursionListEmpty:");
+		HiddenLeftRecursionListEmpty.main(args);
+		System.out.println();
 	}
 }

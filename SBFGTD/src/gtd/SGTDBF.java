@@ -120,16 +120,6 @@ public class SGTDBF implements IGTD{
 		next.updateNode(node, result);
 		next.setStartLocation(location);
 		
-		if(!next.isMatchable()){ // Is non-terminal or list.
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-			if(levelResultStoreMap != null){
-				AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
-				if(resultStore != null){ // Is nullable, queue for reduction.
-					stacksWithNonTerminalsToReduce.put(next, resultStore);
-				}
-			}
-		}
-		
 		sharedNextNodes.putUnsafe(next.getId(), next);
 		stacksToExpand.add(next);
 		return next;
@@ -143,16 +133,6 @@ public class SGTDBF implements IGTD{
 			next = next.getCleanCopy();
 			next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			next.setStartLocation(location);
-			
-			if(!next.isMatchable()){ // Is non-terminal or list.
-				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-				if(levelResultStoreMap != null){
-					AbstractContainerNode resultStore = levelResultStoreMap.get(next.getIdentifier());
-					if(resultStore != null){ // Is nullable, queue for reduction.
-						stacksWithNonTerminalsToReduce.put(next, resultStore);
-					}
-				}
-			}
 			
 			sharedNextNodes.putUnsafe(next.getId(), next);
 			stacksToExpand.add(next);
@@ -395,6 +375,14 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(!node.isList()){
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+			if(levelResultStoreMap != null){
+				AbstractContainerNode resultStore = levelResultStoreMap.get(node.getIdentifier());
+				if(resultStore != null){ // Is nullable, add the known results.
+					stacksWithNonTerminalsToReduce.put(node, resultStore);
+				}
+			}
+			
 			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
 				cachedEdges.add(node);
@@ -469,15 +457,17 @@ public class SGTDBF implements IGTD{
 		
 		findFirstStackToReduce();
 		do{
-			if(shiftedLevel){ // Nullable fix.
-				sharedNextNodes.clear();
-				resultStoreCache.clear();
-				cachedEdgesForExpect.clear();
-			}
-			
-			reduce();
-			
-			expand();
+			do{
+				if(shiftedLevel){ // Nullable fix.
+					sharedNextNodes.clear();
+					resultStoreCache.clear();
+					cachedEdgesForExpect.clear();
+				}
+				
+				reduce();
+				
+				expand();
+			}while(!stacksWithNonTerminalsToReduce.isEmpty());
 		}while(findStacksToReduce());
 		
 		if(location == input.length){
