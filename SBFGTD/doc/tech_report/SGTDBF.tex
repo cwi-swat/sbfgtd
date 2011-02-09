@@ -99,10 +99,16 @@ This is the main function of the recognizer. It starts with building the stacks 
 
 Also note that after each iteration all graph nodes that are no longer reachable through any of the nodes in the {\bf toReduceStore}, can be discarded.
 
+TODO: Include edge sharing / expansion optimization, so the psuedocode reflects the parser implementation with the advertised performance characteristics.
+
 {\small
 \begin{verbatim}
 expand(){
   while(node <- toExpandSet){
+    if(reducedStore.contains(node.sort)){
+        toReduceStore.add(node);
+    }
+    
     if(node.isTerminalOrEpsilon()){
       if(node.match(input)){
         toReduceStore.add(node);
@@ -127,18 +133,20 @@ expand(){
 
 This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node, for sharing purposes.
 
+TODO: Nullable handling.
+
 {\small
 \begin{verbatim}
 reduce(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
       for(edgeLevel <- node.edgesPerLevel){
-        if(reducedStore.notContains(edgeLevel.getOne())){
+        if(reducedStore.notContains(edgeLevel.getOne().sort)){
           for(edges <- edgeLevel){
             toReduceSet.add(parent);
           }
           
-          reducedStore.add(node);
+          reducedStore.add(node.sort);
         }
       }
     }else if(node.hasNext()){
@@ -182,6 +190,10 @@ As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child 
 
 \subsubsection{Cycles}
 Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reduction for each node once.
+
+\subsubsection{Nullables}
+
+TODO: Explain the multiple cycle + check for results thing.
 
 \subsubsection{Breadth-first vs depth-first}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
@@ -343,7 +355,11 @@ The only things that need to be changed in the main function to transform the re
 {\small
 \begin{alltt}
 expand()\{
-  while(node <- toExpandSet)\{
+  while(node <- toExpandSet)\{\textit{
+    if(resultStore.contains(node.sort))\{
+        toReduceStore.add(node);
+    \}}
+    
     if(node.isTerminalOrEpsilon())\{
       if(node.match(input))\{
         toReduceStore.add(node);
@@ -368,14 +384,16 @@ expand()\{
 
 The expansion code does not need to change in any way, since it does not deal with parse results. But we still list it here for completeness.
 
+TODO: Result store stuff.
+
 {\small
 \begin{alltt}
 reduce()\{
   while(node <- toReduceSet)\{
     if(node.lastInProduction())\{
       for(edgesLevel <- node.edgesPerLevel)\{\textit{
-        if(resultStore.contains(edgesLevel.getOne()))\{
-          result = resultStore.get(edgesLevel.getOne());
+        if(resultStore.contains(edgesLevel.getOne().sort))\{
+          result = resultStore.get(edgesLevel.getOne().sort);
         \}else\{
           result = createResult(edgesLevel.getOne());
           for(edges <- edgesLevel)\{
