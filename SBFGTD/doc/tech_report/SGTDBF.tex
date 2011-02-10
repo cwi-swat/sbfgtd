@@ -58,6 +58,8 @@ To represent the parallel stacks we use a directed cyclic graph, acustom to GLR'
 
 \subsection{Basic algorithm}
 
+The basic idea behind the algorithm is fairly straightforward. In general terms this is how it works:
+
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -72,6 +74,8 @@ To represent the parallel stacks we use a directed cyclic graph, acustom to GLR'
 
 \pagebreak
 \subsection{Pseudocode}
+
+In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since it does not make the code more complex and it will enable the recognizer to achieve most of its advertised performance guarantees. Here we will not go into detail about how these optimization work or why they are correct; please refer to the indicated section for more details. Other optimizations were not merged in with the code here, since they either complicate things to much or can be implemented in multiple ways; a decision we would like to leave for the implementor.
 
 {\small
 \begin{verbatim}
@@ -95,35 +99,35 @@ main(){
 \end{verbatim}
 }
 
-This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the `start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we get the appropriate {\bf toReduceSet} from the {\bf toReduceStore}. The {\bf toReduceStore} is a collection that contains one {\bf toReduceSet} for each level. At the end of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data from the previous level. This behaviour is necessary to be able to handle nullables properly.
+This is the main function of the recognizer. It starts with building the stacks for the first level, by queuing the `start node' and expanding it. Once it has done so it will keep alternating between reducing and expanding until there are no more stacks left alive. At the start of each iteration we get the appropriate {\bf toReduceSet} from the {\bf toReduceStore}. The {\bf toReduceStore} is a collection that contains one {\bf toReduceSet} for each level. At the end of each iteration we check whether or not we need another iteration in the current level or need to shift to the next one. In case we shifted we need to discard all level specific data. This behaviour is necessary to be able to handle nullables properly.
 
 Also note that after each iteration all graph nodes that are no longer reachable through any of the nodes in the {\bf toReduceStore}, can be discarded.
 
-TODO: Include edge sharing / expansion optimization, so the psuedocode reflects the parser implementation with the advertised performance characteristics.
-
+\pagebreak
 {\small
 \begin{verbatim}
 expand(){
   while(node <- toExpandSet){
-    if(reducedStore.contains(node.sort)){
-        toReduceStore.add(node);
-    }
-    
     if(node.isTerminalOrEpsilon()){
       if(node.match(input)){
         toReduceStore.add(node);
       }
     }else{
-      expandedSet.add(node);
-      
-      for(childNode <- getChildren(node)){
-        childNode = childNode.initialize(location);
-        if(expandedSet.contains(childNode)){
-          childNode = expandedSet.get(childNode);
-        }else{
+      if(cachedEdges.contains(node.sort)){
+        edgesSet = cachedEdgesMap.get(node.sort);
+      }else{
+        edgesSet = createAndCacheEdgesSet(node.sort);
+        
+        for(childNode <- getAlternatives(node)){
+          childNode = childNode.initialize(location);
+          childNode.setEdgesSet(edgesSet);
           toExpandSet.add(childNode);
         }
-        childNode.addEdge(node);
+      }
+      edgesSet.addEdge(node);
+      
+      if(reducedStore.contains(node.sort)){
+        toReduceStore.add(node);
       }
     }
   }
@@ -131,10 +135,11 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we retrieve its `children', add edges from these children to the current node and queue them for expansion (if not done so already), by adding them to the {\bf toExpandSet}. In case a child node is present in the {\bf expandedSet} it has already been expanded and will not be queued again. Additionally we will need to add an edge to the equivalent node from the {\bf expandedSet} instead of the current child node, for sharing purposes.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we check if there is a cached set of edges available for that non-terminal sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we haven't encounter a non-terminal of this sort yet and need to expand it. We to this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, which may be updated with additional edges later on in the expansion process.
 
-TODO: Nullable handling.
+Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction.
 
+\pagebreak
 {\small
 \begin{verbatim}
 reduce(){
@@ -193,7 +198,7 @@ Cycles present another issue that needs to be handled. Similarly to left recursi
 
 \subsubsection{Nullables}
 
-TODO: Explain the multiple cycle + check for results thing.
+TODO: Explain the multiple iterations per level + check for results thing.
 
 \subsubsection{Breadth-first vs depth-first}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
@@ -202,7 +207,6 @@ This problem could be solved by tracing forward through the production, gatherin
 
 In our opinion the solution for this problem is both to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have stacks running ahead of others, eliminating the possibility of this behaviour popping-up. We do need extra iterations within the same level to handle nullables, but this is only a problem for the parser, which needs to keep track of hidden right recursion. We will cover the handling of hidden right recursion in the parser in section \ref{sec:parserCorrectness}.
 
-\pagebreak
 \subsection{From grammar to code}
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
@@ -355,37 +359,37 @@ The only things that need to be changed in the main function to transform the re
 {\small
 \begin{alltt}
 expand()\{
-  while(node <- toExpandSet)\{\textit{
-    if(resultStore.contains(node.sort))\{
-        toReduceStore.add(node);
-    \}}
-    
+  while(node <- toExpandSet)\{
     if(node.isTerminalOrEpsilon())\{
       if(node.match(input))\{
         toReduceStore.add(node);
       \}
     \}else\{
-      expandedSet.add(node);
-      
-      for(childNode <- getChildren(node))\{
-        childNode = childNode.initialize(location);
-        if(expandedSet.contains(childNode))\{
-          childNode = expandedSet.get(childNode);
-        \}else\{
+      if(cachedEdges.contains(node.sort))\{
+        edgesSet = cachedEdgesMap.get(node.sort);
+      \}else\{
+        edgesSet = createAndCacheEdgesSet(node.sort);
+        
+        for(childNode <- getAlternatives(node))\{
+          childNode = childNode.initialize(location);
+          childNode.setEdgesSet(edgesSet);
           toExpandSet.add(childNode);
         \}
-        childNode.addEdge(node);
       \}
+      edgesSet.addEdge(node);
+      \textit{
+      if(reducedStore.contains(node.sort))\{
+        toReduceStore.add(node);
+      \}}
     \}
   \}
 \}
 \end{alltt}
 }
 
-The expansion code does not need to change in any way, since it does not deal with parse results. But we still list it here for completeness.
+The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context they serve a similar function as in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
 
-TODO: Result store stuff.
-
+\pagebreak
 {\small
 \begin{alltt}
 reduce()\{
@@ -400,8 +404,7 @@ reduce()\{
             toReduceSet.add(parent);
           \}
         \}
-        result.
-            addAlternative(node.prefixes, node.results);}
+        result.addAlternative(node.prefixes, node.results);}
       \}
     \}else if(node.hasNext())\{
       next = node.next.initialize(location);
@@ -425,6 +428,7 @@ First of all the storing of results. We need to create (at most) one {\bf result
 
 Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production.
 
+\pagebreak
 {\small
 \begin{alltt}
 \textit{createResult(node)\{
@@ -558,7 +562,6 @@ Generally parsers store results on edges in the graph. If we would refrain from 
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E$\\
 $E\,::=\,E + E\,|\,E - E$\\
-\pagebreak
 The expansion at the first level would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -596,7 +599,7 @@ Also note that this optimization is not only useful in case we have numereous no
 
 \subsubsection{Reduction}
 \label{subsec:edgeVisitOptimization}
-As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the alternative's results, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly.
+As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the alternative's results, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced or not, without having to execute any additional sharing checks.
 
 \subsection{Graph}
 
@@ -659,7 +662,6 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
-\pagebreak
 \subsection{Worst case}
 
 The obvious candidate for a benchmark is the following worst-case grammar:
@@ -769,6 +771,7 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
+\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
@@ -793,7 +796,6 @@ Finally, it would be interesting to create a C implementation of our parsing alg
 
 In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution.
 
-\pagebreak
 \section{References}
 
 TODO:\\
