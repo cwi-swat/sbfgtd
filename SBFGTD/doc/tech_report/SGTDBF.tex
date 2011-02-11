@@ -44,8 +44,6 @@ If the abstract did not catch your attention yet, here are some highlights:
 
 For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature.
 
-However, general top-down parsers do have the image of being slower than general bottom-up parsers. Mostly because they tend to perform poorly on non-left-factored grammars. Additionally, they usually try to recover from parse errors by back-tracking, which does not scale well, especially in absence of memorization. Our algorithm and implementation do not suffer from any of these problems.
-
 We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
 \section{Recognizer}
