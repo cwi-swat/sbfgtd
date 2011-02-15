@@ -11,12 +11,12 @@ public class SortContainerNode extends AbstractContainerNode{
 		super(name, isNullable, isSeparator);
 	}
 	
-	private void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	private static void gatherAlternatives(Link child, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		String result = child.node.print(stack, depth, cycleMark);
 		gatherProduction(child, new String[]{result}, gatheredAlternatives, stack, depth, cycleMark);
 	}
 	
-	private void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+	private static void gatherProduction(Link child, String[] postFix, ArrayList<String[]> gatheredAlternatives, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
 		ArrayList<Link> prefixes = child.prefixes;
 		if(prefixes == null){
 			gatheredAlternatives.add(postFix);

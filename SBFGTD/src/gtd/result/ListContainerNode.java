@@ -189,7 +189,7 @@ public class ListContainerNode extends AbstractContainerNode{
 		}
 	}
 	
-	private String[] gatherCycle(Link child, String[] postFix, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
+	private static String[] gatherCycle(Link child, String[] postFix, IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark, ArrayList<AbstractNode> blackList){
 		AbstractNode originNode = child.node;
 		
 		blackList.add(originNode);
@@ -228,7 +228,7 @@ public class ListContainerNode extends AbstractContainerNode{
 		return null;
 	}
 	
-	private String[] buildCycle(String[] cycle, String[] postFix, String result){
+	private static String[] buildCycle(String[] cycle, String[] postFix, String result){
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("repeat(");
 		buffer.append(cycle[0]);
