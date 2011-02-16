@@ -140,7 +140,7 @@ expand(){
 
 This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we check if there is a cached set of edges available for that non-terminal sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We to this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, which may be updated with additional edges later on in the expansion process.
 
-Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction.
+Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
 
 \pagebreak
 \subsubsection{Reduce}
@@ -150,8 +150,9 @@ reduce(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
       for(edgeLevel <- node.edgesPerLevel){
-        if(reducedStore.notContains(edgeLevel.getOne().sort)){
-          reducedStore.add(edgeLevel.getOne().sort);
+        sort = edgeLevel.getOne().sort;
+        if(reducedStore.notContains(sort)){
+          reducedStore.add(sort);
           
           for(edges <- edgeLevel){
             toReduceSet.add(parent);
@@ -175,7 +176,7 @@ reduce(){
 
 This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's `parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. In case the `next' node has already been scheduled for expansion we need to retrieve the equivalent `next' node from the {\bf toExpandSet} and add the edges to that node instead, for sharing purposes.
 
-The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if the node this edge points to has been reduced yet or not, by consulting the {\bf reducedStore}. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level. Note that this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar).
+The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by consulting the {\bf reducedStore}. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level. Note that this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar).
 
 The {\bf reducedStore} is a dual layered data structure. The first layer is indexed by the {\bf start location} of the node and the second layer by the sort of the non-terminal in the node. For each level the {\bf reducedStore} can contain a variant for every non-terminal for each possible substring up until the current location. This {\bf reducedStore} is necessary to keep track of which nodes have or have not been reduced yet. The first layer of the {\bf reducedStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
 
@@ -199,6 +200,7 @@ As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child 
 Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reduction for each node once.
 
 \subsubsection{Nullables}
+\label{subsec:nullables}
 Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a production contains two or more consecutive nullables, hidden left recursive or otherwise, problems arrise. These problems are sharing related. First we will describe what would happen in the naïve / broken implementation.
 
 Consider the following grammar:\\
@@ -208,12 +210,15 @@ $C ::= \epsilon$\\
 Input = <empty>\\
 After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
 
-In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsubsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions for these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
+In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsubsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
+
+TODO: Discuss more cases (related to merging and precedence / ordering and such).
 
 \subsubsection{Termination}
 One of the main questions that some people will have on their minds is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing expansion and reduction to converge to a point where no more work can be done in a level, we reach the end of the input string at some point (assuming the input string has a finite length as well).
 
 \subsubsection{Breadth-first vs depth-first}
+\label{subsec:breadthFirstVsDepthFirst}
 Another requirement of the algorithm, of which the reason may not be immediately obvious, is that it needs to be level synchronized. We will demonstrate why the depth-first sibling does not work correctly without modification and why this modification would break the cubic time bound, by means of an example. Consider the following grammar: $S ::= SSS\,|\,a\,|\,aa$. Now imagine we are somewhere in the middle of recognizing an input string containing a number of $a$'s; currently we are recognizing $SS.S$, which matches with one $a$. The preceding items that belong to this production, $.SSS$ and $S.SS$ both recognized one $a$ as well. Causing $S(S(a),S(a),S(a))$ to be reduced at this location. We progress a bit more and are now recognizing $.SSS$ at a location that is one character earlier in the input string as the other $.SSS$ we recognized before; this time it matches $aa$. Since we now end up at a $S.SS$ node at a location where it was already recognized, we do not progress further; this node needs to be shared, otherwise we would do duplicate work, breaking the cubic time bound. However, in the scheme we are using, sharing this node means we stop recognizing the current derivation, preventing reductions from being executed. Which in this case will mean that we fail to recognize the derivation $S(S(aa),S(a),S(a))$ at the current location. If we would be using a different grammar it could even cause recognition to fail entirely because of this behaviour.
 
 This problem could be solved by tracing forward through the production, gathering any potential missing derivation(s) and executing reductions where necessary. However this would cause the algortihm to become unbound polynomial in time, since it would lead us to `touch' nodes $N^{(productionLength+1)}$ times in the worst-case.
@@ -406,7 +411,7 @@ expand()\{
 \end{alltt}
 }
 
-The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context they serve a similar function as in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
+The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context the {\bf resultStore} serves a similar function as the {\bf reducedStore} in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
 
 \pagebreak
 \subsubsection{Reduce}
@@ -446,7 +451,7 @@ The reduce code does need to be modified. Basically two things need to be added.
 
 First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
-Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production.
+Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production each induvidual node is a part of.
 
 \pagebreak
 \subsubsection{Results}
@@ -468,7 +473,9 @@ We also need a function for creating {\bf results}. Every time a result is creat
 Since the conversion of our recognizer to a parser is so trivial, the parser is as correct as the recognizer. The only difference, as mentioned before, is the handling of hidden right recursion.
 
 \subsubsection{Hidden right recursion}
-The reason for complications related to hidden right recursion is that multiple iterations within the same level are possible. This could cause results to `go missing'. The only thing that needs to be done to fix this, is to check whether or not the next node is the last node in the production and is a nullable with results, in case the current node is also a nullable. If this is the case we need to construct the necessary result nodes and add them to their corresponding parents. This is a fairly general description of how to solve it, since the best way to handle this issue may differ per implementation. All that is needed is that the implementor is aware of this issue and takes it under consideration.
+The reason for complications related to hidden right recursion is that multiple iterations within the same level are possible. This could cause results to `go missing'. The only thing that needs to be done to fix this, is to check whether or not the next node is the last node in the production and is a nullable with results, in case the current node is also a nullable. If this is true, we need to construct the necessary result nodes and add them to their corresponding parents. This is a fairly general description of how to solve it, since the best way to handle this issue may differ per implementation. All that is needed is that the implementor is aware of this issue and takes it under consideration.
+
+TODO: Clarify; maybe rewrite?
 
 \subsection{Worst-case complexity}
 We looked at the worst-case behaviour of the recognizer in section \ref{subsec:recognizerComplexity} and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
@@ -571,7 +578,7 @@ A minor performance improvement can be made by matching on entire literals at on
 A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if a certain alternative will never match, we do not need to expect it. This both improves performance and will make recognizing / parsing deterministic for LL(k) grammars. When the prefix-sharing optimization (see section \ref{sec:prefixSharing}) is enabled, this will also be the case for LR(k) grammars.
 
 \subsubsection{Breadth-first}
-Finally we would like to note that (eventhough it is mandatory for the correctness of our algorithm) a breadth-first general parsing algorithm, or breadth-first implementation of a general parsing algorithm is generally more efficient then a depth-first version. This is because recognizing / parsing can be approached in a level synchronized way, which enables the possibility of handling certain things more efficiently; this mainly has a positive effect on memory usage.
+Finally we would like to note that (eventhough it is mandatory for the correctness of our algorithm, as discussed in section \ref{subsec:breadthFirstVsDepthFirst}) a breadth-first general parsing algorithm, or breadth-first implementation of a general parsing algorithm is generally more efficient then a depth-first version. This is because recognizing / parsing can be approached in a level synchronized way, which enables the possibility of handling certain things more efficiently; this mainly has a positive effect on memory usage.
 
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
