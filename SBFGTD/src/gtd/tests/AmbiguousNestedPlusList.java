@@ -34,6 +34,6 @@ public class AmbiguousNestedPlusList extends SGTDBF{
 		AbstractNode result = anpl.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([A+(A([a]+([a](a),[a](a)))),A+(A([a]+([a](a))),A([a]+([a](a))))]) <- good");
+		System.out.println("S([A+(A([a]+([a](a))),A([a]+([a](a)))),A+(A([a]+([a](a),[a](a))))]) <- good");
 	}
 }

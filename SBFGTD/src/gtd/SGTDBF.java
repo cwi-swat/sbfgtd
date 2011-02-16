@@ -8,23 +8,23 @@ import gtd.result.struct.Link;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.NonTerminalStackNode;
 import gtd.util.ArrayList;
-import gtd.util.DoubleRotatingQueue;
+import gtd.util.DoubleStack;
 import gtd.util.HashMap;
 import gtd.util.IntegerKeyedHashMap;
 import gtd.util.LinearIntegerKeyedMap;
-import gtd.util.RotatingQueue;
+import gtd.util.Stack;
 
 import java.lang.reflect.Method;
 
 public class SGTDBF implements IGTD{
 	private final char[] input;
 	
-	private final RotatingQueue<AbstractStackNode>[] todoLists;
+	private final Stack<AbstractStackNode>[] todoLists;
 	
 	// Updatable
 	private final ArrayList<AbstractStackNode> stacksToExpand;
-	private RotatingQueue<AbstractStackNode> stacksWithTerminalsToReduce;
-	private final DoubleRotatingQueue<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
+	private Stack<AbstractStackNode> stacksWithTerminalsToReduce;
+	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
@@ -45,11 +45,11 @@ public class SGTDBF implements IGTD{
 		
 		this.input = input;
 		
-		todoLists = (RotatingQueue<AbstractStackNode>[]) new RotatingQueue[input.length + 1];
+		todoLists = (Stack<AbstractStackNode>[]) new Stack[input.length + 1];
 		
 		stacksToExpand = new ArrayList<AbstractStackNode>();
-		stacksWithTerminalsToReduce = new RotatingQueue<AbstractStackNode>();
-		stacksWithNonTerminalsToReduce = new DoubleRotatingQueue<AbstractStackNode, AbstractNode>();
+		stacksWithTerminalsToReduce = new Stack<AbstractStackNode>();
+		stacksWithNonTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
@@ -190,11 +190,11 @@ public class SGTDBF implements IGTD{
 				levelResultStoreMap.putUnsafe(identifier, resultStore);
 				resultStore.addAlternative(resultLink);
 				
-				stacksWithNonTerminalsToReduce.put(edge, resultStore);
+				stacksWithNonTerminalsToReduce.push(edge, resultStore);
 				
 				for(int j = edgeList.size() - 1; j >= 1; --j){
 					edge = edgeList.get(j);
-					stacksWithNonTerminalsToReduce.put(edge, resultStore);
+					stacksWithNonTerminalsToReduce.push(edge, resultStore);
 				}
 			}
 		}
@@ -267,18 +267,18 @@ public class SGTDBF implements IGTD{
 	private void reduce(){
 		// Reduce terminals.
 		while(!stacksWithTerminalsToReduce.isEmpty()){
-			reduceTerminal(stacksWithTerminalsToReduce.getDirtyUnsafe());
+			reduceTerminal(stacksWithTerminalsToReduce.pop());
 		}
 		
 		// Reduce non-terminals.
 		while(!stacksWithNonTerminalsToReduce.isEmpty()){
-			reduceNonTerminal(stacksWithNonTerminalsToReduce.peekFirstUnsafe(), stacksWithNonTerminalsToReduce.getSecondDirtyUnsafe());
+			reduceNonTerminal(stacksWithNonTerminalsToReduce.peekFirst(), stacksWithNonTerminalsToReduce.popSecond());
 		}
 	}
 	
 	private boolean findFirstStackToReduce(){
 		for(int i = location; i < todoLists.length; ++i){
-			RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[i];
+			Stack<AbstractStackNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
@@ -297,7 +297,7 @@ public class SGTDBF implements IGTD{
 		}
 		
 		for(int i = location + 1; i < todoLists.length; ++i){
-			RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[i];
+			Stack<AbstractStackNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
@@ -364,12 +364,12 @@ public class SGTDBF implements IGTD{
 			if(endLocation <= input.length){
 				if(!node.match(input)) return; // Discard if it didn't match.
 				
-				RotatingQueue<AbstractStackNode> terminalsTodo = todoLists[endLocation];
+				Stack<AbstractStackNode> terminalsTodo = todoLists[endLocation];
 				if(terminalsTodo == null){
-					terminalsTodo = new RotatingQueue<AbstractStackNode>();
+					terminalsTodo = new Stack<AbstractStackNode>();
 					todoLists[endLocation] = terminalsTodo;
 				}
-				terminalsTodo.put(node);
+				terminalsTodo.push(node);
 			}
 			return;
 		}
@@ -379,7 +379,7 @@ public class SGTDBF implements IGTD{
 			if(levelResultStoreMap != null){
 				AbstractContainerNode resultStore = levelResultStoreMap.get(node.getIdentifier());
 				if(resultStore != null){ // Is nullable, add the known results.
-					stacksWithNonTerminalsToReduce.put(node, resultStore);
+					stacksWithNonTerminalsToReduce.push(node, resultStore);
 				}
 			}
 			

@@ -54,6 +54,6 @@ public class SplitAndMerge3 extends SGTDBF{
 		AbstractNode result = sm3.parse("S");
 		System.out.println(result);
 		
-		System.out.println("[S(C(B(A(B(a),a),a))),S(A(B(A(a),a),a))] <- good");
+		System.out.println("[S(A(B(A(a),a),a)),S(C(B(A(B(a),a),a)))] <- good");
 	}
 }
