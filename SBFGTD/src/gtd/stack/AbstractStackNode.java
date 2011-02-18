@@ -90,7 +90,7 @@ public abstract class AbstractStackNode{
 	public abstract AbstractStackNode getCleanCopy();
 	
 	public boolean isSimilar(AbstractStackNode node){
-		return (node.getId() == getId());
+		return (node.id == id);
 	}
 	
 	// Linking & prefixes.
