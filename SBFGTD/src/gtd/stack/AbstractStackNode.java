@@ -248,16 +248,17 @@ public abstract class AbstractStackNode{
 				for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
 					int startLocation = edgesMapToAdd.getKey(i);
 					int index = edgesMap.findKey(startLocation);
+					ArrayList<Link> prefixes;
 					if(index == -1){
 						index = edgesMap.size();
 						edgesMap.add(startLocation, edgesMapToAdd.getValue(i));
-					}
-					
-					ArrayList<Link> prefixes = prefixesMap[index];
-					if(prefixes == null){
+						
 						prefixes = new ArrayList<Link>(1);
 						prefixesMap[index] = prefixes;
+					}else{
+						prefixes = prefixesMap[index];
 					}
+					
 					prefixes.add(new Link(prefixesMapToAdd[i], result));
 				}
 			}
@@ -282,6 +283,59 @@ public abstract class AbstractStackNode{
 				}
 			}
 		}
+	}
+	
+	public int updateOvertakenNode(AbstractStackNode predecessor, AbstractNode result, int potentialNewEdges){
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
+		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
+		
+		int edgesMapSize = edgesMap.size();
+		int possibleMaxSize = edgesMapSize + potentialNewEdges;
+		if(prefixesMap == null){
+			prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize];
+		}else{
+			if(prefixesMap.length < possibleMaxSize){
+				ArrayList<Link>[] oldPrefixesMap = prefixesMap;
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize];
+				System.arraycopy(oldPrefixesMap, 0, prefixesMap, 0, edgesMapSize);
+			}
+		}
+		
+		// TODO Not sure about this.
+		int nrOfAddedEdges = 0;
+		if(prefixesMapToAdd == null){
+			int startLocation = edgesMapToAdd.getKey(0);
+			int index = edgesMap.findKey(startLocation);
+			if(index == -1){
+				addPrefix(new Link(null, result), edgesMap.size());
+				edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
+				nrOfAddedEdges = 1;
+			}else{
+				addPrefix(new Link(null, result), index);
+			}
+		}else{
+			int fromIndex = edgesMapToAdd.size() - potentialNewEdges;
+			for(int i = edgesMapToAdd.size() - 1; i >= fromIndex; --i){
+				int startLocation = edgesMapToAdd.getKey(i);
+				int index = edgesMap.findKey(startLocation);
+				ArrayList<Link> prefixes;
+				if(index == -1){
+					index = edgesMap.size();
+					edgesMap.add(startLocation, edgesMapToAdd.getValue(i));
+					
+					prefixes = new ArrayList<Link>(1);
+					prefixesMap[index] = prefixes;
+					
+					++nrOfAddedEdges;
+				}else{
+					prefixes = prefixesMap[index];
+				}
+				
+				prefixes.add(new Link(prefixesMapToAdd[i], result));
+			}
+		}
+		// TODO End not sure.
+		return nrOfAddedEdges;
 	}
 	
 	public void updatePrefixSharedNode(LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){

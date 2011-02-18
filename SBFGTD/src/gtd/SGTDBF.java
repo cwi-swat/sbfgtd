@@ -124,7 +124,6 @@ public class SGTDBF implements IGTD{
 		return next;
 	}
 	
-	// TODO Fix stack 'overtakes'.
 	private void updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
@@ -191,7 +190,7 @@ public class SGTDBF implements IGTD{
 			return;
 		}
 		
-		
+		int nrOfAddedEdges = next.updateOvertakenNode(node, nodeResult, node.getEdges().size());
 		
 		
 		// TODO Implement.
@@ -202,7 +201,6 @@ public class SGTDBF implements IGTD{
 			propagateReductions(node, nodeResult, next, nextResult);
 			return;
 		}
-		
 		
 		
 		
