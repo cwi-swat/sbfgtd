@@ -236,7 +236,7 @@ public abstract class AbstractStackNode{
 			}
 			
 			if(prefixesMapToAdd == null){
-				int startLocation = edgesMapToAdd.getKey(0);
+				int startLocation = predecessor.getStartLocation();
 				int index = edgesMap.findKey(startLocation);
 				if(index == -1){
 					addPrefix(new Link(null, result), edgesMap.size());
@@ -301,10 +301,9 @@ public abstract class AbstractStackNode{
 			}
 		}
 		
-		// TODO Not sure about this.
 		int nrOfAddedEdges = 0;
 		if(prefixesMapToAdd == null){
-			int startLocation = edgesMapToAdd.getKey(0);
+			int startLocation = predecessor.getStartLocation();
 			int index = edgesMap.findKey(startLocation);
 			if(index == -1){
 				addPrefix(new Link(null, result), edgesMap.size());
@@ -334,7 +333,7 @@ public abstract class AbstractStackNode{
 				prefixes.add(new Link(prefixesMapToAdd[i], result));
 			}
 		}
-		// TODO End not sure.
+		
 		return nrOfAddedEdges;
 	}
 	
