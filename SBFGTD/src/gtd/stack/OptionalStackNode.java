@@ -75,8 +75,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
-		sb.append(',');
-		sb.append('?');
 		sb.append(')');
 		
 		return sb.toString();

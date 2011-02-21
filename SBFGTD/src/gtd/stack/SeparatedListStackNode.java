@@ -91,8 +91,6 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
-		sb.append(',');
-		sb.append('?');
 		sb.append(')');
 		
 		return sb.toString();

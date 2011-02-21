@@ -64,8 +64,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		sb.append(getId());
 		sb.append('(');
 		sb.append(startLocation);
-		sb.append(',');
-		sb.append(startLocation + getLength());
 		sb.append(')');
 		
 		return sb.toString();
