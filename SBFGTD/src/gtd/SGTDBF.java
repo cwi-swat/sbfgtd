@@ -12,6 +12,7 @@ import gtd.util.DoubleStack;
 import gtd.util.HashMap;
 import gtd.util.IntegerKeyedHashMap;
 import gtd.util.LinearIntegerKeyedMap;
+import gtd.util.QuadStack;
 import gtd.util.Stack;
 
 import java.lang.reflect.Method;
@@ -21,24 +22,27 @@ public class SGTDBF implements IGTD{
 	
 	private final Stack<AbstractStackNode>[] todoLists;
 	
-	// Updatable
 	private final ArrayList<AbstractStackNode> stacksToExpand;
 	private Stack<AbstractStackNode> stacksWithTerminalsToReduce;
 	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
-	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
-	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
 	private final HashMap<String, ArrayList<AbstractStackNode>> cachedEdgesForExpect;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
 	
 	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
 	
+	private final QuadStack<AbstractStackNode, AbstractNode, AbstractStackNode, AbstractNode> propagationQueue;
+	
 	private int location;
 	private boolean shiftedLevel;
 	
 	private final HashMap<String, Method> methodCache;
+	
+	// Cached reusable structures
+	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
+	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
 	
 	public SGTDBF(char[] input){
 		super();
@@ -52,8 +56,6 @@ public class SGTDBF implements IGTD{
 		stacksWithNonTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
-		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
-		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
 		cachedEdgesForExpect = new HashMap<String, ArrayList<AbstractStackNode>>();
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
@@ -64,6 +66,11 @@ public class SGTDBF implements IGTD{
 		shiftedLevel = false;
 		
 		methodCache = new HashMap<String, Method>();
+		
+		propagationQueue = new QuadStack<AbstractStackNode, AbstractNode, AbstractStackNode, AbstractNode>();
+		
+		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
+		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
 	}
 	
 	protected void expect(AbstractStackNode... symbolsToExpect){
@@ -101,10 +108,10 @@ public class SGTDBF implements IGTD{
 			if(result.isEmpty()){
 				if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
 					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-					AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
-					if(resultStore != null){
+					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
+					if(nextResult != null){
 						// Encountered stack 'overtake'.
-						propagateEdgesAndPrefixes(node, result, alternative, resultStore, node.getEdges().size());
+						propagationQueue.push(node, result, alternative, nextResult);
 						return alternative;
 					}
 				}
@@ -130,10 +137,10 @@ public class SGTDBF implements IGTD{
 			if(result.isEmpty()){
 				if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
 					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-					AbstractContainerNode resultStore = levelResultStoreMap.get(alternative.getIdentifier());
-					if(resultStore != null){
+					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
+					if(nextResult != null){
 						// Encountered stack 'overtake'.
-						propagateAlternativeEdgesAndPrefixes(node, result, alternative, resultStore, node.getEdges().size(), edgesMap, prefixesMap);
+						// TODO Add alt queue stuff.
 						return;
 					}
 				}
@@ -186,7 +193,6 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	// TODO Fix duplicate problem.
 	private void propagateEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges){
 		if(next.isEndNode()){
 			propagateReductions(node, nodeResult, nextResult, potentialNewEdges);
@@ -211,8 +217,6 @@ public class SGTDBF implements IGTD{
 		}
 		
 		// TODO alts.
-		
-		// TODO Implement.
 	}
 	
 	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
@@ -523,15 +527,29 @@ public class SGTDBF implements IGTD{
 		findFirstStackToReduce();
 		do{
 			do{
-				if(shiftedLevel){ // Nullable fix.
-					sharedNextNodes.clear();
-					resultStoreCache.clear();
-					cachedEdgesForExpect.clear();
+				do{
+					if(shiftedLevel){ // Nullable fix.
+						sharedNextNodes.clear();
+						resultStoreCache.clear();
+						cachedEdgesForExpect.clear();
+					}
+					
+					reduce();
+					
+					expand();
+				}while(!stacksWithNonTerminalsToReduce.isEmpty());
+				
+				while(!propagationQueue.isEmpty()){
+					AbstractStackNode node = propagationQueue.peekFirst();
+					AbstractNode nodeResult = propagationQueue.peekSecond();
+					AbstractStackNode next = propagationQueue.peekThird();
+					AbstractNode nextResult = propagationQueue.popFourth();
+					
+					LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+					
+					propagateEdgesAndPrefixes(node, nodeResult, next, nextResult, edgesMap.size());
 				}
 				
-				reduce();
-				
-				expand();
 			}while(!stacksWithNonTerminalsToReduce.isEmpty());
 		}while(findStacksToReduce());
 		

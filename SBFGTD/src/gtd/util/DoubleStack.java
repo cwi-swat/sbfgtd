@@ -24,13 +24,13 @@ public class DoubleStack<E, F>{
 	}
 	
 	public void enlarge(){
-		E[] oldData = firstData;
+		E[] oldFirst = firstData;
 		firstData = (E[]) new Object[size << 1];
-		System.arraycopy(oldData, 0, firstData, 0, size);
+		System.arraycopy(oldFirst, 0, firstData, 0, size);
 		
-		F[] oldIndexes = secondData;
+		F[] oldSecond = secondData;
 		secondData = (F[]) new Object[size << 1];
-		System.arraycopy(oldIndexes, 0, secondData, 0, size);
+		System.arraycopy(oldSecond, 0, secondData, 0, size);
 	}
 	
 	public void push(E first, F second){
