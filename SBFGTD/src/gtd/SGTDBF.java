@@ -12,7 +12,6 @@ import gtd.util.DoubleStack;
 import gtd.util.HashMap;
 import gtd.util.IntegerKeyedHashMap;
 import gtd.util.LinearIntegerKeyedMap;
-import gtd.util.QuadStack;
 import gtd.util.Stack;
 
 import java.lang.reflect.Method;
@@ -32,8 +31,6 @@ public class SGTDBF implements IGTD{
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
 	
 	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
-	
-	private final QuadStack<AbstractStackNode, AbstractNode, AbstractStackNode, AbstractNode> propagationQueue;
 	
 	private int location;
 	private boolean shiftedLevel;
@@ -66,8 +63,6 @@ public class SGTDBF implements IGTD{
 		shiftedLevel = false;
 		
 		methodCache = new HashMap<String, Method>();
-		
-		propagationQueue = new QuadStack<AbstractStackNode, AbstractNode, AbstractStackNode, AbstractNode>();
 		
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
 		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
@@ -110,8 +105,7 @@ public class SGTDBF implements IGTD{
 					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
 					if(nextResult != null){
-						// Encountered stack 'overtake'.
-						propagationQueue.push(node, result, alternative, nextResult);
+						propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
 						return alternative;
 					}
 				}
@@ -140,7 +134,7 @@ public class SGTDBF implements IGTD{
 					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
 					if(nextResult != null){
 						// Encountered stack 'overtake'.
-						// TODO Add alt queue stuff.
+						propagateAlternativeEdgesAndPrefixes(node, result, alternative, nextResult, edgesMap.size(), edgesMap, prefixesMap);
 						return;
 					}
 				}
@@ -527,29 +521,15 @@ public class SGTDBF implements IGTD{
 		findFirstStackToReduce();
 		do{
 			do{
-				do{
-					if(shiftedLevel){ // Nullable fix.
-						sharedNextNodes.clear();
-						resultStoreCache.clear();
-						cachedEdgesForExpect.clear();
-					}
-					
-					reduce();
-					
-					expand();
-				}while(!stacksWithNonTerminalsToReduce.isEmpty());
-				
-				while(!propagationQueue.isEmpty()){
-					AbstractStackNode node = propagationQueue.peekFirst();
-					AbstractNode nodeResult = propagationQueue.peekSecond();
-					AbstractStackNode next = propagationQueue.peekThird();
-					AbstractNode nextResult = propagationQueue.popFourth();
-					
-					LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
-					
-					propagateEdgesAndPrefixes(node, nodeResult, next, nextResult, edgesMap.size());
+				if(shiftedLevel){ // Nullable fix.
+					sharedNextNodes.clear();
+					resultStoreCache.clear();
+					cachedEdgesForExpect.clear();
 				}
 				
+				reduce();
+				
+				expand();
 			}while(!stacksWithNonTerminalsToReduce.isEmpty());
 		}while(findStacksToReduce());
 		
