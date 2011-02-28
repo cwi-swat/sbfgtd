@@ -41,6 +41,22 @@ public class IntegerList{
 		return false;
 	}
 	
+	public boolean containsBefore(int integer, int limit){
+		for(int i = limit - 1; i >= 0; --i){
+			if(data[i] == integer) return true;
+		}
+		return false;
+	}
+	
+	public boolean containsAfter(int integer, int limit){
+		if(limit >= 0){ // Bounds check elimination helper.
+			for(int i = size - 1; i >= limit; --i){
+				if(data[i] == integer) return true;
+			}
+		}
+		return false;
+	}
+	
 	public int get(int index){
 		return data[index];
 	}

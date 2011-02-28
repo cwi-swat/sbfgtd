@@ -160,5 +160,8 @@ public class RunAll{
 		System.out.println("AmbiguousRecursiveNullable:");
 		AmbiguousRecursiveNullable.main(args);
 		System.out.println();
+		System.out.println("AmbiguousRecursiveNullablePrefixShared:");
+		AmbiguousRecursiveNullablePrefixShared.main(args);
+		System.out.println();
 	}
 }
