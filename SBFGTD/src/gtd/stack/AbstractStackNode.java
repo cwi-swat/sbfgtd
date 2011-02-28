@@ -3,6 +3,7 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.struct.Link;
 import gtd.util.ArrayList;
+import gtd.util.IntegerList;
 import gtd.util.LinearIntegerKeyedMap;
 
 public abstract class AbstractStackNode{
@@ -285,7 +286,7 @@ public abstract class AbstractStackNode{
 		}
 	}
 	
-	public int updateOvertakenNode(AbstractStackNode predecessor, AbstractNode result, int potentialNewEdges){
+	public int updateOvertakenNode(AbstractStackNode predecessor, AbstractNode result, int potentialNewEdges, IntegerList touched){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
 		
@@ -304,10 +305,13 @@ public abstract class AbstractStackNode{
 		int nrOfAddedEdges = 0;
 		if(prefixesMapToAdd == null){
 			int startLocation = predecessor.getStartLocation();
+			if(touched.contains(startLocation)) return 0;
+			
 			int index = edgesMap.findKey(startLocation);
 			if(index == -1){
 				addPrefix(new Link(null, result), edgesMap.size());
 				edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
+				touched.add(startLocation);
 				nrOfAddedEdges = 1;
 			}else{
 				addPrefix(new Link(null, result), index);
@@ -316,11 +320,14 @@ public abstract class AbstractStackNode{
 			int fromIndex = edgesMapToAdd.size() - potentialNewEdges;
 			for(int i = edgesMapToAdd.size() - 1; i >= fromIndex; --i){
 				int startLocation = edgesMapToAdd.getKey(i);
+				if(touched.contains(startLocation)) continue;
+				
 				int index = edgesMap.findKey(startLocation);
 				ArrayList<Link> prefixes;
 				if(index == -1){
 					index = edgesMap.size();
 					edgesMap.add(startLocation, edgesMapToAdd.getValue(i));
+					touched.add(startLocation);
 					
 					prefixes = new ArrayList<Link>(1);
 					prefixesMap[index] = prefixes;
