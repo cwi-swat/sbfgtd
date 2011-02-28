@@ -205,7 +205,6 @@ public class SGTDBF implements IGTD{
 		
 		if(next.isEndNode()){
 			propagateReductions(node, nodeResult, nextResult, potentialNewEdges, touched);
-			return;
 		}
 		
 		int nrOfAddedEdges = next.updateOvertakenNode(node, nodeResult, potentialNewEdges, touched);
@@ -225,7 +224,7 @@ public class SGTDBF implements IGTD{
 		}else{
 			nextNextAlternative.updateNode(next, nextResult);
 		}
-
+		
 		// Handle alternative nexts (and prefix sharing).
 		ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 		if(alternateProds != null){
@@ -248,7 +247,7 @@ public class SGTDBF implements IGTD{
 					
 					AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
 					if(nextAltResultStore != null){
-						propagateAlternativeEdgesAndPrefixes(node, nodeResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+						propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
 					}else{
 						nextNextAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
 					}
@@ -270,7 +269,6 @@ public class SGTDBF implements IGTD{
 		
 		if(next.isEndNode()){
 			propagateReductions(node, nodeResult, nextResult, potentialNewEdges, touched);
-			return;
 		}
 		
 		if(potentialNewEdges != 0){
@@ -311,7 +309,7 @@ public class SGTDBF implements IGTD{
 						
 						AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
 						if(nextAltResultStore != null){
-							propagateAlternativeEdgesAndPrefixes(node, nodeResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
 						}else{
 							nextNextAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
 						}
@@ -367,7 +365,7 @@ public class SGTDBF implements IGTD{
 		AbstractStackNode next = prod[nextDot];
 		next.setProduction(prod);
 		next = updateNextNode(next, node, result);
-
+		
 		// Handle alternative nexts (and prefix sharing).
 		ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 		if(alternateProds != null){
