@@ -542,6 +542,7 @@ public class SGTDBF implements IGTD{
 					sharedNextNodes.clear();
 					resultStoreCache.clear();
 					cachedEdgesForExpect.clear();
+					propagated.clear();
 				}
 				
 				reduce();
