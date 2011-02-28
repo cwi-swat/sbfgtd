@@ -42,7 +42,7 @@ public class SGTDBF implements IGTD{
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
 	
-	private final IntegerKeyedHashMap<IntegerList> propagated;
+	private final LinearIntegerKeyedMap<IntegerList> propagated;
 	
 	public SGTDBF(char[] input){
 		super();
@@ -70,7 +70,7 @@ public class SGTDBF implements IGTD{
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
 		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
 		
-		propagated = new IntegerKeyedHashMap<IntegerList>();
+		propagated = new LinearIntegerKeyedMap<IntegerList>();
 	}
 	
 	protected void expect(AbstractStackNode... symbolsToExpect){
@@ -197,10 +197,10 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void propagateEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges){
-		IntegerList touched = propagated.get(node.getId());
+		IntegerList touched = propagated.findValue(node.getId());
 		if(touched == null){
 			touched = new IntegerList();
-			propagated.put(node.getId(), touched);
+			propagated.add(node.getId(), touched);
 		}
 		
 		int nrOfAddedEdges = next.updateOvertakenNode(node, nodeResult, potentialNewEdges, touched);
@@ -261,10 +261,10 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		IntegerList touched = propagated.get(node.getId());
+		IntegerList touched = propagated.findValue(node.getId());
 		if(touched == null){
 			touched = new IntegerList();
-			propagated.put(node.getId(), touched);
+			propagated.add(node.getId(), touched);
 		}
 		
 		next.updatePrefixSharedNode(edgesMap, prefixesMap);
@@ -625,7 +625,7 @@ public class SGTDBF implements IGTD{
 					sharedNextNodes.clear();
 					resultStoreCache.clear();
 					cachedEdgesForExpect.clear();
-					propagated.clear();
+					propagated.dirtyClear();
 				}
 				
 				reduce();
