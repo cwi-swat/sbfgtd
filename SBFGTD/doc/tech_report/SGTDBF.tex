@@ -694,7 +694,7 @@ Measurements are listed in terms of CPU-time (system + user time) and are gather
 \subsection{Worst case}
 
 The obvious candidate for a benchmark is the following worst-case grammar:
-$S\,::=\,SSS\,|\,SS\,|\,a$\\
+$S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
 input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 
 \begin{table}[H]
@@ -703,16 +703,16 @@ input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
   \hline
   Input chars & Recognize time & Parse time \\
   \hline
-  50 & 4 & 6 \\
-  100 & 18 & 36 \\
-  150 & 60 & 130 \\
-  200 & 154 & 332 \\
-  250 & 322 & 672 \\
-  300 & 596 & 1206 \\
-  350 & 996 & 2018 \\
-  400 & 1534 & 3184 \\
-  450 & 2228 & 4776 \\
-  500 & 3090 & 6880 \\
+  50 & 2 & 4 \\
+  100 & 20 & 40 \\
+  150 & 64 & 140 \\
+  200 & 154 & 344 \\
+  250 & 330 & 684 \\
+  300 & 616 & 1216 \\
+  350 & 1022 & 2012 \\
+  400 & 1566 & 3118 \\
+  450 & 2286 & 4594 \\
+  500 & 3142 & 6510 \\
   \hline
 \end{tabular}
 \caption{Worst-case performance scaling; times are in milliseconds.}
