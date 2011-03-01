@@ -178,13 +178,14 @@ public class SGTDBF implements IGTD{
 		int fromIndex = edgesMap.size() - potentialNewEdges;
 		for(int i = edgesMap.size() - 1; i >= fromIndex; --i){
 			int startLocation = edgesMap.getKey(i);
+			
+			if(touched.contains(startLocation)) continue;
+			touched.add(startLocation);
+			
 			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			
-			if(touched.contains(startLocation)) continue;
-			touched.add(startLocation);
 			
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startLocation);
 			String identifier = edge.getIdentifier();
