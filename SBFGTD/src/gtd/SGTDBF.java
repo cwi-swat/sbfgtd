@@ -162,17 +162,16 @@ public class SGTDBF implements IGTD{
 		
 		int fromIndex = edgesMap.size() - potentialNewEdges;
 		for(int i = edgesMap.size() - 1; i >= fromIndex; --i){
-			int startPosition = edgesMap.getKey(i);
+			int startLocation = edgesMap.getKey(i);
 			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
 			
 			// Update one (because of sharing all will be updated).
 			AbstractStackNode edge = edgesPart.get(0);
-			int startLocation = edge.getStartLocation();
 			
 			if(touched.contains(startLocation)) continue;
 			touched.add(startLocation);
 			
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startPosition);
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startLocation);
 			String identifier = edge.getIdentifier();
 			AbstractContainerNode resultStore = levelResultStoreMap.get(identifier);
 			if(resultStore == null){ // If there are no previous reductions to this level, handle this.
