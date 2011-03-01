@@ -2,6 +2,7 @@ package gtd.bench;
 
 import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
+import gtd.stack.EpsilonStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
 
@@ -9,17 +10,19 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
 /*
-S ::= SSS | SS | a
+S ::= SSS | SS | a | epsilon
 */
 public class WorstCase extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, 2, "S");
 	private final static AbstractStackNode TERMINAL_a5 = new LiteralStackNode(5, 0, new char[]{'a'});
+	private final static AbstractStackNode EP6 = new EpsilonStackNode(6, 0);
 	
 	private final static AbstractStackNode[] SS = new AbstractStackNode[]{NONTERMINAL_S0, NONTERMINAL_S1};
 	private final static AbstractStackNode[] SSS = new AbstractStackNode[]{NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2};
 	private final static AbstractStackNode[] a = new AbstractStackNode[]{TERMINAL_a5};
+	private final static AbstractStackNode[] ep = new AbstractStackNode[]{EP6};
 	
 	public WorstCase(char[] input){
 		super(input);
@@ -31,6 +34,8 @@ public class WorstCase extends SGTDBF{
 		expect(SSS);
 		
 		expect(a);
+		
+		expect(ep);
 	}
 	
 	private final static int ITERATIONS = 5;
