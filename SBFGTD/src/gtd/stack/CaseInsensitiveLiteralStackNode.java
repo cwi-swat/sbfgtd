@@ -32,6 +32,10 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		ciLiteral = original.ciLiteral;
 	}
 	
+	public boolean isEmptyLeafNode(){
+		return ciLiteral.length == 0;
+	}
+	
 	public String getIdentifier(){
 		throw new UnsupportedOperationException();
 	}

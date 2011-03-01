@@ -26,6 +26,10 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		production = original.production;
 	}
 	
+	public boolean isEmptyLeafNode(){
+		return false;
+	}
+	
 	public String getIdentifier(){
 		throw new UnsupportedOperationException();
 	}

@@ -79,6 +79,8 @@ public abstract class AbstractStackNode{
 		return (this instanceof IListStackNode);
 	}
 	
+	public abstract boolean isEmptyLeafNode();
+	
 	public abstract String getIdentifier();
 	
 	public abstract String getName();

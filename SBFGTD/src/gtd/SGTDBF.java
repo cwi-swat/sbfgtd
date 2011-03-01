@@ -106,12 +106,21 @@ public class SGTDBF implements IGTD{
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
-				if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
-					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
-					if(nextResult != null){
-						propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+				if(alternative.isMatchable()){
+					if(alternative.isEmptyLeafNode()){
+						// Encountered stack 'overtake'.
+						propagateEdgesAndPrefixes(node, result, alternative, alternative.getResult(), node.getEdges().size());
 						return alternative;
+					}
+				}else{
+					if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
+						HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+						AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
+						if(nextResult != null){
+							// Encountered stack 'overtake'.
+							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+							return alternative;
+						}
 					}
 				}
 			}
@@ -134,7 +143,13 @@ public class SGTDBF implements IGTD{
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
-				if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
+				if(alternative.isMatchable()){
+					if(alternative.isEmptyLeafNode()){
+						// Encountered stack 'overtake'.
+						propagateAlternativeEdgesAndPrefixes(node, result, alternative, alternative.getResult(), edgesMap.size(), edgesMap, prefixesMap);
+						return;
+					}
+				}else if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
 					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
 					if(nextResult != null){
@@ -218,11 +233,19 @@ public class SGTDBF implements IGTD{
 			if(nextNextAlternative == null) return;
 	
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-			AbstractContainerNode nextNextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
-			if(nextNextResultStore != null){
-				propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextResultStore, nrOfAddedEdges);
+			if(nextNextAlternative.isMatchable()){
+				if(nextNextAlternative.isEmptyLeafNode()){
+					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextAlternative.getResult(), nrOfAddedEdges);
+				}else{
+					nextNextAlternative.updateNode(next, nextResult);
+				}
 			}else{
-				nextNextAlternative.updateNode(next, nextResult);
+				AbstractContainerNode nextNextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
+				if(nextNextResultStore != null){
+					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextResultStore, nrOfAddedEdges);
+				}else{
+					nextNextAlternative.updateNode(next, nextResult);
+				}
 			}
 			
 			// Handle alternative nexts (and prefix sharing).
@@ -246,10 +269,18 @@ public class SGTDBF implements IGTD{
 						AbstractStackNode nextNextAltAlternative = sharedNextNodes.get(alternativeNext.getId());
 						
 						AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
-						if(nextAltResultStore != null){
-							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+						if(nextNextAltAlternative.isMatchable()){
+							if(nextNextAltAlternative.isEmptyLeafNode()){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}else{
-							nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							if(nextAltResultStore != null){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}
 						
 						sharedPrefixNext.add(alternativeNextId, alternativeNext);
@@ -281,11 +312,19 @@ public class SGTDBF implements IGTD{
 			if(nextNextAlternative == null) return;
 
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-			AbstractContainerNode nextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
-			if(nextResultStore != null){
-				propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextResultStore, potentialNewEdges);
+			if(nextNextAlternative.isMatchable()){
+				if(nextNextAlternative.isEmptyLeafNode()){
+					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextAlternative.getResult(), potentialNewEdges);
+				}else{
+					nextNextAlternative.updateNode(next, nextResult);
+				}
 			}else{
-				nextNextAlternative.updateNode(next, nextResult);
+				AbstractContainerNode nextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
+				if(nextResultStore != null){
+					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextResultStore, potentialNewEdges);
+				}else{
+					nextNextAlternative.updateNode(next, nextResult);
+				}
 			}
 
 			// Handle alternative nexts (and prefix sharing).
@@ -307,12 +346,19 @@ public class SGTDBF implements IGTD{
 					AbstractStackNode sharedNext = sharedPrefixNext.findValue(alternativeNextId);
 					if(sharedNext == null){
 						AbstractStackNode nextNextAltAlternative = sharedNextNodes.get(alternativeNext.getId());
-						
-						AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
-						if(nextAltResultStore != null){
-							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+						if(nextNextAlternative.isMatchable()){
+							if(nextNextAlternative.isEmptyLeafNode()){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextNextAltAlternative.getResult(), potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}else{
-							nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
+							if(nextAltResultStore != null){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}
 						
 						sharedPrefixNext.add(alternativeNextId, alternativeNext);

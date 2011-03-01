@@ -34,6 +34,10 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean isEmptyLeafNode(){
+		return false;
+	}
+	
 	public String getMethodName(){
 		throw new UnsupportedOperationException();
 	}
