@@ -1,5 +1,7 @@
 package gtd.util;
 
+import java.util.Iterator;
+
 public class HashMap<K, V>{
 	private Entry<K, V>[] entries;
 
@@ -134,6 +136,20 @@ public class HashMap<K, V>{
 		return null;
 	}
 	
+	public boolean containsKey(K key){
+		int hash = key.hashCode();
+		int position = hash & hashMask;
+		
+		Entry<K, V> entry = entries[position];
+		while(entry != null){
+			if(hash == entry.hash && key.equals(entry.key)) return true;
+			
+			entry = entry.next;
+		}
+		
+		return false;
+	}
+	
 	public V get(K key){
 		int hash = key.hashCode();
 		int position = hash & hashMask;
@@ -167,6 +183,64 @@ public class HashMap<K, V>{
 			this.value = value;
 			this.hash = hash;
 			this.next = next;
+		}
+	}
+	
+	public Iterator<Entry<K, V>> iterator(){
+		return new EntryIterator<K, V>(this);
+	}
+	
+	private static class EntryIterator<K, V> implements Iterator<Entry<K, V>>{
+		private final Entry<K, V>[] data;
+		
+		private Entry<K, V> current;
+		private int index;
+		
+		public EntryIterator(HashMap<K, V> hashMap){
+			super();
+			
+			data = hashMap.entries;
+
+			index = data.length - 1;
+			current = new Entry<K, V>(null, null, -1, data[index]);
+			locateNext();
+		}
+		
+		private void locateNext(){
+			Entry<K, V> next = current.next;
+			if(next != null){
+				current = next;
+				return;
+			}
+			
+			for(int i = index - 1; i >= 0 ; i--){
+				Entry<K, V> entry = data[i];
+				if(entry != null){
+					current = entry;
+					index = i;
+					return;
+				}
+			}
+			
+			current = null;
+			index = 0;
+		}
+		
+		public boolean hasNext(){
+			return (current != null);
+		}
+		
+		public Entry<K, V> next(){
+			if(!hasNext()) throw new UnsupportedOperationException("There are no more elements in this iterator.");
+			
+			Entry<K, V> entry = current;
+			locateNext();
+			
+			return entry;
+		}
+		
+		public void remove(){
+			throw new UnsupportedOperationException("This iterator doesn't support removal.");
 		}
 	}
 }

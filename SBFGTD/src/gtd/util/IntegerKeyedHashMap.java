@@ -124,6 +124,19 @@ public class IntegerKeyedHashMap<V>{
 		return null;
 	}
 	
+	public boolean containsKey(int key){
+		int position = key & hashMask;
+		
+		Entry<V> entry = entries[position];
+		while(entry != null){
+			if(entry.key == key) return true;
+			
+			entry = entry.next;
+		}
+		
+		return false;
+	}
+	
 	public V get(int key){
 		int position = key & hashMask;
 		
@@ -201,10 +214,10 @@ public class IntegerKeyedHashMap<V>{
 		private Entry<V> current;
 		private int index;
 		
-		public EntryIterator(IntegerKeyedHashMap<V> shareableValuesHashMap){
+		public EntryIterator(IntegerKeyedHashMap<V> integerKeyedHashMap){
 			super();
 			
-			data = shareableValuesHashMap.entries;
+			data = integerKeyedHashMap.entries;
 
 			index = data.length - 1;
 			current = new Entry<V>(-1, null, data[index]);
