@@ -230,7 +230,7 @@ public class SGTDBF implements IGTD{
 		if(nrOfAddedEdges == 0) return;
 		
 		if(next.isEndNode()){
-			propagateReductions(node, nodeResult, nextResult, potentialNewEdges, touched);
+			propagateReductions(node, nodeResult, nextResult, nrOfAddedEdges, touched);
 		}
 		
 		if(next.hasNext()){
@@ -280,13 +280,13 @@ public class SGTDBF implements IGTD{
 						AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
 						if(nextNextAltAlternative.isMatchable()){
 							if(nextNextAltAlternative.isEmptyLeafNode()){
-								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
 							}else{
 								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
 							}
 						}else{
 							if(nextAltResultStore != null){
-								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, potentialNewEdges, nextEdgesMap, nextPrefixesMap);
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
 							}else{
 								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
 							}
