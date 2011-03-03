@@ -197,7 +197,7 @@ We would expand these rules in the following way:
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Cycles}
-Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reduction for each node once.
+Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reductions for each node once.
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
