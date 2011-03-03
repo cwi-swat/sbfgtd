@@ -213,7 +213,8 @@ After the first expansion and reduction phase, we matched both $.C$ and the $.AA
 In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsubsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
 TODO: Discuss more cases (related to merging and precedence / ordering and such).\\
--Problems with hidden right recursion \& Stack overtakes.
+-Problems with hidden right recursion \& Stack overtakes.\\
+-Update propagation (prefixes and reductions).
 
 \subsubsection{Termination}
 One of the main questions that some people will have on their minds is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing expansion and reduction to converge to a point where no more work can be done in a level, we reach the end of the input string at some point (assuming the input string has a finite length as well).
@@ -476,7 +477,7 @@ Since the conversion of our recognizer to a parser is so trivial, the parser is 
 \subsubsection{Hidden right recursion}
 The reason for complications related to hidden right recursion is that multiple iterations within the same level are possible. This could cause results to `go missing'. The only thing that needs to be done to fix this, is to check whether or not the next node is the last node in the production and is a nullable with results, in case the current node is also a nullable. If this is true, we need to construct the necessary result nodes and add them to their corresponding parents. This is a fairly general description of how to solve it, since the best way to handle this issue may differ per implementation. All that is needed is that the implementor is aware of this issue and takes it under consideration.
 
-TODO: Clarify; maybe rewrite?
+TODO: Rewrite after update to the related recognizer part.
 
 \subsection{Worst-case complexity}
 We looked at the worst-case behaviour of the recognizer in section \ref{subsec:recognizerComplexity} and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
