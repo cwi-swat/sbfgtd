@@ -42,7 +42,8 @@ public class SGTDBF implements IGTD{
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedLastExpects;
 	private final LinearIntegerKeyedMap<AbstractStackNode> sharedPrefixNext;
 	
-	private final LinearIntegerKeyedMap<IntegerList> propagated;
+	private final LinearIntegerKeyedMap<IntegerList> propagatedPrefixes;
+	private final LinearIntegerKeyedMap<IntegerList> propagatedReductions;
 	
 	public SGTDBF(char[] input){
 		super();
@@ -70,7 +71,8 @@ public class SGTDBF implements IGTD{
 		sharedLastExpects = new LinearIntegerKeyedMap<AbstractStackNode>();
 		sharedPrefixNext = new LinearIntegerKeyedMap<AbstractStackNode>();
 		
-		propagated = new LinearIntegerKeyedMap<IntegerList>();
+		propagatedPrefixes = new LinearIntegerKeyedMap<IntegerList>();
+		propagatedReductions = new LinearIntegerKeyedMap<IntegerList>();
 	}
 	
 	protected void expect(AbstractStackNode... symbolsToExpect){
@@ -171,7 +173,13 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void propagateReductions(AbstractStackNode node, AbstractNode nodeResultStore, AbstractNode nextResultStore, int potentialNewEdges, IntegerList touched){
+	private void propagateReductions(AbstractStackNode node, AbstractNode nodeResultStore, AbstractStackNode next, AbstractNode nextResultStore, int potentialNewEdges){
+		IntegerList touched = propagatedReductions.findValue(next.getId());
+		if(touched == null){
+			touched = new IntegerList();
+			propagatedReductions.add(next.getId(), touched);
+		}
+		
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixes = node.getPrefixesMap();
 		
@@ -220,17 +228,17 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void propagateEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges){
-		IntegerList touched = propagated.findValue(node.getId());
+		IntegerList touched = propagatedPrefixes.findValue(node.getId());
 		if(touched == null){
 			touched = new IntegerList();
-			propagated.add(node.getId(), touched);
+			propagatedPrefixes.add(node.getId(), touched);
 		}
 		
 		int nrOfAddedEdges = next.updateOvertakenNode(node, nodeResult, potentialNewEdges, touched);
 		if(nrOfAddedEdges == 0) return;
 		
 		if(next.isEndNode()){
-			propagateReductions(node, nodeResult, nextResult, nrOfAddedEdges, touched);
+			propagateReductions(node, nodeResult, next, nextResult, nrOfAddedEdges);
 		}
 		
 		if(next.hasNext()){
@@ -300,16 +308,16 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		IntegerList touched = propagated.findValue(node.getId());
+		IntegerList touched = propagatedPrefixes.findValue(node.getId());
 		if(touched == null){
 			touched = new IntegerList();
-			propagated.add(node.getId(), touched);
+			propagatedPrefixes.add(node.getId(), touched);
 		}
 		
 		next.updatePrefixSharedNode(edgesMap, prefixesMap);
 		
 		if(next.isEndNode()){
-			propagateReductions(node, nodeResult, nextResult, potentialNewEdges, touched);
+			propagateReductions(node, nodeResult, next, nextResult, potentialNewEdges);
 		}
 		
 		if(potentialNewEdges != 0 && next.hasNext()){
@@ -414,6 +422,52 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
+	private void updateNullableEdges(AbstractStackNode node, AbstractNode result){
+		IntegerList touched = propagatedReductions.findValue(node.getId());
+		if(touched == null){
+			touched = new IntegerList();
+			propagatedReductions.add(node.getId(), touched);
+		}
+		
+		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
+		
+		for(int i = edgesMap.size() - 1; i >= 0; --i){
+			int startLocation = edgesMap.getKey(i);
+			ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
+			
+			if(touched.contains(startLocation)) continue;
+			touched.add(startLocation);
+			
+			AbstractStackNode edge = edgeList.get(0);
+			String identifier = edge.getIdentifier();
+			String nodeName = edge.getName();
+			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
+			AbstractContainerNode resultStore = null;
+			if(levelResultStoreMap != null){
+				resultStore = levelResultStoreMap.get(identifier);
+			}else{
+				levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
+				resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
+			}
+			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
+			if(resultStore != null){
+				resultStore.addAlternative(resultLink);
+			}else{
+				resultStore = (!edge.isList()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
+				levelResultStoreMap.putUnsafe(identifier, resultStore);
+				resultStore.addAlternative(resultLink);
+				
+				stacksWithNonTerminalsToReduce.push(edge, resultStore);
+				
+				for(int j = edgeList.size() - 1; j >= 1; --j){
+					edge = edgeList.get(j);
+					stacksWithNonTerminalsToReduce.push(edge, resultStore);
+				}
+			}
+		}
+	}
+	
 	private void moveToNext(AbstractStackNode node, AbstractNode result){
 		int nextDot = node.getDot() + 1;
 
@@ -457,7 +511,11 @@ public class SGTDBF implements IGTD{
 	
 	private void move(AbstractStackNode node, AbstractNode result){
 		if(node.isEndNode()){
-			updateEdges(node, result);
+			if(!result.isEmpty()){
+				updateEdges(node, result);
+			}else{
+				updateNullableEdges(node, result);
+			}
 		}
 		
 		if(node.hasNext()){
@@ -679,7 +737,8 @@ public class SGTDBF implements IGTD{
 					sharedNextNodes.clear();
 					resultStoreCache.clear();
 					cachedEdgesForExpect.clear();
-					propagated.dirtyClear();
+					propagatedPrefixes.dirtyClear();
+					propagatedReductions.dirtyClear();
 				}
 				
 				reduce();
