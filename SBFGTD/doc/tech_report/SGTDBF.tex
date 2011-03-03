@@ -663,7 +663,7 @@ Priorities and associativity restrictions are implemented as `don't nest' relati
 
 The current implementation handles priority and associativity filtering completely at parse time. While reducing, it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it is stored in a result node that is identified by the sort name of the non-terminal of the node the edge points to and the set of `don't nest' relations associated with this node. This is because the result needs to be shared between all non-terminals with the same sort and `don't nest' relations. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here $.E + E$ and $.E - E$ would be derived in the same way and thus should share their parse results, just as $E+.E$ and $E-.E$, since their `don't nest' relations are identical.
 
-The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance.
+The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant.
 
 There is a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the node's outgoing edges at every reduction to check whether or not the nesting is allowed. There is a tradeoff here and it will depend on the grammar whether or not the loss of this optimization can be compensated by what we gain by doing priority and associativity filtering at parse time, opposed to implementing it as a post-parse filter. In our opinion this should be the case for most `real' grammars.
 
@@ -697,30 +697,9 @@ The obvious candidate for a benchmark is the following worst-case grammar:
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
 input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{ | p{5em} | p{7em} | p{6em} | }
-  \hline
-  Input chars & Recognize time & Parse time \\
-  \hline
-  50 & 2 & 4 \\
-  100 & 20 & 40 \\
-  150 & 64 & 140 \\
-  200 & 154 & 344 \\
-  250 & 330 & 684 \\
-  300 & 616 & 1216 \\
-  350 & 1022 & 2012 \\
-  400 & 1566 & 3118 \\
-  450 & 2286 & 4594 \\
-  500 & 3142 & 6510 \\
-  \hline
-\end{tabular}
-\caption{Worst-case performance scaling; times are in milliseconds.}
-\end{table}
-
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{worst-case.png}
+\includegraphics[scale=0.35]{worst-case.png}
 \caption{Worst-case recognizer and parser performance scaling.}
 \end{figure}
 
