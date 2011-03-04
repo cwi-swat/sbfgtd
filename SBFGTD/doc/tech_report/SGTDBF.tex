@@ -484,7 +484,7 @@ We also need a function for creating {\bf results}. Every time a result is creat
 Since the conversion of our recognizer to a parser is so trivial, the parser is as correct as the recognizer. The only difference, as mentioned before, is the handling of hidden right recursion.
 
 \subsubsection{Hidden right recursion}
-As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we don't run into any real issues here. We just need to ensure we also propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}.
+As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Worst-case complexity}
 We looked at the worst-case behaviour of the recognizer in section \ref{subsec:recognizerComplexity} and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
