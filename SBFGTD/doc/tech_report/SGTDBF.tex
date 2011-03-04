@@ -212,9 +212,16 @@ After the first expansion and reduction phase, we matched both $.C$ and the $.AA
 
 In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsubsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
-TODO: Discuss more cases (related to merging and precedence / ordering and such).\\
--Problems with hidden right recursion \& Stack overtakes.\\
--Update propagation (prefixes and reductions).
+Unfortunately this only solves one of the two nullable related problems. The other issue that needs to be resolved is related to hidden right recursion.
+
+Consider the following grammar:\\
+$S ::= SS | a | \epsilon$\\
+Input = $a$\\
+Imagine we matched the first part of the tree and are at level $1$ now. We are trying to recognize $.SS$ and $S.S$, where $S.S$ has a prefix that starts at $0$. This means $.SS$ only has edges that point to nodes in level $1$ and $S.S$ only has edges that point to nodes in level $0$. The problem is that the order in which we handle these two nodes will determine whether or not we recognize all derivations. If we would move from $S.S$ to $SS.$ first and follow all the associated edges to level $0$, we would miss the reductions to level $1$, since the edges from $.SS$ are will not have been added to $S.S$ before the $SS.$ node is handled. On the other hand, if we would move from $.SS$ to $S.S$ first, the stacks would merge before any reductions for this production are executed. In this case $S.S$ would contain edges to both the nodes in level $0$ as the ones in $1$ before we move to $SS.$, which does lead to a correct result.
+
+This order dependency is something we cannot enforce for certain grammars, so we need another solution for this problem. We solved this by propagating edges forward through the production. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this is the case, we tranfer all edges that are absent on the next node to it. If missing edges where transfered, we need to continue their propagation to the node beyond this next node and so on until the last node in the production is reached. For each edge that is tranfered to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be found. Also note that, since this propagation only happens within a single level and does not cause extra edge visits it does not influence worst-case behaviour.
+
+TODO: Add performance impact analysis: virtually none.
 
 \subsubsection{Termination}
 Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing expansion and reduction to converge to a point where no more work can be done in a level, we reach the end of the input string at some point (assuming the input string has a finite length as well).
@@ -243,7 +250,7 @@ First we will take a look at a simple non-ambiguous grammar:\\
 $S ::= AB$\\
 $A ::= a$\\
 $B ::= b$\\
-input = $ab$
+Input = $ab$
 
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -269,7 +276,7 @@ This one is easy to follow and does not really need any additional explanation.
 Next up is a grammar containing a left-recursive rule:\\
 $S ::= A$\\
 $A ::= Aa\,|\,a$\\
-input = $aaa$
+Input = $aaa$
 
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
@@ -322,7 +329,7 @@ Note however, that the parser forest contains an exact representation of what th
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
 $S\,::=\,AAA$\\
 $A\,::=\,a\,|\,aa$\\
-input = $aaaa$
+Input = $aaaa$
 
 \begin{figure}[H]
 \centering
@@ -489,7 +496,7 @@ We have already theoreticly proven that the recognizer / parser will be $O(N^3)$
 
 We will give an overview of the most relevant parser statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
-input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
+Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
 \begin{table}[H]
 \centering
@@ -696,7 +703,7 @@ Measurements are listed in terms of CPU-time (system + user time) and are gather
 
 The obvious candidate for a benchmark is the following worst-case grammar:
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
-input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
+Input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
 
 \begin{figure}[H]
 \centering
@@ -711,7 +718,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on worst-case grammars without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-factored non-prefix-shared version, a non-factored prefix-shared version and a left-factored version. The original grammar is the following:\\
 $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
-input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
+Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
 
 It contains lots of left-recursion and is highly ambiguous; the input, on the other hand, is not ambiguous. Normally one would expect non-linear performance when parsing a string for this grammar. However, as can be seen in the graph below this is not the case. Performance seems to scale perfectly linear regardless of how the grammar is factored.
 
@@ -733,7 +740,7 @@ We used the following basic LR grammar for our benchmark:\\
 $S ::= E$\\
 $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
-input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $100000$ character intervals.
+Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $100000$ character intervals.
 
 We compared our performance results with JavaCup, which was used in combination with JFlex. We selected JavaCup, since it is one of the more widely known and used parser generators that produce LALR parsers in Java.
 
