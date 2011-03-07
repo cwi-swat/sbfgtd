@@ -40,9 +40,10 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Low stack activity.
  \item Generating or hand crafting the recognizer / parser code is trivial.
  \item Parse traces are easy to visualize.
+ \item Generating understandable error reports is trivial.
 \end{itemize}
 
-For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require any extra work, unlike what is necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature.
+For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require much work, unlike what is generally necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature.
 
 We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
@@ -73,7 +74,7 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
 \pagebreak
 \subsection{Pseudocode}
 
-In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. The hidden right recursion fix, dicussed in section \ref{subsec:hiddenRightRecursion}, was left out as well for the same reason. On the other hand, the nullable fix dicussed in section \ref{subsec:nullables} is present.
+In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. For the same reason, the hidden right recursion fix, discussed in section \ref{subsec:hiddenRightRecursion}, was left out here as well. On the other hand, the nullable fix described in section \ref{subsec:nullables} is present.
 
 \subsubsection{Main}
 {\small
@@ -319,6 +320,10 @@ Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N^2)$ 
 
 This means that the algorithm remains within cubic time bounds in worst-case scenarios.
 
+\subsection{Error reporting}
+
+Finally we would also like to note the relative ease with which understandable error reports can be generated. When a parse error is encountered it is trivial to generate all possible traces back to the root from the current level, since we have all this information present in the graph. In these traces a user can exactly see where recognition failed, but also what did match up until this point.
+
 \section{Parser}
 
 \subsection{Parse forest}
@@ -329,7 +334,6 @@ The parse forest consists of nodes. Every node in the forest contains a result a
 
 Note however, that the parser forest contains an exact representation of what the parser recognized. This means it can contains cycles.
 
-\pagebreak
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
 $S\,::=\,AAA$\\
