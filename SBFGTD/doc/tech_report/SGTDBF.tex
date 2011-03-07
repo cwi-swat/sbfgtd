@@ -535,6 +535,7 @@ The number of graph nodes and number of edges scale linear with respect to the l
 
 Looking at the parse tree related statistics we can see that the number of results increases by $N$ for every extra character in the input string. Which is because the number of results is equal to the number of different substrings in the input, in this case. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
+\pagebreak
 \subsubsection{Flattening}
 Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{chap:filtering}.
 
@@ -595,7 +596,7 @@ Finally we would like to note that (eventhough it is mandatory for the correctne
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
-Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not be an advantage, however we would be able to share edges among graph nodes and it opens up numereous other opportunities for optimization.
+Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numereous other opportunities for optimization.
 
 \subsubsection{Expansion}
 \label{subsec:nodeExpansionOptimization}
@@ -633,11 +634,14 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
  \item $.E+E$ $\Rightarrow$ $E$ edges += $.E+E$
  \item $.E-E$ $\Rightarrow$ $E$ edges += $.E-E$
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfSorts}$. Originally, without sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfSorts}$. Originally, without this kind of sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
 
-\subsubsection{Reduction}
+\subsubsection{Sharing}
+Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansionOptimization}, are uniquely associated with a level and a certain non-terminal sort, we can reuse these sets of edges for each node in the production. When moving to the `next' node in a production we transfer each of the sets of edges to this `next' node, depending whether or not it is present yet; if a set of edges is present for a certain level in this `next' node, it is guaranteed to be the exact same set of edges as we are trying to add. Because of this guarantee, it will never be necessary to duplicate these sets or any of its content. So in any scenario the worst-case number of edges that will be constructed during a parse will never exceed $N\,*\,\mathit{numberOfSorts}$ in total. This is quite an improvement over the original ${N}^2\,*\,\mathit{numberOfProductions}^2$.
+
+\subsubsection{Visiting}
 \label{subsec:edgeVisitOptimization}
 As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the alternative's results, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced or not, without having to execute any additional sharing checks.
 
@@ -727,7 +731,7 @@ It contains lots of left-recursion and is highly ambiguous; the input, on the ot
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{grammar-factoring.png}
+\includegraphics[scale=0.55]{grammar-factoring.png}
 \caption{Grammar factoring related parse time scaling; without look-ahead filtering.}
 \end{figure}
 
@@ -790,6 +794,7 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
+\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
