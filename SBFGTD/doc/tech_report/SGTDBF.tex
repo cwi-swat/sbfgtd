@@ -73,7 +73,7 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
 \pagebreak
 \subsection{Pseudocode}
 
-In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor.
+In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. The hidden right recursion fix, dicussed in section \ref{subsec:hiddenRightRecursion}, was left out as well for the same reason. On the other hand, the nullable fix dicussed in section \ref{subsec:nullables} is present.
 
 \subsubsection{Main}
 {\small
@@ -106,8 +106,8 @@ Note that the {\bf toReduceStore} needs to be implemented as an array or table w
 Also note that after each iteration all graph nodes that are no longer reachable through any of the nodes in the {\bf toReduceStore}, can be discarded.
 
 \pagebreak
-\subsubsection{Expand}
-\label{subsubsec:psuedocodeExpand}
+\subsubsection{Expansion}
+\label{subsec:psuedocodeExpand}
 {\small
 \begin{verbatim}
 expand(){
@@ -144,7 +144,7 @@ This is the expand loop. It will iterate over the {\bf toExpandSet} until there 
 Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
 
 \pagebreak
-\subsubsection{Reduce}
+\subsubsection{Reduction}
 {\small
 \begin{verbatim}
 reduce(){
@@ -213,7 +213,7 @@ $C ::= \epsilon$\\
 Input = <empty>\\
 After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
 
-In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsubsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
+In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
 \subsubsection{Hidden right recursion}
 \label{subsec:hiddenRightRecursion}
@@ -394,7 +394,7 @@ The only things that need to be changed in the main function to transform the re
 Note that, like the {\bf reducedStore}, the {\bf resultStore} is a dual layered data structure. The first layer is indexed by the {\bf start location} of the result and the second layer by the sort of a non-terminal. In each level the {\bf resultStore} can contain a variant for every non-terminal for each possible substring up until the current location. The first layer of the {\bf resultStore} needs to be implemented as an array or table with O(1) look-up time; otherwise it is not possible to guarantee worst-case cubic time complexity.
 
 \pagebreak
-\subsubsection{Expand}
+\subsubsection{Expansion}
 {\small
 \begin{alltt}
 expand()\{
@@ -429,7 +429,7 @@ expand()\{
 The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context the {\bf resultStore} serves a similar function as the {\bf reducedStore} in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
 
 \pagebreak
-\subsubsection{Reduce}
+\subsubsection{Reduction}
 {\small
 \begin{alltt}
 reduce()\{
