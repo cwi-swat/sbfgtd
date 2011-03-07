@@ -85,6 +85,7 @@ main(){
   while(hasMoreStacksToReduce(toReduceStore)){
     expandedSet.clear();
     reducedStore.clear();
+    sharedNextSet.clear();
     toReduceSet = getStacksToReduce(toReduceStore);
     
     do{
@@ -130,7 +131,7 @@ expand(){
       edgesSet.addEdge(node);
       
       if(reducedStore.contains(node.sort)){
-        toReduceStore.add(node);
+        toReduceSet.add(node);
       }
     }
   }
@@ -140,7 +141,7 @@ expand(){
 
 This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we check if there is a cached set of edges available for that non-terminal sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We to this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, which may be updated with additional edges later on in the expansion process.
 
-Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
+Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
 
 \pagebreak
 \subsubsection{Reduce}
@@ -162,9 +163,10 @@ reduce(){
     }else if(node.hasNext()){
       next = node.next.initialize(location);
       
-      if(toExpandSet.notContains(next)){ // Sharing
-        next = toExpandSet.get(next);
+      if(sharedNextSet.contains(next)){ // Sharing
+        next = sharedNextSet.get(next);
       }else{
+        sharedNextSet.add(next);
         toExpandSet.add(next);
       }
       next.addEdges(node.edges);
@@ -174,7 +176,7 @@ reduce(){
 \end{verbatim}
 }
 
-This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's `parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. In case the `next' node has already been scheduled for expansion we need to retrieve the equivalent `next' node from the {\bf toExpandSet} and add the edges to that node instead, for sharing purposes.
+This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stacks queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's `parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead.
 
 The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by consulting the {\bf reducedStore}. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level. Note that this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar).
 
@@ -201,8 +203,9 @@ Cycles present another issue that needs to be handled. Similarly to left recursi
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
-Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a production contains two or more consecutive nullables, hidden left recursive or otherwise, problems arrise. These problems are sharing related. First we will describe what would happen in the naïve / broken implementation.
+Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a production contains two or more consecutive nullables, hidden left / right recursive or otherwise, problems arrise. The first of these problems is sharing related.
 
+We will describe the issue by illustrating what would happen in the naïve / broken implementation of the algorithm.
 Consider the following grammar:\\
 $S ::= AA$\\
 $A ::= C$\\
@@ -219,11 +222,11 @@ Unfortunately this only solves one of the two nullable related problems. The oth
 Consider the following grammar:\\
 $S\,::=\,SS\,|\,a\,|\,\epsilon$\\
 Input = $a$\\
-Imagine we matched the first part of the tree and are at level $1$ now. We are trying to recognize $.SS$ and $S.S$, where $S.S$ has a prefix that starts at $0$. This means $.SS$ only has edges that point to nodes in level $1$ and $S.S$ only has edges that point to nodes in level $0$. The problem is that the order in which we handle these two nodes will determine whether or not we recognize all derivations. If we would move from $S.S$ to $SS.$ first and follow all the associated edges to level $0$, we would miss the reductions to level $1$, since the edges from $.SS$ are will not have been added to $S.S$ before the $SS.$ node is handled. On the other hand, if we would move from $.SS$ to $S.S$ first, the stacks would merge before any reductions for this production are executed. In this case $S.S$ would contain edges to both the nodes in level $0$ as the ones in $1$ before we move to $SS.$, which does lead to a correct result.
+Imagine we matched the first part of the tree and are at level $1$ now. We are trying to recognize $.SS$ and $S.S$, where $S.S$ has a prefix that starts at $0$. This means $.SS$ only has edges that point to nodes in level $1$ and $S.S$ only has edges that point to nodes in level $0$. The problem is that the order in which we handle these two nodes will determine whether or not we recognize all derivations. If we would move from $S.S$ to $SS.$ first, $SS.$ will only have edges to level $0$ associated with it, so this will cause us to miss the reductions to level $1$ when $SS.$ is handled. This happens because the stack merge at $S.S$ took place after $S.S$ is handled; this prevents the edges present on $.SS$ from being transfered, through $S.S$, to $SS.$. On the other hand, if we would move from $.SS$ to $S.S$ first, the stacks would merge before $S.S$ is handled. In this case $S.S$ would contain edges to both the nodes in level $0$ as the ones in $1$ before we move to $SS.$, which does lead to a correct result.
 
-This order dependency is something we cannot enforce for certain grammars, so we need another solution for this problem. We solved this by propagating edges forward through the production. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this is the case, we tranfer all edges that are absent on the next node to it. If missing edges where transfered, we need to continue their propagation to the node beyond this next node and so on until the last node in the production is reached. For each edge that is tranfered to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be found.
+This order dependency is something we cannot enforce, so we need another solution for this problem. We solved this by propagating edges forward through the production. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production, we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this next node is both hanlded and has nullable derivations associated with it, we tranfer all edges that are absent on this next node to it. If missing edges were transferred, we need to continue the propagation of these transferred edges to the node beyond this next node and so on until the last node in the production is reached. For each edge that is transferred to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be traversed.
 
-Also note that, since this propagation only happens within a single level and does not cause extra edge visits it does not influence worst-case behaviour. Furthermore, the performance impact of this solution will be very low in general; as good as non-existent in cases without hidden right recursion, since the only extra work is one cheap constant time check for each node visit. In cases where hidden right recursion is present there is no real extra work either, as all stack merges would have happened anyway. The only difference is that the same amount of work possibly gets distributed over multiple visits of the same node.
+Also note that, since this propagation only happens within a single level and does not introduce extra work, it does not influence worst-case behaviour. All stack merges would have happened regardless of their timing; the only difference is that the exact same amount of work they normally generate gets distributed over multiple visits of the same node. Consequently, the performance impact of this solution is very low in general; close to non-existent even, since the only real extra work is one cheap constant time check on each node visit.
 
 \subsubsection{Termination}
 Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing expansion and reduction to converge to a point where no more work can be done in a level, we reach the end of the input string at some point (assuming the input string has a finite length as well).
@@ -370,6 +373,7 @@ main()\{
   while(hasMoreStacksToReduce())\{
     expandedSet.clear();
     resultStore.clear();
+    sharedNextSet.clear();
     toReduceSet = getStacksToReduce();
     
     do\{
@@ -445,9 +449,10 @@ reduce()\{
     \}else if(node.hasNext())\{
       next = node.next.initialize(location);
       
-      if(expandedSet.notContains(next))\{ // Sharing
-        next = expandedSet.get(next);
+      if(sharedNextSet.contains(next))\{ // Sharing
+        next = sharedNextSet.get(next);
       \}else\{
+        sharedNextSet.add(next);
         toExpandSet.add(next);
       \}
       next.addEdges(node.edges);\textit{
@@ -484,7 +489,7 @@ We also need a function for creating {\bf results}. Every time a result is creat
 Since the conversion of our recognizer to a parser is so trivial, the parser is as correct as the recognizer. The only difference, as mentioned before, is the handling of hidden right recursion.
 
 \subsubsection{Hidden right recursion}
-As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}.
+As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also properly propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Worst-case complexity}
 We looked at the worst-case behaviour of the recognizer in section \ref{subsec:recognizerComplexity} and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
