@@ -736,7 +736,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 Our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
-What may appear to be surprising is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved to handle them is almost negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
+What may appear to be surprising is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is almost negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Grammar factoring}
 
