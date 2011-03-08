@@ -710,19 +710,33 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
+\pagebreak
 \subsection{Worst case}
 
-The obvious candidate for a benchmark is the following worst-case grammar:
+The obvious candidates for a benchmark are the following worst-case grammars:
+$S\,::=\,SSS\,|\,SS\,|\,a$\\
+And:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
-Input = $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
+With as input:\\
+$a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
+
+Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of increased memory footprint).
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{worst-case.png}
-\caption{Worst-case recognizer and parser performance scaling.}
+\caption{$S\,::=\,SSS\,|\,SS\,|\,a$ recognizer and parser performance scaling.}
 \end{figure}
 
-Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of increased memory footprint). Regardless of this, our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{worst-case_with-epsilon.png}
+\caption{$S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$ recognizer and parser performance scaling.}
+\end{figure}
+
+Our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
+
+What may appear to be surprising is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved to handle them is almost negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Grammar factoring}
 
@@ -798,7 +812,6 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and thus have a major performance advantage.
 
-\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
