@@ -727,15 +727,15 @@ public class SGTDBF implements IGTD{
 		
 		findFirstStackToReduce();
 		do{
+			if(shiftedLevel){ // Nullable fix.
+				sharedNextNodes.clear();
+				resultStoreCache.clear();
+				cachedEdgesForExpect.clear();
+				propagatedPrefixes.dirtyClear();
+				propagatedReductions.dirtyClear();
+			}
+			
 			do{
-				if(shiftedLevel){ // Nullable fix.
-					sharedNextNodes.clear();
-					resultStoreCache.clear();
-					cachedEdgesForExpect.clear();
-					propagatedPrefixes.dirtyClear();
-					propagatedReductions.dirtyClear();
-				}
-				
 				reduce();
 				
 				expand();
