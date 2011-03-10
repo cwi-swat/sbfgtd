@@ -57,7 +57,7 @@ We need multiple iterations in the same level, which complicates sharing.
 
 \subsubsection{Hidden right recursion}
 
-Propagate node updates forwards (update prefixes of next node(s) and execute reductions where needed).
+Propagate node updates forwards and execute reductions where needed.
 
 \subsubsection{Termination}
 
@@ -102,8 +102,7 @@ Cycle in Graph, means cycle in forest as well; so no problem.
 
 \subsubsection{Hidden right recursion}
 
-Fixable problem; just deal with it.\\
-Caused by nullables and multiple iterations in the recognizer to handle them.
+Propagate prefixes properly as well.
 
 \subsubsection{Psuedocode}
 

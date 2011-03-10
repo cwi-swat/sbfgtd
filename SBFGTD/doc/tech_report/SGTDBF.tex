@@ -74,7 +74,7 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
 \pagebreak
 \subsection{Pseudocode}
 
-In this section we will present and discuss the recognizer's psuedocode. Note however that this psuedocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code presented here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. For the same reason, the hidden right recursion fix, discussed in section \ref{subsec:hiddenRightRecursion}, was left out here as well. On the other hand, the nullable fix described in section \ref{subsec:nullables} is present.
+In this section we will present and discuss the recognizer's pseudocode. Note however that this pseudocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code presented here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. For the same reason, the hidden right recursion fix, discussed in section \ref{subsec:hiddenRightRecursion}, was left out here as well. On the other hand, the nullable fix described in section \ref{subsec:nullables} is present.
 
 \subsubsection{Main}
 {\small
@@ -108,7 +108,7 @@ Also note that after each iteration all graph nodes that are no longer reachable
 
 \pagebreak
 \subsubsection{Expansion}
-\label{subsec:psuedocodeExpand}
+\label{subsec:pseudocodeExpand}
 {\small
 \begin{verbatim}
 expand(){
@@ -214,7 +214,7 @@ $C ::= \epsilon$\\
 Input = <empty>\\
 After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
 
-In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:psuedocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
+In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:pseudocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
 \subsubsection{Hidden right recursion}
 \label{subsec:hiddenRightRecursion}
@@ -363,7 +363,7 @@ S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \end{table}
 
 \pagebreak
-\subsection{Psuedocode}
+\subsection{Pseudocode}
 
 Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italic.
 
@@ -688,7 +688,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities (like C typedefs) or filter alternatives that cannot be disambiguated using priorities. I will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of action into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
+Each grammar rule can have a number of actions associated with it. These actions can be used to disambiguate non-context-free ambiguities (like C typedefs) or filter alternatives that cannot be disambiguated using priorities. I will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of actions into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
 
 \section{Benchmarks}
 
