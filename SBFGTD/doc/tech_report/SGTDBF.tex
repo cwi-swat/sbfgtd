@@ -332,9 +332,9 @@ To represent the parse forest we use a format that was especially designed for t
 
 The parse forest consists of nodes. Every node in the forest contains a result and a set of prefixes. Each result represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contains one or more references to alternative representations of the substring it denotes. If the symbol is a terminal, it will just represent that specific terminal. The set of prefixes contained in the node hold all possible alternatives for the preceding item in the production. (Naturally this set is empty for the node containing results for the first item in the production). A prefix only consists of a reference to a node. If one traces all possible paths through this representation of a production to the start, one will get all alternatives for this production of the substring it represents.
 
-Note however, that the parser forest contains an exact representation of what the parser recognized. This means it can contains cycles.
+Note however that there is a strong relation between the parser's internal graph representation and the resulting parse forest; the parse forest is in fact an exact representation of what the parser recognized. Because of the relation, the resulting parse forest can contain cycles.
 
-Another thing worth mentioning is that it is not required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest tradeoff see section \ref{subsec:Flattening}.
+Another thing worth mentioning is that it is not strictly required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest tradeoff see section \ref{subsec:Flattening}.
 
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
@@ -671,6 +671,8 @@ As is common in general parsing, ultimately you often end up with an ambiguous p
 
 Follow restrictions work as a kind of look-ahead after the production; if the production we are trying to reduce matches the specified character(s) after the current location in the input, the reduce fails. They are mainly, though not exclusively, used to indicate eagerness.
 
+Other variations are also possible. Like applying a similar restriction to preceding characters, or even the matched substring in its entirety.
+
 \subsection{Rejects}
 
 Reject filtering is intended for the removal of trees that are not considered to be correct at a certain location in the grammar. One could think of using it for things like filtering alternatives for identifiers that match keywords in the language, for example.
@@ -693,7 +695,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using priorities or disambiguate non-context-free ambiguities (like C typedefs). I will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of actions into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
+Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters or disambiguate non-context-free ambiguities (like C typedefs). We will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of actions into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
 
 \section{Benchmarks}
 
@@ -811,7 +813,7 @@ Regardless of this, compared to the parser we previously used, a C implementatio
 
 \section{Prototype}
 
-The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm, until it matched our requirements. By using this approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
+The development of this algorithm was approached in a rather unorthodox way. Rather then starting with the design of the algorithm and making an implementation for validation and testing purposes afterwards, we started with implementing a basic top-down recognizer, extending it to a parser, followed by testing, profiling and optimization; gradually we improved this implementation and its algorithm, until it matched our requirements. By using this type of approach we are able to get more direct feedback about issues and scalability and performance bottlenecks. Additionally opportunities for optimization will be highlighted that may not be immediately apparent or which may be overlooked when looking at the problem from a purely algorithmic point of view.
 
 The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
@@ -829,9 +831,8 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \item Prefix sharing can be implemented more efficiently by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
  \item We can pre-construct a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
  \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency.
- \item Matching could be handled more efficiently (more bottom-up like, so we `touch' less terminals).
+ \item Matching could be handled more efficiently, so we `touch' less terminals.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
- \item Some rejects can be statically computed and used as a kind of `disallowed' look-ahead. This prevents alternatives of which we know they will die in advance from being explored.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
 \end{itemize}
 
@@ -840,6 +841,11 @@ Finally, it would be interesting to create a C implementation of our parsing alg
 \section{Conclusion}
 
 In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution.
+
+TODO: Compare with others:\\
+-As scalable as other cubic parsers (this is as good as one can get).\\
+-Faster then GLR (a lot less edge visits / graph searching. (Missing text to support this atm)).\\
+-As simple as Earley.
 
 \pagebreak
 \section{References}
