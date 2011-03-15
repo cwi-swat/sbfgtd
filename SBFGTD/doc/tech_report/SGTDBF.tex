@@ -328,9 +328,9 @@ Overall, this means that the algorithm remains within cubic time bounds in worst
 
 Keeping worst-case behaviour in check is great, but is generally less important then having good performance and scalability in more common cases. Here we will prove that our algorithm is linear, not only for LL and LR grammars, but for all unambiguous context-free grammars.
 
-The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity occurs. The cause of these events is always that a certain portion of the input string was derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, it will never result in more then one node per non-terminal sort per level at most. Combined with the linear time graph expansion guarantee described in section \ref{subsec:nodeExpansionOptimization}, this means we can recognized every possible input string for an unambiguous grammar in $O(N)$ time.
+The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity is encountered. The cause of these events is always that a certain portion of the input string was derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, it will never result in more then one node per non-terminal sort per level. Combined with the linear time graph expansion guarantee discussed in section \ref{subsec:nodeExpansionOptimization}, this means we can recognize every possible input string for an unambiguous grammar in $O(N)$ time.
 
-Furthermore, performance degradation will be gracefull. Meaning input strings for near unambiguous grammar will be parsed in near $O(N)$ time.
+Furthermore, performance degradation with ambiguous grammars will be gracefull. Meaning input strings for near unambiguous grammar will be parsed in near $O(N)$ time.
 
 \pagebreak
 \subsection{Error reporting}
