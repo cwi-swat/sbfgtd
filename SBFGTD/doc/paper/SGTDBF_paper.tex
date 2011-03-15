@@ -23,7 +23,7 @@
 \section{Introduction}
 
 Highlight advantages.\\
-Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with LL and LR, easy to visualize and so on ....
+Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with unambiguous grammars, deterministic with LL and LR, easy to visualize, easy to generate good error messages and so on ....
 
 \section{Recognizer}
 
@@ -69,9 +69,14 @@ Assumption: Input isn't infinite.
 
 Depth-first is broken, we need to sync on the input.
 
-\subsection{Worst-case complexity}
+\subsection{Worst-case time complexity}
 
 $O(N^3)$ at most.
+
+\subsection{Unambiguous case time complexity}
+
+$O(N)$ at most.\\
+Graceful performance degradation with ambiguous grammars.
 
 \subsection{Psuedocode}
 
@@ -121,7 +126,7 @@ Make the performance acceptable.
 
 \subsection{Look-ahead}
 
-Makes LL(k) and LR(k) grammars deterministic.
+Makes LL and LR grammars deterministic.
 
 \subsection{Edge optimizations}
 
