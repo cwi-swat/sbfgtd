@@ -34,7 +34,8 @@ If the abstract did not catch your attention yet, here are some highlights:
  
  \item Worst-case cubic space and time bounds with respect to the length of the input string.
  \item Worst-case linear scaling relative to the size of the grammar.
- \item Linear performance on LL and LR grammars.
+ \item Linear performance on unambiguous grammars.
+ \item Deterministic on LL and LR grammars.
  \item No performance hit for rules that are not left factored.
  \item No penalty for being scannerless.
  \item Low stack activity.
@@ -145,10 +146,10 @@ This is the expand loop. It will iterate over the {\bf toExpandSet} until there 
 Finally we check whether or not there have been nullable reductions for the current node's non-terminal sort. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
 
 \pagebreak
-\subsubsection{Reduction}
+\subsubsection{Reduction and moving}
 {\small
 \begin{verbatim}
-reduce(){
+reduceOrMove(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
       for(edgeLevel <- node.edgesPerLevel){
@@ -177,7 +178,7 @@ reduce(){
 \end{verbatim}
 }
 
-This is the reduce loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's `parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead.
+This is the reduce or move loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue this node's `parents' for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead.
 
 The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by consulting the {\bf reducedStore}. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level. Note that this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar). For more information about this optimization see section \ref{subsec:edgeVisitOptimization}.
 
@@ -240,11 +241,13 @@ This problem could be solved by tracing forward through the production, gatherin
 
 In our opinion the solution for this problem is both to complicated and, above all, unnecessary. Since our algorithm is breadth-first, we will never have (non-nullable) stacks running ahead of others, eliminating the possibility of this behaviour popping-up.
 
-\subsection{From grammar to code}
+\subsection{From grammar to recognizer}
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
 
-Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens (your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, but at least the possibility to do so exists).
+Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact handcrafting it is about as simple as writting the grammar itself (although more cumbersome).
+
+Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, but at least the possibility to do so exists.
 
 \subsection{Example traces}
 
@@ -309,17 +312,27 @@ Input = $aaa$
 \end{enumerate}
 As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the graph. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each `iteration' and ultimately consuming all of them.
 
-\subsection{Worst-case complexity}
+\subsection{Worst-case time complexity}
 \label{subsec:recognizerComplexity}
 
 We are designing a parsing algorithm that is intented to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
 
 Since the graph only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, so there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
 
-Reducing consumes $O(N^3)$ time in the worst-case as well. Each of the $O(N)$ edges is associated with $N^2$ reductions. The check whether or not each of the parents still needs to be reduced, is an operation that completes in $O(1)$ time. From this we can conclude that the number of edge visits falls within the $O(N^3)$ bound.
+Reducing consumes $O(N^3)$ time in the worst-case as well. Every edge is associated with one reduction per level per graph node at most. Each of these edges can be associated with $O(N)$ nodes per level; one per level before the current level. There are $N$ levels, so each edge will be visited $O(N^2)$ times. Since there are $O(N)$ edges at most, we can conclude that the number of visited edges falls within the $O(N^3)$ bound. Each of the operations executed during an edge visit completes in constant time, so the worst-case time bound of the reducer is directly related to the number of edge visits.
 
 Overall, this means that the algorithm remains within cubic time bounds in worst-case scenarios.
 
+\subsection{Unambiguous case time complexity}
+\label{subsec:unambiguousTimeComplexity}
+
+Keeping worst-case behaviour in check is great, but is generally less important then having good performance and scalability in more common cases. Here we will prove that our algorithm is linear, not only for LL and LR grammars, but for all unambiguous context-free grammars.
+
+The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity occurs. The cause of these events is always that a certain portion of the input string was derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, it will never result in more then one node per non-terminal sort per level at most. Combined with the linear time graph expansion guarantee described in section \ref{subsec:nodeExpansionOptimization}, this means we can recognized every possible input string for an unambiguous grammar in $O(N)$ time.
+
+Furthermore, performance degradation will be gracefull. Meaning input strings for near unambiguous grammar will be parsed in near $O(N)$ time.
+
+\pagebreak
 \subsection{Error reporting}
 
 Finally we would also like to note the relative ease with which understandable error reports can be generated. When a parse error is encountered it is trivial to generate all possible traces back to the root from the current level, since we have all this information present in the graph. In these traces a user can exactly see where recognition failed, but also what did match up until this point.
@@ -336,6 +349,7 @@ Note however that there is a strong relation between the parser's internal graph
 
 Another thing worth mentioning is that it is not strictly required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest tradeoff see section \ref{subsec:Flattening}.
 
+\pagebreak
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give an example using the following grammar:\\
 $S\,::=\,AAA$\\
@@ -435,10 +449,10 @@ expand()\{
 The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context the {\bf resultStore} serves a similar function as the {\bf reducedStore} in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
 
 \pagebreak
-\subsubsection{Reduction}
+\subsubsection{Reduction and moving}
 {\small
 \begin{alltt}
-reduce()\{
+reduceOrMove()\{
   while(node <- toReduceSet)\{
     if(node.lastInProduction())\{
       for(edgesLevel <- node.edgesPerLevel)\{\textit{
@@ -469,7 +483,7 @@ reduce()\{
 \end{alltt}
 }
 
-The reduce code need to be modified more extensively. Basically two things need to be added.
+The reduce or move code need to be modified more extensively. Basically two things need to be added.
 
 First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
@@ -689,7 +703,7 @@ Priorities and associativity restrictions are implemented as `don't nest' relati
 
 The current implementation handles priority and associativity filtering completely at parse time. While reducing, it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it is stored in a result node that is identified by the sort name of the non-terminal of the node the edge points to and the set of `don't nest' relations associated with this node. This is because the result needs to be shared between all non-terminals with the same sort and `don't nest' relations. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here $.E + E$ and $.E - E$ would be derived in the same way and thus should share their parse results, just as $E+.E$ and $E-.E$, since their `don't nest' relations are identical.
 
-The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant.
+The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages in which priorities and associativity are used for disambiguation (in absence of the application of filters that require a tree to be build).
 
 There is a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the node's outgoing edges at every reduction to check whether or not the nesting is allowed. There is a tradeoff here and it will depend on the grammar whether or not the loss of this optimization can be compensated by what we gain by doing priority and associativity filtering at parse time, opposed to implementing it as a post-parse filter. In our opinion this should be the case for most `real' grammars.
 
@@ -763,6 +777,8 @@ It contains lots of left-recursion and is highly ambiguous; the input, on the ot
 Note that the parser is about twice as slow on the non-factored non-prefix-shared version of the grammar. This is because both the number of graph nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, the refactoring of the grammar also removes all ambiguities from it. Counterary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
+
+Note how these results also support what we asserted in section \ref{subsec:unambiguousTimeComplexity}.
 
 \subsection{Versus non-general}
 
@@ -844,6 +860,7 @@ In this article we described our parsing algorithm, discussed optimizations that
 
 TODO: Compare with others:\\
 -As scalable as other cubic parsers (this is as good as one can get).\\
+-Linear on unambiguous grammars (which is better then everything else?).\\
 -Faster then GLR (a lot less edge visits / graph searching. (Missing text to support this atm)).\\
 -As simple as Earley.
 
