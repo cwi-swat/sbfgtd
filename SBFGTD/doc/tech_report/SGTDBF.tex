@@ -35,13 +35,13 @@ If the abstract did not catch your attention yet, here are some highlights:
  \item Worst-case cubic space and time bounds with respect to the length of the input string.
  \item Worst-case linear scaling relative to the size of the grammar.
  \item Linear performance on unambiguous grammars.
- \item Deterministic on LL and LR grammars.
+ \item Deterministic on all types of LL and LR grammars.
  \item No performance hit for rules that are not left factored.
  \item No penalty for being scannerless.
  \item Low stack activity.
  \item Generating or hand crafting the recognizer / parser code is trivial.
  \item Parse traces are easy to visualize.
- \item Generating understandable error reports is trivial.
+ \item Generating usable error reports is trivial.
 \end{itemize}
 
 For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require much work, unlike what is generally necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature.
@@ -54,9 +54,9 @@ First we will discuss the algorithm for the recognizer, for simplicity's sake. F
 
 \subsection{Graph}
 
-To represent the parallel stacks we use a directed cyclic graph, acustom to GLR's Graph Structured Stack. In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of graph nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with. Each stack node is unique for each identifier, location combination.
+To represent the parallel stacks we use a directed cyclic graph; inspired by GLR's Graph Structured Stack. In our case we generate a stack node with a unique identifier for every item in the grammar. For example; if take the following grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, we would assign these identifiers as follows: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). These identifiers are needed to be able to handle the sharing of graph nodes correctly, so regardless whether or not comparable items exist, they should not be merged. Each stack node consists of this identifier, edges back to their `parents' in the graph, information about its `right neighbour' in the production and the location in the input string it is associated with. Each stack node is unique for each identifier, location combination.
 
-\subsection{Basic algorithm}
+\subsection{The basic principle}
 
 The basic idea behind the algorithm is fairly straightforward. In general terms this is how it works:
 
@@ -69,7 +69,7 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
  \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that do not.
  \item Reduce the nodes on all stacks that matched something and have them queue the `next' node in the production they are part of where applicable, until no reductions are possible anymore.
  \item If there are nodes queued for expansion go to 1.
- \item If the end of the input has been reached and we have at least one derivation for one of the start symbols we are successful; otherwise recognition failed.
+ \item If the end of the input has been reached and we have at least one derivation for one of the start symbols, we are successful; otherwise recognition failed.
 \end{enumerate}
 
 \pagebreak
@@ -201,7 +201,7 @@ We would expand these rules in the following way:
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Cycles}
-Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically fixed by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reductions for each node once.
+Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically resolved by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph and the expansion process will halt. The reduction process will also terminate, since it will only perform the reductions for each node once.
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
@@ -231,7 +231,7 @@ This order dependency is something we cannot enforce, so we need another solutio
 Also note that, since this propagation only happens within a single level and does not introduce any real extra work, it does not influence worst-case behaviour. This is because all stack merges would have happened regardless of their timing; the only difference is that the exact same amount of work they normally generate gets distributed over multiple visits of the same node. Consequently, the performance impact of this solution is very low in general; close to non-existent even, since it only requires one cheap constant time check on each node visit.
 
 \subsubsection{Termination}
-Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing the expansion and reduction phases to converge to a point where no more work can be done in a level, we reach the end of the input string at some point (assuming the input string has a finite length as well).
+Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing the expansion and reduction phases to converge to a point where no more work can be done in a level, we are always able to reach the end of the input string (assuming the input string has a finite length), completing recognition.
 
 \subsubsection{Breadth-first vs depth-first}
 \label{subsec:breadthFirstVsDepthFirst}
@@ -245,9 +245,9 @@ In our opinion the solution for this problem is both to complicated and, above a
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. In case we are generating code, this would mean that we need one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives should be expected.
 
-Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact handcrafting it is about as simple as writting the grammar itself (although more cumbersome).
+Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact handcrafting it is about as simple as writing the grammar itself (although more cumbersome).
 
-Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, but at least the possibility to do so exists.
+Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, which is linked to the amount of non-determinism in the grammar, but at least the possibility to do so exists.
 
 \subsection{Example traces}
 
@@ -308,7 +308,7 @@ Input = $aaa$
  \item reduce $Aa.$ and follow edges to $.A$ and $.Aa$
  \item reduce $A.$ and follow edges to $.S$
  \item parse for $S.$ is complete
- \item move from $.Aa$ to $A.a$; $A.a$ does not match since EOI has already been reached
+ \item move from $.Aa$ to $A.a$; $A.a$ does not match since the EOI has already been reached
 \end{enumerate}
 As one can see, when expanding $.A$ for the second time (at 5), sharing is detected causing a cycle to be added to the graph. Reductions of $Aa.$ follow the edge back to $.Aa$ which will move to $A.a$; this will lead to one $a$ being matched at each `iteration' and ultimately consuming all of them.
 
@@ -319,18 +319,18 @@ We are designing a parsing algorithm that is intented to scale as well as is pos
 
 Since the graph only contains nodes that we expect to `encounter', there are at most $O(N)$ of them; where $N$ is the number of characters in the input string. Each node only has one edge to each of its possible parents per level and there are $N$ levels, so there are at most $O(N)$ edges per node. In the worst-case there are $N$ times $O(N)$ nodes that match a substring that ends at the `current' level. When moving to the `next' node in the production, all edges of these nodes need to be carried over. Since these sets of edges need to be merged, the time this operation needs to complete is equal to the number of levels before (and including) the `current' level (so $N$ at most). So this operation will execute in $O(N^3)$ time at most in the worst-case.
 
-Reducing consumes $O(N^3)$ time in the worst-case as well. Every edge is associated with one reduction per level per graph node at most. Each of these edges can be associated with $O(N)$ nodes per level; one per level before the current level. There are $N$ levels, so each edge will be visited $O(N^2)$ times. Since there are $O(N)$ edges at most, we can conclude that the number of visited edges falls within the $O(N^3)$ bound. Each of the operations executed during an edge visit completes in constant time, so the worst-case time bound of the reducer is directly related to the number of edge visits.
+Reducing consumes $O(N^3)$ time in the worst-case as well. Every edge is associated with one reduction per level per graph node at most. Each of these edges can be associated with $O(N)$ nodes per level; one per level before the current level. There are $N$ levels, so each edge will be visited $O(N^2)$ times. Since there are never more then $O(N)$ edges in total, we can conclude that the number of visited edges falls within the $O(N^3)$ bound. Each of the operations executed during an edge visit completes in constant time, so the worst-case time bound of the reducer is directly related to the number of edge visits.
 
 Overall, this means that the algorithm remains within cubic time bounds in worst-case scenarios.
 
 \subsection{Unambiguous case time complexity}
 \label{subsec:unambiguousTimeComplexity}
 
-Keeping worst-case behaviour in check is great, but is generally less important then having good performance and scalability in more common cases. Here we will prove that our algorithm is linear, not only for deterministic (such as LL and LR) grammars, but for all unambiguous context-free grammars.
+Keeping worst-case behaviour in check is great, but is generally less important then having good performance and scalability in the more common cases. Here we will prove that our algorithm is linear, not only for deterministic (such as LL and LR) grammars, but for all unambiguous context-free grammars.
 
-The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity is encountered. The cause of these events is always that a certain portion of the input string was derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, it will never result in more then one node per non-terminal sort per level. Combined with the linear time graph expansion guarantee discussed in section \ref{subsec:nodeExpansionOptimization}, this means we can recognize every possible input string for an unambiguous grammar in $O(N)$ time.
+The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity is encountered. The cause of these events is always that a certain portion of the input string can be derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, this will never result in more then one node per non-terminal sort per level. Combined with the linear time graph expansion guarantee, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}, this means we can recognize every possible input string for an unambiguous grammar in $O(N)$ time.
 
-Furthermore, performance degradation with ambiguous grammars will be graceful. Meaning input strings for near unambiguous grammar will be parsed in near $O(N)$ time.
+Note however that, while we can recognize input for unambiguous grammars in linear time, performance will degrade by a factor that is relative to the amount of non-determinism in the grammar. Additionally, performance degradation for ambiguous grammars is also fairly graceful. Meaning that input strings for near unambiguous grammars will also be parsed in near $O(N)$ time.
 
 \pagebreak
 \subsection{Error reporting}
@@ -511,10 +511,17 @@ Since the conversion of our recognizer to a parser is so trivial, the parser is 
 \subsubsection{Hidden right recursion}
 As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also properly propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}. Note that special care needs to be taken by the implementor to prevent equal prefixes from being added more then once.
 
+One way to solve this is by marking each set of prefixes associated with a certain start location in a graph node with one bit that indicates whether or not a prefix of which the last result node is nullable was added to this set yet, either by a `move' or by propagation. Before adding a prefix to one of these prefix sets, we check whether or not this bit is set; if it is, we do not add the prefix, since it will already be present in the set. We know this, because every prefix is unique for every combination of its start location and the start location of the last result node in the prefix. Since the last result node of the prefix is always nullable in the case we want to verify, its unicity can be determined by the start location alone. This is why checking this one bit is sufficient to determine whether an identical prefix is already present or not.
+
 \subsection{Worst-case complexity}
+
 We looked at the worst-case behaviour of the recognizer in section \ref{subsec:recognizerComplexity} and proved that is does not break the cubic time bound. For the parser to be able to make the same guarantee, the size of the parse forest must be, at most, cubic in the length of the input. The reason for this, is that it is impossible to construct a greater then cubic parse forest in a cubic amount of time. Here we will prove that we do not break this space bound.
 
-Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. So there are at most $O(N^3)$ prefixes. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different results at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that in the implementation all prefix sets are shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and decreases memory usage.
+Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; at most one per location (before the current location) in the input string. So there are at most $O(N^3)$ prefixes. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different results at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case. Note that all prefix sets can be shared regardless of the end position of the node they are matched to; this has no effect on worst-case behaviour, but does improve performance and decreases memory usage.
+
+\subsection{Unambiguous case complexity}
+
+The scalability guarantees made for the recognizer do not change when it is extended to a parser. The reason for this is that each additional operation the parser requires over the recognizer, can be implemented in a way that only imposes a constant amount of extra work.
 
 \subsubsection{Worst-case statistics}
 In this section we will highlight the $O(N^3)$ behaviour of the recognizer / parser in worst-case scenarios. To accomplish this we will give an overview of the most relevant parser statistics for the following grammar:\\
@@ -555,12 +562,17 @@ The number of graph nodes and number of edges scale linear with respect to the l
 
 Looking at the parse tree related statistics we can see that the number of results increases by $N$ for every extra character in the input string. Which is because the number of results is equal to the number of different substrings in the input, in this case. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
-\pagebreak
 \subsubsection{Flattening}
 \label{subsec:Flattening}
 Optionally it is possible to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{chap:filtering}.
 
 One might wonder why, in case one flattens the parse forest afterwards, using the `deflattenized' version as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use the `deflattenized' representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars unfeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is a possibility is because of the starvation of incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
+
+\subsection{Error reporting}
+
+Compared to the recognizer, the parser offers even more possibilities for generating error reports.
+
+For example, it is relatively simple to add the option to construct a partial parse forest in case a parse error is encountered. The user can use these partially build forests to track down what went wrong with a high amount of accuracy; as all information about what was derived up this this point, what matched the input or not and what was expected is all easily available.
 
 \section{Extended capabilities}
 
@@ -709,7 +721,11 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters or disambiguate non-context-free ambiguities (like C typedefs). We will not go into detail about this feature, since actions are outside of the scope of this article. The option exists to either intergrate the execution of actions into the parser or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
+Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters, disambiguate non-context-free ambiguities (like C typedefs) or even influence the parser's behaviour while it is running.
+
+The option exists to either intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
+
+Unfortunately, we will not go into detail about this feature, since actions are outside of the scope of this article.
 
 \section{Benchmarks}
 
@@ -731,7 +747,6 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
-\pagebreak
 \subsection{Worst case}
 
 The obvious candidates for a benchmark are the following worst-case grammars:
@@ -757,7 +772,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 Our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
-What may appear to be surprising is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is almost negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
+What may appear surprising to some is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Grammar factoring}
 
@@ -766,7 +781,7 @@ $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
 
-It contains lots of left-recursion and is highly ambiguous; the input, on the other hand, is not ambiguous. Normally one would expect non-linear performance when parsing a string for this grammar. However, as can be seen in the graph below this is not the case. Performance seems to scale perfectly linear regardless of how the grammar is factored.
+It contains lots of left-recursion and is highly ambiguous; the input, on the other hand, can not be parsed in more then one way. Normally one would expect non-linear performance when parsing a string for this grammar. However, as can be seen in the graph below, this is not the case for our algorithm. In this benchmark, performance seems to scale perfectly linear regardless of how the grammar is factored.
 
 \begin{figure}[H]
 \centering
@@ -863,7 +878,7 @@ TODO:\\
 -GSS\\
 -LL\\
 -LR\\
--SPPF (and binarized)\\
+-SPPF (and binarization)\\
 -GLR\\
 -SGLR (and ASF+SDF-Meta)\\
 -JFlex\\
