@@ -267,10 +267,11 @@ public class ListContainerNode extends AbstractContainerNode{
 	}
 	
 	protected String print(IndexedStack<AbstractNode> stack, int depth, CycleMark cycleMark){
+		if(depth == cycleMark.depth){
+			cycleMark.reset();
+		}
+		
 		if(cachedResult != null && (depth <= cycleMark.depth)){
-			if(depth == cycleMark.depth){
-				cycleMark.reset();
-			}
 			return cachedResult;
 		}
 		
@@ -319,7 +320,7 @@ public class ListContainerNode extends AbstractContainerNode{
 		
 		stack.dirtyPurge(); // Pop
 		
-		return (depth <= cycleMark.depth) ? (cachedResult = sb.toString()) : sb.toString();
+		return (depth < cycleMark.depth) ? (cachedResult = sb.toString()) : sb.toString();
 	}
 	
 	public String toString(){
