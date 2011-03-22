@@ -9,7 +9,7 @@
 \usepackage{ae,aecompl}
 
 %opening
-\title{Context Free General Top Down Parsing in Cubic Time\\(Unfinished Draft)}
+\title{Context Free General Top Down Parsing in Cubic Time}
 \author{Arnold Lankamp}
 
 \begin{document}
@@ -18,7 +18,9 @@
 
 \begin{abstract}
 
-In this article we will describe our general top-down parsing algorithm. Our intent with this algorithm is to develop something that is both easy to comprehend and performs well on any grammar. The user should not be required to refactor a grammar to enable the parser to complete within an acceptable amout of time. Additionally, it should not be hard to grasp what is going on under the hood, nor should it be complicated to create an implementation of this algorithm.
+In this article we will describe our general top-down parsing algorithm. The intent of this algorithm is to be both easy to comprehend and is able to perform well for any grammar.
+
+In our opinion users should not be required to refactor their grammars to enable the parser to complete within an acceptable amount of time. Nor should it be difficult to comprehend what is going on under the hood, so one can easily visualize what is going on. From a developer's point of view, creating an implementation of the algorithm should also be similarly easy to do; often this requires a considerable amount of effort to get right.
 
 It sounds fairly ambitious, but we managed it. We created a general parsing algorithm that is both easy to understand and can compete with any other general parsing algorithm out there in terms of scalability and performance.
 
@@ -26,27 +28,22 @@ It sounds fairly ambitious, but we managed it. We created a general parsing algo
 
 \section{Introduction}
 
-If the abstract did not catch your attention yet, here are some highlights:
+For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes both the algorithm and implementation(s) easier to comprehend and makes parse traces easier to visualize. Top-down parsers also have no need for complicated parse tables; the translation from a grammar to a for the parser usable format can simply be one-on-one, without any additional trickery or risks of parse table explosion. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature. We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
+
+To give an impression of the capabilities of our algorithm and implementation, we will give some highlights first:
 \begin{itemize}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item Worst-case cubic space and time bounds with respect to the length of the input string.
- \item Worst-case linear scaling relative to the size of the grammar.
+ \item Worst-case cubic space and time bounds with respect to the length of the input.
  \item Linear performance on unambiguous grammars.
  \item Deterministic on all types of LL and LR grammars.
- \item No performance hit for rules that are not left factored.
+ \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
- \item Low stack activity.
- \item Generating or hand crafting the recognizer / parser code is trivial.
+ \item Generating or hand crafting the parse table / code from a grammar is trivial.
  \item Parse traces are easy to visualize.
- \item Generating usable error reports is trivial.
 \end{itemize}
-
-For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes the algorithm and implementation easier to comprehend. Ultimately it should also make its usage simpler, since grammars can more easily be converted to input for the parser; the translation is one-on-one and does not require much work, unlike what is generally necessary when generating parse tables. Nor will it ever explode in size, which parse tables potentially could. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature.
-
-We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
 \section{Recognizer}
 
@@ -851,7 +848,7 @@ The development of this algorithm was approached in a rather unorthodox way. Rat
 
 The main purpose of this project has always been to create a working, usable general parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
-Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
+Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
 \section{Future work}
 
@@ -865,7 +862,7 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \item We can pre-construct a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
  \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency slightly.
  \item Matching could be handled more efficiently.
- \item Prefix sharing can be implemented more efficiently by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
+ \item Prefix sharing can be implemented more efficiently in our prototype, by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
 \end{itemize}
@@ -874,7 +871,7 @@ Finally, it would be interesting to create a C implementation of our parsing alg
 
 \section{Conclusion}
 
-In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales and performs well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution.
+In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales and performs well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution. Compromises between performance and ease of use are now a thing of the past.
 
 \pagebreak
 \section{References}
@@ -888,6 +885,7 @@ TODO:\\
 -SGLR (and ASF+SDF-Meta)\\
 -JFlex\\
 -JavaCup\\
--SDF2
+-SDF2\\
+-Rascal
 
 \end{document}
