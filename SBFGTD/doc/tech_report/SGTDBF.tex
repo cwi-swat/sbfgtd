@@ -18,9 +18,7 @@
 
 \begin{abstract}
 
-In this article we will describe our general top-down parsing algorithm. The intent of this algorithm is to be both easy to comprehend and is able to perform well for any grammar.
-
-In our opinion users should not be required to refactor their grammars to enable the parser to complete within an acceptable amount of time. Nor should it be difficult to comprehend what is going on under the hood, so one can easily visualize what is going on. From a developer's point of view, creating an implementation of the algorithm should also be similarly easy to do; often this requires a considerable amount of effort to get right.
+In this article we will describe our general top-down parsing algorithm. The intent of this algorithm is to be both easy to comprehend and able to perform well for any grammar. In our opinion users should not be required to refactor their grammars to enable the parser to complete within an acceptable amount of time. Nor should it be difficult to comprehend what is going on under the hood, enabling one to easily visualize what is going on. From a developer's point of view, creating an implementation of the algorithm should also be similarly easy to do; often this is something that requires a considerable amount of effort to get right.
 
 It sounds fairly ambitious, but we managed it. We created a general parsing algorithm that is both easy to understand and can compete with any other general parsing algorithm out there in terms of scalability and performance.
 
@@ -30,7 +28,7 @@ It sounds fairly ambitious, but we managed it. We created a general parsing algo
 
 For our parsing algorithm we choose for a top-down approach, as it is more in-line with human thinking then bottom-up. This makes both the algorithm and implementation(s) easier to comprehend and makes parse traces easier to visualize. Top-down parsers also have no need for complicated parse tables; the translation from a grammar to a for the parser usable format can simply be one-on-one, without any additional trickery or risks of parse table explosion. Lastly, top-down parsers can also generate understandable error reports more easily, which is a very welcome feature. We call our parser, the Scannerless General Top Down Binary Forest Parser or SGTDBF.
 
-To give an impression of the capabilities of our algorithm and implementation, we will give some highlights first:
+To give an impression of the capabilities of our algorithm and implementation, we will enumerate some highlights first:
 \begin{itemize}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -871,7 +869,7 @@ Finally, it would be interesting to create a C implementation of our parsing alg
 
 \section{Conclusion}
 
-In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales and performs well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution. Compromises between performance and ease of use are now a thing of the past.
+In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales and performs well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution. Making compromises between performance and ease of use are now a thing of the past.
 
 \pagebreak
 \section{References}
