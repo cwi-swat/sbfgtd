@@ -857,11 +857,9 @@ Numereous things can still be improved or changed. Mostly these involve optimiza
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item We can pre-construct a data structure which contains sort to alternatives mappings in combination with their look-ahead information, so we can obtain relevant alternatives more efficiently.
- \item Nullable derivations or trees can be pre-computed or dynamically cached, improving efficiency slightly.
- \item Matching could be handled more efficiently.
- \item Prefix sharing can be implemented more efficiently in our prototype, by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
+ \item We can pre-construct a data structure which contains mappings from non-terminal sorts to alternatives; optionally in combination with their associated look-ahead information. This can aid in increasing the performance of the expansion phase.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
+ \item Prefix sharing can be implemented more efficiently in our prototype, by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
 \end{itemize}
 
