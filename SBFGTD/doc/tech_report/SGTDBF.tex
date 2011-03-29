@@ -46,7 +46,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
 
 First we will discuss the algorithm for the recognizer, for simplicity's sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
-Note that the main focus of this article will be on the breadth-first variant of the algorithm. 
+Note that, while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and likely the one people will end up using because of its efficiency.
 
 \subsection{Graph}
 
@@ -726,7 +726,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters, disambiguate non-context-free ambiguities (like C typedefs) or even influence the behaviour of the parser while it is running.
 
-The option exists to either intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest.
+The option exists to either intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest. Depending on what kind of actions one want to support, intergrating them into the parse process itself can be especially challenging.
 
 Unfortunately, we will not go into detail about this feature, since actions are outside of the scope of this article.
 
