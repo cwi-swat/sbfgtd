@@ -46,7 +46,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
 
 First we will discuss the algorithm for the recognizer, for simplicity's sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
-Note that, while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and likely the one people will end up using because of its efficiency.
+Note that, while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and likely the one people will end up using because of its efficiency. See section \ref{sec:breadthFirstVsDepthFirst} for more details about this.
 
 \subsection{Graph}
 
@@ -234,13 +234,13 @@ Another questions that some people will have on their mind is: ``does it termina
 \subsection{Breadth-first vs depth-first}
 \label{sec:breadthFirstVsDepthFirst}
 
-While we focussed on a level synchronized version of our algorithm, it also possible to create a recursive decent variant. It can be a bit more tricky to implement, but there is nothing that stands in the way of this possibility.
+While we focussed on a level synchronized version of our algorithm, it also possible to create a recursive decent variant. It can be tricky to implement, but there is nothing that stands in the way of this possibility.
 
 This major difference with a recursive decent approach is that we can now have (non-nullable) stacks running ahead of others. To ensure we register all derivations we need to apply a solution that is almost identical to the hidden right recursion fix, which we discussed in section \ref{subsec:hiddenRightRecursion}. When a stack merge occurs we need to propagate all edges forward, towards the end of all possible continuations of the production that we already recorded and execute the proper reductions in case a new edge is added to the node that is associated with the last item in the production. Naturally, we can halt the propagation for a path as soon as we detect that all the edges we intended to add are already present; if we would not do this the amount of node visits would become unbound polynomial in the worst-case.
 
 Note however that while the absolute amount of `work' required by the algorithm does not increase. While the worst-case amount of node visits increases from $O(N)$ to $O(N^2)$, the number of edges that is merged in during each visit is always $1$, instead of $N$ in the worst-case. Because of this the worst-case behaviour (section \ref{subsec:recognizerComplexity}) is not influenced by this. Nor will it have an effect on the time bound for unambiguous grammars (section \ref{subsec:unambiguousTimeComplexity}), as stack merges do not occur for these cases.
 
-Conceptually the recursive decent version looks nicer, since there is no real destinction between normal control flow and the handling of nullables. On the other hand, creating an implementation for it may be more cumbersome because of all the extra bookkeeping that is required, as it basically implements backtracking in combination with memoization and thus needs information about all levels, instead of just the current one. For similar reasons, in combination with the potentially higher amount of node visits, it will also never be as efficient as a level synchronized variant, both in terms of performance as memory usage. However, since it may be desirable to create a recursive decent implementation in certain cases, we do offer both options to the user / implementor, so it is possible for them to make their own decision.
+Conceptually the recursive decent version looks nicer, since there is no real destinction between normal control flow and the handling of nullables. On the other hand, creating an implementation for it may be more cumbersome because of all the extra bookkeeping that is required, as it basically implements backtracking in combination with memoization and thus needs information about all levels, instead of just the current one. For similar reasons, in combination with the potentially higher amount of node visits, it will also never be as efficient as a level synchronized variant, both in terms of performance as memory usage. However, since it may be desirable to create a recursive decent implementation in certain cases, we offer both options to the user / implementor, so they are able to make their own decision.
 
 \subsection{From grammar to recognizer}
 
