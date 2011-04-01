@@ -23,7 +23,7 @@ public class SGTDBF implements IGTD{
 	
 	private final Stack<AbstractStackNode>[] todoLists;
 	
-	private final ArrayList<AbstractStackNode> stacksToExpand;
+	private final Stack<AbstractStackNode> stacksToExpand;
 	private Stack<AbstractStackNode> stacksWithTerminalsToReduce;
 	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
@@ -53,7 +53,7 @@ public class SGTDBF implements IGTD{
 		
 		todoLists = (Stack<AbstractStackNode>[]) new Stack[input.length + 1];
 		
-		stacksToExpand = new ArrayList<AbstractStackNode>();
+		stacksToExpand = new Stack<AbstractStackNode>();
 		stacksWithTerminalsToReduce = new Stack<AbstractStackNode>();
 		stacksWithNonTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		
@@ -138,7 +138,7 @@ public class SGTDBF implements IGTD{
 		next.setStartLocation(location);
 		
 		sharedNextNodes.putUnsafe(next.getId(), next);
-		stacksToExpand.add(next);
+		stacksToExpand.push(next);
 		return next;
 	}
 	
@@ -170,7 +170,7 @@ public class SGTDBF implements IGTD{
 			next.setStartLocation(location);
 			
 			sharedNextNodes.putUnsafe(next.getId(), next);
-			stacksToExpand.add(next);
+			stacksToExpand.push(next);
 		}
 	}
 	
@@ -622,7 +622,7 @@ public class SGTDBF implements IGTD{
 			
 			sharedLastExpects.add(firstId, first);
 			
-			stacksToExpand.add(first);
+			stacksToExpand.push(first);
 		}
 		
 		cachedEdgesForExpect.put(stackBeingWorkedOn.getName(), cachedEdges);
@@ -674,7 +674,7 @@ public class SGTDBF implements IGTD{
 				child.initEdges();
 				child.addEdgeWithPrefix(node, null, location);
 				
-				stacksToExpand.add(child);
+				stacksToExpand.push(child);
 			}
 			
 			if(listChildren.length > 1){ // Star list or optional.
@@ -684,15 +684,15 @@ public class SGTDBF implements IGTD{
 				empty.initEdges();
 				empty.addEdge(node);
 				
-				stacksToExpand.add(empty);
+				stacksToExpand.push(empty);
 			}
 		}
 	}
 	
 	private void expand(){
-		while(stacksToExpand.size() > 0){
+		while(!stacksToExpand.isEmpty()){
 			lastExpects.dirtyClear();
-			expandStack(stacksToExpand.remove(stacksToExpand.size() - 1));
+			expandStack(stacksToExpand.pop());
 		}
 	}
 	
@@ -722,7 +722,7 @@ public class SGTDBF implements IGTD{
 		rootNode.setProduction(new AbstractStackNode[]{rootNode});
 		rootNode.initEdges();
 		rootNode.setStartLocation(0);
-		stacksToExpand.add(rootNode);
+		stacksToExpand.push(rootNode);
 		expand();
 		
 		findFirstStackToReduce();
