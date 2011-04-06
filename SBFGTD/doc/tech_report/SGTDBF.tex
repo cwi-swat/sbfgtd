@@ -139,7 +139,7 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is a non-terminal, we check if there is a cached set of edges available for that non-terminal sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We do this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, which may be updated with additional edges later on in the expansion process.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches, it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is associated with a non-terminal, we check if there is a cached set of edges available for that non-terminal's sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We do this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, which may be updated with additional edges later on in the expansion process.
 
 Finally we check whether or not there have been nullable reductions for the non-terminal sort associated with the current node. This can occur because we to multiple iterations in this same level to be able to handle nullables properly. If such a nullable reduction is present in the {\bf reducedStore}, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. We will discuss the handling of nullables in more detail in section \ref{subsec:nullables}.
 
@@ -203,7 +203,7 @@ Cycles present another issue that needs to be handled. Similarly to left recursi
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
-Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a production contains two or more consecutive nullables, hidden left- / right-recursive or otherwise, problems arrise. The first of these problems is sharing related.
+Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a nullable non-terminal gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more consecutive nullables, problems arrise. The first of these problems is sharing related.
 
 We will describe the issue by illustrating what would happen in a version of the implementation of the algorithm which does not contain the fix.
 Consider the following grammar:\\
@@ -344,7 +344,7 @@ Finally we would also like to note the relative ease with which understandable e
 
 To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic space and time bounds. We call it `deflattenized', for lack of a better description. While its purpose is similar to binarized SPPFs, its implementation is somewhat different.
 
-The parse forest consists of nodes. Every node in the forest contains a result and a set of prefixes. Each result represents a substring for a certain symbol. In case this symbol is a non-terminal, this result contains one or more references to alternative representations of the substring it denotes. If the symbol is a terminal, it will just represent that specific terminal. The set of prefixes contained in the node hold all possible alternatives for the preceding item in the production. (Naturally this set is empty for the node associated with the first item in the production). A prefix only consists of a reference to a node. If one traces all possible paths through this representation of a production to the start, one will get all alternatives for this production of the substring it represents.
+The parse forest consists of nodes. Every node in the forest contains a result and a set of prefixes. Each result represents a substring for a certain symbol. In case this symbol is a non-terminal sort, this result contains one or more references to alternative representations of the substring it denotes. If the symbol is a terminal, it will just represent that specific terminal. The set of prefixes contained in the node hold all possible alternatives for the preceding item in the production. (Naturally this set is empty for the node associated with the first item in the production). A prefix only consists of a reference to a node. If one traces all possible paths through this representation of a production to the start, one will get all alternatives for this production of the substring it represents.
 
 Note however that there is a strong relation between the internal graph representation of the parser and the resulting parse forest. Because of this relation, the resulting parse forest can contain cycles.
 
@@ -637,7 +637,7 @@ Generally parsers store results on edges in the graph. If we would refrain from 
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling for non-left-factored grammars. The reason for this is the following; for example, if we take the grammar rules:\\
 $S\,::=\,E$\\
 $E\,::=\,E + E\,|\,E - E$\\
-The expansion at the first level would look like this:
+The expansion at the first level, without any optimizations, would look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
