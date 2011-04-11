@@ -66,6 +66,14 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean canBeEmpty(){
+		throw new UnsupportedOperationException();
+	}
+	
+	public AbstractStackNode getEmptyChild(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public AbstractNode getResult(){
 		return result;
 	}

@@ -2,19 +2,21 @@ package gtd.stack;
 
 import gtd.result.AbstractNode;
 
-public final class ListStackNode extends AbstractStackNode implements IListStackNode{
+public final class ListStackNode extends AbstractStackNode implements IExpandableStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
 	
 	private final String nodeName;
 
 	private final AbstractStackNode[] children;
+	private final AbstractStackNode emptyChild;
 	
 	public ListStackNode(int id, int dot, AbstractStackNode child, String nodeName, boolean isPlusList){
 		super(id, dot);
 		
 		this.nodeName = nodeName;
 		
-		this.children = generateChildren(child, isPlusList);
+		this.children = generateChildren(child);
+		this.emptyChild = isPlusList ? null : generateEmptyChild();
 	}
 	
 	private ListStackNode(ListStackNode original){
@@ -23,23 +25,24 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 		nodeName = original.nodeName;
 
 		children = original.children;
+		emptyChild = original.emptyChild;
 	}
 	
-	private AbstractStackNode[] generateChildren(AbstractStackNode child, boolean isPlusList){
+	private AbstractStackNode[] generateChildren(AbstractStackNode child){
 		AbstractStackNode listNode = child.getCleanCopy();
 		listNode.markAsEndNode();
 		listNode.setStartLocation(startLocation);
 		listNode.setProduction(new AbstractStackNode[]{listNode, listNode});
 		
-		if(isPlusList){
-			return new AbstractStackNode[]{listNode};
-		}
-		
+		return new AbstractStackNode[]{listNode};
+	}
+	
+	private AbstractStackNode generateEmptyChild(){
 		AbstractStackNode empty = EMPTY.getCleanCopy();
 		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
-		return new AbstractStackNode[]{listNode, empty};
+		return empty;
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -72,6 +75,14 @@ public final class ListStackNode extends AbstractStackNode implements IListStack
 	
 	public AbstractStackNode[] getChildren(){
 		return children;
+	}
+	
+	public boolean canBeEmpty(){
+		return (emptyChild != null);
+	}
+	
+	public AbstractStackNode getEmptyChild(){
+		return emptyChild;
 	}
 	
 	public AbstractNode getResult(){

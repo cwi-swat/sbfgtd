@@ -49,6 +49,14 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean canBeEmpty(){
+		throw new UnsupportedOperationException();
+	}
+	
+	public AbstractStackNode getEmptyChild(){
+		throw new UnsupportedOperationException();
+	}
+	
 	public AbstractNode getResult(){
 		throw new UnsupportedOperationException();
 	}

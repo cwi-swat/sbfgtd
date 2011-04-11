@@ -2,19 +2,21 @@ package gtd.stack;
 
 import gtd.result.AbstractNode;
 
-public final class SeparatedListStackNode extends AbstractStackNode implements IListStackNode{
+public final class SeparatedListStackNode extends AbstractStackNode implements IExpandableStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
 	
 	private final String nodeName;
 
 	private final AbstractStackNode[] children;
+	private final AbstractStackNode emptyChild;
 	
 	public SeparatedListStackNode(int id, int dot, AbstractStackNode child, AbstractStackNode[] separators, String nodeName, boolean isPlusList){
 		super(id, dot);
 		
 		this.nodeName = nodeName;
 		
-		this.children = generateChildren(child, separators, isPlusList);
+		this.children = generateChildren(child, separators);
+		this.emptyChild = isPlusList ? null : generateEmptyChild();
 	}
 	
 	private SeparatedListStackNode(SeparatedListStackNode original){
@@ -23,9 +25,10 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		nodeName = original.nodeName;
 
 		children = original.children;
+		emptyChild = original.emptyChild;
 	}
 	
-	private AbstractStackNode[] generateChildren(AbstractStackNode child,  AbstractStackNode[] separators, boolean isPlusList){
+	private AbstractStackNode[] generateChildren(AbstractStackNode child,  AbstractStackNode[] separators){
 		AbstractStackNode listNode = child.getCleanCopy();
 		listNode.markAsEndNode();
 		
@@ -42,15 +45,15 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		}
 		prod[numberOfSeparators + 1] = listNode; // End
 		
-		if(isPlusList){
-			return new AbstractStackNode[]{listNode};
-		}
-		
+		return new AbstractStackNode[]{listNode};
+	}
+	
+	private AbstractStackNode generateEmptyChild(){
 		AbstractStackNode empty = EMPTY.getCleanCopy();
 		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
-		return new AbstractStackNode[]{listNode, empty};
+		return empty;
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -83,6 +86,14 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 	
 	public AbstractStackNode[] getChildren(){
 		return children;
+	}
+	
+	public boolean canBeEmpty(){
+		return (emptyChild != null);
+	}
+	
+	public AbstractStackNode getEmptyChild(){
+		return emptyChild;
 	}
 	
 	public AbstractNode getResult(){

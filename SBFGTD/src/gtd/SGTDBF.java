@@ -6,7 +6,7 @@ import gtd.result.ListContainerNode;
 import gtd.result.SortContainerNode;
 import gtd.result.struct.Link;
 import gtd.stack.AbstractStackNode;
-import gtd.stack.IListStackNode;
+import gtd.stack.IExpandableStackNode;
 import gtd.stack.NonTerminalStackNode;
 import gtd.util.ArrayList;
 import gtd.util.DoubleStack;
@@ -209,7 +209,7 @@ public class SGTDBF implements IGTD{
 			
 			if(resultStore == null){ // If there are no previous reductions to this level, handle this.
 				String nodeName = edge.getName();
-				resultStore = (!edge.isList()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
+				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
 				levelResultStoreMap.putUnsafe(identifier, resultStore);
 				
 				stacksWithNonTerminalsToReduce.push(edge, resultStore);
@@ -403,7 +403,7 @@ public class SGTDBF implements IGTD{
 			if(resultStore != null){
 				resultStore.addAlternative(resultLink);
 			}else{
-				resultStore = (!edge.isList()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
+				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
 				levelResultStoreMap.putUnsafe(identifier, resultStore);
 				resultStore.addAlternative(resultLink);
 				
@@ -449,7 +449,7 @@ public class SGTDBF implements IGTD{
 			if(resultStore != null){
 				resultStore.addAlternative(resultLink);
 			}else{
-				resultStore = (!edge.isList()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
+				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
 				levelResultStoreMap.putUnsafe(identifier, resultStore);
 				resultStore.addAlternative(resultLink);
 				
@@ -506,7 +506,7 @@ public class SGTDBF implements IGTD{
 	
 	private void move(AbstractStackNode node, AbstractNode result){
 		if(node.isEndNode()){
-			if(!result.isEmpty() || node.getId() == IListStackNode.DEFAULT_LIST_EPSILON_ID){
+			if(!result.isEmpty() || node.getId() == IExpandableStackNode.DEFAULT_LIST_EPSILON_ID){
 				updateEdges(node, result);
 			}else{
 				updateNullableEdges(node, result);
@@ -644,7 +644,7 @@ public class SGTDBF implements IGTD{
 			return;
 		}
 		
-		if(!node.isList()){
+		if(!node.isExpandable()){
 			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
 				cachedEdges.add(node);
@@ -663,23 +663,25 @@ public class SGTDBF implements IGTD{
 		}else{ // 'List'
 			AbstractStackNode[] listChildren = node.getChildren();
 			
-			AbstractStackNode child = listChildren[0];
-			int childId = child.getId();
-			if(!shareListNode(childId, node)){
-				child = child.getCleanCopy();
-				
-				sharedNextNodes.putUnsafe(childId, child);
-				
-				child.setStartLocation(location);
-				child.initEdges();
-				child.addEdgeWithPrefix(node, null, location);
-				
-				stacksToExpand.push(child);
+			for(int i = listChildren.length - 1; i >= 0; --i){
+				AbstractStackNode child = listChildren[i];
+				int childId = child.getId();
+				if(!shareListNode(childId, node)){
+					child = child.getCleanCopy();
+					
+					sharedNextNodes.putUnsafe(childId, child);
+					
+					child.setStartLocation(location);
+					child.initEdges();
+					child.addEdgeWithPrefix(node, null, location);
+					
+					stacksToExpand.push(child);
+				}
 			}
 			
-			if(listChildren.length > 1){ // Star list or optional.
+			if(node.canBeEmpty()){ // Star list or optional.
 				// This is always epsilon (and unique for this position); so shouldn't be shared.
-				AbstractStackNode empty = listChildren[1].getCleanCopy();
+				AbstractStackNode empty = node.getEmptyChild().getCleanCopy();
 				empty.setStartLocation(location);
 				empty.initEdges();
 				empty.addEdge(node);

@@ -2,27 +2,30 @@ package gtd.stack;
 
 import gtd.result.AbstractNode;
 
-public final class OptionalStackNode extends AbstractStackNode implements IListStackNode{
+public final class OptionalStackNode extends AbstractStackNode implements IExpandableStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
 	
-	private final AbstractStackNode[] children;
-	
 	private final String nodeName;
+	
+	private final AbstractStackNode[] children;
+	private final AbstractStackNode emptyChild;
 	
 	public OptionalStackNode(int id, int dot, AbstractStackNode optional, String nodeName){
 		super(id, dot);
 		
-		this.children = generateChildren(optional);
-		
 		this.nodeName = nodeName;
+		
+		this.children = generateChildren(optional);
+		this.emptyChild = generateEmptyChild();
 	}
 	
 	private OptionalStackNode(OptionalStackNode original){
 		super(original);
 		
-		children = original.children;
-		
 		nodeName = original.nodeName;
+		
+		children = original.children;
+		emptyChild = original.emptyChild;
 	}
 	
 	private AbstractStackNode[] generateChildren(AbstractStackNode optional){
@@ -30,11 +33,15 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 		child.setProduction(new AbstractStackNode[]{child});
 		child.markAsEndNode();
 		
+		return new AbstractStackNode[]{child};
+	}
+	
+	private AbstractStackNode generateEmptyChild(){
 		AbstractStackNode empty = EMPTY.getCleanCopy();
 		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
-		return new AbstractStackNode[]{child, empty};
+		return empty;
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -67,6 +74,14 @@ public final class OptionalStackNode extends AbstractStackNode implements IListS
 	
 	public AbstractStackNode[] getChildren(){
 		return children;
+	}
+	
+	public boolean canBeEmpty(){
+		return true;
+	}
+	
+	public AbstractStackNode getEmptyChild(){
+		return emptyChild;
 	}
 	
 	public AbstractNode getResult(){
