@@ -23,7 +23,7 @@
 \section{Introduction}
 
 Highlight advantages.\\
-Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with unambiguous grammars, deterministic with LL and LR, easy to visualize, easy to generate good error messages and so on ....
+Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with most unambiguous grammars, deterministic with LL and LR, easy to visualize, easy to generate good error messages and so on ....
 
 \section{Recognizer}
 
@@ -77,7 +77,7 @@ $O(N^3)$ at most.
 
 \subsection{Unambiguous case time complexity}
 
-$O(N)$ at most.\\
+$O(N^2)$ upper bound, $O(N)$ on most.\\
 Deterministic on all classes of LL and LR grammars; depending on look-ahead.\\
 Graceful performance degradation with ambiguous grammars.
 

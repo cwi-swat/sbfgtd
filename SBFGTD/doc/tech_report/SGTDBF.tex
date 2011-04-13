@@ -33,7 +33,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
  \setlength{\parsep}{0pt}
  
  \item Worst-case cubic space and time bounds with respect to the length of the input.
- \item Linear performance on unambiguous grammars.
+ \item Linear performance on unambiguous grammars. TODO: Update.
  \item Deterministic on all types of LL and LR grammars.
  \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
@@ -326,6 +326,8 @@ Overall, this means that the algorithm remains within cubic time bounds in worst
 
 \subsection{Unambiguous case time complexity}
 \label{subsec:unambiguousTimeComplexity}
+
+TODO: Fix text, $O(N^2)$ for weird cases, so not linear in every unambiguous case.
 
 Keeping worst-case behaviour in check is great, but is generally of lesser importance then having good performance and scalability in the more common cases. Here we will prove that our algorithm is linear, not only for deterministic (such as LL and LR) grammars, but for all unambiguous context-free grammars.
 
