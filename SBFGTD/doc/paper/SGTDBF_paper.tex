@@ -77,9 +77,12 @@ $O(N^3)$ at most.
 
 \subsection{Unambiguous case time complexity}
 
-$O(N^2)$ upper bound, $O(N)$ on most.\\
+$O(N^2)$ upper bound.\\
 Deterministic on all classes of LL and LR grammars; depending on look-ahead.\\
-Graceful performance degradation with ambiguous grammars.
+$O(N)$ on split only.\\
+$O(N^2)$ on split + merge.\\
+Graceful performance degradation with ambiguous grammars.\\
+At least as good as others.
 
 \subsection{Psuedocode}
 

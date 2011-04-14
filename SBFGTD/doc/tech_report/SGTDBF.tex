@@ -32,8 +32,8 @@ To give an impression of the capabilities of our algorithm and implementation, w
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
  
- \item Worst-case cubic space and time bounds with respect to the length of the input.
- \item Linear performance on unambiguous grammars. TODO: Update.
+ \item Worst-case cubic time and space bounds with respect to the length of the input.
+ \item Worst-case quadratic performance on unambiguous grammars.
  \item Deterministic on all types of LL and LR grammars.
  \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
@@ -327,15 +327,20 @@ Overall, this means that the algorithm remains within cubic time bounds in worst
 \subsection{Unambiguous case time complexity}
 \label{subsec:unambiguousTimeComplexity}
 
-TODO: Fix text, $O(N^2)$ for weird cases, so not linear in every unambiguous case.
+Keeping worst-case behaviour in check is great, but is generally of lesser importance then having good performance and scalability in the more common cases. Here we will discuss the performance of our algorithm for unambiguous context-free grammars.
 
-Keeping worst-case behaviour in check is great, but is generally of lesser importance then having good performance and scalability in the more common cases. Here we will prove that our algorithm is linear, not only for deterministic (such as LL and LR) grammars, but for all unambiguous context-free grammars.
+Lets first specify how an unambiguous grammar restricts the behaviour of the recognizer. Ambiguities only arise when a stack that splits into two or more alternative paths recombines into one; this indicates that a part of the input can be validly interpreted in more then one way. For unambiguous grammars this behaviour never occurs. While it is still possible for stacks to split, just as it is possible that stacks merge, no combination of any of the splits and merges can ever be related.
 
-The reason for this is fairly simple. In our algorithm a stack merge or edge that is visited twice only occurs in cases where an ambiguity is encountered. The cause of these events is always that a certain portion of the input string can be derived in more then one way. When parsing an input string for an unambiguous language neither of these events can ever occur. The result of this is that every graph node can only have one edge and one unique graph node that preceded it. While the stack can split, this will never result in more then one node per non-terminal sort per level. Combined with the linear time graph expansion guarantee, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}, this means we can recognize every possible input string for an unambiguous grammar in $O(N)$ time.
+Using splits and merges as behavioural indicators, we can categorize unambiguous grammars in different classes and give specific performance guarantees for each of them.
 
-Note however that, while we can recognize input for unambiguous grammars in linear time, performance will degrade by a factor that is relative to the amount of non-determinism in the grammar. Additionally, performance degradation for ambiguous grammars is also fairly graceful. Meaning that input strings for near unambiguous grammars will also be parsed in near linear time.
+First of all we have deterministic grammars. For these types of grammars we can guarantee linear performance, since there will never be more then one live stack during recognition. In our case, all classes of LL and LR grammars fall in this group. Note however that, even though LR grammars are guaranteed never to break the linear time bound, prefix sharing (see section \ref{sec:prefixSharing}) is required to enable deterministic behaviour for them.
 
-\pagebreak
+Additionally there are unambiguous grammars for which stacks can split, but never merge. We can also guarantee linear performance on these. The reason for this is that, while there can be more then one live stack at any given point, each node in the graph will never have more then one edge, because stack merges never occur. Note however that, while the time bound for these types of grammars is guaranteed to be $O(N)$, performance will degrade relative to the amount of non-determinism. Grammars containing rules like $S ::= Sa\,|\,a$, for example, fall in this group.
+
+Finally, we also have unambiguous grammars for which stack both stack splits and merges occur. This group represents the worst-case, which has a $O(N^2)$ bound. Because stacks can merge in these cases, each graph node could potentially have edges to $N$ different levels. Which means there can be $N$ reductions per node at most, instead of just $1$. Grammars containing rules like $S ::= aSa\,|\,a$, for example, fall in this group.
+
+However we would like to point out that the performance of the recognizer is directly linked to the amount of non-determinism in the grammar; indicating that performance degradation should be fairly graceful, also for ambiguous grammars. This means that recognizing input strings for near deterministic grammars will also complete in near linear time. Our assumption is that deterministic or near-deterministic grammars represent the majority of real grammars. Regardless of this, our performance guarantees are at least as good as any other general recognizer algorithm.
+
 \subsection{Error reporting}
 
 Finally we would also like to note the relative ease with which understandable error reports can be generated. When a parse error is encountered it is trivial to generate all possible traces back to the root from the current level, since we have all the necessary information present in the graph. In these traces a user can exactly see where recognition failed, but also what did match up until this point.
@@ -352,7 +357,6 @@ Note however that there is a strong relation between the internal graph represen
 
 Another thing worth mentioning is that it is not strictly required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest tradeoff see section \ref{subsec:Flattening}.
 
-\pagebreak
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give a simple example using the following grammar:\\
 $S\,::=\,AAA$\\
