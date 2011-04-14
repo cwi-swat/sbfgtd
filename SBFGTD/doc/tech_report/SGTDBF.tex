@@ -34,7 +34,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
  
  \item Worst-case cubic time and space bounds with respect to the length of the input.
  \item Worst-case quadratic performance on unambiguous grammars.
- \item Deterministic on all types of LL and LR grammars.
+ \item Deterministic on all classes of LL and LR grammars.
  \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
  \item Generating or hand crafting the parse table / code from a grammar is trivial.
@@ -329,7 +329,7 @@ Overall, this means that the algorithm remains within cubic time bounds in worst
 
 Keeping worst-case behaviour in check is great, but is generally of lesser importance then having good performance and scalability in the more common cases. Here we will discuss the performance of our algorithm for unambiguous context-free grammars.
 
-Lets first specify how an unambiguous grammar restricts the behaviour of the recognizer. Ambiguities only arise when a stack that splits into two or more alternative paths recombines into one; this indicates that a part of the input can be validly interpreted in more then one way. For unambiguous grammars this behaviour never occurs. While it is still possible for stacks to split, just as it is possible that stacks merge, no combination of any of the splits and merges can ever be related.
+Lets first specify how the usage of an unambiguous grammar restricts the behaviour of the recognizer. Ambiguities only arise when a stack that splits into two or more alternative paths recombines into one; this indicates that a part of the input can be validly interpreted in more then one way. For unambiguous grammars this behaviour never occurs. While it is still possible for stacks to split, just as it is possible that stacks merge, no combination of any of the splits and merges can ever be related.
 
 Using splits and merges as behavioural indicators, we can categorize unambiguous grammars in different classes and give specific performance guarantees for each of them.
 
@@ -339,11 +339,11 @@ Additionally there are unambiguous grammars for which stacks can split, but neve
 
 Finally, we also have unambiguous grammars for which stack both stack splits and merges occur. This group represents the worst-case, which has a $O(N^2)$ bound. Because stacks can merge in these cases, each graph node could potentially have edges to $N$ different levels. Which means there can be $N$ reductions per node at most, instead of just $1$. Grammars containing rules like $S ::= aSa\,|\,a$, for example, fall in this group.
 
-However we would like to point out that the performance of the recognizer is directly linked to the amount of non-determinism in the grammar; indicating that performance degradation should be fairly graceful, also for ambiguous grammars. This means that recognizing input strings for near deterministic grammars will also complete in near linear time. Our assumption is that deterministic or near-deterministic grammars represent the majority of real grammars. Regardless of this, our performance guarantees are at least as good as any other general recognizer algorithm.
+However we would like to point out that the performance of the recognizer is directly linked to the amount of non-determinism in the grammar; indicating that performance degradation should be fairly graceful, also for ambiguous grammars. This means that recognizing input strings for near deterministic grammars will also complete in near linear time. Our assumption is that deterministic or near-deterministic grammars represent the majority of real grammars. Regardless of this, our performance guarantees are at least as good as those of any other general recognizer algorithm.
 
 \subsection{Error reporting}
 
-Finally we would also like to note the relative ease with which understandable error reports can be generated. When a parse error is encountered it is trivial to generate all possible traces back to the root from the current level, since we have all the necessary information present in the graph. In these traces a user can exactly see where recognition failed, but also what did match up until this point.
+We would also like to note the relative ease with which understandable error reports can be generated. When a parse error is encountered it is trivial to generate all possible traces back to the root from the current level, since we have all the necessary information present in the graph. In these traces a user can exactly see where recognition failed, but also what did match up until this point.
 
 \section{Parser}
 
