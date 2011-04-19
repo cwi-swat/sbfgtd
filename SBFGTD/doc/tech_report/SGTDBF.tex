@@ -46,7 +46,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
 
 First we will discuss the algorithm for the recognizer, for simplicity's sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
-Note that, while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and also likely the one people will end up using because of its efficiency. See section \ref{sec:breadthFirstVsDepthFirst} for more details about this.
+Different variations of the algorithm are possible and while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and also likely the one people will end up using because of its efficiency. See section \ref{sec:breadthFirstVsDepthFirst} for more details about this.
 
 \subsection{Graph}
 
@@ -147,7 +147,7 @@ Finally we check whether or not there have been nullable reductions for the non-
 \subsubsection{Reduction and moving}
 {\small
 \begin{verbatim}
-reduceOrMove(){
+reduceAndMove(){
   while(node <- toReduceSet){
     if(node.lastInProduction()){
       for(edgeLevel <- node.edgesPerLevel){
@@ -176,7 +176,7 @@ reduceOrMove(){
 \end{verbatim}
 }
 
-This is the reduce or move loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue the `parents' of this node for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead.
+This is the reduce and move loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue the `parents' of this node for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead.
 
 The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgeLevel} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by consulting the {\bf reducedStore}. If a node has not been reduced yet, we queue all of the nodes that are pointed to from edges in that {\bf edgeLevel} for reduction; otherwise we do not. This will work correctly since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level. Note that this behaviour is not a necessity, but an optimization (which reduces the number of edge visits by a factor between one and the number of non-terminals in the grammar). For more information about this optimization see section \ref{subsec:edgeVisitOptimization}.
 
@@ -199,11 +199,11 @@ We would expand these rules in the following way:
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Cycles}
-Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically resolved by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph, halting the expansion process for the involved rule. The reduction process will also terminate, since it will only perform the reductions for each node once.
+Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically resolved by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph, halting the expansion process for the involved rule. The reduction process will also terminate, since the recognizer will only perform the reductions for each node once.
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
-Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a nullable non-terminal gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more consecutive nullables, problems arrise. The first of these problems is sharing related.
+Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a node that is associated with a nullable non-terminal sort gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more identical consecutive nullables, problems arrise. The first of these problems is sharing related.
 
 We will describe the issue by illustrating what would happen in a version of the implementation of the algorithm which does not contain the fix.
 Consider the following grammar:\\
@@ -211,7 +211,7 @@ $S ::= AA$\\
 $A ::= C$\\
 $C ::= \epsilon$\\
 Input = <empty>\\
-After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
+After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand the $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
 
 In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:pseudocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
@@ -226,7 +226,7 @@ Imagine we matched the first part of the tree and are at level $1$ now. We are t
 
 This order dependency is something we cannot enforce, so we need another solution for this problem. We solved this by propagating edges forward through the production, when necessary. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production, we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this next node is both handled and has nullable derivations associated with it, we tranfer all edges that are absent on this next node to it. If missing edges were transferred, we need to continue the propagation of these transferred edges to the node beyond this next node and so on until the last node in the production is reached. For each edge that is transferred to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be traversed.
 
-Also note that, since this propagation only happens within a single level and does not introduce any real extra work, it does not influence worst-case behaviour. This is because all stack merges would have happened regardless of their timing; the only difference is that the exact same amount of work they normally generate gets distributed over multiple visits of the same node. Consequently, the performance impact of this solution is very low in general; close to non-existent even, since it only requires one cheap constant time check on each node visit.
+Also note that, since this propagation only happens within a single level and does not introduce any real extra work, it does not influence worst-case behaviour. This is because all stack merges would have happened regardless of their timing. The only difference is that the exact same amount of work they normally generate gets distributed over multiple visits of the same node. Consequently, the performance impact of this solution is very low in general; close to non-existent even, since it only requires one cheap constant time check on each node visit. See section \ref{sec:worstcaseBench} for related benchmark results.
 
 \subsubsection{Termination}
 Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing the expansion and reduction phases to converge to a point where no more work can be done in a level, we are always able to reach the end of the input string (assuming the input string has a finite length), completing recognition.
@@ -339,7 +339,7 @@ Additionally there are unambiguous grammars for which stacks can split, but neve
 
 Finally, we also have unambiguous grammars for which both stack splits and merges occur. This group represents the worst-case, which has a $O(N^2)$ time bound. Because stacks can merge in these cases, each graph node could potentially have edges to $N$ different levels. Which means there can be $N$ reductions per node at most, instead of just $1$. Grammars containing rules like $S ::= aSa\,|\,a$, for example, fall in this group.
 
-However we would like to point out that the performance of the recognizer is directly linked to the amount of non-determinism in the grammar; indicating that performance degradation should be fairly graceful, also for ambiguous grammars. This means that recognizing input strings for near deterministic grammars will also complete in near linear time. Our assumption is that deterministic or near-deterministic grammars represent the majority of real grammars. Regardless of this, our performance guarantees are at least as good as those of any other general recognizer algorithm.
+However, we would like to point out that the performance of the recognizer is directly linked to the amount of non-determinism in the grammar; indicating that performance degradation should be fairly graceful, also for ambiguous grammars. This means that recognizing input strings for near deterministic grammars will also complete in near linear time. Our assumption is that deterministic or near-deterministic grammars represent the majority of real grammars. Regardless of this, our performance guarantees are at least as good as those of any other general recognizer algorithm.
 
 \subsection{Error reporting}
 
@@ -349,7 +349,7 @@ We would also like to note the relative ease with which understandable error rep
 
 \subsection{Parse forest}
 
-To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic space and time bounds. We call it `deflattenized', for lack of a better description. While its purpose is similar to binarized SPPFs, its implementation is somewhat different.
+To represent the parse forest we use a format that was especially designed for this parser, to ensure worst-case behaviour remains within cubic space and time bounds. We will refer to this type of parse forest as `deflattenized', for lack of a better description. While its purpose is similar to binarized SPPFs, its implementation is somewhat different.
 
 The parse forest consists of nodes. Every node in the forest contains a result and a set of prefixes. Each result represents a substring for a certain symbol. In case this symbol is a non-terminal sort, this result contains one or more references to alternative representations of the substring it denotes. If the symbol is a terminal, it will just represent that specific terminal. The set of prefixes contained in the node hold all possible alternatives for the preceding item in the production. (Naturally this set is empty for the node associated with the first item in the production). A prefix only consists of a reference to a node. If one traces all possible paths through this representation of a production to the start, one will get all alternatives for this production of the substring it represents.
 
@@ -388,7 +388,7 @@ S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \pagebreak
 \subsection{Pseudocode}
 
-Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italic.
+Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italics.
 
 \subsubsection{Main}
 {\small
@@ -459,7 +459,7 @@ The expansion code does not need to change a lot, since it has limited interatio
 \subsubsection{Reduction and moving}
 {\small
 \begin{alltt}
-reduceOrMove()\{
+reduceAndMove()\{
   while(node <- toReduceSet)\{
     if(node.lastInProduction())\{
       for(edgesLevel <- node.edgesPerLevel)\{\textit{
@@ -490,7 +490,7 @@ reduceOrMove()\{
 \end{alltt}
 }
 
-The reduce or move code need to be modified more extensively. Basically two things need to be added.
+The reduce and move code needs to be modified more extensively. Basically two things need to be added.
 
 First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
@@ -757,6 +757,7 @@ Benchmarks were executed on a machine with the following specifications:
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
 \subsection{Worst case}
+\label{sec:worstcaseBench}
 
 The obvious candidates for a benchmark are the following worst-case grammars:
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
