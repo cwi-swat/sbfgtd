@@ -693,11 +693,13 @@ As mentioned before, since every graph node that contains the same non-terminal 
 
 \subsubsection{Prefix sharing}
 \label{sec:prefixSharing}
-In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$. It is trivial to modify our algorithm to support this. Simply by allowing every node in the graph to have more then one `next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as the prefix for the rule overlaps with that of another rule, it can be merged, regardless whether or not it already has been merged with another rule.
+In many grammars productions exist that start with the same symbols. There is no reason to do duplicate work for these symbols. For example, if we take the grammar rule: $S\,::=\,E\,+\,E\,|\,E\,-\,E$. Both $E$'s at the start of these productions will always be derived exactly the same way for the same substring(s) and thus they are equal. Because of this, the prefixes of these two productions may as well be merged; i.e. by converting the rule into $S\,::=\,E\,(+\,E\,|\,-\,E)$.
 
-This optimization ensures we can recognize and parse all types of LR grammars in linear time. The reason for this is that there will always be one active stack at most, thus each visit of a level completes in $O(1)$ time. This leads to the conclusion that the total recognize / parse time for any LR grammar will be $O(N)$, where $N$ is the length of the input.
+It is trivial to modify our algorithm to support this. Simply by allowing every node in the graph to have more then one `next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as the prefix for the rule overlaps with that of another rule, it can be merged, regardless whether or not it already has been merged with another rule.
 
-One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
+This optimization ensures we can recognize and parse all classes of LR grammars deterministicly, since there will only be one active stack at most.
+
+One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and we assume that opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \section{Filtering}
 \label{chap:filtering}
@@ -708,13 +710,13 @@ As is common in general parsing, ultimately you often end up with an ambiguous p
 
 Follow restrictions work as a kind of disallowed look-ahead after the production; if the production we are trying to reduce matches the specified character(s) after the current location in the input, the reduce fails. They are mainly, though not exclusively, used to indicate eagerness.
 
-Other variations are also possible. Like applying a similar restriction to preceding characters, or even the matched substring in its entirety.
+Other variations are also possible. Like applying a similar restriction to preceding characters or instead of restricting certain characters before or after the production making them required instead. Additionally one could even restrict the production from matching a certain set of strings.
 
 \subsection{Rejects}
 
 Reject filtering is intended for the removal of trees that are considered not to be correct at a certain location in the grammar. One could think of using it for things like filtering alternatives for identifiers that match keywords in the language, for example.
 
-Any alternative of a production can be marked as reject. If this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially discarded at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case reductions for the node associated with the rejected alternative were already performed, as we would need to transitively revisit all the outgoing edges and perform the necessary updates accordingly. This is the reason why it is not completely done at parse time.
+Any alternative of a production can be marked as reject. If this reject alternative matches, all other alternatives this reject belongs to are discarded. In our current implementation, rejected nodes are partially discarded at parse time and partially during post-parse filtering / flattening. Removing rejected stacks while parsing prevents unnecessary work from being performed; however it can be expensive to do in case reductions for the node associated with the rejected alternative were already performed, as we would need to transitively revisit all the outgoing edges and perform the necessary updates accordingly. This is the reason why we decided not to completely handle rejects at parse time.
 
 In our current implementation reject rules cannot be nested, since this may lead to incorrect behaviour. Consider the following grammar: $S\,::=\,A(r)\,|\,a,\,A\,::=\,B(r)\,|\,a,\,B\,::=\,a$. The reject alternatives are marked with $(r)$. In this case the order in which reductions are done will determine the final parse result. For example, we could follow the edges from $.a$ to $.A$ and then from $.A(r)$ to $.S$. This will cause $S.$ to be rejected, failing the parse. On the other hand, if we would have followed the edge from $.a$ to $.B$ first and then from $.B(r)$ to $.A$ we would end up with a successful parse, since $A$ gets rejected, preventing the edge from $.A(r)$ to $.S$ from being followed. So if one writes a grammar that contains nested rejects it may, or may not do what was intended.
 
@@ -734,7 +736,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters, disambiguate non-context-free ambiguities (like C typedefs) or even influence the behaviour of the parser while it is running.
 
-The option exists to either intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. However their implementation is not trivial, because of their interaction with ambiguities and the parse forest. Depending on what kind of actions one want to support, intergrating them into the parse process itself can be especially challenging.
+The option exists to, either partially or wholly, intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that their implementation is not trivial, because of their interaction with ambiguities and the parse forest. Depending on what kind of actions one wants to support, intergrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parse process, when we are in posession of a complete parse forest, is by far the easiest way to do it.
 
 Unfortunately, we will not go into detail about this feature, since actions are outside of the scope of this article.
 
@@ -784,7 +786,7 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 
 Our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
-What may appear surprising to some is the limited performance difference between both cases. Even though the version with the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
+What may appear surprising to some is the limited performance difference between both cases. Even though the version which includes the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Grammar factoring}
 \label{sec:factoringBenchmark}
@@ -802,7 +804,7 @@ It contains lots of recursion and is highly ambiguous; the input, on the other h
 \caption{Grammar factoring related parse time scaling; without look-ahead filtering.}
 \end{figure}
 
-Note how the parser is more then twice as slow on the non-factored version of the grammar when prefix sharing is disabled. This is because both the number of graph nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}. This also supports the claims made in section \ref{subsec:unambiguousTimeComplexity}.
+Note how the parser is more then twice as slow on the non-factored version of the grammar when prefix sharing is disabled. This is because both the number of graph nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
 The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, left-factoring the grammar also removes all ambiguities from it. Counterary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
 
@@ -816,7 +818,7 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $100000$ character intervals.
 
-We compared our performance results with JavaCup, which was used in combination with JFlex. We selected JavaCup, since it is one of the more widely known and used parser generators that produce LALR parsers in Java.
+We compared our performance results with JavaCup, which was used in combination with JFlex. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java.
 
 \begin{figure}[H]
 \centering
@@ -824,7 +826,7 @@ We compared our performance results with JavaCup, which was used in combination 
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
-As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input somewhere between two and a half and three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack.
+As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input somewhere between two and a half and three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parse scales exactly the same, as the relative performance difference does not change for different input lengths.
 
 \subsection{Realistic cases}
 
