@@ -583,11 +583,11 @@ For example, it is relatively simple to add the option to construct a partial pa
 
 \section{Extended capabilities}
 
-To improve the usefulness of the parser on real grammars a few additional features were developed. Namely support for lists, optionals and location related features was added. In this chapter we will discuss how these features intergrate into our algorithm and implementation.
+To improve the usefulness of the parser on real grammars a few additional features were developed. Namely intergrated support for lists, optionals and location related features was added, along with a few other things. In this chapter we will discuss how these mentioned features fit into our algorithm and implementation.
 
 \subsection{Lists}
 
-List, separated lists and optionals are handled in a similar way, because in essense they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists with one element at most; from here on out we will refer to all of these simply as `lists'.
+List, separated lists and optionals are handled in a similar way, because in essense they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists that are restricted to one element at most; from here on out we will refer to all of these simply as `lists'.
 
 Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
 
@@ -826,7 +826,7 @@ We compared our performance results with JavaCup, which was used in combination 
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
-As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input somewhere between two and a half and three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parse scales exactly the same, as the relative performance difference does not change for different input lengths.
+As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input somewhere between two and a half and three times as fast. This seems like a lot, however it is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parser scales exactly the same on this LR grammar (linear), as the relative performance difference between the two does not change for different input lengths.
 
 \subsection{Realistic cases}
 
