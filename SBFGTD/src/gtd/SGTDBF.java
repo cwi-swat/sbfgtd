@@ -221,7 +221,7 @@ public class SGTDBF implements IGTD{
 			}
 			
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
-			Link prefix = constructPrefixesFor(i, prefixes, nodeResultStore);
+			Link prefix = (prefixes != null) ? new Link(prefixes[i], nodeResultStore) : new Link(null, nodeResultStore);
 			edgePrefixes.add(prefix);
 			
 			resultStore.addAlternative(new Link(edgePrefixes, nextResultStore));
@@ -516,14 +516,6 @@ public class SGTDBF implements IGTD{
 		if(node.hasNext()){
 			moveToNext(node, result);
 		}
-	}
-	
-	private Link constructPrefixesFor(int index, ArrayList<Link>[] prefixesMap, AbstractNode result){
-		if(prefixesMap == null){
-			return new Link(null, result);
-		}
-		
-		return new Link(prefixesMap[index], result);
 	}
 	
 	private void reduceTerminal(AbstractStackNode terminal){
