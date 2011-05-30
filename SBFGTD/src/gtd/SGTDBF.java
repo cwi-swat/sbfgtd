@@ -191,40 +191,13 @@ public class SGTDBF implements IGTD{
 			if(touched.contains(startLocation)) continue;
 			touched.add(startLocation);
 			
-			ArrayList<AbstractStackNode> edgesPart = edgesMap.getValue(i);
-			
-			// Update one (because of sharing all will be updated).
-			AbstractStackNode edge = edgesPart.get(0);
-			
-			String identifier = edge.getIdentifier();
-			
-			AbstractContainerNode resultStore = null;
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(startLocation);
-			if(levelResultStoreMap != null){
-				resultStore = levelResultStoreMap.get(identifier);
-			}else{
-				levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
-				resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
-			}
-			
-			if(resultStore == null){ // If there are no previous reductions to this level, handle this.
-				String nodeName = edge.getName();
-				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
-				levelResultStoreMap.putUnsafe(identifier, resultStore);
-				
-				stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				
-				for(int j = edgesPart.size() - 1; j >= 1; --j){
-					edge = edgesPart.get(j);
-					stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				}
-			}
-			
 			ArrayList<Link> edgePrefixes = new ArrayList<Link>();
 			Link prefix = (prefixes != null) ? new Link(prefixes[i], nodeResultStore) : new Link(null, nodeResultStore);
 			edgePrefixes.add(prefix);
 			
-			resultStore.addAlternative(new Link(edgePrefixes, nextResultStore));
+			Link resultLink = new Link(edgePrefixes, nextResultStore);
+			
+			handleEdgesList(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
 		}
 	}
 	
@@ -385,35 +358,9 @@ public class SGTDBF implements IGTD{
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
-			int startLocation = edgesMap.getKey(i);
-			ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
-			
-			AbstractStackNode edge = edgeList.get(0);
-			String identifier = edge.getIdentifier();
-			String nodeName = edge.getName();
-			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
-			AbstractContainerNode resultStore = null;
-			if(levelResultStoreMap != null){
-				resultStore = levelResultStoreMap.get(identifier);
-			}else{
-				levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
-				resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
-			}
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
-			if(resultStore != null){
-				resultStore.addAlternative(resultLink);
-			}else{
-				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
-				levelResultStoreMap.putUnsafe(identifier, resultStore);
-				resultStore.addAlternative(resultLink);
-				
-				stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				
-				for(int j = edgeList.size() - 1; j >= 1; --j){
-					edge = edgeList.get(j);
-					stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				}
-			}
+			
+			handleEdgesList(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
 		}
 	}
 	
@@ -429,36 +376,41 @@ public class SGTDBF implements IGTD{
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
 			int startLocation = edgesMap.getKey(i);
-			ArrayList<AbstractStackNode> edgeList = edgesMap.getValue(i);
 			
 			if(touched.contains(startLocation)) continue;
 			touched.add(startLocation);
 			
-			AbstractStackNode edge = edgeList.get(0);
-			String identifier = edge.getIdentifier();
-			String nodeName = edge.getName();
-			HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
-			AbstractContainerNode resultStore = null;
-			if(levelResultStoreMap != null){
-				resultStore = levelResultStoreMap.get(identifier);
-			}else{
-				levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
-				resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
-			}
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
-			if(resultStore != null){
-				resultStore.addAlternative(resultLink);
-			}else{
-				resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
-				levelResultStoreMap.putUnsafe(identifier, resultStore);
-				resultStore.addAlternative(resultLink);
-				
+			
+			handleEdgesList(edgesMap.getValue(i), resultLink, startLocation);
+		}
+	}
+	
+	private void handleEdgesList(ArrayList<AbstractStackNode> edgeList, Link resultLink, int startLocation){
+		AbstractStackNode edge = edgeList.get(0);
+		String identifier = edge.getIdentifier();
+		String nodeName = edge.getName();
+		HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
+		AbstractContainerNode resultStore = null;
+		if(levelResultStoreMap != null){
+			resultStore = levelResultStoreMap.get(identifier);
+		}else{
+			levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
+			resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
+		}
+		
+		if(resultStore != null){
+			resultStore.addAlternative(resultLink);
+		}else{
+			resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
+			levelResultStoreMap.putUnsafe(identifier, resultStore);
+			resultStore.addAlternative(resultLink);
+			
+			stacksWithNonTerminalsToReduce.push(edge, resultStore);
+			
+			for(int j = edgeList.size() - 1; j >= 1; --j){
+				edge = edgeList.get(j);
 				stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				
-				for(int j = edgeList.size() - 1; j >= 1; --j){
-					edge = edgeList.get(j);
-					stacksWithNonTerminalsToReduce.push(edge, resultStore);
-				}
 			}
 		}
 	}
