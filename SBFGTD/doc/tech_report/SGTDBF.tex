@@ -734,7 +734,7 @@ There is a down-side however. Handling priority and associativity filtering at p
 
 \subsection{Actions}
 
-Each grammar rule can have a number of actions associated with it. These actions can be used to filter alternatives that cannot be disambiguated using other filters, disambiguate non-context-free ambiguities (like C typedefs) or even influence the behaviour of the parser while it is running.
+Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter alternatives that cannot be disambiguated using other filters, disambiguate non-context-free ambiguities (like C typedefs) or even influence the behaviour of the parser while it is running.
 
 The option exists to, either partially or wholly, intergrate the execution of actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that their implementation is not trivial, both because of their interaction with ambiguities and the parse forest and the possible side-effects they can have. Depending on what types of actions one wants to support, intergrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parsing and flattening process, when we are in possession of a complete parse forest, is by far the easiest way to do it.
 
@@ -747,7 +747,9 @@ As mentioned, it is possible that actions have side-effects. Most of the complic
 
 Basically, there are three types of events; either we enter or we exit something or we need to apply an action to a certain tree construct. If we receive an enter event, we have the opportunity to prepare everything for the handling of the indicated construct, like pushing a new environment on the stack. If we receive an exit event, we are notified whether or not the construct we are handling is successfully build or filtered; so any bookkeeping actions can be executed, if required. Finally, we have the filter events, which requests the execution of any with the indicated construct associated semantic actions. These constructs can either be alternatives for productions, ambiguity clusters or cycles. Each action has the opportunity to either replace the given construct by an alternative version or have a arbitrary side-effect on any of the environments on its associated stack.
 
-For more information, we would like to refer users to our reference implementation.
+Something to keep in mind is how the sharing of the results is handled. Because of the potential side-effects that actions can have, one cannot determine whether or not a certain previously constructed result can be reused as easily. Generally this is only the case when the construct we are handling and all of its potential direct and indirect children are side-effect free and do not rely on side-effects themselfs. In all other cases the result will need to be reconstructed; unless the content of the current environment is equal to one which is associated with any of the previously constructed results.
+
+For more information about the semantic actions framework, we would like to refer users to our reference implementation.
 
 \section{Benchmarks}
 
@@ -769,6 +771,7 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
+\pagebreak
 \subsection{Worst case}
 \label{sec:worstcaseBench}
 
