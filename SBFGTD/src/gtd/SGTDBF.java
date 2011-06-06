@@ -35,7 +35,6 @@ public class SGTDBF implements IGTD{
 	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
 	
 	private int location;
-	private boolean shiftedLevel;
 	
 	private final HashMap<String, Method> methodCache;
 	
@@ -65,7 +64,6 @@ public class SGTDBF implements IGTD{
 		resultStoreCache = new IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>>();
 		
 		location = 0;
-		shiftedLevel = false;
 		
 		methodCache = new HashMap<String, Method>();
 		
@@ -497,7 +495,6 @@ public class SGTDBF implements IGTD{
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
 				location = i;
-				shiftedLevel = (location != 0);
 				return true;
 			}
 		}
@@ -505,11 +502,6 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private boolean findStacksToReduce(){
-		if(!stacksWithTerminalsToReduce.isEmpty()){
-			shiftedLevel = false;
-			return true;
-		}
-		
 		for(int i = location + 1; i < todoLists.length; ++i){
 			Stack<AbstractStackNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
@@ -517,7 +509,6 @@ public class SGTDBF implements IGTD{
 				
 				todoLists[location] = null;
 				location = i;
-				shiftedLevel = true;
 				return true;
 			}
 		}
@@ -671,22 +662,25 @@ public class SGTDBF implements IGTD{
 		stacksToExpand.push(rootNode);
 		expand();
 		
-		findFirstStackToReduce();
-		do{
-			if(shiftedLevel){ // Nullable fix.
-				sharedNextNodes.clear();
-				resultStoreCache.clear();
-				cachedEdgesForExpect.clear();
-				propagatedPrefixes.dirtyClear();
-				propagatedReductions.dirtyClear();
-			}
-			
+		if(findFirstStackToReduce()){
+			boolean shiftedLevel = (location != 0);
 			do{
-				reduce();
+				if(shiftedLevel){ // Nullable fix for the first level.
+					sharedNextNodes.clear();
+					resultStoreCache.clear();
+					cachedEdgesForExpect.clear();
+					propagatedPrefixes.dirtyClear();
+					propagatedReductions.dirtyClear();
+				}
 				
-				expand();
-			}while(!stacksWithNonTerminalsToReduce.isEmpty());
-		}while(findStacksToReduce());
+				do{
+					reduce();
+					
+					expand();
+				}while(!stacksWithNonTerminalsToReduce.isEmpty() || !stacksWithTerminalsToReduce.isEmpty());
+				shiftedLevel = true;
+			}while(findStacksToReduce());
+		}
 		
 		if(location == input.length){
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
