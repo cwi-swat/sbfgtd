@@ -706,12 +706,13 @@ One may wonder why merging anything other then the prefixes of productions is no
 
 As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features that can be used to filter the trees in this forest, in case this is required. These features are all optional and have no dependencies on eachother.
 
-\subsection{Follow restrictions}
+\subsection{Restrictions and requirements}
 
-Follow restrictions work as a kind of disallowed look-ahead after the production; if the production we are trying to reduce matches the specified character(s) after the current location in the input, the reduce fails. They are mainly, though not exclusively, used to indicate eagerness.
+First of all one could add restrictions to grammar items. For example, marking a certain list item with a restriction that prevents it from being followed by a certain set of characters or strings, could be used to indicate eagerness for this list item. Another example would be to require a certain item to start at the beginning of a line or at a certain column. One can think of numereous different possibilities; basically any restriction or requirement on the substring an item matched or the input preceding or following an item is imaginable. These restrictions and requirements include, but are not limited to, sets of characters, string and regular expressions.
 
-Other variations are also possible. Like applying a similar restriction to preceding characters or instead of restricting certain characters before or after the production making them required instead. Additionally one could even restrict the production from matching a certain set of strings or regular expressions. There are numereous possibilities.
+When adding this feature to the implementation of the recognizer / parser one can make the destinction between filters that need to be executed before reducing and filters that can also be executed before expanding an item, for efficiency reasons. Filters that can be executed before the expansion of an item are almost exclusively limited to restrictions and requirements that deal with input that preceded an item, all other filters can only be handled before the reduction of their associated item, since we generally do not have all the required information to handle these before that time. When a filter succesfully matches it should prevent either the expansion or reduction of the item it is associated with, to prevent the recognizer from recognizing it and prevent the possible results this item would have had from being added to the parse forest.
 
+\pagebreak
 \subsection{Priorities and associativity}
 
 Priorities and associativity relations can be implemented as nesting restrictions. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, this means that the production $E\,+\,E$ cannot be a child of $E\,*\,E$ on either side of the production. $E\,::=\,E\,+\,E\,\{left\}$ on the other hand means that the production $E\,+\,E$ only cannot be a child of itself on the right hand side of the production; similarly for $\{right\}$, but the other way around. If declared as $\{nonassoc\}$ it cannot be nested on either side of itself.
@@ -722,6 +723,7 @@ The main advantage of handling priority and associativity filtering at parse tim
 
 There is a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of the node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not handling priority and associativity filtering is required for each batch of reductions, depending on the node they are associated with. So it is possible to dynamically choose the appropriate reduction path depending on the node that needs to be handled. This means the performance impact will remain limited to rules on which nesting restrictions apply; making this solution most likely more efficient than any alternative implementation.
 
+\pagebreak
 \subsection{Semantic actions}
 
 Support for semantic actions is also present. Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter ambiguities that cannot be disambiguated using other filters, including non-context-free ambiguities (like C typedefs). It even opens up the opportunity to influence the behaviour of the parser while it is running.
@@ -862,7 +864,6 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
-\pagebreak
 \section{Future work}
 
 Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
