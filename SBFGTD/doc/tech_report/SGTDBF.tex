@@ -63,7 +63,7 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
  \setlength{\parskip}{0pt}
  \setlength{\parsep}{0pt}
 
- \item Expand the left most node of every production that did not match anything yet on all stacks, until no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
+ \item Expand the left most node of every production that did not match anything yet on all stacks, until there are no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
  \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that do not.
  \item Reduce the nodes on all stacks that matched something and have them queue the `next' node in the production they are part of where applicable, until no reductions are possible anymore.
  \item If there are nodes queued for expansion go to 1.
@@ -71,9 +71,9 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
 \end{enumerate}
 
 \pagebreak
-\subsection{Pseudocode}
+\subsection{Pseudo-code}
 
-In this section we will present and discuss the pseudocode of the recognizer. Note however that this pseudocode already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code presented here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementor. For the same reason, the hidden right recursion fix, discussed in section \ref{subsec:hiddenRightRecursion}, was left out here as well. On the other hand, the nullable fix described in section \ref{subsec:nullables} is present.
+In this section we will present and discuss the pseudo-code of the recognizer. Note however that this pseudo-code already contains the edge related optimizations listed in section \ref{sec:edgeOptimizations}. This was done since, besides improving performance, they simplify the implementation of the algorithm slightly and they enable the recognizer to achieve most of its advertised performance guarantees. We will not go into detail about how these optimization work or why they are correct here; please refer to the indicated section for more details. Other optimizations were not merged in with the code presented here, since they either complicate things too much or can be implemented in multiple ways; a decision we would like to leave for the implementer. For the same reason, the hidden right recursion fix, discussed in section \ref{subsec:hiddenRightRecursion}, was left out here as well. On the other hand, the nullable fix described in section \ref{subsec:nullables} is present.
 
 \subsubsection{Main}
 {\small
@@ -184,7 +184,7 @@ The {\bf reducedStore} is a dual layered data structure. The first layer is inde
 
 \subsection{Correctness}
 
-In this section we will go into detail on some special cases that deserve some additional explaination.
+In this section we will go into detail on some special cases that deserve some additional explanation.
 
 \subsubsection{Left recursion}
 First of all, left recursion. Normal top-down parsers cannot handle grammars containing left recursion, since they keep expanding left recursive rules indefinitely, preventing implementations of these kind algorithms from terminating. Because we introduce sharing into the graph, which leads to automatic terminalization of all these rules, this undesirable behaviour is prevented from manifesting. By terminalization we mean that the expansion phase converges to a point at which each stack has a terminal at the bottom and thus cannot be expanded further. For example, if we take the grammar:\\
@@ -203,7 +203,7 @@ Cycles present another issue that needs to be handled. Similarly to left recursi
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
-Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a node that is associated with a nullable non-terminal sort gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more identical consecutive nullables, problems arrise. The first of these problems is sharing related.
+Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a node that is associated with a nullable non-terminal sort gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more identical consecutive nullables, problems arise. The first of these problems is sharing related.
 
 We will describe the issue by illustrating what would happen in a version of the implementation of the algorithm which does not contain the fix.
 Consider the following grammar:\\
@@ -222,14 +222,14 @@ Unfortunately this only solves one of the two nullable related problems. The oth
 Consider the following grammar:\\
 $S\,::=\,SS\,|\,a\,|\,\epsilon$\\
 Input = $a$\\
-Imagine we matched the first part of the tree and are at level $1$ now. We are trying to recognize $.SS$ and $S.S$, where $S.S$ has a prefix that starts at $0$. This means $.SS$ only has edges that point to nodes in level $1$ and $S.S$ only has edges that point to nodes in level $0$. The problem is that the order in which we handle these two nodes will determine whether or not we recognize all derivations. If we would move from $S.S$ to $SS.$ first, $SS.$ will only have edges to level $0$ associated with it, so this will cause us to miss the reductions to level $1$ when $SS.$ is handled. This happens because the stack merge at $S.S$ took place after $S.S$ is handled, preventing the edges present on $.SS$ from being transfered, through $S.S$, to $SS.$. On the other hand, if we would move from $.SS$ to $S.S$ first, the stacks would merge before $S.S$ is handled. In this case $S.S$ would contain edges to both the nodes in level $0$ as the ones in $1$ before we move to $SS.$, which does lead to a correct result.
+Imagine we matched the first part of the tree and are at level $1$ now. We are trying to recognize $.SS$ and $S.S$, where $S.S$ has a prefix that starts at $0$. This means $.SS$ only has edges that point to nodes in level $1$ and $S.S$ only has edges that point to nodes in level $0$. The problem is that the order in which we handle these two nodes will determine whether or not we recognize all derivations. If we would move from $S.S$ to $SS.$ first, $SS.$ will only have edges to level $0$ associated with it, so this will cause us to miss the reductions to level $1$ when $SS.$ is handled. This happens because the stack merge at $S.S$ took place after $S.S$ is handled, preventing the edges present on $.SS$ from being transferred, through $S.S$, to $SS.$. On the other hand, if we would move from $.SS$ to $S.S$ first, the stacks would merge before $S.S$ is handled. In this case $S.S$ would contain edges to both the nodes in level $0$ as the ones in $1$ before we move to $SS.$, which does lead to a correct result.
 
-This order dependency is something we cannot enforce, so we need another solution for this problem. We solved this by propagating edges forward through the production, when necessary. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production, we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this next node is both handled and has nullable derivations associated with it, we tranfer all edges that are absent on this next node to it. If missing edges were transferred, we need to continue the propagation of specifically these transferred edges to the node beyond this next node and so on until the last node in the production is reached. For each edge that is transferred to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be traversed.
+This order dependency is something we cannot enforce, so we need another solution for this problem. We solved this by propagating edges forward through the production, when necessary. If we are currently handling a node associated with nullable derivations and are moving to the next node in the production, we need to check whether or not this next node is handled yet and if it is associated with nullable derivations as well. If this next node is both handled and has nullable derivations associated with it, we transfer all edges that are absent on this next node to it. If missing edges were transferred, we need to continue the propagation of specifically these transferred edges to the node beyond this next node and so on until the last node in the production is reached. For each edge that is transferred to the last node in the production a reduction needs to be performed. This way we can be sure all derivations will be traversed.
 
 Also note that, since this propagation only happens within a single level and does not introduce any real extra work, it does not influence worst-case behaviour. This is because all stack merges would have happened regardless of their timing. The only difference is that the exact same amount of work they normally generate gets distributed over multiple visits of the same node. Consequently, the performance impact of this solution is very low in general; close to non-existent even, since it only requires one cheap constant time check on each node visit. See section \ref{sec:worstcaseBench} for related benchmark results.
 
 \subsubsection{Termination}
-Another questions that some people will have on their mind is: ``does it terminate?". Ofcourse it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing the expansion and reduction phases to converge to a point where no more work can be done in a level, we are always able to reach the end of the input string (assuming the input string has a finite length), completing recognition.
+Another questions that some people will have on their mind is: ``does it terminate?". Of course it does. The reason for this fairly obvious and can be even explained in one sentence; since we move forward to the next level once all work is done in the current level and we share all graph nodes within each level (of which there are a finite amount), causing the expansion and reduction phases to converge to a point where no more work can be done in a level, we are always able to reach the end of the input string (assuming the input string has a finite length), completing recognition.
 
 \subsection{Breadth-first vs depth-first}
 \label{sec:breadthFirstVsDepthFirst}
@@ -240,13 +240,13 @@ The main difference with a recursive decent approach is that we can now have (no
 
 Note however that while the absolute amount of `work' required by the algorithm does not increase, the worst-case amount of node visits increases from $O(N)$ to $O(N^2)$, however the number of edges that is merged in during each visit is always $1$, instead of $N$ in the worst-case. Because of this the worst-case behaviour (section \ref{subsec:recognizerComplexity}) is not influenced by this. Nor will it have an effect on the time bound for unambiguous grammars (section \ref{subsec:unambiguousTimeComplexity}), as stack merges do not occur for these cases.
 
-Conceptually the recursive decent version looks nicer, since there is no real destinction between normal control flow and the handling of nullables. On the other hand, creating an implementation for it may be more cumbersome because of all the extra bookkeeping that is required, as it basically implements backtracking in combination with memoization and thus needs information about all levels, instead of just the current one. For similar reasons, in combination with the potentially higher amount of node visits, it will also never be as efficient as a level synchronized variant, both in terms of performance as memory usage. However, since it may be desirable to create a recursive decent implementation in certain cases, we offer both options to the user / implementor, so they are able to make their own decision.
+Conceptually the recursive decent version looks nicer, since there is no real distinction between normal control flow and the handling of nullables. On the other hand, creating an implementation for it may be more cumbersome because of all the extra bookkeeping that is required, as it basically implements backtracking in combination with memoization and thus needs information about all levels, instead of just the current one. For similar reasons, in combination with the potentially higher amount of node visits, it will also never be as efficient as a level synchronized variant, both in terms of performance as memory usage. However, since it may be desirable to create a recursive decent implementation in certain cases, we offer both options to the user / implementer, so they are able to make their own decision.
 
 \subsection{From grammar to recognizer}
 
 Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. For example, in case one generates code, this means there would need to be one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives to expect.
 
-Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact handcrafting it is about as simple as writing the grammar itself (although more cumbersome).
+Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact hand crafting it is about as simple as writing the grammar itself (although more cumbersome).
 
 Another advantage is that, in combination with the top-down-ness of our algorithm, it makes tracing errors in a grammar easier; if you would like to know why something does not match at a certain position, you can just go through it with a debugger to see what happens. Your degree of success naturally depends on the amount of stacks that are alive at the moment you are trying to observe, which is linked to the amount of non-determinism in the grammar, but at least the possibility to do so exists.
 
@@ -316,7 +316,7 @@ As one can see, when expanding $.A$ for the second time (at 5), sharing is detec
 \subsection{Worst-case time complexity}
 \label{subsec:recognizerComplexity}
 
-We are designing a parsing algorithm that is intented to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
+We are designing a parsing algorithm that is intended to scale as well as is possible, regardless of the input grammar. For this reason, the recognizer must not break the cubic time bound. Here we will prove that we remain within this bound.
 
 Reducing consumes $O(N^3)$ time in the worst-case; where $N$ is the number of characters in the input string. Every edge is associated with one reduction per level per graph node at most. Each of these edges can be associated with $O(N)$ nodes per level; one per level before the current level. There are $N$ levels, so each edge will be visited $O(N^2)$ times at most. Since there are never more then $O(N)$ edges in total, we can conclude that the number of visited edges falls within the $O(N^3)$ bound. Each of the operations executed during an edge visit completes in constant time, so the worst-case time bound of the reducer is directly related to the number of edge visits.
 
@@ -355,7 +355,7 @@ The parse forest consists of nodes. Every node in the forest contains a result a
 
 Note however that there is a strong relation between the internal graph representation of the parser and the resulting parse forest. Because of this relation, the resulting parse forest can contain cycles.
 
-Another thing worth mentioning is that it is not strictly required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest tradeoff see section \ref{subsec:Flattening}.
+Another thing worth mentioning is that it is not strictly required to use a binarized parse forest in combination with our parser. In reality any kind of representation could be used, though it is highly recommended to use the one described here for optimal performance and ease of implementation. For more information about the cubic vs non-cubic parse forest trade-off see section \ref{subsec:Flattening}.
 
 \subsubsection{Example}
 To give an idea of what a typical parse forest would look like we will give a simple example using the following grammar:\\
@@ -386,7 +386,7 @@ S(A(aa),A(a),A(a)) & $A0$-$2$ $\leftarrow$ $A2$-$3$ $\leftarrow$ $A3$-$4$
 \end{table}
 
 \pagebreak
-\subsection{Pseudocode}
+\subsection{Pseudo-code}
 
 Augmenting our recognizer with parse tree construction code is trivial. Only a few minor adjustments are needed. Relevant pieces of code, containing changes or additions, are highlighted in italics.
 
@@ -453,7 +453,7 @@ expand()\{
 \end{alltt}
 }
 
-The expansion code does not need to change a lot, since it has limited interation with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context the {\bf resultStore} serves a similar function as the {\bf reducedStore} in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
+The expansion code does not need to change a lot, since it has limited interaction with parse results. The only change is related to the {\bf reducedStore}, which has been replaced by the {\bf resultStore}. In this context the {\bf resultStore} serves a similar function as the {\bf reducedStore} in the recognizer; to check whether or not there are nullable reductions available for a certain non-terminal sort. We will discuss the {\bf resultStore} in more detail further on in this section.
 
 \pagebreak
 \subsubsection{Reduction and moving}
@@ -494,7 +494,7 @@ The reduce and move code needs to be modified more extensively. Basically two th
 
 First of all the storing of results. We need to create (at most) one {\bf result} per sort of non-terminal for each matched substring; no more then that. In the recognizer code we used the {\bf reducedStore} for a similar purpose. Here it is replaced by the {\bf resultStore}, which basically is the same thing, but with results associated with the non-terminal sorts in the store.
 
-Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production each induvidual node is a part of.
+Secondly we need to add {\bf prefixes} to the nodes that are being queued for expansion when we are moving to the {\bf next} node in the production. We do this by creating a new prefix using the prefix of the current node and its result and adding it to the {\bf next} node. We add the prefixes to graph nodes for convenience reasons; regardless of where the result(s) of the node end, they will always share the same prefix. By adding the prefixes to the graph nodes they are easy to retrieve; all these nodes need is a collection that holds all the prefixes for it, grouped by the start location of the production each individual node is a part of.
 
 \pagebreak
 \subsubsection{Results}
@@ -508,15 +508,15 @@ Secondly we need to add {\bf prefixes} to the nodes that are being queued for ex
 \end{alltt}
 }
 
-We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and non-terminal {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered datastructure, where the first layer is indexed using the {\bf start position} of the node and the second layer by the non-terminal {\bf sort} the node represents.
+We also need a function for creating {\bf results}. Every time a result is created we need to add it to the {\bf resultStore}. The {\bf start position} and non-terminal {\bf sort} of the given node are used as keys. Like the {\bf reducedStore} the {\bf resultStore} is a dual layered data structure, where the first layer is indexed using the {\bf start position} of the node and the second layer by the non-terminal {\bf sort} the node represents.
 
 \subsection{Correctness}
 \label{sec:parserCorrectness}
 
-Since the conversion of our recognizer to a parser is so trivial, the parser is as correct as the recognizer. The only thing that may require some additional explaination, is the handling of hidden right recursion.
+Since the conversion of our recognizer to a parser is so trivial, the parser is as correct as the recognizer. The only thing that may require some additional explanation, is the handling of hidden right recursion.
 
 \subsubsection{Hidden right recursion}
-As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also properly propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}. Note that special care needs to be taken by the implementor to prevent equal prefixes from being added more then once in these specific cases. The reason that is possible that a duplicate prefix gets added, is that the propagation process can get interleaved with related reduction / move actions.
+As mentioned before hidden right recursion needs some extra attention. However since the recognizer produces all derivations we do not run into any real issues here. We just need to ensure we also properly propagate the prefixes along with the edges, as discussed in section \ref{subsec:hiddenRightRecursion}. Note that special care needs to be taken by the implementer to prevent equal prefixes from being added more then once in these specific cases. The reason that is possible that a duplicate prefix gets added, is that the propagation process can get interleaved with related reduction / move actions.
 
 One way to solve this is by marking each set of prefixes associated with a certain start location in a graph node with one bit that indicates whether or not a prefix of which the last result node is nullable was added to this set yet, either by a `move' or by propagation. Before adding a prefix to one of these prefix sets, we check whether or not this bit is set; if it is, we do not add the prefix, since it will already be present in the set. We know this, because every prefix is unique for every combination of its start location and the start location of the last result node in the prefix. Since the last result node of the prefix is always nullable in the case we want to verify, its unicity can be determined by the start location alone. This is why checking this one bit is sufficient to determine whether an identical prefix is already present or not.
 
@@ -565,7 +565,7 @@ Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 
 In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably edge sharing (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
 
-The number of graph nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of result nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to concieve.
+The number of graph nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of result nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to conceive.
 
 Looking at the parse tree related statistics we can see that the number of results increases by $N$ for every extra character in the input string. Which is because the number of results is equal to the number of different substrings in the input, in this case. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
 
@@ -573,7 +573,7 @@ Looking at the parse tree related statistics we can see that the number of resul
 \label{subsec:Flattening}
 In most cases delivering a binarized parse forest as final result is not very convenient for the user. For this reason the option exists to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{chap:filtering}.
 
-One might wonder why, in case one flattens the parse forest afterwards, using the `deflattenized' version as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use the `deflattenized' representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars unfeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is a possibility is because of the starvation of incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
+One might wonder why, in case one flattens the parse forest afterwards, using the `deflattenized' version as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use the `deflattenized' representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars infeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is a possibility is because of the starvation of incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
 
 \subsection{Error reporting}
 
@@ -583,11 +583,11 @@ For example, it is relatively simple to add the option to construct a partial pa
 
 \section{Extended capabilities}
 
-To improve the usefulness of the parser on real grammars a few additional features were developed. Namely intergrated support for lists, optionals and location related features was added, along with a few other things. In this chapter we will discuss how these mentioned features fit into our algorithm and implementation.
+To improve the usefulness of the parser on real grammars a few additional features were developed. Namely integrated support for lists and `optional' related features was added, along with a few other things. In this chapter we will discuss how these fit into our algorithm and implementation.
 
 \subsection{Lists}
 
-List, separated lists and optionals are handled in a similar way, because in essense they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists that are restricted to one element at most; from here on out we will refer to all of these simply as `lists'.
+List, separated lists and optionals are handled in a similar way, because in essence they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists that are restricted to one element at most; from here on out we will refer to all of these simply as `lists'.
 
 Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
 
@@ -603,20 +603,6 @@ These list children can be shared just like any other graph node. Nothing specia
 
 Exactly the same principle is used for separated lists and optionals. We will not go into detail on those, since one can easily imagine how these work.
 
-\subsection{Location}
-
-There are also specialized graph nodes for location related indicators. We have the following varieties:
-\begin{enumerate}
- \setlength{\itemsep}{0pt}
- \setlength{\parskip}{0pt}
- \setlength{\parsep}{0pt}
- 
- \item Start-of-line
- \item End-of-line
- \item At-column($X$); where $X$ indicates the column number
-\end{enumerate}
-Basically these are epsilons that only match when we are at a specific location in the input. So they do not consume input and act more like filters then anything else. They can be very useful when parsing for certain languages.
-
 \section{Optimizations}
 \label{chap:optimizations}
 
@@ -625,7 +611,7 @@ The basic algorithm is fairly straightforward and relatively simple to implement
 \subsection{General}
 
 \subsubsection{Matching}
-A minor performance improvement can be made by matching on entire literals at once, instead of on induvidual characters. This decreases the amount of necessary graph nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely. Note that, to ensure correct behaviour, the level at which each literal ends is the level in which it needs to be handled.
+A minor performance improvement can be made by matching on entire literals at once, instead of on individual characters. This decreases the amount of necessary graph nodes and thus reduces stack activity, offsetting the performance overhead being scannerless brings along completely. Note that, to ensure correct behaviour, the level at which each literal ends is the level in which it needs to be handled.
 
 In essence, this optimization is fairly similar to having a built-in parallel scanner.
 
@@ -638,8 +624,9 @@ Finally we would like to note that (as we hinted in section \ref{sec:breadthFirs
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
-Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numereous other opportunities for optimization.
+Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numerous other opportunities for optimization.
 
+\pagebreak
 \subsubsection{Expansion}
 \label{subsec:nodeExpansionOptimization}
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling for grammars containing (hidden) left recursive rules. The reason for this is the following; for example, if we take the grammar rules:\\
@@ -664,7 +651,7 @@ The expansion at the first level, without any optimizations, would look like thi
  \item $.E-E$ $\rightarrow$ $.E-E$
  \item $.E-E$ edges = \{$.E$, $.E+E$, $.E-E$\}
 \end{enumerate}
-This example clearly demonstrates quardratic behaviour. If we would cache the edges set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same parent(s). This will make the expansion look like this:
+This example clearly demonstrates quadratic behaviour. If we would cache the edges set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same parent(s). This will make the expansion look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -678,7 +665,7 @@ This example clearly demonstrates quardratic behaviour. If we would cache the ed
 \end{enumerate}
 Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfSorts}$. Originally, without this kind of sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this is a massive improvement. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
-Also note that this optimization is not only useful in case we have numereous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
+Also note that this optimization is not only useful in case we have numerous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
 
 In section \ref{sec:factoringBenchmark} we look at some experimental results related to this optimization.
 
@@ -697,29 +684,29 @@ In many grammars productions exist that start with the same symbols. There is no
 
 It is trivial to modify our algorithm to support this. Simply by allowing every node in the graph to have more then one `next' node and assigning the same id to both $E$'s (to indicate they must be shared), the desired result can be achieved. Naturally the merged prefixes of grammar rules can be arbitrarily long and are not restricted to just two partially equal rules; as long as the prefix for the rule overlaps with that of another rule, it can be merged, regardless whether or not it already has been merged with another rule.
 
-This optimization ensures we can recognize and parse all classes of LR grammars deterministicly, since there will only be one active stack at most.
+This optimization ensures we can recognize and parse all classes of LR grammars deterministically, since there will only be one active stack at most.
 
 One may wonder why merging anything other then the prefixes of productions is not supported. While in theory sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and we assume that opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \section{Filtering}
 \label{chap:filtering}
 
-As is common in general parsing, ultimately you often end up with an ambiguous parse forest. In this chapter we will discuss a number of features that can be used to filter the trees in this forest, in case this is required. These features are all optional and have no dependencies on eachother.
+As is common in general parsing, ultimately you may end up with an ambiguous parse forest. In this chapter we will discuss a number of features that can be used to filter the trees in an ambiguous parse forest, in case this is required. These features are all optional and have no dependencies on each other.
 
 \subsection{Restrictions and requirements}
 
-First of all one could add restrictions to grammar items. For example, marking a certain list item with a restriction that prevents it from being followed by a certain set of characters or strings, could be used to indicate eagerness for this list item. Another example would be to require a certain item to start at the beginning of a line or at a certain column. One can think of numereous different possibilities; basically any restriction or requirement on the substring an item matched or the input preceding or following an item is imaginable. These restrictions and requirements include, but are not limited to, sets of characters, string and regular expressions.
+First of all one could add restrictions to grammar items. For example, in case one wants to indicate eagerness for a certain item, one could mark this item with a restriction that prevents it from being followed by a specific set of characters or strings. Another example would be a restriction which specifies that a certain item should always start at the beginning of a line, or a specific column. One can think of numerous different possibilities; basically any restriction or requirement on the substring an item matched or the input preceding or following an item is imaginable. These restrictions and requirements include, but are not limited to, sets of characters, string and regular expressions.
 
-When adding this feature to the implementation of the recognizer / parser one can make the destinction between filters that need to be executed before reducing and filters that can also be executed before expanding an item, for efficiency reasons. Filters that can be executed before the expansion of an item are almost exclusively limited to restrictions and requirements that deal with input that preceded an item, all other filters can only be handled before the reduction of their associated item, since we generally do not have all the required information to handle these before that time. When a filter succesfully matches it should prevent either the expansion or reduction of the item it is associated with, to prevent the recognizer from recognizing it and prevent the possible results this item would have had from being added to the parse forest.
+When adding this feature to the implementation of the recognizer / parser one can make the distinction between filters that need to be executed before reduction and filters that can also be executed before expansion of an item, for efficiency reasons. Filters that can be executed before the expansion of an item are almost exclusively limited to restrictions and requirements that deal with input that precedes an item, all other filters can only be handled before the reduction of their associated item, since we generally do not have all the required information to handle these before that time. When a filter successfully matches it should prevent either the expansion or reduction of the item it is associated with, both to prohibit the recognizer from recognizing it and preventing the possible results this item would have had from being added to the parse forest.
 
 \pagebreak
 \subsection{Priorities and associativity}
 
-Priority and associativity relations are another type of filter which can be a useful for disambiguation. Priority and associativity relations can be implemented as nesting restrictions. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, to indicated that $E\,*\,E$ has a higher priority then $E\,+\,E$, this means $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative. Associativity works in a similar way; $E\,::=\,E\,+\,E\,\{left\}$ means that it is not allowed for $E\,+\,E$ to be a child of itself in the right most $E$ of this alternative. The same goes for right associative rules, but the other way around. Making a rule non-associative is also possible, this will prevent it from being nested on either side of itself.
+The application of priority and associativity rules is another useful strategy to aid with disambiguation. Priority and associativity rules can be implemented as nesting restrictions. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, to indicated that $E\,*\,E$ has a higher priority then $E\,+\,E$, this means $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative. Associativity works in a similar way; $E\,::=\,E\,+\,E\,\{left\}$ means that it is not allowed for $E\,+\,E$ to be a child of itself at the right most $E$ of this alternative. The same goes for right associative rules, but the other way around. Making a rule non-associative is also possible, this will prevent it from being nested at either side of itself.
 
 Our current implementation handles priority and associativity filtering completely at parse time. While reducing, it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it is stored in a result node that is identified by the sort name of the non-terminal associated with the node the edge points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all non-terminals with the same sort and nesting restrictions. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here the items $.E + E$ and $.E - E$ will always be derived in the same way and thus should share their parse results, just as $E+.E$ and $E-.E$, since their nesting restrictions are identical.
 
-The main advantage of handling priority and associativity filtering at parse time oppossed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarilly exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages in which priorities and associativity are used for disambiguation.
+The main advantage of handling priority and associativity filtering at parse time, opposed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarily exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages in which priorities and associativity are used for disambiguation.
 
 There is minor a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of the node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not handling priority and associativity filtering is required for each batch of reductions, depending on the node they are associated with. So it is possible to dynamically choose the appropriate reduction path depending on the node that needs to be handled. This means the performance impact will remain limited to rules on which nesting restrictions apply; making this solution most likely more efficient than any alternative implementation.
 
@@ -728,18 +715,18 @@ There is minor a down-side however. Handling priority and associativity filterin
 
 Support for semantic actions is also present. Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter ambiguities that cannot be disambiguated using other filters, including non-context-free ambiguities (like C typedefs). It even opens up the opportunity to influence the behaviour of the parser while it is running.
 
-One has the choice to, either partially or wholly, intergrate the execution of semantic actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that the implementation of semantic action support is not trivial, both because of their interaction with ambiguities and the parse forest and the possible side-effects they can have. Depending on what types of actions one wants to support, intergrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parsing and flattening process, when we are in possession of a complete parse forest, is by far the easiest alternative.
+One has the choice to, either partially or wholly, integrate the execution of semantic actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that the implementation of semantic action support is not trivial, both because of their interaction with ambiguities and the parse forest and the possible side-effects they can have. Depending on what types of actions one wants to support, integrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parsing and flattening process, when we are in possession of a complete parse forest, is by far the easiest alternative.
 
-We will not go into detail about the implementation of actions, since that is outside the scope of this article. However, we will outline a proposal about how one could accomodate the intergration of actions, to give an impression of what is involved and what issues may arise when implementing an alternative solution.
+We will not go into detail about the implementation of actions, since that is outside the scope of this article. However, we will outline a proposal about how one could accommodate the integration of actions, to give an impression of what is involved and what issues may arise when implementing an alternative solution.
 
 \subsubsection{Implementation}
-The framework we propose for handling the execution of actions is fairly involved. Mostly, because we need to be able to handle actions with side-effects on different branches of ambiguous trees and support the ability to backtrack and merge environments. Both to make everyone's life slightly easier and to make it simpler for users to redefine the way actions are handled (if needed), we propose to intergrate the handling of actions in the flattener, instead of the core of the parser itself. While we lose the ability to influence the parser while it is running (which is a relatively scary thought anyway), we still remain fairly efficient opposed to postponing the execution of actions until after the completion of the flattener; since that would require a second pass over the parse forest.
+The framework we propose for handling the execution of actions is fairly involved. Mostly, because we need to be able to handle actions with side-effects on different branches of ambiguous trees and support the ability to backtrack and merge environments. Both to make everyone's life slightly easier and to make it simpler for users to redefine the way actions are handled (if needed), we propose to integrate the handling of actions in the flattener, instead of the core of the parser itself. While we lose the ability to influence the parser while it is running (which is a relatively scary thought anyway), we still remain fairly efficient opposed to postponing the execution of actions until after the completion of the flattener; since that would require a second pass over the parse forest. Additionally, integrating the handling of semantic actions in the parse process itself would cause the parser to exceed its worst-case time and space bound guarantees, since each result needs to be flattened before we can invoke any action on it. This is another reason why the integration of the execution of semantic actions in the flattener is a better fit.
 
-As mentioned, it is possible for actions to have side-effects. Most of the complications related to actions stem from this property. In cases where there is more then one alternative parse result for a certain part of the tree, the side-effects of actions on one alternative should not have an impact on actions on any of the other alternatives, including their sub trees. To facilitate this we introduce the concept of environments, which can be linked together to form a stack. While traversing the parse forest we fire events, each of these events requests a response from the action executor. For example, if we are about to flatten a production which has an action associated with it, the event indicating that this is the case enables the user to push a new environment on the stack, if required. The popping of environments, on the other hand, should be handled by the flattener itself; although all the events that would be required by the user to handle this themselfs should be fired regardless, so users are able to maintain their own shadow hierarchy of environments if necessary.
+As mentioned, it is possible for actions to have side-effects. Most of the complications related to actions stem from this property. In cases where there is more then one alternative parse result for a certain part of the tree, the side-effects of actions on one alternative should not have an impact on actions on any of the other alternatives, including their sub trees. To facilitate this we introduce the concept of environments, which can be linked together to form a stack. While traversing the parse forest we fire events, each of these events requests a response from the action executor. For example, if we are about to flatten a production which has an action associated with it, the event indicating that this is the case enables the user to push a new environment on the stack, if required. The popping of environments, on the other hand, should be handled by the flattener itself; although all the events that would be required by the user to handle this themselves should be fired regardless, so users are able to maintain their own shadow hierarchy of environments if necessary.
 
 Basically, there are three types of events; either we enter or we exit something or we need to apply an action to a certain tree construct. If we receive an enter event, we have the opportunity to prepare everything for the handling of the indicated construct, like pushing a new environment on the stack. If we receive an exit event, we should be notified whether or not the construct we are handling is successfully build or filtered; so any bookkeeping actions can be executed, if required. Finally, we have the filter events, which request the execution of any with the indicated construct associated semantic actions. These constructs can either be alternatives for productions, ambiguity clusters or cycles. Each action has the opportunity to either replace the given construct by an alternative version or have an arbitrary side-effect on any of the environments on its associated stack.
 
-Something else to keep in mind is how the sharing of the results is handled. Because of the potential side-effects that actions can have, one cannot determine whether or not a certain previously constructed result can be reused as easily. Generally this is only the case when the construct we are handling and all of its potential direct and indirect children are side-effect free and do not rely on side-effects themselfs. In all other cases the result will need to be reconstructed; unless the content of the current environment is equal to one which is associated with any of the previously constructed results for the construct we are currently handling.
+Something else to keep in mind is how the sharing of the results is handled. Because of the potential side-effects that actions can have, one cannot determine whether or not a certain previously constructed result can be reused as easily. Generally this is only the case when the construct we are handling and all of its potential direct and indirect children are side-effect free and do not rely on side-effects themselves. In all other cases the result will need to be reconstructed; unless the content of the current environment is equal to one which is associated with any of the previously constructed results for the construct we are currently handling.
 
 \section{Benchmarks}
 
@@ -761,6 +748,7 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
+\pagebreak
 \subsection{Worst case}
 \label{sec:worstcaseBench}
 
@@ -785,9 +773,9 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 \caption{$S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$ recognizer and parser performance scaling.}
 \end{figure}
 
-Our recognizer and parser implementations clearly demonstate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
+Our recognizer and parser implementations clearly demonstrate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
 
-What may appear surprising to some is the limited performance difference between both cases. Even though the version which includes the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligable. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
+What may appear surprising to some is the limited performance difference between both cases. Even though the version which includes the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligible. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
 \subsection{Grammar factoring}
 \label{sec:factoringBenchmark}
@@ -797,7 +785,7 @@ $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
 
-It contains lots of recursion and is highly ambiguous; the input, on the other hand, can not be parsed in more then one way. Regardless, normally one would expect non-linear performance when parsing a string for this grammar. However, as can be seen in the graph below, this is not the case for our algorithm. In this benchmark, performance seems to scale perfectly linear regardless of how the grammar is factored.
+It contains a lot of recursion and is highly ambiguous; the input, on the other hand, can not be parsed in more then one way. Regardless, normally one would expect non-linear performance when parsing a string for this grammar. However, as can be seen in the graph below, this is not the case for our algorithm. In this benchmark, performance seems to scale perfectly linear regardless of how the grammar is factored.
 
 \begin{figure}[H]
 \centering
@@ -805,9 +793,9 @@ It contains lots of recursion and is highly ambiguous; the input, on the other h
 \caption{Grammar factoring related parse time scaling; without look-ahead filtering.}
 \end{figure}
 
-Note how the parser is more then twice as slow on the non-factored version of the grammar when prefix sharing is disabled. This is because both the number of graph nodes as the number of edge visits is significantly higher for this case. Regardless of this, parsing performance still scales linear with respect to the length of the input, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
+Note how the parser is more then twice as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
-The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, left-factoring the grammar also removes all ambiguities from it. Counterary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
+The non-factored prefix-shared and the left-factored versions of the grammar perform almost similar. The main reason that the parser using the left-factored version of the grammar performs slightly better is that our current implementation needs to do a little extra work to detect the sharing. However, if required, it is reasonably simple to construct an implementation of our parsing algorithm that does not suffer from this overhead. Additionally, left-factoring the grammar also removes all ambiguities from it. Contrary to what one might think, this does not have an impact on performance in this specific case. The reason for this is that look-ahead filtering was disabled for the purposes of this benchmark. If one would enable look-ahead filtering, parsing the left-factored version would become deterministic, since it falls within the LL(1) class of grammars.
 
 \subsection{Versus non-general}
 
@@ -866,7 +854,7 @@ Our first implementation is written in Java. The reason we chose this language f
 
 \section{Future work}
 
-Numereous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
+Numerous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
 
 \begin{itemize}
  \setlength{\itemsep}{0pt}
