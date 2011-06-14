@@ -574,7 +574,26 @@ public class SGTDBF implements IGTD{
 				continue;
 			}
 			
-			first = first.getCleanCopy();
+			if(first.isMatchable()){
+				int endLocation = location + first.getLength();
+				if(endLocation > input.length) continue;
+				
+				AbstractNode result = first.match(input, location);
+				if(result == null) continue; // Discard if it didn't match.
+				
+				DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
+				if(terminalsTodo == null){
+					terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
+					todoLists[endLocation] = terminalsTodo;
+				}
+				
+				first = first.getCleanCopy();
+				terminalsTodo.push(first, result);
+			}else{
+				first = first.getCleanCopy();
+				stacksToExpand.push(first);
+			}
+			
 			first.setStartLocation(location);
 			first.setProduction(expectedNodes);
 			first.initEdges();
@@ -585,8 +604,6 @@ public class SGTDBF implements IGTD{
 			}
 			
 			sharedLastExpects.add(firstId, first);
-			
-			stacksToExpand.push(first);
 		}
 		
 		cachedEdgesForExpect.put(stackBeingWorkedOn.getName(), cachedEdges);
@@ -606,10 +623,7 @@ public class SGTDBF implements IGTD{
 				}
 				terminalsTodo.push(node, result);
 			}
-			return;
-		}
-		
-		if(!node.isExpandable()){
+		}else if(!node.isExpandable()){
 			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
 				cachedEdges.add(node);
