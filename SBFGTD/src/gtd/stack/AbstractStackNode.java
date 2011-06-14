@@ -198,6 +198,32 @@ public abstract class AbstractStackNode{
 		prefixes.add(prefix);
 	}
 	
+	public void updateNodeAfterNonEmptyMatchable(AbstractStackNode predecessor, AbstractNode result){
+		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
+		
+		edgesMap = predecessor.edgesMap;
+
+		if(prefixesMap == null){
+			prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
+		}
+		
+		if(prefixesMapToAdd == null){
+			int index = edgesMap.findKey(predecessor.getStartLocation());
+			addPrefix(new Link(null, result), index);
+		}else{
+			int nrOfPrefixes = edgesMap.size();
+			for(int i = nrOfPrefixes - 1; i >= 0; --i){
+				ArrayList<Link> prefixes = prefixesMap[i];
+				if(prefixes == null){
+					prefixes = new ArrayList<Link>(1);
+					prefixesMap[i] = prefixes;
+				}
+				
+				prefixes.add(new Link(prefixesMapToAdd[i], result));
+			}
+		}
+	}
+	
 	public void updateNode(AbstractStackNode predecessor, AbstractNode result){
 		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;

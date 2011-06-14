@@ -108,8 +108,6 @@ public class SGTDBF implements IGTD{
 			
 			AbstractNode nextResult = next.match(input, location);
 			if(nextResult == null) return null;
-			
-			// TODO Reuse edge set.
 		}
 		
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
@@ -140,7 +138,11 @@ public class SGTDBF implements IGTD{
 		}
 		
 		next = next.getCleanCopy();
-		next.updateNode(node, result);
+		if(!node.isMatchable() || result.isEmpty()){
+			next.updateNode(node, result);
+		}else{
+			next.updateNodeAfterNonEmptyMatchable(node, result);
+		}
 		next.setStartLocation(location);
 		
 		sharedNextNodes.putUnsafe(next.getId(), next);
