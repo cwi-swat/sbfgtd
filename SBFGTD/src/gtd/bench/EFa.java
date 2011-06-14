@@ -1,12 +1,12 @@
 package gtd.bench;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-
 import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
-import gtd.stack.LiteralStackNode;
+import gtd.stack.CharStackNode;
 import gtd.stack.NonTerminalStackNode;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
 /*
 S ::= E
@@ -18,17 +18,17 @@ public class EFa extends SGTDBF{
 	private final static AbstractStackNode[] S_E = new AbstractStackNode[]{NONTERMINAL_E0};
 	
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 0, "E");
-	private final static AbstractStackNode LITERAL_2 = new LiteralStackNode(2, 1, "+".toCharArray());
+	private final static AbstractStackNode LITERAL_2 = new CharStackNode(2, 1, '+');
 	private final static AbstractStackNode NONTERMINAL_F3 = new NonTerminalStackNode(3, 2, "F");
 	private final static AbstractStackNode[] E_EF = new AbstractStackNode[]{NONTERMINAL_E1, LITERAL_2, NONTERMINAL_F3};
 	private final static AbstractStackNode NONTERMINAL_F4 = new NonTerminalStackNode(4, 0, "F");
 	private final static AbstractStackNode[] E_F = new AbstractStackNode[]{NONTERMINAL_F4};
 	
-	private final static AbstractStackNode LITERAL_5 = new LiteralStackNode(5, 0, "a".toCharArray());
+	private final static AbstractStackNode LITERAL_5 = new CharStackNode(5, 0, 'a');
 	private final static AbstractStackNode[] F_a = new AbstractStackNode[]{LITERAL_5};
-	private final static AbstractStackNode LITERAL_6 = new LiteralStackNode(6, 0, "(".toCharArray());
+	private final static AbstractStackNode LITERAL_6 = new CharStackNode(6, 0, '(');
 	private final static AbstractStackNode NONTERMINAL_E7 = new NonTerminalStackNode(7, 1, "E");
-	private final static AbstractStackNode LITERAL_8 = new LiteralStackNode(8, 2, ")".toCharArray());
+	private final static AbstractStackNode LITERAL_8 = new CharStackNode(8, 2, ')');
 	private final static AbstractStackNode[] F_E = new AbstractStackNode[]{LITERAL_6, NONTERMINAL_E7, LITERAL_8};
 	
 	private EFa(char[] input){
