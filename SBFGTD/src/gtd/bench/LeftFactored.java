@@ -50,7 +50,7 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode LITERAL_7 = new CharStackNode(107, 0, '|');
 	private final static AbstractStackNode LITERAL_8 = new CharStackNode(108, 0, '\\');
 	private final static AbstractStackNode LITERAL_9 = new CharStackNode(109, 0, '\'');
-	private final static AbstractStackNode LITERAL_10 = new CharStackNode(110, 0, '\'');
+	private final static AbstractStackNode LITERAL_10 = new CharStackNode(110, 0, '\"');
 	private final static AbstractStackNode LITERAL_11 = new CharStackNode(111, 0, ';');
 	private final static AbstractStackNode LITERAL_12 = new CharStackNode(112, 0, ':');
 	private final static AbstractStackNode LITERAL_13 = new CharStackNode(113, 0, '?');
@@ -100,11 +100,14 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode[] Ep_27E = new AbstractStackNode[]{LITERAL_27, NONTERMINAL_E55};
 	private final static AbstractStackNode[] Ep_28E = new AbstractStackNode[]{LITERAL_28, NONTERMINAL_E57};
 	private final static AbstractStackNode[] Ep_29E = new AbstractStackNode[]{LITERAL_29, NONTERMINAL_E59};
-
-	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
-	private final static AbstractStackNode NONTERMINAL_Ep100000 = new NonTerminalStackNode(100000, 1, "Ep");
-	private final static AbstractStackNode[] E_EEp = new AbstractStackNode[]{NONTERMINAL_E0, NONTERMINAL_Ep100000};
-
+	
+	private final static AbstractStackNode NONTERMINAL_Epp100000 = new NonTerminalStackNode(100000, 0, "Epp");
+	private final static AbstractStackNode NONTERMINAL_Ep1000000 = new NonTerminalStackNode(1000000, 1, "Ep");
+	private final static AbstractStackNode[] E_EppEp = new AbstractStackNode[]{NONTERMINAL_Epp100000, NONTERMINAL_Ep1000000};
+	
+	private final static AbstractStackNode NONTERMINAL_Epp10000000 = new NonTerminalStackNode(10000000, 0, "Epp");
+	private final static AbstractStackNode[] E_Epp = new AbstractStackNode[]{NONTERMINAL_Epp10000000};
+	
 	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
 	private final static AbstractStackNode[] LST9999 = new AbstractStackNode[]{LIST9999};
@@ -117,46 +120,56 @@ public class LeftFactored extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LST9999);
+		if(location + 1 <= input.length && input[location] == '1') expect(LST9999);
 	}
 	
 	public void E(){
-		expect(E_EEp);
+		if(location + 1 <= input.length){
+			if(input[location] == '1') expect(E_EppEp);
 		
-		expect(L1000);
+			if(input[location] == '1') expect(E_Epp);
+		}
 	}
 	
 	public void Ep(){
-		expect(Ep_0E);
-		expect(Ep_1E);
-		expect(Ep_2E);
-		expect(Ep_3E);
-		expect(Ep_4E);
-		expect(Ep_5E);
-		expect(Ep_6E);
-		expect(Ep_7E);
-		expect(Ep_8E);
-		expect(Ep_9E);
-		expect(Ep_10E);
-		expect(Ep_11E);
-		expect(Ep_12E);
-		expect(Ep_13E);
-		expect(Ep_14E);
-		expect(Ep_15E);
-		expect(Ep_16E);
-		expect(Ep_17E);
-		expect(Ep_18E);
-		expect(Ep_19E);
-		expect(Ep_20E);
-		expect(Ep_21E);
-		expect(Ep_22E);
-		expect(Ep_23E);
-		expect(Ep_24E);
-		expect(Ep_25E);
-		expect(Ep_26E);
-		expect(Ep_27E);
-		expect(Ep_28E);
-		expect(Ep_29E);
+		if(location + 1 <= input.length){
+			if(input[location] == '@') expect(Ep_0E);
+			else if(input[location] == '-') expect(Ep_1E);
+			else if(input[location] == '_') expect(Ep_2E);
+			else if(input[location] == '+') expect(Ep_3E);
+			else if(input[location] == '=') expect(Ep_4E);
+			else if(input[location] == '[') expect(Ep_5E);
+			else if(input[location] == ']') expect(Ep_6E);
+			else if(input[location] == '|') expect(Ep_7E);
+			else if(input[location] == '\\') expect(Ep_8E);
+			else if(input[location] == '\'') expect(Ep_9E);
+			else if(input[location] == '\"') expect(Ep_10E);
+			else if(input[location] == ';') expect(Ep_11E);
+			else if(input[location] == ':') expect(Ep_12E);
+			else if(input[location] == '?') expect(Ep_13E);
+			else if(input[location] == '/') expect(Ep_14E);
+			else if(input[location] == '.') expect(Ep_15E);
+			else if(input[location] == '>') expect(Ep_16E);
+			else if(input[location] == '<') expect(Ep_17E);
+			else if(input[location] == ',') expect(Ep_18E);
+			else if(input[location] == '*') expect(Ep_19E);
+			else if(input[location] == '`') expect(Ep_20E);
+			else if(input[location] == '~') expect(Ep_21E);
+			else if(input[location] == '!') expect(Ep_22E);
+			else if(input[location] == '(') expect(Ep_23E);
+			else if(input[location] == ')') expect(Ep_24E);
+			else if(input[location] == '&') expect(Ep_25E);
+			else if(input[location] == '^') expect(Ep_26E);
+			else if(input[location] == '%') expect(Ep_27E);
+			else if(input[location] == '$') expect(Ep_28E);
+			else if(input[location] == '#') expect(Ep_29E);
+		}
+	}
+	
+	public void Epp(){
+		if(location + 1 <= input.length){
+			if(input[location] == '1') expect(L1000);
+		}
 	}
 	
 	private final static int ITERATIONS = 3;

@@ -20,7 +20,7 @@ import gtd.util.Stack;
 import java.lang.reflect.Method;
 
 public class SGTDBF implements IGTD{
-	private final char[] input;
+	protected final char[] input;
 	
 	private final DoubleStack<AbstractStackNode, AbstractNode>[] todoLists;
 	
@@ -35,7 +35,7 @@ public class SGTDBF implements IGTD{
 	
 	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
 	
-	private int location;
+	protected int location;
 	
 	private final HashMap<String, Method> methodCache;
 	
