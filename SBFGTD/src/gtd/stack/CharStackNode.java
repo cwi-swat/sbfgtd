@@ -47,7 +47,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	}
 	
 	public AbstractNode match(char[] input, int location){
-		if(input[startLocation] == character){
+		if(input[location] == character){
 			return result;
 		}
 		return null;
