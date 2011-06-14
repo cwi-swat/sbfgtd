@@ -688,6 +688,15 @@ This optimization ensures we can recognize and parse all classes of LR grammars 
 
 One may wonder why merging anything other then the prefixes of productions is not supported. While, in theory, sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and we assume that opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible when using our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
+\subsection{Eager matching and more edge related sharing}
+
+As one may have noticed, we do not distinguish between the handling of leaf nodes in the graph (literals, characters, epsilons, etc.) and non-leaf nodes (non-terminals, lists, optionals, etc.). This causes us to do more work then necessary, since certain assumptions related to specific graph nodes can be used to handle them more efficiently. Basically two optimization can be easily implemented.
+
+First of all eager matching. It is possible to check whether or not a leaf node in the graph will match the input before constructing and initializing it. This is an optimization that is trivial to implement, but can have a significant impact, as it potentially prevents a lot of unnecessary work. This optimization can be applied to both the expansion code as the code which handles the movement to the `next' items in productions.
+
+Secondly, the set of edges on a leaf node in the graph will always be identical to the set of edges on the `next' item in the production (if present). This is because leaf nodes are guaranteed to always have a static length. This property makes it impossible for a stack merge to occur on any node that is located directly after a leaf node in a production. For this reason the set of edges on a leaf node can be shared with its immediate right neighbour in the production. The only exception that needs to be taken into account is related to empty leaf nodes (epsilons), as sharing their edge sets may cause interference with the hidden right recursion fix. While epsilons are not intended to be located in the middle of production, which makes this is a non-issue in general, there are scenarios imaginable where this may be desirable.
+
+\pagebreak
 \section{Filtering}
 \label{chap:filtering}
 
