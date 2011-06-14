@@ -1,13 +1,13 @@
 package gtd.bench;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-
 import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
+import gtd.stack.CharStackNode;
 import gtd.stack.ListStackNode;
-import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
 public class NonLeftFactoredNonShared extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E0 = new NonTerminalStackNode(0, 0, "E");
@@ -70,36 +70,36 @@ public class NonLeftFactoredNonShared extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E57 = new NonTerminalStackNode(57, 2, "E");
 	private final static AbstractStackNode NONTERMINAL_E58 = new NonTerminalStackNode(58, 0, "E");
 	private final static AbstractStackNode NONTERMINAL_E59 = new NonTerminalStackNode(59, 2, "E");
-	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(100, 1, "@".toCharArray());
-	private final static AbstractStackNode LITERAL_1 = new LiteralStackNode(101, 1, "-".toCharArray());
-	private final static AbstractStackNode LITERAL_2 = new LiteralStackNode(102, 1, "_".toCharArray());
-	private final static AbstractStackNode LITERAL_3 = new LiteralStackNode(103, 1, "+".toCharArray());
-	private final static AbstractStackNode LITERAL_4 = new LiteralStackNode(104, 1, "=".toCharArray());
-	private final static AbstractStackNode LITERAL_5 = new LiteralStackNode(105, 1, "[".toCharArray());
-	private final static AbstractStackNode LITERAL_6 = new LiteralStackNode(106, 1, "]".toCharArray());
-	private final static AbstractStackNode LITERAL_7 = new LiteralStackNode(107, 1, "|".toCharArray());
-	private final static AbstractStackNode LITERAL_8 = new LiteralStackNode(108, 1, "\\".toCharArray());
-	private final static AbstractStackNode LITERAL_9 = new LiteralStackNode(109, 1, "'".toCharArray());
-	private final static AbstractStackNode LITERAL_10 = new LiteralStackNode(110, 1, "\"".toCharArray());
-	private final static AbstractStackNode LITERAL_11 = new LiteralStackNode(111, 1, ";".toCharArray());
-	private final static AbstractStackNode LITERAL_12 = new LiteralStackNode(112, 1, ":".toCharArray());
-	private final static AbstractStackNode LITERAL_13 = new LiteralStackNode(113, 1, "?".toCharArray());
-	private final static AbstractStackNode LITERAL_14 = new LiteralStackNode(114, 1, "/".toCharArray());
-	private final static AbstractStackNode LITERAL_15 = new LiteralStackNode(115, 1, ".".toCharArray());
-	private final static AbstractStackNode LITERAL_16 = new LiteralStackNode(116, 1, ">".toCharArray());
-	private final static AbstractStackNode LITERAL_17 = new LiteralStackNode(117, 1, "<".toCharArray());
-	private final static AbstractStackNode LITERAL_18 = new LiteralStackNode(118, 1, ",".toCharArray());
-	private final static AbstractStackNode LITERAL_19 = new LiteralStackNode(119, 1, "*".toCharArray());
-	private final static AbstractStackNode LITERAL_20 = new LiteralStackNode(120, 1, "`".toCharArray());
-	private final static AbstractStackNode LITERAL_21 = new LiteralStackNode(121, 1, "~".toCharArray());
-	private final static AbstractStackNode LITERAL_22 = new LiteralStackNode(122, 1, "!".toCharArray());
-	private final static AbstractStackNode LITERAL_23 = new LiteralStackNode(123, 1, "(".toCharArray());
-	private final static AbstractStackNode LITERAL_24 = new LiteralStackNode(124, 1, ")".toCharArray());
-	private final static AbstractStackNode LITERAL_25 = new LiteralStackNode(125, 1, "&".toCharArray());
-	private final static AbstractStackNode LITERAL_26 = new LiteralStackNode(126, 1, "^".toCharArray());
-	private final static AbstractStackNode LITERAL_27 = new LiteralStackNode(127, 1, "%".toCharArray());
-	private final static AbstractStackNode LITERAL_28 = new LiteralStackNode(128, 1, "$".toCharArray());
-	private final static AbstractStackNode LITERAL_29 = new LiteralStackNode(129, 1, "#".toCharArray());
+	private final static AbstractStackNode LITERAL_0 = new CharStackNode(100, 0, '@');
+	private final static AbstractStackNode LITERAL_1 = new CharStackNode(101, 0, '-');
+	private final static AbstractStackNode LITERAL_2 = new CharStackNode(102, 0, '_');
+	private final static AbstractStackNode LITERAL_3 = new CharStackNode(103, 0, '+');
+	private final static AbstractStackNode LITERAL_4 = new CharStackNode(104, 0, '=');
+	private final static AbstractStackNode LITERAL_5 = new CharStackNode(105, 0, '[');
+	private final static AbstractStackNode LITERAL_6 = new CharStackNode(106, 0, ']');
+	private final static AbstractStackNode LITERAL_7 = new CharStackNode(107, 0, '|');
+	private final static AbstractStackNode LITERAL_8 = new CharStackNode(108, 0, '\\');
+	private final static AbstractStackNode LITERAL_9 = new CharStackNode(109, 0, '\'');
+	private final static AbstractStackNode LITERAL_10 = new CharStackNode(110, 0, '\'');
+	private final static AbstractStackNode LITERAL_11 = new CharStackNode(111, 0, ';');
+	private final static AbstractStackNode LITERAL_12 = new CharStackNode(112, 0, ':');
+	private final static AbstractStackNode LITERAL_13 = new CharStackNode(113, 0, '?');
+	private final static AbstractStackNode LITERAL_14 = new CharStackNode(114, 0, '/');
+	private final static AbstractStackNode LITERAL_15 = new CharStackNode(115, 0, '.');
+	private final static AbstractStackNode LITERAL_16 = new CharStackNode(116, 0, '>');
+	private final static AbstractStackNode LITERAL_17 = new CharStackNode(117, 0, '<');
+	private final static AbstractStackNode LITERAL_18 = new CharStackNode(118, 0, ',');
+	private final static AbstractStackNode LITERAL_19 = new CharStackNode(119, 0, '*');
+	private final static AbstractStackNode LITERAL_20 = new CharStackNode(120, 0, '`');
+	private final static AbstractStackNode LITERAL_21 = new CharStackNode(121, 0, '~');
+	private final static AbstractStackNode LITERAL_22 = new CharStackNode(122, 0, '!');
+	private final static AbstractStackNode LITERAL_23 = new CharStackNode(123, 0, '(');
+	private final static AbstractStackNode LITERAL_24 = new CharStackNode(124, 0, ')');
+	private final static AbstractStackNode LITERAL_25 = new CharStackNode(125, 0, '&');
+	private final static AbstractStackNode LITERAL_26 = new CharStackNode(126, 0, '^');
+	private final static AbstractStackNode LITERAL_27 = new CharStackNode(127, 0, '%');
+	private final static AbstractStackNode LITERAL_28 = new CharStackNode(128, 0, '$');
+	private final static AbstractStackNode LITERAL_29 = new CharStackNode(129, 0, '#');
 	private final static AbstractStackNode[] Ep_E0E = new AbstractStackNode[]{NONTERMINAL_E0, LITERAL_0, NONTERMINAL_E1};
 	private final static AbstractStackNode[] Ep_E1E = new AbstractStackNode[]{NONTERMINAL_E2, LITERAL_1, NONTERMINAL_E3};
 	private final static AbstractStackNode[] Ep_E2E = new AbstractStackNode[]{NONTERMINAL_E4, LITERAL_2, NONTERMINAL_E5};
@@ -131,7 +131,7 @@ public class NonLeftFactoredNonShared extends SGTDBF{
 	private final static AbstractStackNode[] Ep_E28E = new AbstractStackNode[]{NONTERMINAL_E56, LITERAL_28, NONTERMINAL_E57};
 	private final static AbstractStackNode[] Ep_E29E = new AbstractStackNode[]{NONTERMINAL_E58, LITERAL_29, NONTERMINAL_E59};
 	
-	private final static AbstractStackNode LITERAL_1000 = new LiteralStackNode(1000, 0, "1".toCharArray());
+	private final static AbstractStackNode LITERAL_1000 = new CharStackNode(1000, 0, '1');
 	private final static AbstractStackNode[] L1000 = new AbstractStackNode[]{LITERAL_1000};
 	
 	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");

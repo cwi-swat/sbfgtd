@@ -8,8 +8,6 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 	
 	private final String production;
 	
-	private AbstractNode result;
-	
 	public CharRangeStackNode(int id, int dot, String production, char[][] ranges){
 		super(id, dot);
 		
@@ -42,16 +40,15 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean match(char[] input){
-		char next = input[startLocation];
+	public AbstractNode match(char[] input, int location){
+		char next = input[location];
 		for(int i = ranges.length - 1; i >= 0; --i){
 			char[] range = ranges[i];
 			if(next >= range[0] && next <= range[1]){
-				result = new CharNode(production, next);
-				return true;
+				return new CharNode(production, next);
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public AbstractStackNode getCleanCopy(){
@@ -75,7 +72,7 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String toString(){

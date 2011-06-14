@@ -21,10 +21,10 @@ import java.lang.reflect.Method;
 public class SGTDBF implements IGTD{
 	private final char[] input;
 	
-	private final Stack<AbstractStackNode>[] todoLists;
+	private final DoubleStack<AbstractStackNode, AbstractNode>[] todoLists;
 	
 	private final Stack<AbstractStackNode> stacksToExpand;
-	private Stack<AbstractStackNode> stacksWithTerminalsToReduce;
+	private DoubleStack<AbstractStackNode, AbstractNode> stacksWithTerminalsToReduce;
 	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
 	private final ArrayList<AbstractStackNode[]> lastExpects;
@@ -50,10 +50,10 @@ public class SGTDBF implements IGTD{
 		
 		this.input = input;
 		
-		todoLists = (Stack<AbstractStackNode>[]) new Stack[input.length + 1];
+		todoLists = (DoubleStack<AbstractStackNode, AbstractNode>[]) new DoubleStack[input.length + 1];
 		
 		stacksToExpand = new Stack<AbstractStackNode>();
-		stacksWithTerminalsToReduce = new Stack<AbstractStackNode>();
+		stacksWithTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		stacksWithNonTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		
 		lastExpects = new ArrayList<AbstractStackNode[]>();
@@ -468,29 +468,21 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void reduceTerminal(AbstractStackNode terminal){
-		move(terminal, terminal.getResult());
-	}
-	
-	private void reduceNonTerminal(AbstractStackNode nonTerminal, AbstractNode result){
-		move(nonTerminal, result);
-	}
-	
 	private void reduce(){
 		// Reduce terminals.
 		while(!stacksWithTerminalsToReduce.isEmpty()){
-			reduceTerminal(stacksWithTerminalsToReduce.pop());
+			move(stacksWithTerminalsToReduce.peekFirst(), stacksWithTerminalsToReduce.popSecond());
 		}
 		
 		// Reduce non-terminals.
 		while(!stacksWithNonTerminalsToReduce.isEmpty()){
-			reduceNonTerminal(stacksWithNonTerminalsToReduce.peekFirst(), stacksWithNonTerminalsToReduce.popSecond());
+			move(stacksWithNonTerminalsToReduce.peekFirst(), stacksWithNonTerminalsToReduce.popSecond());
 		}
 	}
 	
 	private boolean findFirstStackToReduce(){
 		for(int i = location; i < todoLists.length; ++i){
-			Stack<AbstractStackNode> terminalsTodo = todoLists[i];
+			DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
@@ -503,7 +495,7 @@ public class SGTDBF implements IGTD{
 	
 	private boolean findStacksToReduce(){
 		for(int i = location + 1; i < todoLists.length; ++i){
-			Stack<AbstractStackNode> terminalsTodo = todoLists[i];
+			DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[i];
 			if(!(terminalsTodo == null || terminalsTodo.isEmpty())){
 				stacksWithTerminalsToReduce = terminalsTodo;
 				
@@ -567,14 +559,15 @@ public class SGTDBF implements IGTD{
 		if(node.isMatchable()){
 			int endLocation = location + node.getLength();
 			if(endLocation <= input.length){
-				if(!node.match(input)) return; // Discard if it didn't match.
+				AbstractNode result = node.match(input, location);
+				if(result == null) return; // Discard if it didn't match.
 				
-				Stack<AbstractStackNode> terminalsTodo = todoLists[endLocation];
+				DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
 				if(terminalsTodo == null){
-					terminalsTodo = new Stack<AbstractStackNode>();
+					terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
 					todoLists[endLocation] = terminalsTodo;
 				}
-				terminalsTodo.push(node);
+				terminalsTodo.push(node, result);
 			}
 			return;
 		}

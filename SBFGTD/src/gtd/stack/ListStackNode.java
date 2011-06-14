@@ -61,7 +61,7 @@ public final class ListStackNode extends AbstractStackNode implements IExpandabl
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean match(char[] input){
+	public AbstractNode match(char[] input, int location){
 		throw new UnsupportedOperationException();
 	}
 	

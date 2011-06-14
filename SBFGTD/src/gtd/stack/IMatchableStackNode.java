@@ -1,7 +1,9 @@
 package gtd.stack;
 
+import gtd.result.AbstractNode;
+
 public interface IMatchableStackNode{
-	boolean match(char[] input);
+	AbstractNode match(char[] input, int location);
 	
 	int getLength();
 }

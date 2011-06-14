@@ -33,7 +33,7 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		return nonTerminal;
 	}
 	
-	public boolean match(char[] input){
+	public AbstractNode match(char[] input, int location){
 		throw new UnsupportedOperationException();
 	}
 	

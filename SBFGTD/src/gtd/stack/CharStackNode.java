@@ -8,14 +8,16 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	
 	private final String production;
 	
-	private AbstractNode result;
+	private final AbstractNode result;
 	
-	public CharStackNode(int id, int dot, String production, char character){
+	public CharStackNode(int id, int dot, char character){
 		super(id, dot);
 		
-		this.production = production;
+		this.production = "["+character+"]";
 		
 		this.character = character;
+		
+		result = new CharNode(production, character);
 	}
 	
 	private CharStackNode(CharStackNode original){
@@ -24,6 +26,8 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		character = original.character;
 		
 		production = original.production;
+		
+		result = original.result;
 	}
 	
 	public String getIdentifier(){
@@ -42,13 +46,11 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean match(char[] input){
-		char next = input[startLocation];
-		if(next == character){
-			result = new CharNode(production, next);
-			return true;
+	public AbstractNode match(char[] input, int location){
+		if(input[startLocation] == character){
+			return result;
 		}
-		return false;
+		return null;
 	}
 	
 	public AbstractStackNode getCleanCopy(){
@@ -72,7 +74,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String toString(){

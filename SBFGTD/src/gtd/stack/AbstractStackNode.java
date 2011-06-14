@@ -86,7 +86,7 @@ public abstract class AbstractStackNode{
 	
 	public abstract String getMethodName();
 	
-	public abstract boolean match(char[] input);
+	public abstract AbstractNode match(char[] input, int location);
 	
 	// Sharing.
 	public abstract AbstractStackNode getCleanCopy();

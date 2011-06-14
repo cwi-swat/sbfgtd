@@ -24,7 +24,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	}
 	
 	public boolean isEmptyLeafNode(){
-		return literal.length == 0;
+		return false;
 	}
 	
 	public String getIdentifier(){
@@ -39,11 +39,11 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean match(char[] input){
+	public AbstractNode match(char[] input, int location){
 		for(int i = literal.length - 1; i >= 0; --i){
-			if(literal[i] != input[startLocation + i]) return false; // Did not match.
+			if(literal[i] != input[location + i]) return null; // Did not match.
 		}
-		return true;
+		return result;
 	}
 	
 	public AbstractStackNode getCleanCopy(){
@@ -67,7 +67,7 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	}
 	
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String toString(){

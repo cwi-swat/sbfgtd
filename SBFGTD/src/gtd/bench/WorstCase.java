@@ -2,8 +2,8 @@ package gtd.bench;
 
 import gtd.SGTDBF;
 import gtd.stack.AbstractStackNode;
+import gtd.stack.CharStackNode;
 import gtd.stack.EpsilonStackNode;
-import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
 
 import java.lang.management.ManagementFactory;
@@ -16,7 +16,7 @@ public class WorstCase extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, 2, "S");
-	private final static AbstractStackNode TERMINAL_a5 = new LiteralStackNode(5, 0, new char[]{'a'});
+	private final static AbstractStackNode TERMINAL_a5 = new CharStackNode(5, 0, 'a');
 	private final static AbstractStackNode EP6 = new EpsilonStackNode(6, 0);
 	
 	private final static AbstractStackNode[] SS = new AbstractStackNode[]{NONTERMINAL_S0, NONTERMINAL_S1};

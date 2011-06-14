@@ -6,8 +6,6 @@ import gtd.result.LiteralNode;
 public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ciLiteral;
 	
-	private LiteralNode result;
-	
 	public CaseInsensitiveLiteralStackNode(int id, int dot, char[] ciLiteral){
 		super(id, dot);
 		
@@ -33,7 +31,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	}
 	
 	public boolean isEmptyLeafNode(){
-		return ciLiteral.length == 0;
+		return false;
 	}
 	
 	public String getIdentifier(){
@@ -48,23 +46,22 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		throw new UnsupportedOperationException();
 	}
 	
-	public boolean match(char[] input){
+	public AbstractNode match(char[] input, int location){
 		int literalLength = ciLiteral.length;
 		char[] resultLiteral = new char[literalLength];
 		OUTER : for(int i = literalLength - 1; i >= 0; --i){
 			char[] ciLiteralPart = ciLiteral[i];
 			for(int j = ciLiteralPart.length - 1; j >= 0; --j){
 				char character = ciLiteralPart[j];
-				if(character == input[startLocation + i]){
+				if(character == input[location + i]){
 					resultLiteral[i] = character;
 					continue OUTER;
 				}
 			}
-			return false; // Did not match.
+			return null; // Did not match.
 		}
 		
-		result = new LiteralNode(resultLiteral);
-		return true;
+		return new LiteralNode(resultLiteral);
 	}
 	
 	public AbstractStackNode getCleanCopy(){
@@ -88,7 +85,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	}
 
 	public AbstractNode getResult(){
-		return result;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String toString(){
