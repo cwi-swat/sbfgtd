@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -22,15 +23,27 @@ public class NullableSharing extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_N1, NONTERMINAL_N2);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_N1, NONTERMINAL_N2);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(EPSILON3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(EPSILON3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void N(){
-		expect(NONTERMINAL_A0);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

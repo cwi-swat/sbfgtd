@@ -1,6 +1,7 @@
 package gtd.bench;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
@@ -18,9 +19,18 @@ public class LL extends SGTDBF{
 		super(input);
 	}
 	
+	private final static AbstractStackNode[][] SMatrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_0, NONTERMINAL_S1, LITERAL_2);
+		eb.addAlternative(LITERAL_4);
+		
+		SMatrix = eb.buildExpectMatrix();
+	}
+	
 	public void S(){
-		expect(LITERAL_0, NONTERMINAL_S1, LITERAL_2);
-		expect(LITERAL_4);
+		expect(SMatrix);
 	}
 	
 	private final static int ITERATIONS = 3;

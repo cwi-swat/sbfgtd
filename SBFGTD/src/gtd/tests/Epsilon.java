@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -24,15 +25,27 @@ public class Epsilon extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0, NONTERMINAL_A1, NONTERMINAL_B2);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1, NONTERMINAL_B2);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(EPSILON_3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(EPSILON_3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(LITERAL_a4);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

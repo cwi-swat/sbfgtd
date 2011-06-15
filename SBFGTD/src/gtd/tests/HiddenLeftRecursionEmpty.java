@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -33,21 +34,30 @@ public class HiddenLeftRecursionEmpty extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_S0, NONTERMINAL_T1, NONTERMINAL_U2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(EPSILON_10);
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_T1, NONTERMINAL_U2);
+		eb.addAlternative(EPSILON_10);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void T(){
-		expect(NONTERMINAL_T3, NONTERMINAL_U4, NONTERMINAL_S5);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(EPSILON_11);
+		eb.addAlternative(NONTERMINAL_T3, NONTERMINAL_U4, NONTERMINAL_S5);
+		eb.addAlternative(EPSILON_11);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void U(){
-		expect(NONTERMINAL_U6, NONTERMINAL_S7, NONTERMINAL_T8);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(EPSILON_12);
+		eb.addAlternative(NONTERMINAL_U6, NONTERMINAL_S7, NONTERMINAL_T8);
+		eb.addAlternative(EPSILON_12);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

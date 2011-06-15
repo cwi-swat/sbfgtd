@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -24,21 +25,30 @@ public class UselessSelfLoop extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_B1);
+		eb.addAlternative(NONTERMINAL_A0);
+		eb.addAlternative(NONTERMINAL_B1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B3);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a4);
+		eb.addAlternative(NONTERMINAL_B3);
+		eb.addAlternative(LITERAL_a4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_A2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a5);
+		eb.addAlternative(NONTERMINAL_A2);
+		eb.addAlternative(LITERAL_a5);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

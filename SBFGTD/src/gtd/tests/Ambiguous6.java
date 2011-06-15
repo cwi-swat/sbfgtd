@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -33,39 +34,69 @@ public class Ambiguous6 extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_E4);
+		eb.addAlternative(NONTERMINAL_A0);
+		eb.addAlternative(NONTERMINAL_E4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_B1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_C2);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_C2);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void C(){
-		expect(NONTERMINAL_D3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_D3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void D(){
-		expect(NONTERMINAL_E5);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a8);
+		eb.addAlternative(NONTERMINAL_E5);
+		eb.addAlternative(LITERAL_a8);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void E(){
-		expect(NONTERMINAL_F6);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_F6);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void F(){
-		expect(NONTERMINAL_G7);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_G7);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void G(){
-		expect(LITERAL_a9);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a9);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

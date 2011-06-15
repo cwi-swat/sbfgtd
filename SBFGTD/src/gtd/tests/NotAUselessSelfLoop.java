@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -32,27 +33,39 @@ public class NotAUselessSelfLoop extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0, NONTERMINAL_A1);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_B6);
+		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1);
+		eb.addAlternative(NONTERMINAL_B6);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_C7, NONTERMINAL_C8);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a11);
+		eb.addAlternative(NONTERMINAL_C7, NONTERMINAL_C8);
+		eb.addAlternative(LITERAL_a11);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_A2, NONTERMINAL_A3);
-
-		expect(NONTERMINAL_C9, NONTERMINAL_C10);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A2, NONTERMINAL_A3);
+		eb.addAlternative(NONTERMINAL_C9, NONTERMINAL_C10);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void C(){
-		expect(NONTERMINAL_A4, NONTERMINAL_A5);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a12);
+		eb.addAlternative(NONTERMINAL_A4, NONTERMINAL_A5);
+		eb.addAlternative(LITERAL_a12);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

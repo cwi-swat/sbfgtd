@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -22,11 +23,13 @@ public class AmbiguousRecursive extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_S3, NONTERMINAL_S4);
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
+		eb.addAlternative(NONTERMINAL_S3, NONTERMINAL_S4);
+		eb.addAlternative(LITERAL_a5);
 		
-		expect(LITERAL_a5);
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

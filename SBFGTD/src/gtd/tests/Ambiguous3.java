@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -21,13 +22,20 @@ public class Ambiguous3 extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0, NONTERMINAL_A1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(LITERAL_a2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_aa3);
+		eb.addAlternative(LITERAL_a2);
+		eb.addAlternative(LITERAL_aa3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

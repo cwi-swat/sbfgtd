@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharRangeStackNode;
@@ -18,7 +19,11 @@ public class CharStarList extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LIST1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LIST1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

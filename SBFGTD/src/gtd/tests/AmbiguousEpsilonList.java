@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharStackNode;
@@ -23,13 +24,20 @@ public class AmbiguousEpsilonList extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LIST1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LIST1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(CHAR2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(EPSILON3);
+		eb.addAlternative(CHAR2);
+		eb.addAlternative(EPSILON3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

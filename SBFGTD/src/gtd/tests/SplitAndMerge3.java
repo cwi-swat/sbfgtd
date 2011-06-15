@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -28,25 +29,38 @@ public class SplitAndMerge3 extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0);
-
-		expect(NONTERMINAL_C4);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0);
+		eb.addAlternative(NONTERMINAL_C4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B2, LITERAL_a5);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a6);
+		eb.addAlternative(NONTERMINAL_B2, LITERAL_a5);
+		eb.addAlternative(LITERAL_a6);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_A1, LITERAL_a7);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a8);
+		eb.addAlternative(NONTERMINAL_A1, LITERAL_a7);
+		eb.addAlternative(LITERAL_a8);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void C(){
-		expect(NONTERMINAL_B3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_B3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

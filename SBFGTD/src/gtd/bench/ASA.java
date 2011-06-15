@@ -1,12 +1,13 @@
 package gtd.bench;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
 /*
 S ::= aSa | a 
@@ -22,10 +23,18 @@ public class ASA extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
-		expect(LITERAL_0, NONTERMINAL_S1, LITERAL_2);
+	private final static AbstractStackNode[][] SMatrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_3);
+		eb.addAlternative(LITERAL_0, NONTERMINAL_S1, LITERAL_2);
+		eb.addAlternative(LITERAL_3);
+		
+		SMatrix = eb.buildExpectMatrix();
+	}
+	
+	public void S(){
+		expect(SMatrix);
 	}
 	
 	private final static int ITERATIONS = 3;

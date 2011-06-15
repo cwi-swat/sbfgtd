@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.ListStackNode;
@@ -27,15 +28,27 @@ public class ListOverlap extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LIST3, LIST4, LIST5);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LIST3, LIST4, LIST5);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(LITERAL_a6);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a6);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(LITERAL_b7);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_b7);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

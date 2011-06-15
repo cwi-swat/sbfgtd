@@ -1,6 +1,7 @@
 package gtd.bench;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -19,23 +20,24 @@ public class WorstCase extends SGTDBF{
 	private final static AbstractStackNode TERMINAL_a5 = new CharStackNode(5, 0, 'a');
 	private final static AbstractStackNode EP6 = new EpsilonStackNode(6, 0);
 	
-	private final static AbstractStackNode[] SS = new AbstractStackNode[]{NONTERMINAL_S0, NONTERMINAL_S1};
-	private final static AbstractStackNode[] SSS = new AbstractStackNode[]{NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2};
-	private final static AbstractStackNode[] a = new AbstractStackNode[]{TERMINAL_a5};
-	private final static AbstractStackNode[] ep = new AbstractStackNode[]{EP6};
-	
 	public WorstCase(char[] input){
 		super(input);
 	}
 	
+	private final static AbstractStackNode[][] SMatrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1);
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
+		eb.addAlternative(TERMINAL_a5);
+		eb.addAlternative(EP6);
+		
+		SMatrix = eb.buildExpectMatrix();
+	}
+	
 	public void S(){
-		expect(SS);
-		
-		expect(SSS);
-		
-		expect(a);
-		
-		expect(ep);
+		expect(SMatrix);
 	}
 	
 	private final static int ITERATIONS = 5;

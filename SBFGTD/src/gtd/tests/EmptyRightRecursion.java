@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -24,17 +25,28 @@ public class EmptyRightRecursion extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0, NONTERMINAL_B1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_B1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(LITERAL_a3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(NONTERMINAL_B2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(EPSILON_4);
+		eb.addAlternative(NONTERMINAL_B2);
+		eb.addAlternative(EPSILON_4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

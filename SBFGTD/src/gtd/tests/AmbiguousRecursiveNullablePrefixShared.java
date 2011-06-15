@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.EpsilonStackNode;
@@ -22,13 +23,14 @@ public class AmbiguousRecursiveNullablePrefixShared extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_S0, NONTERMINAL_S1);
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
+		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1);
+		eb.addAlternative(LITERAL_a5);
+		eb.addAlternative(EP6);
 		
-		expect(LITERAL_a5);
-		
-		expect(EP6);
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

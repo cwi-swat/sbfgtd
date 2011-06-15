@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharRangeStackNode;
@@ -16,7 +17,11 @@ public class CharRange extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(CHAR_a0);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(CHAR_a0);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

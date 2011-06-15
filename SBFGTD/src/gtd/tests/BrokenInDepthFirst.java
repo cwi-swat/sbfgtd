@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -32,29 +33,46 @@ public class BrokenInDepthFirst extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LITERAL_a10, NONTERMINAL_A0);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(NONTERMINAL_A1, LITERAL_a11);
+		eb.addAlternative(LITERAL_a10, NONTERMINAL_A0);
+		eb.addAlternative(NONTERMINAL_A1, LITERAL_a11);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_B2, NONTERMINAL_C3, NONTERMINAL_D4);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_B2, NONTERMINAL_C3, NONTERMINAL_D4);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void B(){
-		expect(LITERAL_a5);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_aa6);
+		eb.addAlternative(LITERAL_a5);
+		eb.addAlternative(LITERAL_aa6);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void C(){
-		expect(LITERAL_a7);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a7);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void D(){
-		expect(LITERAL_a8);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_aa9);
+		eb.addAlternative(LITERAL_a8);
+		eb.addAlternative(LITERAL_aa9);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

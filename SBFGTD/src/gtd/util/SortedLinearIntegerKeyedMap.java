@@ -30,10 +30,14 @@ public class SortedLinearIntegerKeyedMap<V>{
 			enlarge();
 		}
 		
+		if(size == 0 || keys[size - 1] < key){
+			keys[size] = key;
+			values[size++] = value;
+			return;
+		}
+		
 		for(int i = size - 1; i >= 0; --i){
-			if(keys[i] > key){
-				if(i == size - 1) break;
-				
+			if(keys[i] < key){
 				System.arraycopy(keys, i + 1, keys, i + 2, size);
 				System.arraycopy(values, i + 1, values, i + 2, size++);
 				
@@ -44,8 +48,11 @@ public class SortedLinearIntegerKeyedMap<V>{
 			}
 		}
 		
-		keys[size] = key;
-		values[size++] = value;
+		System.arraycopy(keys, 0, keys, 1, size);
+		System.arraycopy(values, 0, values, 1, size++);
+		
+		keys[0] = key;
+		values[0] = value;
 	}
 	
 	public int getKey(int index){

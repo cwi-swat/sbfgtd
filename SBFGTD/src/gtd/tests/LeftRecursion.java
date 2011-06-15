@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -21,13 +22,20 @@ public class LeftRecursion extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(NONTERMINAL_A0);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_A0);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(NONTERMINAL_A1, LITERAL_a2);
+		ExpectBuilder eb = new ExpectBuilder();
 		
-		expect(LITERAL_a3);
+		eb.addAlternative(NONTERMINAL_A1, LITERAL_a2);
+		eb.addAlternative(LITERAL_a3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

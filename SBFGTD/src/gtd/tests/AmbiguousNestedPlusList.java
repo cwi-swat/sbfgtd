@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharStackNode;
@@ -22,11 +23,19 @@ public class AmbiguousNestedPlusList extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LIST1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LIST1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void A(){
-		expect(CHAR_LIST3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(CHAR_LIST3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

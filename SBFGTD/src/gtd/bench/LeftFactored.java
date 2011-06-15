@@ -1,6 +1,7 @@
 package gtd.bench;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CharStackNode;
 import gtd.stack.ListStackNode;
@@ -70,106 +71,250 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode LITERAL_27 = new CharStackNode(127, 0, '%');
 	private final static AbstractStackNode LITERAL_28 = new CharStackNode(128, 0, '$');
 	private final static AbstractStackNode LITERAL_29 = new CharStackNode(129, 0, '#');
-	private final static AbstractStackNode[] Ep_0E = new AbstractStackNode[]{LITERAL_0, NONTERMINAL_E1};
-	private final static AbstractStackNode[] Ep_1E = new AbstractStackNode[]{LITERAL_1, NONTERMINAL_E3};
-	private final static AbstractStackNode[] Ep_2E = new AbstractStackNode[]{LITERAL_2, NONTERMINAL_E5};
-	private final static AbstractStackNode[] Ep_3E = new AbstractStackNode[]{LITERAL_3, NONTERMINAL_E7};
-	private final static AbstractStackNode[] Ep_4E = new AbstractStackNode[]{LITERAL_4, NONTERMINAL_E9};
-	private final static AbstractStackNode[] Ep_5E = new AbstractStackNode[]{LITERAL_5, NONTERMINAL_E11};
-	private final static AbstractStackNode[] Ep_6E = new AbstractStackNode[]{LITERAL_6, NONTERMINAL_E13};
-	private final static AbstractStackNode[] Ep_7E = new AbstractStackNode[]{LITERAL_7, NONTERMINAL_E15};
-	private final static AbstractStackNode[] Ep_8E = new AbstractStackNode[]{LITERAL_8, NONTERMINAL_E17};
-	private final static AbstractStackNode[] Ep_9E = new AbstractStackNode[]{LITERAL_9, NONTERMINAL_E19};
-	private final static AbstractStackNode[] Ep_10E = new AbstractStackNode[]{LITERAL_10, NONTERMINAL_E21};
-	private final static AbstractStackNode[] Ep_11E = new AbstractStackNode[]{LITERAL_11, NONTERMINAL_E23};
-	private final static AbstractStackNode[] Ep_12E = new AbstractStackNode[]{LITERAL_12, NONTERMINAL_E25};
-	private final static AbstractStackNode[] Ep_13E = new AbstractStackNode[]{LITERAL_13, NONTERMINAL_E27};
-	private final static AbstractStackNode[] Ep_14E = new AbstractStackNode[]{LITERAL_14, NONTERMINAL_E29};
-	private final static AbstractStackNode[] Ep_15E = new AbstractStackNode[]{LITERAL_15, NONTERMINAL_E31};
-	private final static AbstractStackNode[] Ep_16E = new AbstractStackNode[]{LITERAL_16, NONTERMINAL_E33};
-	private final static AbstractStackNode[] Ep_17E = new AbstractStackNode[]{LITERAL_17, NONTERMINAL_E35};
-	private final static AbstractStackNode[] Ep_18E = new AbstractStackNode[]{LITERAL_18, NONTERMINAL_E37};
-	private final static AbstractStackNode[] Ep_19E = new AbstractStackNode[]{LITERAL_19, NONTERMINAL_E39};
-	private final static AbstractStackNode[] Ep_20E = new AbstractStackNode[]{LITERAL_20, NONTERMINAL_E41};
-	private final static AbstractStackNode[] Ep_21E = new AbstractStackNode[]{LITERAL_21, NONTERMINAL_E43};
-	private final static AbstractStackNode[] Ep_22E = new AbstractStackNode[]{LITERAL_22, NONTERMINAL_E45};
-	private final static AbstractStackNode[] Ep_23E = new AbstractStackNode[]{LITERAL_23, NONTERMINAL_E47};
-	private final static AbstractStackNode[] Ep_24E = new AbstractStackNode[]{LITERAL_24, NONTERMINAL_E49};
-	private final static AbstractStackNode[] Ep_25E = new AbstractStackNode[]{LITERAL_25, NONTERMINAL_E51};
-	private final static AbstractStackNode[] Ep_26E = new AbstractStackNode[]{LITERAL_26, NONTERMINAL_E53};
-	private final static AbstractStackNode[] Ep_27E = new AbstractStackNode[]{LITERAL_27, NONTERMINAL_E55};
-	private final static AbstractStackNode[] Ep_28E = new AbstractStackNode[]{LITERAL_28, NONTERMINAL_E57};
-	private final static AbstractStackNode[] Ep_29E = new AbstractStackNode[]{LITERAL_29, NONTERMINAL_E59};
 	
 	private final static AbstractStackNode NONTERMINAL_Epp100000 = new NonTerminalStackNode(100000, 0, "Epp");
 	private final static AbstractStackNode NONTERMINAL_Ep1000000 = new NonTerminalStackNode(1000000, 1, "Ep");
-	private final static AbstractStackNode[] E_EppEp = new AbstractStackNode[]{NONTERMINAL_Epp100000, NONTERMINAL_Ep1000000};
 	
 	private final static AbstractStackNode NONTERMINAL_Epp10000000 = new NonTerminalStackNode(10000000, 0, "Epp");
-	private final static AbstractStackNode[] E_Epp = new AbstractStackNode[]{NONTERMINAL_Epp10000000};
 	
 	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
-	private final static AbstractStackNode[] LST9999 = new AbstractStackNode[]{LIST9999};
 	
 	private final static AbstractStackNode LITERAL_1000 = new CharStackNode(1000, 0, '1');
-	private final static AbstractStackNode[] L1000 = new AbstractStackNode[]{LITERAL_1000};
 	
 	private LeftFactored(char[] input){
 		super(input);
 	}
 	
+	private final static AbstractStackNode[][] S1Matrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LIST9999);
+		
+		S1Matrix = eb.buildExpectMatrix();
+	}
+	
 	public void S(){
-		if(location + 1 <= input.length && input[location] == '1') expect(LST9999);
+		/*if(location + 1 <= input.length && input[location] == '1') */expect(S1Matrix);
+	}
+	
+	private final static AbstractStackNode[][] E1Matrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(NONTERMINAL_Epp100000, NONTERMINAL_Ep1000000);
+		eb.addAlternative(NONTERMINAL_Epp10000000);
+		
+		E1Matrix = eb.buildExpectMatrix();
 	}
 	
 	public void E(){
-		if(location + 1 <= input.length){
-			if(input[location] == '1') expect(E_EppEp);
-		
-			if(input[location] == '1') expect(E_Epp);
-		}
+		/*if(location + 1 <= input.length){
+			if(input[location] == '1') */expect(E1Matrix);
+		//}
+	}
+	
+	private final static AbstractStackNode[][] Ep0Matrix;
+	private final static AbstractStackNode[][] Ep1Matrix;
+	private final static AbstractStackNode[][] Ep2Matrix;
+	private final static AbstractStackNode[][] Ep3Matrix;
+	private final static AbstractStackNode[][] Ep4Matrix;
+	private final static AbstractStackNode[][] Ep5Matrix;
+	private final static AbstractStackNode[][] Ep6Matrix;
+	private final static AbstractStackNode[][] Ep7Matrix;
+	private final static AbstractStackNode[][] Ep8Matrix;
+	private final static AbstractStackNode[][] Ep9Matrix;
+	private final static AbstractStackNode[][] Ep10Matrix;
+	private final static AbstractStackNode[][] Ep11Matrix;
+	private final static AbstractStackNode[][] Ep12Matrix;
+	private final static AbstractStackNode[][] Ep13Matrix;
+	private final static AbstractStackNode[][] Ep14Matrix;
+	private final static AbstractStackNode[][] Ep15Matrix;
+	private final static AbstractStackNode[][] Ep16Matrix;
+	private final static AbstractStackNode[][] Ep17Matrix;
+	private final static AbstractStackNode[][] Ep18Matrix;
+	private final static AbstractStackNode[][] Ep19Matrix;
+	private final static AbstractStackNode[][] Ep20Matrix;
+	private final static AbstractStackNode[][] Ep21Matrix;
+	private final static AbstractStackNode[][] Ep22Matrix;
+	private final static AbstractStackNode[][] Ep23Matrix;
+	private final static AbstractStackNode[][] Ep24Matrix;
+	private final static AbstractStackNode[][] Ep25Matrix;
+	private final static AbstractStackNode[][] Ep26Matrix;
+	private final static AbstractStackNode[][] Ep27Matrix;
+	private final static AbstractStackNode[][] Ep28Matrix;
+	private final static AbstractStackNode[][] Ep29Matrix;
+	static{
+		ExpectBuilder eb0 = new ExpectBuilder();
+		eb0.addAlternative(LITERAL_0, NONTERMINAL_E1);
+		Ep0Matrix = eb0.buildExpectMatrix();
+
+		ExpectBuilder eb1 = new ExpectBuilder();
+		eb1.addAlternative(LITERAL_1, NONTERMINAL_E3);
+		Ep1Matrix = eb1.buildExpectMatrix();
+
+		ExpectBuilder eb2 = new ExpectBuilder();
+		eb2.addAlternative(LITERAL_2, NONTERMINAL_E5);
+		Ep2Matrix = eb2.buildExpectMatrix();
+
+		ExpectBuilder eb3 = new ExpectBuilder();
+		eb3.addAlternative(LITERAL_3, NONTERMINAL_E7);
+		Ep3Matrix = eb3.buildExpectMatrix();
+
+		ExpectBuilder eb4 = new ExpectBuilder();
+		eb4.addAlternative(LITERAL_4, NONTERMINAL_E9);
+		Ep4Matrix = eb4.buildExpectMatrix();
+
+		ExpectBuilder eb5 = new ExpectBuilder();
+		eb5.addAlternative(LITERAL_5, NONTERMINAL_E11);
+		Ep5Matrix = eb5.buildExpectMatrix();
+
+		ExpectBuilder eb6 = new ExpectBuilder();
+		eb6.addAlternative(LITERAL_6, NONTERMINAL_E13);
+		Ep6Matrix = eb6.buildExpectMatrix();
+
+		ExpectBuilder eb7 = new ExpectBuilder();
+		eb7.addAlternative(LITERAL_7, NONTERMINAL_E15);
+		Ep7Matrix = eb7.buildExpectMatrix();
+
+		ExpectBuilder eb8 = new ExpectBuilder();
+		eb8.addAlternative(LITERAL_8, NONTERMINAL_E17);
+		Ep8Matrix = eb8.buildExpectMatrix();
+
+		ExpectBuilder eb9 = new ExpectBuilder();
+		eb9.addAlternative(LITERAL_9, NONTERMINAL_E19);
+		Ep9Matrix = eb9.buildExpectMatrix();
+
+		ExpectBuilder eb10 = new ExpectBuilder();
+		eb10.addAlternative(LITERAL_10, NONTERMINAL_E21);
+		Ep10Matrix = eb10.buildExpectMatrix();
+
+		ExpectBuilder eb11 = new ExpectBuilder();
+		eb11.addAlternative(LITERAL_11, NONTERMINAL_E23);
+		Ep11Matrix = eb11.buildExpectMatrix();
+
+		ExpectBuilder eb12 = new ExpectBuilder();
+		eb12.addAlternative(LITERAL_12, NONTERMINAL_E25);
+		Ep12Matrix = eb12.buildExpectMatrix();
+
+		ExpectBuilder eb13 = new ExpectBuilder();
+		eb13.addAlternative(LITERAL_13, NONTERMINAL_E27);
+		Ep13Matrix = eb13.buildExpectMatrix();
+
+		ExpectBuilder eb14 = new ExpectBuilder();
+		eb14.addAlternative(LITERAL_14, NONTERMINAL_E29);
+		Ep14Matrix = eb14.buildExpectMatrix();
+
+		ExpectBuilder eb15 = new ExpectBuilder();
+		eb15.addAlternative(LITERAL_15, NONTERMINAL_E31);
+		Ep15Matrix = eb15.buildExpectMatrix();
+
+		ExpectBuilder eb16 = new ExpectBuilder();
+		eb16.addAlternative(LITERAL_16, NONTERMINAL_E33);
+		Ep16Matrix = eb16.buildExpectMatrix();
+
+		ExpectBuilder eb17 = new ExpectBuilder();
+		eb17.addAlternative(LITERAL_17, NONTERMINAL_E35);
+		Ep17Matrix = eb17.buildExpectMatrix();
+
+		ExpectBuilder eb18 = new ExpectBuilder();
+		eb18.addAlternative(LITERAL_18, NONTERMINAL_E37);
+		Ep18Matrix = eb18.buildExpectMatrix();
+
+		ExpectBuilder eb19 = new ExpectBuilder();
+		eb19.addAlternative(LITERAL_19, NONTERMINAL_E39);
+		Ep19Matrix = eb19.buildExpectMatrix();
+
+		ExpectBuilder eb20 = new ExpectBuilder();
+		eb20.addAlternative(LITERAL_20, NONTERMINAL_E41);
+		Ep20Matrix = eb20.buildExpectMatrix();
+
+		ExpectBuilder eb21 = new ExpectBuilder();
+		eb21.addAlternative(LITERAL_21, NONTERMINAL_E43);
+		Ep21Matrix = eb21.buildExpectMatrix();
+
+		ExpectBuilder eb22 = new ExpectBuilder();
+		eb22.addAlternative(LITERAL_22, NONTERMINAL_E45);
+		Ep22Matrix = eb22.buildExpectMatrix();
+
+		ExpectBuilder eb23 = new ExpectBuilder();
+		eb23.addAlternative(LITERAL_23, NONTERMINAL_E47);
+		Ep23Matrix = eb23.buildExpectMatrix();
+
+		ExpectBuilder eb24 = new ExpectBuilder();
+		eb24.addAlternative(LITERAL_24, NONTERMINAL_E49);
+		Ep24Matrix = eb24.buildExpectMatrix();
+
+		ExpectBuilder eb25 = new ExpectBuilder();
+		eb25.addAlternative(LITERAL_25, NONTERMINAL_E51);
+		Ep25Matrix = eb25.buildExpectMatrix();
+
+		ExpectBuilder eb26 = new ExpectBuilder();
+		eb26.addAlternative(LITERAL_26, NONTERMINAL_E53);
+		Ep26Matrix = eb26.buildExpectMatrix();
+
+		ExpectBuilder eb27 = new ExpectBuilder();
+		eb27.addAlternative(LITERAL_27, NONTERMINAL_E55);
+		Ep27Matrix = eb27.buildExpectMatrix();
+
+		ExpectBuilder eb28 = new ExpectBuilder();
+		eb28.addAlternative(LITERAL_28, NONTERMINAL_E57);
+		Ep28Matrix = eb8.buildExpectMatrix();
+
+		ExpectBuilder eb29 = new ExpectBuilder();
+		eb29.addAlternative(LITERAL_29, NONTERMINAL_E59);
+		Ep29Matrix = eb29.buildExpectMatrix();
 	}
 	
 	public void Ep(){
-		if(location + 1 <= input.length){
-			if(input[location] == '@') expect(Ep_0E);
-			else if(input[location] == '-') expect(Ep_1E);
-			else if(input[location] == '_') expect(Ep_2E);
-			else if(input[location] == '+') expect(Ep_3E);
-			else if(input[location] == '=') expect(Ep_4E);
-			else if(input[location] == '[') expect(Ep_5E);
-			else if(input[location] == ']') expect(Ep_6E);
-			else if(input[location] == '|') expect(Ep_7E);
-			else if(input[location] == '\\') expect(Ep_8E);
-			else if(input[location] == '\'') expect(Ep_9E);
-			else if(input[location] == '\"') expect(Ep_10E);
-			else if(input[location] == ';') expect(Ep_11E);
-			else if(input[location] == ':') expect(Ep_12E);
-			else if(input[location] == '?') expect(Ep_13E);
-			else if(input[location] == '/') expect(Ep_14E);
-			else if(input[location] == '.') expect(Ep_15E);
-			else if(input[location] == '>') expect(Ep_16E);
-			else if(input[location] == '<') expect(Ep_17E);
-			else if(input[location] == ',') expect(Ep_18E);
-			else if(input[location] == '*') expect(Ep_19E);
-			else if(input[location] == '`') expect(Ep_20E);
-			else if(input[location] == '~') expect(Ep_21E);
-			else if(input[location] == '!') expect(Ep_22E);
-			else if(input[location] == '(') expect(Ep_23E);
-			else if(input[location] == ')') expect(Ep_24E);
-			else if(input[location] == '&') expect(Ep_25E);
-			else if(input[location] == '^') expect(Ep_26E);
-			else if(input[location] == '%') expect(Ep_27E);
-			else if(input[location] == '$') expect(Ep_28E);
-			else if(input[location] == '#') expect(Ep_29E);
-		}
+		//if(location + 1 <= input.length){
+			/*if(input[location] == '@') */expect(Ep0Matrix);
+			/*else if(input[location] == '-') */expect(Ep1Matrix);
+			/*else if(input[location] == '_') */expect(Ep2Matrix);
+			/*else if(input[location] == '+') */expect(Ep3Matrix);
+			/*else if(input[location] == '=') */expect(Ep4Matrix);
+			/*else if(input[location] == '[') */expect(Ep5Matrix);
+			/*else if(input[location] == ']') */expect(Ep6Matrix);
+			/*else if(input[location] == '|') */expect(Ep7Matrix);
+			/*else if(input[location] == '\\') */expect(Ep8Matrix);
+			/*else if(input[location] == '\'') */expect(Ep9Matrix);
+			/*else if(input[location] == '\"') */expect(Ep10Matrix);
+			/*else if(input[location] == ';') */expect(Ep11Matrix);
+			/*else if(input[location] == ':') */expect(Ep12Matrix);
+			/*else if(input[location] == '?') */expect(Ep13Matrix);
+			/*else if(input[location] == '/') */expect(Ep14Matrix);
+			/*else if(input[location] == '.') */expect(Ep15Matrix);
+			/*else if(input[location] == '>') */expect(Ep16Matrix);
+			/*else if(input[location] == '<') */expect(Ep17Matrix);
+			/*else if(input[location] == ',') */expect(Ep18Matrix);
+			/*else if(input[location] == '*') */expect(Ep19Matrix);
+			/*else if(input[location] == '`') */expect(Ep20Matrix);
+			/*else if(input[location] == '~') */expect(Ep21Matrix);
+			/*else if(input[location] == '!') */expect(Ep22Matrix);
+			/*else if(input[location] == '(') */expect(Ep23Matrix);
+			/*else if(input[location] == ')') */expect(Ep24Matrix);
+			/*else if(input[location] == '&') */expect(Ep25Matrix);
+			/*else if(input[location] == '^') */expect(Ep26Matrix);
+			/*else if(input[location] == '%') */expect(Ep27Matrix);
+			/*else if(input[location] == '$') */expect(Ep28Matrix);
+			/*else if(input[location] == '#') */expect(Ep29Matrix);
+		//}
+	}
+	
+	private final static AbstractStackNode[][] Epp1Matrix;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_1000);
+		
+		Epp1Matrix = eb.buildExpectMatrix();
 	}
 	
 	public void Epp(){
-		if(location + 1 <= input.length){
-			if(input[location] == '1') expect(L1000);
-		}
+		/*if(location + 1 <= input.length){
+			if(input[location] == '1') */expect(Epp1Matrix);
+		//}
 	}
 	
 	private final static int ITERATIONS = 3;

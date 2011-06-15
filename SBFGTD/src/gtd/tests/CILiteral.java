@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.CaseInsensitiveLiteralStackNode;
@@ -18,7 +19,11 @@ public class CILiteral extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LITERAL_bla0);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_bla0);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){

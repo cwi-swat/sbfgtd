@@ -1,6 +1,7 @@
 package gtd.tests;
 
 import gtd.SGTDBF;
+import gtd.preprocessing.ExpectBuilder;
 import gtd.result.AbstractNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.LiteralStackNode;
@@ -22,11 +23,19 @@ public class Optional1 extends SGTDBF{
 	}
 	
 	public void S(){
-		expect(LITERAL_a0, OPTIONAL_3);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a0, OPTIONAL_3);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public void O(){
-		expect(LITERAL_a1);
+		ExpectBuilder eb = new ExpectBuilder();
+		
+		eb.addAlternative(LITERAL_a1);
+		
+		expect(eb.buildExpectMatrix());
 	}
 	
 	public static void main(String[] args){
