@@ -10,6 +10,7 @@ import gtd.stack.NonTerminalStackNode;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
+// NOTE: This version describes a slightly smaller language then intended, as it can't parse '1+1' for example, but this should have an impact on the test.
 public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, 1, "E");
@@ -75,12 +76,11 @@ public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_Epp100000 = new NonTerminalStackNode(100000, 0, "Epp");
 	private final static AbstractStackNode NONTERMINAL_Ep1000000 = new NonTerminalStackNode(1000000, 1, "Ep");
 	
-	private final static AbstractStackNode NONTERMINAL_Epp10000000 = new NonTerminalStackNode(10000000, 0, "Epp");
-	
 	private final static AbstractStackNode NONTERMINAL_E10000 = new NonTerminalStackNode(10000, 0, "E");
 	private final static AbstractStackNode LIST9999 = new ListStackNode(9999, 0, NONTERMINAL_E10000, "E+", true);
 	
 	private final static AbstractStackNode LITERAL_1000 = new CharStackNode(1000, 0, '1');
+	private final static AbstractStackNode LITERAL_10000000 = new CharStackNode(10000000, 0, '1');
 	
 	private LeftFactored(char[] input){
 		super(input);
@@ -104,7 +104,7 @@ public class LeftFactored extends SGTDBF{
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_Epp100000, NONTERMINAL_Ep1000000);
-		eb.addAlternative(NONTERMINAL_Epp10000000);
+		eb.addAlternative(LITERAL_10000000);
 		
 		E1Matrix = eb.buildExpectMatrix();
 	}

@@ -217,7 +217,7 @@ In our algorithm we address this issue by checking whether or not the non-termin
 
 \subsubsection{Hidden right recursion}
 \label{subsec:hiddenRightRecursion}
-Unfortunately this only solves one of the two nullable related problems. The other issue that needs to be resolved is related to hidden right recursion.
+Unfortunately solution described above only solves one of the two nullable related problems. The other issue that needs to be resolved is related to hidden right recursion.
 
 Consider the following grammar:\\
 $S\,::=\,SS\,|\,a\,|\,\epsilon$\\
@@ -626,7 +626,6 @@ Finally we would like to note that (as we hinted in section \ref{sec:breadthFirs
 
 Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numerous other opportunities for optimization.
 
-\pagebreak
 \subsubsection{Expansion}
 \label{subsec:nodeExpansionOptimization}
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling relative to the size of the grammar, regardless whether or not the grammar contains (hidden) left recursive rules. The reason for this is the following; for example, if we take the grammar rules:\\
@@ -690,13 +689,12 @@ One may wonder why merging anything other then the prefixes of productions is no
 
 \subsection{Eager matching and more edge related sharing}
 
-As one may have noticed, we do not distinguish between the handling of leaf nodes in the graph (literals, characters, epsilons, etc.) and non-leaf nodes (non-terminals, lists, optionals, etc.). This causes us to do more work then necessary, since certain assumptions related to specific graph nodes can be used to handle them more efficiently. Basically two optimization can be easily implemented.
+As one may have noticed, in our algorithm, we do not distinguish between the handling of leaf nodes in the graph (literals, characters, epsilons, etc.) and non-leaf nodes (non-terminals, lists, optionals, etc.). This causes us to do more work then necessary, since certain assumptions related to specific graph nodes can be used to handle them more efficiently. Basically two optimization can be easily implemented.
 
 First of all eager matching. It is possible to check whether or not a leaf node in the graph will match the input before constructing and initializing it. This is an optimization that is trivial to implement, but can have a significant impact, as it potentially prevents a lot of unnecessary work. This optimization can be applied to both the expansion code as the code which handles the movement to the `next' items in productions.
 
-Secondly, the set of edges on a leaf node in the graph will always be identical to the set of edges on the `next' item in the production (if present). This is because leaf nodes are guaranteed to always have a static length. This property makes it impossible for a stack merge to occur on any node that is located directly after a leaf node in a production. For this reason the set of edges on a leaf node can be shared with its immediate right neighbour in the production. The only exception that needs to be taken into account is related to empty leaf nodes (epsilons), as sharing their edge sets may cause interference with the hidden right recursion fix. While epsilons are not intended to be located in the middle of production, which makes this is a non-issue in general, there are scenarios imaginable where this may be desirable.
+Secondly, the set of edges on a leaf node in the graph will always be identical to the set of edges on the `next' item in the production (if present). This is because leaf nodes are guaranteed to always have a static length. This property makes it impossible for a stack merge to occur on any node that is located directly after a leaf node in a production. For this reason the set of edges on a leaf node can be shared with its immediate right neighbour in the production. The only exception that needs to be taken into account is related to empty leaf nodes (epsilons), as sharing their edges set may cause interference with the hidden right recursion fix. While epsilons are not intended to be located in the middle of production, which makes this is a non-issue in general, there are scenarios imaginable where this may be desirable.
 
-\pagebreak
 \section{Filtering}
 \label{chap:filtering}
 
@@ -708,7 +706,6 @@ First of all one could add restrictions to grammar items. For example, in case o
 
 When adding this feature to the implementation of the recognizer / parser one can make the distinction between filters that need to be executed before reduction and filters that can also be executed before expansion of an item, for efficiency reasons. Filters that can be executed before the expansion of an item are almost exclusively limited to restrictions and requirements that deal with input that precedes an item, all other filters can only be handled before the reduction of their associated item, since we generally do not have all the required information to handle these before that time. When a filter successfully matches it should prevent either the expansion or reduction of the item it is associated with, both to prohibit the recognizer from recognizing it and preventing the possible results this item would have had from being added to the parse forest.
 
-\pagebreak
 \subsection{Priorities and associativity}
 
 The application of priority and associativity rules is another useful strategy to aid with disambiguation. Priority and associativity rules can be implemented as nesting restrictions. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, to indicated that $E\,*\,E$ has a higher priority then $E\,+\,E$, this means $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative. Associativity works in a similar way; $E\,::=\,E\,+\,E\,\{left\}$ means that it is not allowed for $E\,+\,E$ to be a child of itself at the right most $E$ of this alternative. The same goes for right associative rules, but the other way around. Making a rule non-associative is also possible, this will prevent it from being nested at either side of itself.
@@ -719,7 +716,6 @@ The main advantage of handling priority and associativity filtering at parse tim
 
 There is minor a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of the node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not handling priority and associativity filtering is required for each batch of reductions, depending on the node they are associated with. So it is possible to dynamically choose the appropriate reduction path depending on the node that needs to be handled. This means the performance impact will remain limited to rules on which nesting restrictions apply; making this solution most likely more efficient than any alternative implementation.
 
-\pagebreak
 \subsection{Semantic actions}
 
 Support for semantic actions is also present. Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter ambiguities that cannot be disambiguated using other filters, including non-context-free ambiguities (like C typedefs). It even opens up the opportunity to influence the behaviour of the parser while it is running.
@@ -757,7 +753,6 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
-\pagebreak
 \subsection{Worst case}
 \label{sec:worstcaseBench}
 
@@ -767,8 +762,6 @@ And:\\
 $S\,::=\,SSS\,|\,SS\,|\,a\,|\,\epsilon$\\
 With as input:\\
 $a\,*\,50$ to $a\,*\,500$ at $50$ character intervals.
-
-Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of an increased memory footprint).
 
 \begin{figure}[H]
 \centering
@@ -783,6 +776,8 @@ Note however that the recognizer is optimized for speed and the parser for a bal
 \end{figure}
 
 Our recognizer and parser implementations clearly demonstrate cubic worst-case behaviour, as expected. Looking at the times, our implementation seems very efficient in worst-case scenarios.
+
+Note however that the recognizer is optimized for speed and the parser for a balance between memory usage and speed (meaning a faster implementation is possible at the cost of an increased memory footprint).
 
 What may appear surprising to some is the limited performance difference between both cases. Even though the version which includes the $\epsilon$ yields a more complicated tree and nullables need some special care, the actual extra work involved in handling them is negligible. This is in line with what we asserted in section \ref{subsec:hiddenRightRecursion}.
 
@@ -802,9 +797,13 @@ It contains a lot of recursion and is highly ambiguous; the input, on the other 
 \caption{Grammar factoring related parse time scaling.}
 \end{figure}
 
-Note how the parser is more then twice as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
+Note how the parser is more then four times as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
-The non-factored prefix-shared and the left-factored versions of the grammar perform a lot better and are fairly close together in terms of performance. The only reason why the left-factored version is faster is that look-ahead filtering prevents some unnecessary work. Keep in mind though that this benchmark is one of the cases that is most heavily biased in favor of look-ahead filtering; in other cases the impact will be a lot less pronounced. One other thing to mention is that the left-factoring of the grammar also removes all ambiguities from it. Contrary to what one might expect, this does not have an impact on performance in this specific case, since in both the prefix-shared as the left-factored case there will never have more then one live stack.
+The non-factored prefix-shared and the left-factored versions of the grammar perform a lot better and are fairly close together in terms of performance. The reason why the parser performs slightly worse on the left-factored version of the grammar is because it contains one extra non-terminal; the introduction of this non-terminal was necessary to accomplish the factoring.
+
+Surprising though is that, while this benchmark is one of the cases that is most heavily biased in favor of look-ahead filtering, the impact it has is hardly noticeable. Disabling it should have a negative influence on performance while parsing an input string for the left-factored version of the grammar, although it is so minor that it does not seem to be worth it. The main reason for this is the eager matching optimization, which basically does what look-ahead filtering partially would have done. The trade-off here is between potentially unnecessary loop iterations and potentially unnecessary condition checks; in either case the `wasted' CPU cycles will be minimal.
+
+One other thing to mention is that the left-factoring of the grammar also removes all ambiguities from it. Contrary to what one might expect, this does not have an impact on performance in this specific case, since in both the prefix-shared as the left-factored case there will never have more then one live stack.
 
 \subsection{Versus non-general}
 
@@ -826,7 +825,7 @@ We compared our performance results with JavaCup, which was used in combination 
 
 As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input just over two times as fast. This seems like a big difference, however this is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parser scales exactly the same on this LR grammar (linear). The data in the graph supports this, as the relative performance difference between the two does not change for different input lengths.
 
-\subsection{Realistic cases}
+\subsection{Realistic cases (NOTE: update, measurements are pre-optimization)}
 
 Benchmarks on artificial grammars are nice for getting a point across or to indicate certain guarantees can be met, however they generally do not offer any insight about performance in realistic cases. Here we will list a number of statistics related to parsing actual source files.
 
@@ -872,7 +871,6 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  
  \item We can pre-construct a data structure which contains mappings from non-terminal sorts to alternatives; optionally in combination with their associated look-ahead information. This can aid in increasing the performance of the expansion phase.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
- \item Prefix sharing can be implemented more efficiently in our prototype, by moving more logic to the generator, so parts of productions do not have to be merged dynamically any more.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
 \end{itemize}
 
