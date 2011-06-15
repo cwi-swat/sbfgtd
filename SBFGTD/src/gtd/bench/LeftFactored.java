@@ -96,7 +96,7 @@ public class LeftFactored extends SGTDBF{
 	}
 	
 	public void S(){
-		/*if(location + 1 <= input.length && input[location] == '1') */expect(S1Matrix);
+		if(location + 1 <= input.length && input[location] == '1') expect(S1Matrix);
 	}
 	
 	private final static AbstractStackNode[][] E1Matrix;
@@ -110,9 +110,9 @@ public class LeftFactored extends SGTDBF{
 	}
 	
 	public void E(){
-		/*if(location + 1 <= input.length){
-			if(input[location] == '1') */expect(E1Matrix);
-		//}
+		if(location + 1 <= input.length){
+			if(input[location] == '1') expect(E1Matrix);
+		}
 	}
 	
 	private final static AbstractStackNode[][] Ep0Matrix;
@@ -268,38 +268,38 @@ public class LeftFactored extends SGTDBF{
 	}
 	
 	public void Ep(){
-		//if(location + 1 <= input.length){
-			/*if(input[location] == '@') */expect(Ep0Matrix);
-			/*else if(input[location] == '-') */expect(Ep1Matrix);
-			/*else if(input[location] == '_') */expect(Ep2Matrix);
-			/*else if(input[location] == '+') */expect(Ep3Matrix);
-			/*else if(input[location] == '=') */expect(Ep4Matrix);
-			/*else if(input[location] == '[') */expect(Ep5Matrix);
-			/*else if(input[location] == ']') */expect(Ep6Matrix);
-			/*else if(input[location] == '|') */expect(Ep7Matrix);
-			/*else if(input[location] == '\\') */expect(Ep8Matrix);
-			/*else if(input[location] == '\'') */expect(Ep9Matrix);
-			/*else if(input[location] == '\"') */expect(Ep10Matrix);
-			/*else if(input[location] == ';') */expect(Ep11Matrix);
-			/*else if(input[location] == ':') */expect(Ep12Matrix);
-			/*else if(input[location] == '?') */expect(Ep13Matrix);
-			/*else if(input[location] == '/') */expect(Ep14Matrix);
-			/*else if(input[location] == '.') */expect(Ep15Matrix);
-			/*else if(input[location] == '>') */expect(Ep16Matrix);
-			/*else if(input[location] == '<') */expect(Ep17Matrix);
-			/*else if(input[location] == ',') */expect(Ep18Matrix);
-			/*else if(input[location] == '*') */expect(Ep19Matrix);
-			/*else if(input[location] == '`') */expect(Ep20Matrix);
-			/*else if(input[location] == '~') */expect(Ep21Matrix);
-			/*else if(input[location] == '!') */expect(Ep22Matrix);
-			/*else if(input[location] == '(') */expect(Ep23Matrix);
-			/*else if(input[location] == ')') */expect(Ep24Matrix);
-			/*else if(input[location] == '&') */expect(Ep25Matrix);
-			/*else if(input[location] == '^') */expect(Ep26Matrix);
-			/*else if(input[location] == '%') */expect(Ep27Matrix);
-			/*else if(input[location] == '$') */expect(Ep28Matrix);
-			/*else if(input[location] == '#') */expect(Ep29Matrix);
-		//}
+		if(location + 1 <= input.length){
+			if(input[location] == '@') expect(Ep0Matrix);
+			else if(input[location] == '-') expect(Ep1Matrix);
+			else if(input[location] == '_') expect(Ep2Matrix);
+			else if(input[location] == '+') expect(Ep3Matrix);
+			else if(input[location] == '=') expect(Ep4Matrix);
+			else if(input[location] == '[') expect(Ep5Matrix);
+			else if(input[location] == ']') expect(Ep6Matrix);
+			else if(input[location] == '|') expect(Ep7Matrix);
+			else if(input[location] == '\\') expect(Ep8Matrix);
+			else if(input[location] == '\'') expect(Ep9Matrix);
+			else if(input[location] == '\"') expect(Ep10Matrix);
+			else if(input[location] == ';') expect(Ep11Matrix);
+			else if(input[location] == ':') expect(Ep12Matrix);
+			else if(input[location] == '?') expect(Ep13Matrix);
+			else if(input[location] == '/') expect(Ep14Matrix);
+			else if(input[location] == '.') expect(Ep15Matrix);
+			else if(input[location] == '>') expect(Ep16Matrix);
+			else if(input[location] == '<') expect(Ep17Matrix);
+			else if(input[location] == ',') expect(Ep18Matrix);
+			else if(input[location] == '*') expect(Ep19Matrix);
+			else if(input[location] == '`') expect(Ep20Matrix);
+			else if(input[location] == '~') expect(Ep21Matrix);
+			else if(input[location] == '!') expect(Ep22Matrix);
+			else if(input[location] == '(') expect(Ep23Matrix);
+			else if(input[location] == ')') expect(Ep24Matrix);
+			else if(input[location] == '&') expect(Ep25Matrix);
+			else if(input[location] == '^') expect(Ep26Matrix);
+			else if(input[location] == '%') expect(Ep27Matrix);
+			else if(input[location] == '$') expect(Ep28Matrix);
+			else if(input[location] == '#') expect(Ep29Matrix);
+		}
 	}
 	
 	private final static AbstractStackNode[][] Epp1Matrix;
@@ -312,9 +312,9 @@ public class LeftFactored extends SGTDBF{
 	}
 	
 	public void Epp(){
-		/*if(location + 1 <= input.length){
-			if(input[location] == '1') */expect(Epp1Matrix);
-		//}
+		if(location + 1 <= input.length){
+			if(input[location] == '1') expect(Epp1Matrix);
+		}
 	}
 	
 	private final static int ITERATIONS = 3;
