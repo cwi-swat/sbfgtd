@@ -49,7 +49,10 @@ public class ExpectBuilder{
 				}else{
 					int k = 1;
 					for(; k < alternative.length; ++k){
-						if(alternative[k].getId() != sharedExpect[k].getId()){
+						AbstractStackNode alternativeItem = alternative[k];
+						alternativeItem.setProduction(alternative);
+						
+						if(alternativeItem.getId() != sharedExpect[k].getId()){
 							break;
 						}
 					}
@@ -59,6 +62,12 @@ public class ExpectBuilder{
 					}else{
 						sharedExpect[alternative.length - 1].markAsEndNode();
 					}
+					
+					for(; k < alternative.length; ++k){
+						alternative[k].setProduction(alternative);
+					}
+					
+					alternative[alternative.length - 1].markAsEndNode();
 				}
 			}
 		}
