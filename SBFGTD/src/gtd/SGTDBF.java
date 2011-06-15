@@ -616,7 +616,6 @@ public class SGTDBF implements IGTD{
 			int endLocation = location + node.getLength();
 			if(endLocation <= input.length){
 				AbstractNode result = node.match(input, location);
-				if(result == null) return; // Discard if it didn't match.
 				
 				DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
 				if(terminalsTodo == null){
@@ -648,15 +647,31 @@ public class SGTDBF implements IGTD{
 				AbstractStackNode child = listChildren[i];
 				int childId = child.getId();
 				if(!shareListNode(childId, node)){
-					child = child.getCleanCopy();
+					if(child.isMatchable()){
+						int endLocation = location + child.getLength();
+						if(endLocation > input.length) continue;
+						
+						AbstractNode result = child.match(input, location);
+						if(result == null) continue; // Discard if it didn't match.
+						
+						DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
+						if(terminalsTodo == null){
+							terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
+							todoLists[endLocation] = terminalsTodo;
+						}
+						
+						child = child.getCleanCopy();
+						terminalsTodo.push(child, result);
+					}else{
+						child = child.getCleanCopy();
+						stacksToExpand.push(child);
+					}
 					
 					sharedNextNodes.putUnsafe(childId, child);
 					
 					child.setStartLocation(location);
 					child.initEdges();
 					child.addEdgeWithPrefix(node, null, location);
-					
-					stacksToExpand.push(child);
 				}
 			}
 			
