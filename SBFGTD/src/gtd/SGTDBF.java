@@ -11,7 +11,6 @@ import gtd.stack.NonTerminalStackNode;
 import gtd.util.ArrayList;
 import gtd.util.DoubleStack;
 import gtd.util.HashMap;
-import gtd.util.IndexedLinearIntegerSet;
 import gtd.util.IntegerKeyedHashMap;
 import gtd.util.IntegerList;
 import gtd.util.LinearIntegerKeyedMap;
