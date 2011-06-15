@@ -6,6 +6,8 @@ import gtd.result.LiteralNode;
 public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
 	private final char[][] ciLiteral;
 	
+	private final AbstractNode result;
+	
 	public CaseInsensitiveLiteralStackNode(int id, int dot, char[] ciLiteral){
 		super(id, dot);
 		
@@ -22,12 +24,24 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 				this.ciLiteral[i] = new char[]{character};
 			}
 		}
+		
+		result = null;
 	}
 	
 	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original){
 		super(original);
 
 		ciLiteral = original.ciLiteral;
+		
+		result = null;
+	}
+	
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, AbstractNode result){
+		super(original);
+		
+		this.ciLiteral = original.ciLiteral;
+		
+		this.result = result;
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -66,6 +80,10 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	public AbstractStackNode getCleanCopy(){
 		return new CaseInsensitiveLiteralStackNode(this);
+	}
+	
+	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+		return new CaseInsensitiveLiteralStackNode(this, result);
 	}
 	
 	public int getLength(){

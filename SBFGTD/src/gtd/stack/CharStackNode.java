@@ -57,6 +57,10 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		return new CharStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+		return new CharStackNode(this);
+	}
+	
 	public int getLength(){
 		return 1;
 	}
@@ -74,7 +78,7 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	}
 	
 	public AbstractNode getResult(){
-		throw new UnsupportedOperationException();
+		return result;
 	}
 	
 	public String toString(){

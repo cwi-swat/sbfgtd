@@ -103,13 +103,6 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
-		if(next.isMatchable()){
-			if((location + next.getLength()) > input.length) return null;
-			
-			AbstractNode nextResult = next.match(input, location);
-			if(nextResult == null) return null;
-		}
-		
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
@@ -137,7 +130,17 @@ public class SGTDBF implements IGTD{
 			return alternative;
 		}
 		
-		next = next.getCleanCopy();
+		if(next.isMatchable()){
+			if((location + next.getLength()) > input.length) return null;
+			
+			AbstractNode nextResult = next.match(input, location);
+			if(nextResult == null) return null;
+			
+			next = next.getCleanCopyWithResult(nextResult);
+		}else{
+			next = next.getCleanCopy();
+		}
+		
 		if(!node.isMatchable() || result.isEmpty()){
 			next.updateNode(node, result);
 		}else{
@@ -151,13 +154,6 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private boolean updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
-		if(next.isMatchable()){
-			if((location + next.getLength()) > input.length) return false;
-			
-			AbstractNode nextResult = next.match(input, location);
-			if(nextResult == null) return false;
-		}
-		
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
@@ -180,7 +176,17 @@ public class SGTDBF implements IGTD{
 			
 			alternative.updatePrefixSharedNode(edgesMap, prefixesMap);
 		}else{
-			next = next.getCleanCopy();
+			if(next.isMatchable()){
+				if((location + next.getLength()) > input.length) return false;
+				
+				AbstractNode nextResult = next.match(input, location);
+				if(nextResult == null) return false;
+				
+				next = next.getCleanCopyWithResult(nextResult);
+			}else{
+				next = next.getCleanCopy();
+			}
+			
 			next.updatePrefixSharedNode(edgesMap, prefixesMap);
 			next.setStartLocation(location);
 			
@@ -589,7 +595,7 @@ public class SGTDBF implements IGTD{
 					todoLists[endLocation] = terminalsTodo;
 				}
 				
-				first = first.getCleanCopy();
+				first = first.getCleanCopyWithResult(result);
 				terminalsTodo.push(first, result);
 			}else{
 				first = first.getCleanCopy();
@@ -615,7 +621,7 @@ public class SGTDBF implements IGTD{
 		if(node.isMatchable()){
 			int endLocation = location + node.getLength();
 			if(endLocation <= input.length){
-				AbstractNode result = node.match(input, location);
+				AbstractNode result = node.getResult();
 				
 				DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
 				if(terminalsTodo == null){
@@ -660,7 +666,7 @@ public class SGTDBF implements IGTD{
 							todoLists[endLocation] = terminalsTodo;
 						}
 						
-						child = child.getCleanCopy();
+						child = child.getCleanCopyWithResult(result);
 						terminalsTodo.push(child, result);
 					}else{
 						child = child.getCleanCopy();

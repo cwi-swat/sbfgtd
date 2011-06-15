@@ -8,12 +8,16 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 	
 	private final String production;
 	
+	private final AbstractNode result;
+	
 	public CharRangeStackNode(int id, int dot, String production, char[][] ranges){
 		super(id, dot);
 		
 		this.production = production;
 
 		this.ranges = ranges;
+		
+		result = null;
 	}
 	
 	private CharRangeStackNode(CharRangeStackNode original){
@@ -22,6 +26,18 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		ranges = original.ranges;
 		
 		production = original.production;
+		
+		result = null;
+	}
+	
+	private CharRangeStackNode(CharRangeStackNode original, AbstractNode result){
+		super(original);
+		
+		this.ranges = original.ranges;
+		
+		this.production = original.production;
+		
+		this.result = result;
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -55,6 +71,10 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		return new CharRangeStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+		return new CharRangeStackNode(this, result);
+	}
+	
 	public int getLength(){
 		return 1;
 	}
@@ -72,7 +92,7 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 	}
 	
 	public AbstractNode getResult(){
-		throw new UnsupportedOperationException();
+		return result;
 	}
 	
 	public String toString(){

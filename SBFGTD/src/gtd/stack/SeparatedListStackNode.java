@@ -80,6 +80,10 @@ public final class SeparatedListStackNode extends AbstractStackNode implements I
 		return new SeparatedListStackNode(this);
 	}
 	
+	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+		throw new UnsupportedOperationException();
+	}
+	
 	public int getLength(){
 		throw new UnsupportedOperationException();
 	}
