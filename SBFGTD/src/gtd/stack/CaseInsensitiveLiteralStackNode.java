@@ -103,7 +103,7 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	}
 
 	public AbstractNode getResult(){
-		throw new UnsupportedOperationException();
+		return result;
 	}
 	
 	public String toString(){
