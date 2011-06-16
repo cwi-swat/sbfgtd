@@ -13,7 +13,7 @@ import gtd.util.DoubleStack;
 import gtd.util.HashMap;
 import gtd.util.IntegerKeyedHashMap;
 import gtd.util.IntegerList;
-import gtd.util.LinearIntegerKeyedMap;
+import gtd.util.IntegerObjectList;
 import gtd.util.Stack;
 
 import java.lang.reflect.Method;
@@ -38,8 +38,8 @@ public class SGTDBF implements IGTD{
 	
 	private final HashMap<String, Method> methodCache;
 	
-	private final LinearIntegerKeyedMap<IntegerList> propagatedPrefixes;
-	private final LinearIntegerKeyedMap<IntegerList> propagatedReductions; // Note: we can replace this thing, if we pick a more efficient solution.
+	private final IntegerObjectList<IntegerList> propagatedPrefixes;
+	private final IntegerObjectList<IntegerList> propagatedReductions; // Note: we can replace this thing, if we pick a more efficient solution.
 	
 	public SGTDBF(char[] input){
 		super();
@@ -62,8 +62,8 @@ public class SGTDBF implements IGTD{
 		
 		methodCache = new HashMap<String, Method>();
 		
-		propagatedPrefixes = new LinearIntegerKeyedMap<IntegerList>();
-		propagatedReductions = new LinearIntegerKeyedMap<IntegerList>();
+		propagatedPrefixes = new IntegerObjectList<IntegerList>();
+		propagatedReductions = new IntegerObjectList<IntegerList>();
 	}
 	
 	protected void expect(AbstractStackNode[][] expectMatrix){
@@ -146,7 +146,7 @@ public class SGTDBF implements IGTD{
 		return next;
 	}
 	
-	private boolean updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	private boolean updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
@@ -199,7 +199,7 @@ public class SGTDBF implements IGTD{
 			propagatedReductions.add(next.getId(), touched);
 		}
 		
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixes = node.getPrefixesMap();
 		
 		int fromIndex = edgesMap.size() - potentialNewEdges;
@@ -260,7 +260,7 @@ public class SGTDBF implements IGTD{
 			// Handle alternative nexts (and prefix sharing).
 			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
-				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
+				IntegerObjectList<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
 				ArrayList<Link>[] nextPrefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateProds.size() - 1; i >= 0; --i){
@@ -289,7 +289,7 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
 		next.updatePrefixSharedNode(edgesMap, prefixesMap);
 		
 		if(next.isEndNode()){
@@ -323,7 +323,7 @@ public class SGTDBF implements IGTD{
 			// Handle alternative nexts (and prefix sharing).
 			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
-				LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
+				IntegerObjectList<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
 				ArrayList<Link>[] nextPrefixesMap = next.getPrefixesMap();
 				
 				for(int i = alternateProds.size() - 1; i >= 0; --i){
@@ -352,7 +352,7 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void updateEdges(AbstractStackNode node, AbstractNode result){
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
@@ -369,7 +369,7 @@ public class SGTDBF implements IGTD{
 			propagatedReductions.add(node.getId(), touched);
 		}
 		
-		LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
@@ -424,7 +424,7 @@ public class SGTDBF implements IGTD{
 		// Handle alternative nexts (and prefix sharing).
 		ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
 		if(alternateProds != null){
-			LinearIntegerKeyedMap<ArrayList<AbstractStackNode>> edgesMap = null;
+			IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = null;
 			ArrayList<Link>[] prefixesMap = null;
 			if(next != null){
 				edgesMap = next.getEdges();

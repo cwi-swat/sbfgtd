@@ -1,6 +1,6 @@
 package gtd.util;
 
-public class SortedLinearIntegerKeyedMap<V>{
+public class IntegerObjectList<V>{
 	private final static int DEFAULT_SIZE = 8;
 	
 	private int[] keys;
@@ -8,11 +8,25 @@ public class SortedLinearIntegerKeyedMap<V>{
 	
 	private int size;
 	
-	public SortedLinearIntegerKeyedMap(){
+	public IntegerObjectList(){
 		super();
 		
 		keys = new int[DEFAULT_SIZE];
 		values = (V[]) new Object[DEFAULT_SIZE];
+	}
+	
+	public IntegerObjectList(IntegerObjectList<V> original){
+		super();
+		
+		int[] oldKeys = original.keys;
+		V[] oldValues = original.values;
+		int length = oldKeys.length;
+		
+		size = original.size;
+		keys = new int[length];
+		System.arraycopy(oldKeys, 0, keys, 0, size);
+		values = (V[]) new Object[length];
+		System.arraycopy(oldValues, 0, values, 0, size);
 	}
 	
 	public void enlarge(){
@@ -30,29 +44,8 @@ public class SortedLinearIntegerKeyedMap<V>{
 			enlarge();
 		}
 		
-		if(size == 0 || keys[size - 1] < key){
-			keys[size] = key;
-			values[size++] = value;
-			return;
-		}
-		
-		for(int i = size - 1; i >= 0; --i){
-			if(keys[i] < key){
-				System.arraycopy(keys, i + 1, keys, i + 2, size);
-				System.arraycopy(values, i + 1, values, i + 2, size++);
-				
-				keys[i + 1] = key;
-				values[i + 1] = value;
-				
-				return;
-			}
-		}
-		
-		System.arraycopy(keys, 0, keys, 1, size);
-		System.arraycopy(values, 0, values, 1, size++);
-		
-		keys[0] = key;
-		values[0] = value;
+		keys[size] = key;
+		values[size++] = value;
 	}
 	
 	public int getKey(int index){
@@ -72,8 +65,26 @@ public class SortedLinearIntegerKeyedMap<V>{
 		return -1;
 	}
 	
+	public int findKeyBefore(int key, int index){
+		for(int i = index - 1; i >= 0; --i){
+			if(keys[i] == key){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public V findValue(int key){
 		for(int i = size - 1; i >= 0; --i){
+			if(keys[i] == key){
+				return values[i];
+			}
+		}
+		return null;
+	}
+	
+	public V findValueBefore(int key, int index){
+		for(int i = index - 1; i >= 0; --i){
 			if(keys[i] == key){
 				return values[i];
 			}

@@ -2,16 +2,16 @@ package gtd.preprocessing;
 
 import gtd.stack.AbstractStackNode;
 import gtd.util.ArrayList;
-import gtd.util.LinearIntegerKeyedMap;
-import gtd.util.SortedLinearIntegerKeyedMap;
+import gtd.util.IntegerObjectList;
+import gtd.util.SortedIntegerObjectList;
 
 public class ExpectBuilder{
-	private final SortedLinearIntegerKeyedMap<ArrayList<AbstractStackNode[]>> alternatives;
+	private final SortedIntegerObjectList<ArrayList<AbstractStackNode[]>> alternatives;
 	
 	public ExpectBuilder(){
 		super();
 		
-		alternatives = new SortedLinearIntegerKeyedMap<ArrayList<AbstractStackNode[]>>();
+		alternatives = new SortedIntegerObjectList<ArrayList<AbstractStackNode[]>>();
 	}
 	
 	public void addAlternative(AbstractStackNode... alternative){
@@ -27,7 +27,7 @@ public class ExpectBuilder{
 	
 	// Builds the expect matrix and calculates sharing.
 	public AbstractStackNode[][] buildExpectMatrix(){
-		LinearIntegerKeyedMap<AbstractStackNode[]> constructedExpects = new LinearIntegerKeyedMap<AbstractStackNode[]>();
+		IntegerObjectList<AbstractStackNode[]> constructedExpects = new IntegerObjectList<AbstractStackNode[]>();
 		
 		for(int i = alternatives.size() - 1; i >= 0; --i){
 			ArrayList<AbstractStackNode[]> alternativesList = alternatives.getValue(i);
