@@ -16,12 +16,12 @@ public class CharRange extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(CHAR_a0);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

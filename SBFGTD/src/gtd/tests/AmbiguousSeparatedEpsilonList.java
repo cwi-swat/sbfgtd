@@ -27,29 +27,29 @@ public class AmbiguousSeparatedEpsilonList extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LIST2);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void A(){
+	public AbstractStackNode[] A(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LITERAL_a3);
 		eb.addAlternative(EPSILON4);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void SEP(){
+	public AbstractStackNode[] SEP(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(EPSILON5);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

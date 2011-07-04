@@ -21,20 +21,20 @@ public class NonTerminalStarList extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LIST1);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void A(){
+	public AbstractStackNode[] A(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LITERAL_a2);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

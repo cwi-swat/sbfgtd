@@ -22,20 +22,20 @@ public class Optional1 extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LITERAL_a0, OPTIONAL_3);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void O(){
+	public AbstractStackNode[] O(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LITERAL_a1);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

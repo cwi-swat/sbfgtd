@@ -30,46 +30,46 @@ public class SplitAndMerge2 extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_D4);
 		eb.addAlternative(NONTERMINAL_D5, LITERAL_a6);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void A(){
+	public AbstractStackNode[] A(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(LITERAL_a7);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void B(){
+	public AbstractStackNode[] B(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_A0);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void C(){
+	public AbstractStackNode[] C(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_B1, LITERAL_a8);
 		eb.addAlternative(NONTERMINAL_B2, LITERAL_aa9);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void D(){
+	public AbstractStackNode[] D(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_C3);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

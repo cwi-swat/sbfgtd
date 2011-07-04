@@ -82,7 +82,7 @@ public class NonLeftFactoredShared extends SGTDBF{
 		super(input);
 	}
 	
-	private final static AbstractStackNode[][] SMatrix;
+	private final static AbstractStackNode[] SMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -91,11 +91,11 @@ public class NonLeftFactoredShared extends SGTDBF{
 		SMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void S(){
-		expect(SMatrix);
+	public AbstractStackNode[] S(){
+		return SMatrix;
 	}
 	
-	private final static AbstractStackNode[][] EMatrix;
+	private final static AbstractStackNode[] EMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -134,8 +134,8 @@ public class NonLeftFactoredShared extends SGTDBF{
 		EMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void E(){
-		expect(EMatrix);
+	public AbstractStackNode[] E(){
+		return EMatrix;
 	}
 	
 	private final static int ITERATIONS = 3;

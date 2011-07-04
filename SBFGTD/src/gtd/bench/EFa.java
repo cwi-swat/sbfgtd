@@ -31,7 +31,7 @@ public class EFa extends SGTDBF{
 		super(input);
 	}
 	
-	private final static AbstractStackNode[][] SMatrix;
+	private final static AbstractStackNode[] SMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -40,11 +40,11 @@ public class EFa extends SGTDBF{
 		SMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void S(){
-		expect(SMatrix);
+	public AbstractStackNode[] S(){
+		return SMatrix;
 	}
 	
-	private final static AbstractStackNode[][] EMatrix;
+	private final static AbstractStackNode[] EMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -54,11 +54,11 @@ public class EFa extends SGTDBF{
 		EMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void E(){
-		expect(EMatrix);
+	public AbstractStackNode[] E(){
+		return EMatrix;
 	}
 	
-	private final static AbstractStackNode[][] FMatrix;
+	private final static AbstractStackNode[] FMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -68,8 +68,8 @@ public class EFa extends SGTDBF{
 		FMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void F(){
-		expect(FMatrix);
+	public AbstractStackNode[] F(){
+		return FMatrix;
 	}
 	
 	private final static int ITERATIONS = 3;

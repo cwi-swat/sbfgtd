@@ -35,32 +35,32 @@ public class HiddenLeftRecursionNonEmpty extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_T1, NONTERMINAL_U2);
 		eb.addAlternative(LITERAL_a9);
 		eb.addAlternative(EPSILON_10);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void T(){
+	public AbstractStackNode[] T(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_T3, NONTERMINAL_U4, NONTERMINAL_S5);
 		eb.addAlternative(EPSILON_11);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void U(){
+	public AbstractStackNode[] U(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_U6, NONTERMINAL_S7, NONTERMINAL_T8);
 		eb.addAlternative(EPSILON_12);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

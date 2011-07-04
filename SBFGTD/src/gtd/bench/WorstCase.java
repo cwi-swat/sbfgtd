@@ -24,7 +24,7 @@ public class WorstCase extends SGTDBF{
 		super(input);
 	}
 	
-	private final static AbstractStackNode[][] SMatrix;
+	private final static AbstractStackNode[] SMatrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -36,8 +36,8 @@ public class WorstCase extends SGTDBF{
 		SMatrix = eb.buildExpectMatrix();
 	}
 	
-	public void S(){
-		expect(SMatrix);
+	public AbstractStackNode[] S(){
+		return SMatrix;
 	}
 	
 	private final static int ITERATIONS = 5;

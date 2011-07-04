@@ -86,7 +86,7 @@ public class LeftFactored extends SGTDBF{
 		super(input);
 	}
 	
-	private final static AbstractStackNode[][] S1Matrix;
+	private final static AbstractStackNode[] S1Matrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -95,11 +95,12 @@ public class LeftFactored extends SGTDBF{
 		S1Matrix = eb.buildExpectMatrix();
 	}
 	
-	public void S(){
-		if(location + 1 <= input.length && input[location] == '1') expect(S1Matrix);
+	public AbstractStackNode[] S(){
+		if(location + 1 <= input.length && input[location] == '1') return S1Matrix;
+		return null;
 	}
 	
-	private final static AbstractStackNode[][] E1Matrix;
+	private final static AbstractStackNode[] E1Matrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -109,42 +110,43 @@ public class LeftFactored extends SGTDBF{
 		E1Matrix = eb.buildExpectMatrix();
 	}
 	
-	public void E(){
+	public AbstractStackNode[] E(){
 		if(location + 1 <= input.length){
-			if(input[location] == '1') expect(E1Matrix);
+			if(input[location] == '1') return E1Matrix;
 		}
+		return null;
 	}
 	
-	private final static AbstractStackNode[][] Ep0Matrix;
-	private final static AbstractStackNode[][] Ep1Matrix;
-	private final static AbstractStackNode[][] Ep2Matrix;
-	private final static AbstractStackNode[][] Ep3Matrix;
-	private final static AbstractStackNode[][] Ep4Matrix;
-	private final static AbstractStackNode[][] Ep5Matrix;
-	private final static AbstractStackNode[][] Ep6Matrix;
-	private final static AbstractStackNode[][] Ep7Matrix;
-	private final static AbstractStackNode[][] Ep8Matrix;
-	private final static AbstractStackNode[][] Ep9Matrix;
-	private final static AbstractStackNode[][] Ep10Matrix;
-	private final static AbstractStackNode[][] Ep11Matrix;
-	private final static AbstractStackNode[][] Ep12Matrix;
-	private final static AbstractStackNode[][] Ep13Matrix;
-	private final static AbstractStackNode[][] Ep14Matrix;
-	private final static AbstractStackNode[][] Ep15Matrix;
-	private final static AbstractStackNode[][] Ep16Matrix;
-	private final static AbstractStackNode[][] Ep17Matrix;
-	private final static AbstractStackNode[][] Ep18Matrix;
-	private final static AbstractStackNode[][] Ep19Matrix;
-	private final static AbstractStackNode[][] Ep20Matrix;
-	private final static AbstractStackNode[][] Ep21Matrix;
-	private final static AbstractStackNode[][] Ep22Matrix;
-	private final static AbstractStackNode[][] Ep23Matrix;
-	private final static AbstractStackNode[][] Ep24Matrix;
-	private final static AbstractStackNode[][] Ep25Matrix;
-	private final static AbstractStackNode[][] Ep26Matrix;
-	private final static AbstractStackNode[][] Ep27Matrix;
-	private final static AbstractStackNode[][] Ep28Matrix;
-	private final static AbstractStackNode[][] Ep29Matrix;
+	private final static AbstractStackNode[] Ep0Matrix;
+	private final static AbstractStackNode[] Ep1Matrix;
+	private final static AbstractStackNode[] Ep2Matrix;
+	private final static AbstractStackNode[] Ep3Matrix;
+	private final static AbstractStackNode[] Ep4Matrix;
+	private final static AbstractStackNode[] Ep5Matrix;
+	private final static AbstractStackNode[] Ep6Matrix;
+	private final static AbstractStackNode[] Ep7Matrix;
+	private final static AbstractStackNode[] Ep8Matrix;
+	private final static AbstractStackNode[] Ep9Matrix;
+	private final static AbstractStackNode[] Ep10Matrix;
+	private final static AbstractStackNode[] Ep11Matrix;
+	private final static AbstractStackNode[] Ep12Matrix;
+	private final static AbstractStackNode[] Ep13Matrix;
+	private final static AbstractStackNode[] Ep14Matrix;
+	private final static AbstractStackNode[] Ep15Matrix;
+	private final static AbstractStackNode[] Ep16Matrix;
+	private final static AbstractStackNode[] Ep17Matrix;
+	private final static AbstractStackNode[] Ep18Matrix;
+	private final static AbstractStackNode[] Ep19Matrix;
+	private final static AbstractStackNode[] Ep20Matrix;
+	private final static AbstractStackNode[] Ep21Matrix;
+	private final static AbstractStackNode[] Ep22Matrix;
+	private final static AbstractStackNode[] Ep23Matrix;
+	private final static AbstractStackNode[] Ep24Matrix;
+	private final static AbstractStackNode[] Ep25Matrix;
+	private final static AbstractStackNode[] Ep26Matrix;
+	private final static AbstractStackNode[] Ep27Matrix;
+	private final static AbstractStackNode[] Ep28Matrix;
+	private final static AbstractStackNode[] Ep29Matrix;
 	static{
 		ExpectBuilder eb0 = new ExpectBuilder();
 		eb0.addAlternative(LITERAL_0, NONTERMINAL_E1);
@@ -267,42 +269,43 @@ public class LeftFactored extends SGTDBF{
 		Ep29Matrix = eb29.buildExpectMatrix();
 	}
 	
-	public void Ep(){
+	public AbstractStackNode[] Ep(){
 		if(location + 1 <= input.length){
-			if(input[location] == '@') expect(Ep0Matrix);
-			else if(input[location] == '-') expect(Ep1Matrix);
-			else if(input[location] == '_') expect(Ep2Matrix);
-			else if(input[location] == '+') expect(Ep3Matrix);
-			else if(input[location] == '=') expect(Ep4Matrix);
-			else if(input[location] == '[') expect(Ep5Matrix);
-			else if(input[location] == ']') expect(Ep6Matrix);
-			else if(input[location] == '|') expect(Ep7Matrix);
-			else if(input[location] == '\\') expect(Ep8Matrix);
-			else if(input[location] == '\'') expect(Ep9Matrix);
-			else if(input[location] == '\"') expect(Ep10Matrix);
-			else if(input[location] == ';') expect(Ep11Matrix);
-			else if(input[location] == ':') expect(Ep12Matrix);
-			else if(input[location] == '?') expect(Ep13Matrix);
-			else if(input[location] == '/') expect(Ep14Matrix);
-			else if(input[location] == '.') expect(Ep15Matrix);
-			else if(input[location] == '>') expect(Ep16Matrix);
-			else if(input[location] == '<') expect(Ep17Matrix);
-			else if(input[location] == ',') expect(Ep18Matrix);
-			else if(input[location] == '*') expect(Ep19Matrix);
-			else if(input[location] == '`') expect(Ep20Matrix);
-			else if(input[location] == '~') expect(Ep21Matrix);
-			else if(input[location] == '!') expect(Ep22Matrix);
-			else if(input[location] == '(') expect(Ep23Matrix);
-			else if(input[location] == ')') expect(Ep24Matrix);
-			else if(input[location] == '&') expect(Ep25Matrix);
-			else if(input[location] == '^') expect(Ep26Matrix);
-			else if(input[location] == '%') expect(Ep27Matrix);
-			else if(input[location] == '$') expect(Ep28Matrix);
-			else if(input[location] == '#') expect(Ep29Matrix);
+			if(input[location] == '@') return Ep0Matrix;
+			else if(input[location] == '-') return Ep1Matrix;
+			else if(input[location] == '_') return Ep2Matrix;
+			else if(input[location] == '+') return Ep3Matrix;
+			else if(input[location] == '=') return Ep4Matrix;
+			else if(input[location] == '[') return Ep5Matrix;
+			else if(input[location] == ']') return Ep6Matrix;
+			else if(input[location] == '|') return Ep7Matrix;
+			else if(input[location] == '\\') return Ep8Matrix;
+			else if(input[location] == '\'') return Ep9Matrix;
+			else if(input[location] == '\"') return Ep10Matrix;
+			else if(input[location] == ';') return Ep11Matrix;
+			else if(input[location] == ':') return Ep12Matrix;
+			else if(input[location] == '?') return Ep13Matrix;
+			else if(input[location] == '/') return Ep14Matrix;
+			else if(input[location] == '.') return Ep15Matrix;
+			else if(input[location] == '>') return Ep16Matrix;
+			else if(input[location] == '<') return Ep17Matrix;
+			else if(input[location] == ',') return Ep18Matrix;
+			else if(input[location] == '*') return Ep19Matrix;
+			else if(input[location] == '`') return Ep20Matrix;
+			else if(input[location] == '~') return Ep21Matrix;
+			else if(input[location] == '!') return Ep22Matrix;
+			else if(input[location] == '(') return Ep23Matrix;
+			else if(input[location] == ')') return Ep24Matrix;
+			else if(input[location] == '&') return Ep25Matrix;
+			else if(input[location] == '^') return Ep26Matrix;
+			else if(input[location] == '%') return Ep27Matrix;
+			else if(input[location] == '$') return Ep28Matrix;
+			else if(input[location] == '#') return Ep29Matrix;
 		}
+		return null;
 	}
 	
-	private final static AbstractStackNode[][] Epp1Matrix;
+	private final static AbstractStackNode[] Epp1Matrix;
 	static{
 		ExpectBuilder eb = new ExpectBuilder();
 		
@@ -311,10 +314,11 @@ public class LeftFactored extends SGTDBF{
 		Epp1Matrix = eb.buildExpectMatrix();
 	}
 	
-	public void Epp(){
+	public AbstractStackNode[] Epp(){
 		if(location + 1 <= input.length){
-			if(input[location] == '1') expect(Epp1Matrix);
+			if(input[location] == '1') return Epp1Matrix;
 		}
+		return null;
 	}
 	
 	private final static int ITERATIONS = 3;

@@ -27,22 +27,22 @@ public class Ambiguous9 extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_E0);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void E(){
+	public AbstractStackNode[] E(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_E1, LITERAL_4, NONTERMINAL_E2);
 		eb.addAlternative(NONTERMINAL_E1, LITERAL_5, NONTERMINAL_E3);
 		eb.addAlternative(LITERAL_6);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

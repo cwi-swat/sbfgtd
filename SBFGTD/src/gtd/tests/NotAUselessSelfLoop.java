@@ -32,40 +32,40 @@ public class NotAUselessSelfLoop extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1);
 		eb.addAlternative(NONTERMINAL_B6);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void A(){
+	public AbstractStackNode[] A(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_C7, NONTERMINAL_C8);
 		eb.addAlternative(LITERAL_a11);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void B(){
+	public AbstractStackNode[] B(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_A2, NONTERMINAL_A3);
 		eb.addAlternative(NONTERMINAL_C9, NONTERMINAL_C10);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
-	public void C(){
+	public AbstractStackNode[] C(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_A4, NONTERMINAL_A5);
 		eb.addAlternative(LITERAL_a12);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){
@@ -73,6 +73,6 @@ public class NotAUselessSelfLoop extends SGTDBF{
 		AbstractNode result = nausl.parse("S");
 		System.out.println(result);
 		
-		System.out.println("[S([B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a))),B(C(A(a),A(a)),C(a)),B(A(C(a),C(a)),A(a))]),S(A(a),A(C(a),C(a))),S(A(C(a),C(a)),A(a))] <- good");
+		System.out.println("[S([B(C(A(a),A(a)),C(a)),B(A(C(a),C(a)),A(a)),B(C(a),C(A(a),A(a))),B(A(a),A(C(a),C(a)))]),S(A(C(a),C(a)),A(a)),S(A(a),A(C(a),C(a)))] <- good");
 	}
 }

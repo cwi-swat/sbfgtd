@@ -27,7 +27,6 @@ public class SGTDBF implements IGTD{
 	private DoubleStack<AbstractStackNode, AbstractNode> stacksWithTerminalsToReduce;
 	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
-	private AbstractStackNode[][] lastExpects;
 	private final HashMap<String, ArrayList<AbstractStackNode>> cachedEdgesForExpect;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
@@ -66,11 +65,7 @@ public class SGTDBF implements IGTD{
 		propagatedReductions = new IntegerObjectList<IntegerList>();
 	}
 	
-	protected void expect(AbstractStackNode[][] expectMatrix){
-		lastExpects = expectMatrix;
-	}
-	
-	protected void invokeExpects(String name){
+	protected AbstractStackNode[] invokeExpects(String name){
 		Method method = methodCache.get(name);
 		if(method == null){
 			try{
@@ -87,12 +82,14 @@ public class SGTDBF implements IGTD{
 			methodCache.putUnsafe(name, method);
 		}
 		
+		AbstractStackNode[] expects = null;
 		try{
-			method.invoke(this);
+			expects = (AbstractStackNode[]) method.invoke(this);
 		}catch(Exception ex){
 			// Not going to happen.
 			ex.printStackTrace(); // Temp
 		}
+		return expects;
 	}
 	
 	private AbstractStackNode updateNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result){
@@ -512,13 +509,11 @@ public class SGTDBF implements IGTD{
 		return false;
 	}
 	
-	private void handleExpects(AbstractStackNode stackBeingWorkedOn){
-		if(lastExpects == null) return;
-		
+	private void handleExpects(AbstractStackNode stackBeingWorkedOn, AbstractStackNode[] expects){
 		ArrayList<AbstractStackNode> cachedEdges = null;
 		
-		for(int i = lastExpects.length - 1; i >= 0; --i){
-			AbstractStackNode first = lastExpects[i][0];
+		for(int i = expects.length - 1; i >= 0; --i){
+			AbstractStackNode first = expects[i];
 			
 			if(first.isMatchable()){
 				int endLocation = location + first.getLength();
@@ -575,8 +570,9 @@ public class SGTDBF implements IGTD{
 					}
 				}
 			}else{
-				invokeExpects(node.getMethodName());
-				handleExpects(node);
+				AbstractStackNode[] expects = invokeExpects(node.getMethodName());
+				if(expects == null) return;
+				handleExpects(node, expects);
 			}
 		}else{ // 'List'
 			AbstractStackNode[] listChildren = node.getChildren();
@@ -627,7 +623,6 @@ public class SGTDBF implements IGTD{
 	
 	private void expand(){
 		while(!stacksToExpand.isEmpty()){
-			lastExpects = null;
 			expandStack(stacksToExpand.pop());
 		}
 	}

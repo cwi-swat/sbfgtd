@@ -22,7 +22,7 @@ public class AmbiguousRecursiveNullablePrefixShared extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2);
@@ -30,7 +30,7 @@ public class AmbiguousRecursiveNullablePrefixShared extends SGTDBF{
 		eb.addAlternative(LITERAL_a5);
 		eb.addAlternative(EP6);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){

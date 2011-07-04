@@ -20,14 +20,14 @@ public class HiddenHiddenRightRecursiveBugGrammar extends SGTDBF{
 		super(input);
 	}
 	
-	public void S(){
+	public AbstractStackNode[] S(){
 		ExpectBuilder eb = new ExpectBuilder();
 		
 		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_S1, NONTERMINAL_S2, NONTERMINAL_S3);
 		eb.addAlternative(LITERAL_a5);
 		eb.addAlternative(EP6);
 		
-		expect(eb.buildExpectMatrix());
+		return eb.buildExpectMatrix();
 	}
 	
 	public static void main(String[] args){
