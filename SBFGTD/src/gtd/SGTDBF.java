@@ -555,16 +555,13 @@ public class SGTDBF implements IGTD{
 	private void expandStack(AbstractStackNode node){
 		if(node.isMatchable()){
 			int endLocation = location + node.getLength();
-			if(endLocation <= input.length){
-				AbstractNode result = node.getResult();
-				
-				DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
-				if(terminalsTodo == null){
-					terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
-					todoLists[endLocation] = terminalsTodo;
-				}
-				terminalsTodo.push(node, result);
+			DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
+			if(terminalsTodo == null){
+				terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
+				todoLists[endLocation] = terminalsTodo;
 			}
+			
+			terminalsTodo.push(node, node.getResult());
 		}else if(!node.isExpandable()){
 			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
