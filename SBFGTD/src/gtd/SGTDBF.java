@@ -255,13 +255,13 @@ public class SGTDBF implements IGTD{
 			}
 			
 			// Handle alternative nexts (and prefix sharing).
-			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
+			AbstractStackNode[][] alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
 				IntegerObjectList<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
 				ArrayList<Link>[] nextPrefixesMap = next.getPrefixesMap();
 				
-				for(int i = alternateProds.size() - 1; i >= 0; --i){
-					prod = alternateProds.get(i);
+				for(int i = alternateProds.length - 1; i >= 0; --i){
+					prod = alternateProds[i];
 					if(nextDot == prod.length) continue;
 					AbstractStackNode alternativeNext = prod[nextDot];
 					
@@ -318,13 +318,13 @@ public class SGTDBF implements IGTD{
 			}
 
 			// Handle alternative nexts (and prefix sharing).
-			ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
+			AbstractStackNode[][] alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
 				IntegerObjectList<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
 				ArrayList<Link>[] nextPrefixesMap = next.getPrefixesMap();
 				
-				for(int i = alternateProds.size() - 1; i >= 0; --i){
-					prod = alternateProds.get(i);
+				for(int i = alternateProds.length - 1; i >= 0; --i){
+					prod = alternateProds[i];
 					if(nextDot == prod.length) continue;
 					AbstractStackNode alternativeNext = prod[nextDot];
 					
@@ -419,7 +419,7 @@ public class SGTDBF implements IGTD{
 		AbstractStackNode next = updateNextNode(newNext, node, result);
 		
 		// Handle alternative nexts (and prefix sharing).
-		ArrayList<AbstractStackNode[]> alternateProds = node.getAlternateProductions();
+		AbstractStackNode[][] alternateProds = node.getAlternateProductions();
 		if(alternateProds != null){
 			IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = null;
 			ArrayList<Link>[] prefixesMap = null;
@@ -428,8 +428,8 @@ public class SGTDBF implements IGTD{
 				prefixesMap = next.getPrefixesMap();
 			}
 			
-			for(int i = alternateProds.size() - 1; i >= 0; --i){
-				prod = alternateProds.get(i);
+			for(int i = alternateProds.length - 1; i >= 0; --i){
+				prod = alternateProds[i];
 				if(nextDot == prod.length) continue;
 				AbstractStackNode newAlternativeNext = prod[nextDot];
 				

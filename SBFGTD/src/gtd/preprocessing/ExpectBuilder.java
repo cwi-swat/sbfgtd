@@ -52,10 +52,10 @@ public class ExpectBuilder{
 						AbstractStackNode alternativeItem = alternative[k];
 						
 						if(alternativeItem.getId() != sharedExpect[k].getId()){
-							ArrayList<AbstractStackNode[]> otherAlternatives = alternativeItem.getAlternateProductions();
+							AbstractStackNode[][] otherAlternatives = alternativeItem.getAlternateProductions();
 							if(otherAlternatives != null){
-								for(int l = otherAlternatives.size() - 1; l >= 0; --l){
-									AbstractStackNode[] otherAlternative = otherAlternatives.get(l);
+								for(int l = otherAlternatives.length - 1; l >= 0; --l){
+									AbstractStackNode[] otherAlternative = otherAlternatives[l];
 									AbstractStackNode otherAlternativeItem = otherAlternative[k];
 									if(otherAlternativeItem.getId() == sharedExpect[k].getId()){
 										otherAlternativeItem.setProduction(alternative);

@@ -10,7 +10,7 @@ public abstract class AbstractStackNode{
 	public final static int START_SYMBOL_ID = -1; // 0xffffffff
 	
 	protected AbstractStackNode[] production;
-	protected ArrayList<AbstractStackNode[]> alternateProductions;
+	protected AbstractStackNode[][] alternateProductions;
 	protected IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
 	
@@ -111,13 +111,11 @@ public abstract class AbstractStackNode{
 			this.production = production;
 		}else{
 			if(alternateProductions == null){
-				alternateProductions = new ArrayList<AbstractStackNode[]>();
-			}
-			if(production.length > this.production.length){
-				alternateProductions.add(this.production);
-				this.production = production;
+				alternateProductions = new AbstractStackNode[][]{production};
 			}else{
-				alternateProductions.add(production);
+				int nrOfAlternateProductions = alternateProductions.length;
+				AbstractStackNode[][] newAlternateProductions = new AbstractStackNode[nrOfAlternateProductions][];
+				System.arraycopy(alternateProductions, 0, newAlternateProductions, 0, nrOfAlternateProductions);
 			}
 		}
 	}
@@ -130,7 +128,7 @@ public abstract class AbstractStackNode{
 		return production;
 	}
 	
-	public ArrayList<AbstractStackNode[]> getAlternateProductions(){
+	public AbstractStackNode[][] getAlternateProductions(){
 		return alternateProductions;
 	}
 	
