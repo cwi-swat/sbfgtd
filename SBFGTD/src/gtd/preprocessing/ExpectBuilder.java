@@ -48,13 +48,28 @@ public class ExpectBuilder{
 					constructedExpects.add(identifier, alternative);
 				}else{
 					int k = 1;
-					for(; k < alternative.length; ++k){
+					CHAIN: for(; k < alternative.length; ++k){
 						AbstractStackNode alternativeItem = alternative[k];
-						alternativeItem.setProduction(alternative);
 						
 						if(alternativeItem.getId() != sharedExpect[k].getId()){
+							ArrayList<AbstractStackNode[]> otherAlternatives = alternativeItem.getAlternateProductions();
+							if(otherAlternatives != null){
+								for(int l = otherAlternatives.size() - 1; l >= 0; --l){
+									AbstractStackNode[] otherAlternative = otherAlternatives.get(l);
+									AbstractStackNode otherAlternativeItem = otherAlternative[k];
+									if(otherAlternativeItem.getId() == sharedExpect[k].getId()){
+										otherAlternativeItem.setProduction(alternative);
+										alternative = otherAlternative;
+										
+										continue CHAIN;
+									}
+								}
+							}
+							
 							break;
 						}
+						
+						alternativeItem.setProduction(alternative);
 					}
 					
 					if(k < alternative.length){
