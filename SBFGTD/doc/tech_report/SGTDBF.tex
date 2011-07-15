@@ -710,18 +710,18 @@ First of all one could add restrictions to grammar items. For example, in case o
 
 When adding this feature to the implementation of the recognizer / parser one can make the distinction between filters that need to be executed before reduction and filters that can also be executed before expansion of an item, for efficiency reasons. Filters that can be executed before the expansion of an item are almost exclusively limited to restrictions and requirements that deal with input that precedes an item, all other filters can only be handled before the reduction of their associated item, since we generally do not have all the required information to handle these before that time. When a filter successfully matches it should prevent either the expansion or reduction of the item it is associated with, both to prohibit the recognizer from recognizing it and preventing the possible results this item would have had from being added to the parse forest.
 
-\pagebreak
-\subsection{Priorities and associativity}
+\subsection{Nesting restrictions}
 
-The application of priority and associativity rules is another useful strategy to aid with disambiguation. Priority and associativity rules can be implemented as nesting restrictions. For example, if we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, to indicated that $E\,*\,E$ has a higher priority then $E\,+\,E$, this means $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative. Associativity works in a similar way; $E\,::=\,E\,+\,E\,\{left\}$ means that it is not allowed for $E\,+\,E$ to be a child of itself at the right most $E$ of this alternative. The same goes for right associative rules, but the other way around. Making a rule non-associative is also possible, this will prevent it from being nested at either side of itself.
+Another disambiguation feature we supply comes in the form of nesting restrictions. These restrictions can be used to indicate that certain reduction paths of productions are invalid. This enables us to support things like priority and associativity rules in grammars.
 
-Our current implementation handles priority and associativity filtering completely at parse time. While reducing, it checks whether or not the reduction is allowed for the edge we want to follow; in case it is, it is stored in a result node that is identified by the sort name of the non-terminal associated with the node the edge points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all non-terminals with the same sort and nesting restrictions. For example consider the following grammar rule: $E\,::=\,E * E\,\{left\}\,>\,(E + E\,|\,E - E)\{left\}$. Here the items $.E + E$ and $.E - E$ will always be derived in the same way and thus should share their parse results, just as $E+.E$ and $E-.E$, since their nesting restrictions are identical.
+As an example, the implemention of priority and associativity rule handling would go as follows. If we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, where the $>$ sign indicates that $E\,*\,E$ has a higher priority then $E\,+\,E$, this would mean that $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative, since $E\,*\,E$ binds stronger. Associativity works in a similar way. If the rule $E\,::=\,E\,+\,E$ would be declared as being left associative, this means that it is not allowed for $E\,+\,E$ to be a child of itself at the rightmost $E$ of this alternative. Right or non-associativity can be achieved in a similar way. Additionally this restriction scheme allows priorities and associativity to both be mixed and nested arbitrarily.
 
-The main advantage of handling priority and associativity filtering at parse time, opposed to implementing it as post-parse filter is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarily exploring certain parses, because we can determine they will be filtered earlier on, increasing performance. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages in which priorities and associativity are used for disambiguation.
+Our current implementation handles nesting restriction filtering completely at parse time. While reducing it checks whether or not each of the reductions of allowed; in case it is (and we are parsing), the result is stored in a result node that is identified by the sort name of the non-terminal which the edge we are currently following points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all the items associated with the same non-terminal sort and set of nesting restrictions.
 
-There is minor a down-side however. Handling priority and associativity filtering at parse time, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of the node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not handling priority and associativity filtering is required for each batch of reductions, depending on the node they are associated with. So it is possible to dynamically choose the appropriate reduction path depending on the node that needs to be handled. This means the performance impact will remain limited to rules on which nesting restrictions apply; making this solution most likely more efficient than any alternative implementation.
+The main advantage of handling nesting restrictions at parse time, opposed to implementing it as post-parse filter, is that it is more efficient. We prevent the construction of results that will be thrown away later on, saving memory. Additionally it will prevent unnecessarily exploring certain parses, because we can determine they will be filtered earlier on, decreasing the total amount of work that needs to be done. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages which require nesting restrictions for disambiguation. This is because the way the filtering is implemented does not require any results to be constructed, rather it just prevents certain stacks from progressing.
 
-\pagebreak
+There is however one additional thing that needs to be noted. Handling nesting restriction filtering at parse time disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of a node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not any nesting restrictions need to be applied for each batch of reductions. So it is possible to dynamically determine the appropriate reduction code path, depending on the type of node that needs to be handled. This means any possible performance impact will remain limited to the handling of rules on which nesting restrictions apply; making this solution, most likely, more efficient than any alternative implementation.
+
 \subsection{Semantic actions}
 
 Support for semantic actions is also present. Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter ambiguities that cannot be disambiguated using other filters, including non-context-free ambiguities (like C typedefs). It even opens up the opportunity to influence the behaviour of the parser while it is running.
@@ -759,7 +759,6 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
-\pagebreak
 \subsection{Worst case}
 \label{sec:worstcaseBench}
 
@@ -824,15 +823,15 @@ Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $20
 
 We compared our performance results with JavaCup, which was used in combination with JFlex. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java.
 
-As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input about twice as fast. This seems like a big difference, however this is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parser scales exactly the same on this LR grammar (linear). The data in the graph supports this, as the relative performance difference between the two does not change for different input lengths.
-
-It is worth mentioning that it is still possible to optimize the performance of the parser on LL and (LA)LR grammars. One could imagine implementing a faster path for productions in slices of the grammar that conform to certain restrictions (i.e. they only contain non-terminals that are in LR(k) for example). By doing this we would be able to match the speed of any competing parser.
-
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{vsLALR.png}
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
+
+As expected JavaCup performs better. For this specific grammar, JavaCup consistently parses the given input about twice as fast. This seems like a big difference, however this is a fairly reasonable result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. Apart from this, our parser scales exactly the same on this LR grammar (linear). The data in the graph supports this, as the relative performance difference between the two does not change for different input lengths.
+
+It is worth mentioning that it is still possible to optimize the performance of the parser on LL and (LA)LR grammars. One could imagine implementing a faster path for productions in slices of the grammar that conform to certain restrictions (i.e. they only contain non-terminals that are in LR(k) for example). By doing this we would be able to match the speed of any competing parser.
 
 \subsection{Realistic cases (NOTE: update, the measurements\\were done pre-optimization)}
 
