@@ -39,11 +39,11 @@ public class LR extends SGTDBF{
 	
 	private static char[] createInput(int size){
 		char[] input = new char[size];
-		for(int i = (size / 2) - 1; i >= 0; --i){
-			input[i] = 'a';
-		}
 		for(int i = size - 1; i >= size / 2; --i){
 			input[i] = 'b';
+		}
+		for(int i = (size / 2); i >= 0; --i){
+			input[i] = 'a';
 		}
 		
 		return input;
