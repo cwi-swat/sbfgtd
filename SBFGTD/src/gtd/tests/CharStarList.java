@@ -18,12 +18,15 @@ public class CharStarList extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(LIST1);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
 	}
 	
 	public static void main(String[] args){

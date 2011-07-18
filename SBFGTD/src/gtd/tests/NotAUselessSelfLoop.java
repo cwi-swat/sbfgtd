@@ -32,40 +32,52 @@ public class NotAUselessSelfLoop extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1);
 		eb.addAlternative(NONTERMINAL_B6);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(NONTERMINAL_C7, NONTERMINAL_C8);
+		eb.addAlternative(LITERAL_a11);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] B_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_C7, NONTERMINAL_C8);
-		eb.addAlternative(LITERAL_a11);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_A2, NONTERMINAL_A3);
+		eb.addAlternative(NONTERMINAL_C9, NONTERMINAL_C10);
+		B_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] B(){
+		return B_EXPECT;
+	}
+	
+	private final static AbstractStackNode[]C_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_A2, NONTERMINAL_A3);
-		eb.addAlternative(NONTERMINAL_C9, NONTERMINAL_C10);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_A4, NONTERMINAL_A5);
+		eb.addAlternative(LITERAL_a12);
+		C_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] C(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_A4, NONTERMINAL_A5);
-		eb.addAlternative(LITERAL_a12);
-		
-		return eb.buildExpectMatrix();
+		return C_EXPECT;
 	}
 	
 	public static void main(String[] args){

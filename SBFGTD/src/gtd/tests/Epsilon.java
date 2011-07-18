@@ -24,28 +24,37 @@ public class Epsilon extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A0, NONTERMINAL_A1, NONTERMINAL_B2);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(EPSILON_3);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] B_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(EPSILON_3);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(LITERAL_a4);
+		B_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] B(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a4);
-		
-		return eb.buildExpectMatrix();
+		return B_EXPECT;
 	}
 	
 	public static void main(String[] args){

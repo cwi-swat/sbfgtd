@@ -20,20 +20,26 @@ public class Simple1 extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A0, LITERAL_b2);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(LITERAL_aa1);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_aa1);
-		
-		return eb.buildExpectMatrix();
+		return A_EXPECT;
 	}
 	
 	public static void main(String[] args){

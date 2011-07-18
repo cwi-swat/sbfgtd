@@ -26,29 +26,38 @@ public class Optional3 extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(LITERAL_a0, OPTIONAL_6);
 		eb.addAlternative(LITERAL_a1, NONTERMINAL_A3);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(LITERAL_a2);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] O_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a2);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_A4);
+		O_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] O(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_A4);
-		
-		return eb.buildExpectMatrix();
+		return O_EXPECT;
 	}
 	
 	public static void main(String[] args){

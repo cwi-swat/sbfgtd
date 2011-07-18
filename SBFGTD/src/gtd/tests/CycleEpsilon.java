@@ -23,22 +23,28 @@ public class CycleEpsilon extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A0);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
 	}
 	
-	public AbstractStackNode[] A(){
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A1, NONTERMINAL_A2);
 		eb.addAlternative(LITERAL_a3);
 		eb.addAlternative(EPSILON_4);
-		
-		return eb.buildExpectMatrix();
+		A_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] A(){
+		return A_EXPECT;
 	}
 	
 	public static void main(String[] args){

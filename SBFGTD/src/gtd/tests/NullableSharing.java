@@ -22,28 +22,37 @@ public class NullableSharing extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_N1, NONTERMINAL_N2);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(EPSILON3);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] N_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(EPSILON3);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_A0);
+		N_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] N(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_A0);
-		
-		return eb.buildExpectMatrix();
+		return N_EXPECT;
 	}
 	
 	public static void main(String[] args){

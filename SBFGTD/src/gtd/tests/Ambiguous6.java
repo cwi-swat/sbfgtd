@@ -33,70 +33,94 @@ public class Ambiguous6 extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_A0);
 		eb.addAlternative(NONTERMINAL_E4);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(NONTERMINAL_B1);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] B_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_B1);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_C2);
+		B_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] B(){
+		return B_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] C_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_C2);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_D3);
+		C_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] C(){
+		return C_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] D_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_D3);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_E5);
+		eb.addAlternative(LITERAL_a8);
+		D_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] D(){
+		return D_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] E_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_E5);
-		eb.addAlternative(LITERAL_a8);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_F6);
+		E_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] E(){
+		return E_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] F_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_F6);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_G7);
+		F_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] F(){
+		return F_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] G_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_G7);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(LITERAL_a9);
+		G_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] G(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a9);
-		
-		return eb.buildExpectMatrix();
+		return G_EXPECT;
 	}
 	
 	public static void main(String[] args){

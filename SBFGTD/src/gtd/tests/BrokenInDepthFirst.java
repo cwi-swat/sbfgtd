@@ -32,47 +32,62 @@ public class BrokenInDepthFirst extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(LITERAL_a10, NONTERMINAL_A0);
 		eb.addAlternative(NONTERMINAL_A1, LITERAL_a11);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] A_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(NONTERMINAL_B2, NONTERMINAL_C3, NONTERMINAL_D4);
+		A_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] A(){
+		return A_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] B_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_B2, NONTERMINAL_C3, NONTERMINAL_D4);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(LITERAL_a5);
+		eb.addAlternative(LITERAL_aa6);
+		B_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] B(){
+		return B_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] C_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a5);
-		eb.addAlternative(LITERAL_aa6);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(LITERAL_a7);
+		C_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] C(){
+		return C_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] D_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a7);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(LITERAL_a8);
+		eb.addAlternative(LITERAL_aa9);
+		D_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] D(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(LITERAL_a8);
-		eb.addAlternative(LITERAL_aa9);
-		
-		return eb.buildExpectMatrix();
+		return D_EXPECT;
 	}
 	
 	public static void main(String[] args){

@@ -35,32 +35,41 @@ public class HiddenLeftRecursionNonEmpty extends SGTDBF{
 		super(input);
 	}
 	
-	public AbstractStackNode[] S(){
+	private final static AbstractStackNode[] S_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
 		eb.addAlternative(NONTERMINAL_S0, NONTERMINAL_T1, NONTERMINAL_U2);
 		eb.addAlternative(LITERAL_a9);
 		eb.addAlternative(EPSILON_10);
-		
-		return eb.buildExpectMatrix();
+		S_EXPECT = eb.buildExpectMatrix();
+	}
+	
+	public AbstractStackNode[] S(){
+		return S_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] T_EXPECT;
+	static{
+		ExpectBuilder eb = new ExpectBuilder();
+		eb.addAlternative(NONTERMINAL_T3, NONTERMINAL_U4, NONTERMINAL_S5);
+		eb.addAlternative(EPSILON_11);
+		T_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] T(){
+		return T_EXPECT;
+	}
+	
+	private final static AbstractStackNode[] U_EXPECT;
+	static{
 		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_T3, NONTERMINAL_U4, NONTERMINAL_S5);
-		eb.addAlternative(EPSILON_11);
-		
-		return eb.buildExpectMatrix();
+		eb.addAlternative(NONTERMINAL_U6, NONTERMINAL_S7, NONTERMINAL_T8);
+		eb.addAlternative(EPSILON_12);
+		U_EXPECT = eb.buildExpectMatrix();
 	}
 	
 	public AbstractStackNode[] U(){
-		ExpectBuilder eb = new ExpectBuilder();
-		
-		eb.addAlternative(NONTERMINAL_U6, NONTERMINAL_S7, NONTERMINAL_T8);
-		eb.addAlternative(EPSILON_12);
-		
-		return eb.buildExpectMatrix();
+		return U_EXPECT;
 	}
 	
 	public static void main(String[] args){
