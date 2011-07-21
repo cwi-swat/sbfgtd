@@ -52,7 +52,7 @@ public class NonLeftFactoredShared extends SGTDBF{
 	private final static AbstractStackNode LITERAL_7 = new CharStackNode(107, 0, '|');
 	private final static AbstractStackNode LITERAL_8 = new CharStackNode(108, 0, '\\');
 	private final static AbstractStackNode LITERAL_9 = new CharStackNode(109, 0, '\'');
-	private final static AbstractStackNode LITERAL_10 = new CharStackNode(110, 0, '\'');
+	private final static AbstractStackNode LITERAL_10 = new CharStackNode(110, 0, '\"');
 	private final static AbstractStackNode LITERAL_11 = new CharStackNode(111, 0, ';');
 	private final static AbstractStackNode LITERAL_12 = new CharStackNode(112, 0, ':');
 	private final static AbstractStackNode LITERAL_13 = new CharStackNode(113, 0, '?');
