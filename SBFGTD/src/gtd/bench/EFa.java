@@ -133,7 +133,7 @@ public class EFa extends SGTDBF{
 		}
 		
 		// The benchmarks.
-		for(int i = 50001; i <= 2000001; i += 50000){
+		for(int i = 50001; i <= 1000001; i += 50000){
 			input = createInput(i);
 			runTest(input);
 		}

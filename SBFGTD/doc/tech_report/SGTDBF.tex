@@ -815,6 +815,7 @@ Surprising though is that, while this benchmark is one of the cases that is most
 
 One other thing to mention is that the left-factoring of the grammar also removes all ambiguities from it. Contrary to what one might expect, this does not have an impact on performance in this specific case, since in both the prefix-shared as the left-factored case there will never have more then one live stack.
 
+\pagebreak
 \subsection{Versus non-general}
 
 We also liked to know how we compare when pinned against non-general parsers, since general parsers have the image of being inferior in terms of performance, compared to `normal' LL or (LA)LR parsers.
@@ -825,9 +826,9 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $200000$ character intervals.
 
-We compared our performance results with JavaCup (which was used in combination with JFlex), SGLR and JSGLR. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java.
+We compared our performance with JavaCup (which was used in combination with JFlex), SGLR and JSGLR. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java.
 
-To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. The measurements are in CPU time (user + system) and all Java code was executed as multiple times before running the actual tests, to give the JIT compiler enough time to optimize. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
+To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. The measurements are in CPU time (user + system). All Java code was executed multiple times before running the actual tests, to give the JIT compiler time to optimize. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
 
 \begin{figure}[H]
 \centering
@@ -835,38 +836,13 @@ To make the comparison as fair as possible, all parsers were purely executed as 
 \caption{A parsing performance comparison with a LALR parser.}
 \end{figure}
 
-As expected JavaCup performs best. For this specific grammar, the JavaCup parser consistently recognizes the given input between one and a half and two times as fast as ours. This seems like a big difference, however this is a fairly impressive result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. When looking at the results for both of the SGLR version it becomes even more apparent how well we do in comparison.
+As expected JavaCup performs best. For this specific grammar, the JavaCup parser consistently recognizes the given input between one and a half and two times as fast as our parser. This seems like a big difference, however this is a fairly impressive result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. When looking at the results for both of the SGLR version it becomes even more apparent how well we do in comparison.
 
-Apart from this, our parser scales perfectly linear for this LR grammar, like the others. The data in the graph supports this, as the relative performance difference between them does not change for different input lengths.
+Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between them does not change for different input lengths.
 
 It is worth mentioning that it is still possible to further optimize the performance of our parser on LL and (LA)LR grammars. One could imagine implementing a faster path for productions in slices of the grammar that conform to certain restrictions (i.e. they only contain non-terminals that are in LR(k) for example). By doing this we would be able to match the speed of any competing parser.
 
-\subsection{Realistic cases (NOTE: update, the measurements\\were done pre-optimization)}
-
-Benchmarks on artificial grammars are nice for getting a point across or to indicate certain guarantees can be met, however they generally do not offer any insight about performance in realistic cases. Here we will list a number of statistics related to parsing actual source files.
-
-Note that, for now, we just list SDF2 files; a grammar definition format which is mildly ambiguous before filtering. In the future more results will be added for other languages.
-
-\begin{table}[H]
-\centering
-\begin{tabular}{ | p{5em} | p{5em} | p{6em} | p{10em} |}
-  \hline
-  Filename & Input & Throughput & Throughput including\\
-   & characters & (char/sec) & filtering \& flattening\\
-   & & & (char/sec)\\
-  \hline
-  ATerm.def & 2393 & 341857 & 217545\\
-  C.def & 10552 & 363862 & 245395\\
-  SDF2.def & 18054 & 368448 & 234467\\
-  Java.def & 30983 & 360267 & 232954\\
-  \hline
-\end{tabular}
-\caption{Average parser throughput.}
-\end{table}
-
-One does have to take into account that our current implementation is written in Java. If we would re-implement it in C, a performance increase of at least three to five fold is to be expected. Putting our throughput at around 1 million characters per second, while having all filters enabled, in the SDF2 case.
-
-Regardless of this, compared to the parser we previously used, a C implementation of scannerless GLR, we achieved a performance gain of roughly 40\% (i.e. our implementation parses the same file in 0.6 the amount of time), in this specific case.
+One also has to take into account that, while our parser handles itself nicely in this benchmark, it is written in Java. If we would implement a C version we would be able to get even closer to the performance of a non-general parser.
 
 \section{Prototype}
 
@@ -876,6 +852,7 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
+\pagebreak
 \section{Future work}
 
 Numerous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
@@ -905,7 +882,8 @@ TODO:\\
 -LR\\
 -SPPF (and binarization)\\
 -GLR\\
--SGLR (and the ASF+SDF Meta-environment)\\
+-SGLR\\
+-JSGLR\\
 -JFlex\\
 -JavaCup\\
 -SDF2\\
