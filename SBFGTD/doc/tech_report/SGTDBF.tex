@@ -807,7 +807,7 @@ This grammar contains a lot of recursion and is highly ambiguous; the input, on 
 \caption{Grammar factoring related parse time scaling.}
 \end{figure}
 
-Our parser is more then four times as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the expansion8 optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
+Our parser is more then four times as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the expansion optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
 As can be seem, the non-factored prefix-shared and the left-factored versions of the grammar are fairly close together in terms of performance. The reason why the parser performs slightly better on the prefix-shared version of the grammar in comparison to the left-factored version, is purely a result of the transformation that was required to achieve the left-factoring.
 
@@ -828,7 +828,7 @@ Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $20
 
 We compared our performance with JavaCup (which was used in combination with JFlex), SGLR and JSGLR. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java.
 
-To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. The measurements are in CPU time (user + system). All Java code was executed multiple times before running the actual tests, to give the JIT compiler time to optimize. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
+To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
 
 \begin{figure}[H]
 \centering
