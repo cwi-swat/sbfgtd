@@ -578,7 +578,7 @@ In most cases delivering a binarized parse forest as final result is not very co
 
 \subsubsection{To binarize or not to binarize}
 \label{subsec:Binarization}
-One might wonder why, in case one flattens the parse forest afterwards, using a binarized version as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use a binarized representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars infeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is a possibility is because of the starvation of incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will most likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
+One might wonder why, in case one flattens the parse forest afterwards, using a binarized version as internal representation would be advantageous. The reason for this is that it enables us to guarantee that both the recognition and parse phases will always be cubic with respect to the length of the input in the worst-case. If we would not use a binarized representation we would not be able to make this guarantee for the parse phase. The consequence of this is that it may make the parsing of input for certain grammars infeasible. While it may be feasible to flatten the final parse result in these cases. The main reason that this is a possibility is because of the starvation of stacks belonging to incomplete parse results; either ones that died because they failed to match the input further down the line or because they were filtered. In both cases it will prevent their results from being added to the parse forest as alternatives. This means the final parse result will most likely have less nodes in it then there are constructed in total while parsing, reducing the amount of nodes the flattener has to touch.
 
 \subsection{Error reporting}
 
@@ -794,7 +794,7 @@ What may appear surprising to some is the limited performance difference between
 \subsection{Grammar factoring}
 \label{sec:factoringBenchmark}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case grammars, without ambiguous input. Here we will compare the performance of our parser between different version of a grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case grammars, without ambiguous input. Here we will compare the performance of our parser between different versions of a grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
 $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
@@ -809,9 +809,9 @@ This grammar contains a lot of recursion and is highly ambiguous; the input, on 
 
 Our parser is more then four times as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the expansion optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
-As can be seem, the non-factored prefix-shared and the left-factored versions of the grammar are fairly close together in terms of performance. The reason why the parser performs slightly better on the prefix-shared version of the grammar in comparison to the left-factored version, is purely a result of the transformation that was required to achieve the left-factoring.
+As can be seem, the non-factored prefix-shared and the left-factored versions of the grammar are fairly close together in terms of performance. The reason why our parser performs slightly better on the prefix-shared version of the grammar in comparison to the left-factored version, is purely a result of the transformation that was required to achieve the left-factoring.
 
-Surprising though is that, while this benchmark is one of the cases that is most heavily biased in favor of look-ahead filtering, the impact it has is hardly noticeable. Enabling look-ahead filtering should have a positive influence on performance while parsing an input string for the left-factored version of the grammar, surprisingly the impact it has is so minor that it is hardly noticable. The main reason for this is the eager matching optimization, which achieves what look-ahead filtering partially would have in this particular case. However, there are other situations in which look-ahead filtering can still be a potentially useful performance enhancing tool.
+Surprising though is that, while this benchmark is one of the cases that is most heavily biased in favor of look-ahead filtering, the impact it has is hardly noticeable. Look-ahead filtering should have a positive influence on performance while parsing an input string for the left-factored version of the grammar, surprisingly the impact it has is so minor that it is hardly measurable. The main reason for this is the eager matching optimization, achieves almost the same goal as look-ahead filtering would have in this particular case. However, there are other situations in which look-ahead filtering can still be a potentially useful performance enhancing tool.
 
 One other thing to mention is that the left-factoring of the grammar also removes all ambiguities from it. Contrary to what one might expect, this does not have an impact on performance in this specific case, since in both the prefix-shared as the left-factored case there will never have more then one live stack.
 
@@ -826,23 +826,25 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $200000$ character intervals.
 
-We compared our performance with JavaCup (which was used in combination with JFlex), SGLR and JSGLR. We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java.
+We compared our performance with JavaCup (which was used in combination with JFlex), SGLR, JSGLR and Bison (in combination with Flex). We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java. Finally, Bison was selected to complete the picture.
 
-To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
+To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. Both SGLR and Bison were compiled using GCC with `-O2'. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{vsLALR.png}
-\caption{A parsing performance comparison with a LALR parser.}
+\caption{A parsing performance comparison between different parsers.}
 \end{figure}
 
-As expected JavaCup performs best. For this specific grammar, the JavaCup parser consistently recognizes the given input between one and a half and two times as fast as our parser. This seems like a big difference, however this is a fairly impressive result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. When looking at the results for both of the SGLR version it becomes even more apparent how well we do in comparison.
+As expected JavaCup performs best in the Java category. For this specific grammar, the JavaCup parser consistently recognizes the given input between one and a half and two times as fast as our parser. This seems like a big difference, however this is a fairly impressive result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. When looking at the results for JSGLR it becomes even more apparent how well we do in comparison.
 
-Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between them does not change for different input lengths.
+In the C category Bison dominates. SGLR is around fifteen times slower then Bison on this grammar, on average. As can be seen our parser also outperforms it by quite a significant amount.
+
+Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between the different parsers does not change for different input lengths.
 
 It is worth mentioning that it is still possible to further optimize the performance of our parser on LL and (LA)LR grammars. One could imagine implementing a faster path for productions in slices of the grammar that conform to certain restrictions (i.e. they only contain non-terminals that are in LR(k) for example). By doing this we would be able to match the speed of any competing parser.
 
-One also has to take into account that, while our parser handles itself nicely in this benchmark, it is written in Java. If we would implement a C version we would be able to get even closer to the performance of a non-general parser.
+One also has to take into account that, while our parser handles itself nicely in this benchmark, when compared to other in Java written parser, an equivalent C implementation would perform much better.
 
 \section{Prototype}
 
