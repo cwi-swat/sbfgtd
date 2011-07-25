@@ -838,7 +838,7 @@ To make the comparison as fair as possible, all parsers were purely executed as 
 
 As expected JavaCup performs best in the Java category. For this specific grammar, the JavaCup parser consistently recognizes the given input between one and a half and two times as fast as our parser. This seems like a big difference, however this is a fairly impressive result. Especially considering we are using a graph, since we need to be fully general, instead of the application's stack. When looking at the results for JSGLR it becomes even more apparent how well we do in comparison.
 
-In the C category Bison dominates. SGLR is around fifteen times slower then Bison on this grammar, on average. As can be seen our parser also outperforms it by quite a significant amount.
+In the C category Bison dominates. SGLR is over fifteen times slower then Bison on this grammar. As can be seen our parser also outperforms it by quite a significant amount.
 
 Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between the different parsers does not change for different input lengths.
 
