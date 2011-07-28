@@ -794,7 +794,7 @@ What may appear surprising to some is the limited performance difference between
 \subsection{Grammar factoring}
 \label{sec:factoringBenchmark}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case grammars, without ambiguous input. Here we will compare the performance of our parser between different versions of a grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case grammars, without ambiguous input. Here we will compare the performance of our parser between different versions of an expression grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
 $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
