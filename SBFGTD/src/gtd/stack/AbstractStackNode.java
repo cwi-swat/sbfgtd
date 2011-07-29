@@ -224,10 +224,8 @@ public abstract class AbstractStackNode{
 		
 		if(edgesMap == null){
 			edgesMap = new IntegerObjectList<ArrayList<AbstractStackNode>>(edgesMapToAdd);
-
-			if(prefixesMap == null){
-				prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
-			}
+			
+			prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
 			
 			if(prefixesMapToAdd == null){
 				int index = edgesMap.findKey(predecessor.getStartLocation());
