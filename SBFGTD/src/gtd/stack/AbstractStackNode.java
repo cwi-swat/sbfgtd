@@ -264,14 +264,8 @@ public abstract class AbstractStackNode{
 			}
 			
 			if(prefixesMapToAdd == null){
-				int startLocation = predecessor.getStartLocation();
-				int index = edgesMap.findKey(startLocation);
-				if(index == -1){
-					addPrefix(new Link(null, result), edgesMap.size());
-					edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
-				}else{
-					addPrefix(new Link(null, result), index);
-				}
+				addPrefix(new Link(null, result), edgesMap.size());
+				edgesMap.add(predecessor.getStartLocation(), edgesMapToAdd.getValue(0));
 			}else{
 				for(int i = edgesMapToAdd.size() - 1; i >= 0; --i){
 					int startLocation = edgesMapToAdd.getKey(i);
@@ -291,10 +285,6 @@ public abstract class AbstractStackNode{
 				}
 			}
 		}else{
-			if(prefixesMap == null){
-				prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
-			}
-			
 			if(prefixesMapToAdd == null){
 				int index = edgesMap.findKey(predecessor.getStartLocation());
 				addPrefix(new Link(null, result), index);
