@@ -203,11 +203,11 @@ We would expand these rules in the following way:
 As can be seen a cycle is added to the graph, since $.Aa$ is, in a way, a child of itself. To see how left recursive grammars work in action see section \ref{sec:tracesLeftRecusive}.
 
 \subsubsection{Cycles}
-Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically resolved by the sharing that is introduced into the graph. Instead of infinitely expanding the circularly dependent production rules, a cycle will be added to the graph, halting the expansion process for the involved rule. The reduction process will also terminate, since the recognizer will only perform the reductions for each node once.
+Cycles present another issue that needs to be handled. Similarly to left recursion, this problem is automatically resolved by the sharing that is introduced into the graph. Instead of infinitely expanding circularly dependent production rules, a cycle will be added to the graph, halting the expansion process for the involved rule. The reduction process will also terminate, since the recognizer only performs the reductions for each node once.
 
 \subsubsection{Nullables}
 \label{subsec:nullables}
-Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a node that is associated with a nullable non-terminal sort gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more identical consecutive nullables, problems arise. The first of these problems is sharing related.
+Nullables also deserve some attention. Nullables do not pose any difficulties in most cases; however when a node that is associated with a nullable non-terminal gets queued for expansion in two or more separate iterations in the same level, like when a production contains two or more identical consecutive nullables, problems arise. The first of these problems is sharing related.
 
 We will describe the issue by illustrating what would happen in a version of the implementation of the algorithm which does not contain the fix.
 Consider the following grammar:\\
@@ -217,7 +217,7 @@ $C ::= \epsilon$\\
 Input = <empty>\\
 After the first expansion and reduction phase, we matched both $.C$ and the $.AA$ at location $0$. Next we move to $A.A$; when we expand the $A.A$ node we notice $.C$ has already been expanded at the current level ($0$), causing recognition to stop. Since there is no work left to do, the recognizer will terminate with an error, as we failed to produce any derivations for the input string.
 
-In our algorithm we address this issue by checking whether or not the non-terminal sort associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:pseudocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
+In our algorithm we address this issue by checking whether or not the non-terminal associated with the node we are currently attempting to expand has nullable results in the current level. If this is the case we queue this node for reduction. Additionally, we also update the appropriate set of edges (as described in section \ref{subsec:pseudocodeExpand}). This is necessary, since the children of the current node were already expanded in a previous iteration in the same level; this means the current stack needs to merge with the stacks of these children, so no future (non-nullable) reductions involving these children will go missing. We will keep alternating between expansion and reduction until no more work can be done for the current level (i.e. there are no more nullable reductions); once this is the case, we shift to the next level.
 
 \subsubsection{Hidden right recursion}
 \label{subsec:hiddenRightRecursion}
@@ -238,9 +238,9 @@ Another questions that some people will have on their mind is: ``does it termina
 \subsection{Breadth-first vs depth-first}
 \label{sec:breadthFirstVsDepthFirst}
 
-While we focussed on a level synchronized version of our algorithm, it also possible to create a recursive decent variant.
+While we focussed on a level synchronized version of our algorithm, it also possible to implement a recursive decent variant.
 
-The main difference with a recursive decent approach is that we can now have (non-nullable) stacks running ahead of others. To ensure we register all derivations we need to apply a solution that is almost identical to the hidden right recursion fix, which we discussed in section \ref{subsec:hiddenRightRecursion}. When a stack merge occurs we need to propagate the edge forward, towards the end of all possible continuations of the production that we already recorded and execute the proper reductions in case the edge is not present yet of the node that is associated with the last item in the production. Naturally, we can halt the propagation for a path as soon as we detect that the edge we intended to add is already present; if we would not do this the amount of node visits would become unbound polynomial in the worst-case.
+The main difference with a recursive decent approach is that we can now have (non-nullable) stacks running ahead of others. To ensure we register all derivations, we need to apply a solution that is almost identical to the hidden right recursion fix, which we discussed in section \ref{subsec:hiddenRightRecursion}. When a stack merge occurs we need to propagate the edge forward, towards the end of all possible continuations of the production that we already recorded and execute the proper reductions in case the edge is not present yet of the node that is associated with the last item in the production. Naturally, we can halt the propagation for a path as soon as we detect that the edge we intended to add is already present; if we would not do this the amount of node visits would become unbound polynomial in the worst-case.
 
 Note however that while the absolute amount of `work' required by the algorithm does not increase, the worst-case amount of node visits increases from $O(N)$ to $O(N^2)$, however the number of edges that is merged in during each visit is always $1$, instead of $N$ in the worst-case. Because of this the worst-case behaviour (section \ref{subsec:recognizerComplexity}) is not influenced by this. Nor will it have an effect on the time bound for unambiguous grammars (section \ref{subsec:unambiguousTimeComplexity}), as stack merges do not occur for these cases.
 
@@ -248,7 +248,7 @@ Conceptually the recursive decent version looks nicer, since there is no real di
 
 \subsection{From grammar to recognizer}
 
-Converting a grammar to a recognizer or parser, either by hand writing or generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. For example, in case one generates code, this means there would need to be one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives to expect.
+Converting a grammar into a format the recognizer or parser can use, either by hand or by generating it, is relatively straight forward. All that is needed is a direct translation from the grammar rules to either functions or a table like data structure. Basically the recognizer just needs to know what alternatives are associated with each left-hand-side. For example, in case one generates code, this means there would need to be one function per non-terminal sort, which contains logic that informs the recognizer about what alternatives to expect.
 
 Since the mapping between the original grammar and the code or table is one-on-one, it is possible to implement or edit it by hand without much effort. In fact hand crafting it is about as simple as writing the grammar itself (although more cumbersome).
 
