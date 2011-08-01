@@ -310,15 +310,10 @@ public abstract class AbstractStackNode{
 			int startLocation = predecessor.getStartLocation();
 			if(touched.contains(startLocation)) return 0;
 			
-			int index = edgesMap.findKey(startLocation);
-			if(index == -1){
-				addPrefix(new Link(null, result), edgesMap.size());
-				edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
-				touched.add(startLocation);
-				nrOfAddedEdges = 1;
-			}else{
-				addPrefix(new Link(null, result), index);
-			}
+			addPrefix(new Link(null, result), edgesMap.size());
+			edgesMap.add(startLocation, edgesMapToAdd.getValue(0));
+			touched.add(startLocation);
+			nrOfAddedEdges = 1;
 		}else{
 			int fromIndex = edgesMapToAdd.size() - potentialNewEdges;
 			for(int i = edgesMapToAdd.size() - 1; i >= fromIndex; --i){
