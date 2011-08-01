@@ -347,10 +347,6 @@ public abstract class AbstractStackNode{
 		this.prefixesMap = prefixesMap;
 	}
 	
-	public boolean hasEdges(){
-		return (edgesMap.size() != 0);
-	}
-	
 	public IntegerObjectList<ArrayList<AbstractStackNode>> getEdges(){
 		return edgesMap;
 	}
