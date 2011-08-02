@@ -868,6 +868,7 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (i.e. contain only non-terminals that are in LR(k) for example), to improve performance on non-ambiguous grammars even further.
  \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
+ \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance.
 \end{itemize}
 
 Finally, it would be interesting to create a C implementation of our parsing algorithm, both to see how far we can push the throughput of the parser and to be able to make a broader and more accurate performance comparison with implementations of other (general) parsing algorithms. We expect to do fairly well in such a showdown.
@@ -888,7 +889,8 @@ TODO:\\
 -JSGLR\\
 -JFlex\\
 -JavaCup\\
--SDF2\\
--Rascal
+-Rascal\\
+-Bison\\
+-Flex
 
 \end{document}
