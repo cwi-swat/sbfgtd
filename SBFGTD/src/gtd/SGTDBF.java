@@ -103,14 +103,12 @@ public class SGTDBF implements IGTD{
 						return alternative;
 					}
 				}else{
-					if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
-						HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-						AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
-						if(nextResult != null){
-							// Encountered stack 'overtake'.
-							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
-							return alternative;
-						}
+					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
+					if(nextResult != null){
+						// Encountered stack 'overtake'.
+						propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+						return alternative;
 					}
 				}
 			}
@@ -153,7 +151,7 @@ public class SGTDBF implements IGTD{
 						propagateAlternativeEdgesAndPrefixes(node, result, alternative, alternative.getResult(), edgesMap.size(), edgesMap, prefixesMap);
 						return true;
 					}
-				}else if(alternative.getId() != node.getId() && !(alternative.isSeparator() || node.isSeparator())){ // (Separated) list cycle fix.
+				}else{
 					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
 					if(nextResult != null){
