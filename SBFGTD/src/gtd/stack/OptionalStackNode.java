@@ -19,8 +19,8 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 		this.emptyChild = generateEmptyChild();
 	}
 	
-	private OptionalStackNode(OptionalStackNode original){
-		super(original);
+	private OptionalStackNode(OptionalStackNode original, int startLocation){
+		super(original, startLocation);
 		
 		nodeName = original.nodeName;
 		
@@ -29,7 +29,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 	}
 	
 	private AbstractStackNode[] generateChildren(AbstractStackNode optional){
-		AbstractStackNode child = optional.getCleanCopy();
+		AbstractStackNode child = optional.getCleanCopy(DEFAULT_START_LOCATION);
 		child.setProduction(new AbstractStackNode[]{child});
 		child.markAsEndNode();
 		
@@ -37,7 +37,7 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 	}
 	
 	private AbstractStackNode generateEmptyChild(){
-		AbstractStackNode empty = EMPTY.getCleanCopy();
+		AbstractStackNode empty = EMPTY.getCleanCopy(DEFAULT_START_LOCATION);
 		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
@@ -68,11 +68,11 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new OptionalStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new OptionalStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
 		throw new UnsupportedOperationException();
 	}
 	

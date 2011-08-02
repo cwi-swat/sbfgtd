@@ -28,16 +28,16 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		result = null;
 	}
 	
-	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original){
-		super(original);
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, int startLocation){
+		super(original, startLocation);
 
 		ciLiteral = original.ciLiteral;
 		
 		result = null;
 	}
 	
-	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, AbstractNode result){
-		super(original);
+	private CaseInsensitiveLiteralStackNode(CaseInsensitiveLiteralStackNode original, int startLocation, AbstractNode result){
+		super(original, startLocation);
 		
 		this.ciLiteral = original.ciLiteral;
 		
@@ -78,12 +78,12 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return new LiteralNode(resultLiteral);
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new CaseInsensitiveLiteralStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new CaseInsensitiveLiteralStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
-		return new CaseInsensitiveLiteralStackNode(this, result);
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
+		return new CaseInsensitiveLiteralStackNode(this, startLocation, result);
 	}
 	
 	public int getLength(){

@@ -8,6 +8,7 @@ import gtd.util.IntegerObjectList;
 
 public abstract class AbstractStackNode{
 	public final static int START_SYMBOL_ID = -1; // 0xffffffff
+	public final static int DEFAULT_START_LOCATION = -1;
 	
 	protected AbstractStackNode[] production;
 	protected AbstractStackNode[][] alternateProductions;
@@ -17,7 +18,7 @@ public abstract class AbstractStackNode{
 	protected final int id;
 	protected final int dot;
 	
-	protected int startLocation;
+	protected final int startLocation;
 	
 	private boolean isEndNode;
 	
@@ -29,10 +30,10 @@ public abstract class AbstractStackNode{
 		this.id = id;
 		this.dot = dot;
 		
-		startLocation = -1;
+		startLocation = DEFAULT_START_LOCATION;
 	}
 	
-	protected AbstractStackNode(AbstractStackNode original){
+	protected AbstractStackNode(AbstractStackNode original, int startLocation){
 		super();
 		
 		id = original.id;
@@ -43,6 +44,8 @@ public abstract class AbstractStackNode{
 		
 		this.isEndNode = original.isEndNode;
 		this.isSeparator = original.isSeparator;
+		
+		this.startLocation = startLocation;
 	}
 	
 	// General.
@@ -89,9 +92,9 @@ public abstract class AbstractStackNode{
 	public abstract AbstractNode match(char[] input, int location);
 	
 	// Sharing.
-	public abstract AbstractStackNode getCleanCopy();
+	public abstract AbstractStackNode getCleanCopy(int startLocation);
 	
-	public abstract AbstractStackNode getCleanCopyWithResult(AbstractNode result);
+	public abstract AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result);
 	
 	public boolean isSimilar(AbstractStackNode node){
 		return (node.id == id);
@@ -356,10 +359,6 @@ public abstract class AbstractStackNode{
 	}
 	
 	// Location.
-	public void setStartLocation(int startLocation){
-		this.startLocation = startLocation;
-	}
-	
 	public int getStartLocation(){
 		return startLocation;
 	}

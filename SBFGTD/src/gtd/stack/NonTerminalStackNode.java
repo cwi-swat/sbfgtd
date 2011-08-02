@@ -11,8 +11,8 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		this.nonTerminal = nonTerminal;
 	}
 	
-	private NonTerminalStackNode(NonTerminalStackNode original){
-		super(original);
+	private NonTerminalStackNode(NonTerminalStackNode original, int startLocation){
+		super(original, startLocation);
 
 		nonTerminal = original.nonTerminal;
 	}
@@ -37,11 +37,11 @@ public final class NonTerminalStackNode extends AbstractStackNode{
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new NonTerminalStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new NonTerminalStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
 		throw new UnsupportedOperationException();
 	}
 	

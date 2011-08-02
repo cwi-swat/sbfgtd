@@ -10,8 +10,8 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 		super(id, dot);
 	}
 	
-	private EpsilonStackNode(EpsilonStackNode original){
-		super(original);
+	private EpsilonStackNode(EpsilonStackNode original, int startLocation){
+		super(original, startLocation);
 	}
 	
 	public boolean isEmptyLeafNode(){
@@ -34,12 +34,12 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 		return result;
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new EpsilonStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new EpsilonStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
-		return new EpsilonStackNode(this);
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
+		return new EpsilonStackNode(this, startLocation);
 	}
 	
 	public int getLength(){

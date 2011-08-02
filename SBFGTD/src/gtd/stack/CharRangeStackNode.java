@@ -20,8 +20,8 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		result = null;
 	}
 	
-	private CharRangeStackNode(CharRangeStackNode original){
-		super(original);
+	private CharRangeStackNode(CharRangeStackNode original, int startLocation){
+		super(original, startLocation);
 		
 		ranges = original.ranges;
 		
@@ -30,8 +30,8 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		result = null;
 	}
 	
-	private CharRangeStackNode(CharRangeStackNode original, AbstractNode result){
-		super(original);
+	private CharRangeStackNode(CharRangeStackNode original, int startLocation, AbstractNode result){
+		super(original, startLocation);
 		
 		this.ranges = original.ranges;
 		
@@ -67,12 +67,12 @@ public final class CharRangeStackNode extends AbstractStackNode implements IMatc
 		return null;
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new CharRangeStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new CharRangeStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
-		return new CharRangeStackNode(this, result);
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
+		return new CharRangeStackNode(this, startLocation, result);
 	}
 	
 	public int getLength(){

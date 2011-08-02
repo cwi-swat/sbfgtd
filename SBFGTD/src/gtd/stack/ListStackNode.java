@@ -19,8 +19,8 @@ public final class ListStackNode extends AbstractStackNode implements IExpandabl
 		this.emptyChild = isPlusList ? null : generateEmptyChild();
 	}
 	
-	private ListStackNode(ListStackNode original){
-		super(original);
+	private ListStackNode(ListStackNode original, int startLocation){
+		super(original, startLocation);
 		
 		nodeName = original.nodeName;
 
@@ -29,16 +29,15 @@ public final class ListStackNode extends AbstractStackNode implements IExpandabl
 	}
 	
 	private AbstractStackNode[] generateChildren(AbstractStackNode child){
-		AbstractStackNode listNode = child.getCleanCopy();
+		AbstractStackNode listNode = child.getCleanCopy(DEFAULT_START_LOCATION);
 		listNode.markAsEndNode();
-		listNode.setStartLocation(startLocation);
 		listNode.setProduction(new AbstractStackNode[]{listNode, listNode});
 		
 		return new AbstractStackNode[]{listNode};
 	}
 	
 	private AbstractStackNode generateEmptyChild(){
-		AbstractStackNode empty = EMPTY.getCleanCopy();
+		AbstractStackNode empty = EMPTY.getCleanCopy(DEFAULT_START_LOCATION);
 		empty.setProduction(new AbstractStackNode[]{empty});
 		empty.markAsEndNode();
 		
@@ -65,11 +64,11 @@ public final class ListStackNode extends AbstractStackNode implements IExpandabl
 		throw new UnsupportedOperationException();
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new ListStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new ListStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
 		throw new UnsupportedOperationException();
 	}
 	

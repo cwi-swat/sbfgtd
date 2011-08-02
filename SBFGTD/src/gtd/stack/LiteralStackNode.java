@@ -15,8 +15,8 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		result = new LiteralNode(literal);
 	}
 	
-	private LiteralStackNode(LiteralStackNode original){
-		super(original);
+	private LiteralStackNode(LiteralStackNode original, int startLocation){
+		super(original, startLocation);
 
 		literal = original.literal;
 		
@@ -46,12 +46,12 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		return result;
 	}
 	
-	public AbstractStackNode getCleanCopy(){
-		return new LiteralStackNode(this);
+	public AbstractStackNode getCleanCopy(int startLocation){
+		return new LiteralStackNode(this, startLocation);
 	}
 	
-	public AbstractStackNode getCleanCopyWithResult(AbstractNode result){
-		return new LiteralStackNode(this);
+	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
+		return new LiteralStackNode(this, startLocation);
 	}
 	
 	public int getLength(){
