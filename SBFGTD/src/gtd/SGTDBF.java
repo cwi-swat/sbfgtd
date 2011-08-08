@@ -227,26 +227,27 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(next.hasNext()){
+			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+			
 			// Proceed with the tail of the production.
 			int nextDot = next.getDot() + 1;
 			AbstractStackNode[] prod = node.getProduction();
 			AbstractStackNode nextNext = prod[nextDot];
 			AbstractStackNode nextNextAlternative = sharedNextNodes.get(nextNext.getId());
-			if(nextNextAlternative == null) return;
-	
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-			if(nextNextAlternative.isMatchable()){
-				if(nextNextAlternative.isEmptyLeafNode()){
-					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextAlternative.getResult(), nrOfAddedEdges);
+			if(nextNextAlternative != null){
+				if(nextNextAlternative.isMatchable()){
+					if(nextNextAlternative.isEmptyLeafNode()){
+						propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextAlternative.getResult(), nrOfAddedEdges);
+					}else{
+						nextNextAlternative.updateNode(next, nextResult);
+					}
 				}else{
-					nextNextAlternative.updateNode(next, nextResult);
-				}
-			}else{
-				AbstractContainerNode nextNextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
-				if(nextNextResultStore != null){
-					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextResultStore, nrOfAddedEdges);
-				}else{
-					nextNextAlternative.updateNode(next, nextResult);
+					AbstractContainerNode nextNextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
+					if(nextNextResultStore != null){
+						propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextResultStore, nrOfAddedEdges);
+					}else{
+						nextNextAlternative.updateNode(next, nextResult);
+					}
 				}
 			}
 			
@@ -262,19 +263,20 @@ public class SGTDBF implements IGTD{
 					AbstractStackNode alternativeNext = prod[nextDot];
 					
 					AbstractStackNode nextNextAltAlternative = sharedNextNodes.get(alternativeNext.getId());
-					
-					AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
-					if(nextNextAltAlternative.isMatchable()){
-						if(nextNextAltAlternative.isEmptyLeafNode()){
-							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
+					if(nextNextAltAlternative != null){
+						if(nextNextAltAlternative.isMatchable()){
+							if(nextNextAltAlternative.isEmptyLeafNode()){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextNextAltAlternative.getResult(), nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}else{
-							nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
-						}
-					}else{
-						if(nextAltResultStore != null){
-							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
-						}else{
-							nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
+							if(nextAltResultStore != null){
+								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
+							}else{
+								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+							}
 						}
 					}
 				}
