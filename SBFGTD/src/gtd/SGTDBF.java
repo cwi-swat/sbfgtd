@@ -147,7 +147,7 @@ public class SGTDBF implements IGTD{
 				if(alternative.isMatchable()){
 					if(alternative.isEmptyLeafNode()){
 						// Encountered stack 'overtake'.
-						propagateAlternativeEdgesAndPrefixes(node, result, alternative, alternative.getResult(), edgesMap.size(), edgesMap, prefixesMap);
+						propagateAlternativeEdgesAndPrefixes(node, result, alternative, alternative.getResult(), node.getEdges().size(), edgesMap, prefixesMap);
 						return true;
 					}
 				}else{
@@ -155,7 +155,7 @@ public class SGTDBF implements IGTD{
 					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
 					if(nextResult != null){
 						// Encountered stack 'overtake'.
-						propagateAlternativeEdgesAndPrefixes(node, result, alternative, nextResult, edgesMap.size(), edgesMap, prefixesMap);
+						propagateAlternativeEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size(), edgesMap, prefixesMap);
 						return true;
 					}
 				}
