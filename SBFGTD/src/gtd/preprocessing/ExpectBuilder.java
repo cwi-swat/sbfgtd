@@ -50,17 +50,16 @@ public class ExpectBuilder{
 					int k = 1;
 					CHAIN: for(; k < alternative.length; ++k){
 						AbstractStackNode alternativeItem = alternative[k];
+						AbstractStackNode sharedExpectItem = sharedExpect[k];
 						
-						if(alternativeItem.getId() != sharedExpect[k].getId()){
-							AbstractStackNode[][] otherAlternatives = alternativeItem.getAlternateProductions();
-							if(otherAlternatives != null){
-								for(int l = otherAlternatives.length - 1; l >= 0; --l){
-									AbstractStackNode[] otherAlternative = otherAlternatives[l];
-									AbstractStackNode otherAlternativeItem = otherAlternative[k];
-									if(alternativeItem.getId() == otherAlternativeItem.getId()){
-										otherAlternativeItem.setProduction(alternative);
-										sharedExpect = otherAlternative;
-										
+						if(alternativeItem.getId() != sharedExpectItem.getId()){
+							AbstractStackNode[][] otherSharedExpects = sharedExpectItem.getAlternateProductions();
+							if(otherSharedExpects != null){
+								for(int l = otherSharedExpects.length - 1; l >= 0; --l){
+									AbstractStackNode[] otherSharedExpect = otherSharedExpects[l];
+									AbstractStackNode otherSharedExpectItem = otherSharedExpect[k];
+									if(alternativeItem.getId() == otherSharedExpectItem.getId()){
+										sharedExpect = otherSharedExpect;
 										continue CHAIN;
 									}
 								}
