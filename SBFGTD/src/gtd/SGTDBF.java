@@ -5,8 +5,8 @@ import gtd.result.AbstractNode;
 import gtd.result.ListContainerNode;
 import gtd.result.SortContainerNode;
 import gtd.result.struct.Link;
+import gtd.stack.AbstractExpandableStackNode;
 import gtd.stack.AbstractStackNode;
-import gtd.stack.IExpandableStackNode;
 import gtd.stack.NonTerminalStackNode;
 import gtd.util.ArrayList;
 import gtd.util.DoubleStack;
@@ -447,7 +447,7 @@ public class SGTDBF implements IGTD{
 	
 	private void move(AbstractStackNode node, AbstractNode result){
 		if(node.isEndNode()){
-			if(!result.isEmpty() || node.getId() == IExpandableStackNode.DEFAULT_LIST_EPSILON_ID){
+			if(!result.isEmpty() || node.getId() == AbstractExpandableStackNode.DEFAULT_LIST_EPSILON_ID){
 				updateEdges(node, result);
 			}else{
 				updateNullableEdges(node, result);
