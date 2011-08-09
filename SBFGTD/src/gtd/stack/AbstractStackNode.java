@@ -24,7 +24,7 @@ public abstract class AbstractStackNode{
 	
 	private boolean isSeparator;
 	
-	public AbstractStackNode(int id, int dot){
+	protected AbstractStackNode(int id, int dot){
 		super();
 		
 		this.id = id;
@@ -70,15 +70,15 @@ public abstract class AbstractStackNode{
 	}
 	
 	public final boolean isMatchable(){
-		return (this instanceof IMatchableStackNode);
+		return (this instanceof AbstractMatchableStackNode);
+	}
+	
+	public final boolean isExpandable(){
+		return (this instanceof AbstractExpandableStackNode);
 	}
 	
 	public final boolean isEpsilon(){
 		return (this instanceof EpsilonStackNode);
-	}
-	
-	public final boolean isExpandable(){
-		return (this instanceof IExpandableStackNode);
 	}
 	
 	public abstract boolean isEmptyLeafNode();

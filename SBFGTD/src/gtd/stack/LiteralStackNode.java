@@ -3,7 +3,7 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.LiteralNode;
 
-public final class LiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
+public final class LiteralStackNode extends AbstractMatchableStackNode{
 	private final char[] literal;
 	
 	private final LiteralNode result;
@@ -27,18 +27,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 		return false;
 	}
 	
-	public String getIdentifier(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getName(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public AbstractNode match(char[] input, int location){
 		for(int i = literal.length - 1; i >= 0; --i){
 			if(literal[i] != input[location + i]) return null; // Did not match.
@@ -56,18 +44,6 @@ public final class LiteralStackNode extends AbstractStackNode implements IMatcha
 	
 	public int getLength(){
 		return literal.length;
-	}
-	
-	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean canBeEmpty(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public AbstractStackNode getEmptyChild(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractNode getResult(){

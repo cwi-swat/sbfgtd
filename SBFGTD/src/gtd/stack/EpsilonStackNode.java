@@ -3,7 +3,7 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.EpsilonNode;
 
-public final class EpsilonStackNode extends AbstractStackNode implements IMatchableStackNode{
+public final class EpsilonStackNode extends AbstractMatchableStackNode{
 	private final static EpsilonNode result = new EpsilonNode();
 	
 	public EpsilonStackNode(int id, int dot){
@@ -16,18 +16,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	
 	public boolean isEmptyLeafNode(){
 		return true;
-	}
-	
-	public String getIdentifier(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getName(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractNode match(char[] input, int location){
@@ -44,18 +32,6 @@ public final class EpsilonStackNode extends AbstractStackNode implements IMatcha
 	
 	public int getLength(){
 		return 0;
-	}
-	
-	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean canBeEmpty(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public AbstractStackNode getEmptyChild(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractNode getResult(){

@@ -1,8 +1,7 @@
 package gtd.stack;
 
-import gtd.result.AbstractNode;
 
-public final class OptionalStackNode extends AbstractStackNode implements IExpandableStackNode{
+public final class OptionalStackNode extends AbstractExpandableStackNode{
 	private final static EpsilonStackNode EMPTY = new EpsilonStackNode(DEFAULT_LIST_EPSILON_ID, 0);
 	
 	private final String nodeName;
@@ -44,10 +43,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 		return empty;
 	}
 	
-	public boolean isEmptyLeafNode(){
-		return false;
-	}
-	
 	public String getIdentifier(){
 		return nodeName+id; // Add the id to make it unique.
 	}
@@ -56,24 +51,8 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 		return nodeName;
 	}
 	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public int getLength(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public AbstractNode match(char[] input, int location){
-		throw new UnsupportedOperationException();
-	}
-	
 	public AbstractStackNode getCleanCopy(int startLocation){
 		return new OptionalStackNode(this, startLocation);
-	}
-	
-	public AbstractStackNode getCleanCopyWithResult(int startLocation, AbstractNode result){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractStackNode[] getChildren(){
@@ -86,10 +65,6 @@ public final class OptionalStackNode extends AbstractStackNode implements IExpan
 	
 	public AbstractStackNode getEmptyChild(){
 		return emptyChild;
-	}
-	
-	public AbstractNode getResult(){
-		throw new UnsupportedOperationException();
 	}
 
 	public String toString(){

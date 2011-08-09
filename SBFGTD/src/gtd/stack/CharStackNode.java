@@ -3,7 +3,7 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.CharNode;
 
-public final class CharStackNode extends AbstractStackNode implements IMatchableStackNode{
+public final class CharStackNode extends AbstractMatchableStackNode{
 	private final char character;
 	
 	private final String production;
@@ -30,20 +30,8 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 		result = original.result;
 	}
 	
-	public String getIdentifier(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public boolean isEmptyLeafNode(){
 		return false;
-	}
-	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractNode match(char[] input, int location){
@@ -63,18 +51,6 @@ public final class CharStackNode extends AbstractStackNode implements IMatchable
 	
 	public int getLength(){
 		return 1;
-	}
-	
-	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean canBeEmpty(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public AbstractStackNode getEmptyChild(){
-		throw new UnsupportedOperationException();
 	}
 	
 	public AbstractNode getResult(){

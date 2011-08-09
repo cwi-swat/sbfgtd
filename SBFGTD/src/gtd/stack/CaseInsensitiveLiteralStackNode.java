@@ -3,7 +3,7 @@ package gtd.stack;
 import gtd.result.AbstractNode;
 import gtd.result.LiteralNode;
 
-public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode implements IMatchableStackNode{
+public final class CaseInsensitiveLiteralStackNode extends AbstractMatchableStackNode{
 	private final char[][] ciLiteral;
 	
 	private final AbstractNode result;
@@ -48,18 +48,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 		return false;
 	}
 	
-	public String getIdentifier(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getName(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getMethodName(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public AbstractNode match(char[] input, int location){
 		int literalLength = ciLiteral.length;
 		char[] resultLiteral = new char[literalLength];
@@ -88,18 +76,6 @@ public final class CaseInsensitiveLiteralStackNode extends AbstractStackNode imp
 	
 	public int getLength(){
 		return ciLiteral.length;
-	}
-	
-	public AbstractStackNode[] getChildren(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean canBeEmpty(){
-		throw new UnsupportedOperationException();
-	}
-	
-	public AbstractStackNode getEmptyChild(){
-		throw new UnsupportedOperationException();
 	}
 
 	public AbstractNode getResult(){
