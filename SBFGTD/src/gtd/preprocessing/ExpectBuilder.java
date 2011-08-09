@@ -73,15 +73,15 @@ public class ExpectBuilder{
 					
 					if(k < alternative.length){
 						sharedExpect[k - 1].addProduction(alternative);
+						
+						for(; k < alternative.length; ++k){
+							alternative[k].setProduction(alternative);
+						}
+						
+						alternative[alternative.length - 1].markAsEndNode();
 					}else{
 						sharedExpect[alternative.length - 1].markAsEndNode();
 					}
-					
-					for(; k < alternative.length; ++k){
-						alternative[k].setProduction(alternative);
-					}
-					
-					alternative[alternative.length - 1].markAsEndNode();
 				}
 			}
 		}
