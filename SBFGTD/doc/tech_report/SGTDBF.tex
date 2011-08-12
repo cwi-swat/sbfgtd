@@ -7,6 +7,14 @@
 \usepackage{alltt}
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
+\usepackage{natbib}
+\usepackage{url}
+
+\makeatletter
+\def\url@urlstyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+\urlstyle{url}
 
 %opening
 \title{General Context-free Top Down Parsing in Cubic Time\\-\\Draft}
@@ -35,7 +43,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
  
  \item Worst-case cubic time and space bounds with respect to the length of the input.
  \item Worst-case quadratic performance on unambiguous grammars.
- \item Deterministic on all classes of LL and LR grammars.
+ \item Deterministic on all classes of LL\cite{ll} and LR\cite{lr} grammars.
  \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
  \item Generating or hand crafting the parse table / code from a grammar is trivial.
@@ -54,7 +62,7 @@ Different variations of the algorithm are possible and while the recursive decen
 
 \subsection{Graph}
 
-To represent the parallel stacks we use a directed cyclic graph; inspired by GLR's Graph Structured Stack. While it serves a similar purpose, the way it is used is completely different. Simply put, while GLR parsers store their `history' in the GSS, we use it to model possible `futures'.
+To represent the parallel stacks we use a directed cyclic graph; inspired by GLR's Graph Structured Stack. While it serves a similar purpose, the way it is used is completely different. Simply put, while GLR parsers store their `history' in the GSS\cite{tomita1985efficient}, we use it to model possible `futures'.
 
 Each graph node consists of an item, edges back to their `parents' in the graph, information about its `right neighbour' in the production, the location in the input string it is associated with and a unique identifier. Each stack node is unique for each identifier, location combination. The identifiers for the graph nodes are assigned in the following way. If we take the grammar: $S\,::=\,AB\,|\,BA,\,A\,::=\,a,\,B\,::=\,b$, this is how these identifiers could be distributed: $.S$(-1), $.AB$(0), $A.B$(1), $.BA$(2), $B.A$(3), $.a$(4) and $.b$(5). The reason these identifiers are needed is because we require them to handle the sharing of graph nodes correctly; so regardless whether or not comparable items exist, they should not be assigned the same identifier.
 
@@ -826,7 +834,7 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $200000$ character intervals.
 
-We compared our performance with JavaCup (which was used in combination with JFlex), SGLR, JSGLR and Bison (in combination with Flex). We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java. Finally, Bison was selected to complete the picture.
+We compared our performance with JavaCup\cite{javacup} (which was used in combination with JFlex\cite{jflex}), SGLR\cite{sglr}, JSGLR\cite{jsglr} and Bison\cite{bison} (in combination with Flex\cite{flex}). We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR\cite{lalr} parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java. Finally, Bison was selected to complete the picture.
 
 To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. Both SGLR and Bison were compiled using GCC 4.2.2 with `-O2'. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
 
@@ -852,7 +860,7 @@ The development of this algorithm was approached in a rather unorthodox way. Rat
 
 The main purpose of this project has always been to create a working, usable general context-free parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
-Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
+Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal\cite{klint2011easy} meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
 \pagebreak
 \section{Future work}
@@ -879,18 +887,8 @@ In this article we described our parsing algorithm, discussed optimizations that
 
 \section{References}
 
-TODO:\\
--GSS\\
--LL\\
--LR\\
--SPPF (and binarization)\\
--GLR\\
--SGLR\\
--JSGLR\\
--JFlex\\
--JavaCup\\
--Rascal\\
--Bison\\
--Flex
+\pagebreak
+\bibliographystyle{plain}
+\bibliography{bibs.bib}
 
 \end{document}
