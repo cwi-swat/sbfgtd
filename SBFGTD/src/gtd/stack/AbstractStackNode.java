@@ -141,10 +141,6 @@ public abstract class AbstractStackNode{
 		edgesMap = new IntegerObjectList<ArrayList<AbstractStackNode>>();
 	}
 	
-	public boolean isInitialized(){
-		return (edgesMap != null);
-	}
-	
 	public ArrayList<AbstractStackNode> addEdge(AbstractStackNode edge){
 		int startLocation = edge.getStartLocation();
 		
