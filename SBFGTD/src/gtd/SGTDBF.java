@@ -228,6 +228,9 @@ public class SGTDBF implements IGTD{
 		
 		if(next.hasNext()){
 			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
+
+			IntegerObjectList<ArrayList<AbstractStackNode>> nextNextEdgesMap = null;
+			ArrayList<Link>[] nextNextPrefixesMap = null;
 			
 			// Proceed with the tail of the production.
 			int nextDot = next.getDot() + 1;
@@ -249,14 +252,14 @@ public class SGTDBF implements IGTD{
 						nextNextAlternative.updateNode(next, nextResult);
 					}
 				}
+				
+				nextNextEdgesMap = nextNextAlternative.getEdges();
+				nextNextPrefixesMap = nextNextAlternative.getPrefixesMap();
 			}
 			
 			// Handle alternative nexts (and prefix sharing).
 			AbstractStackNode[][] alternateProds = node.getAlternateProductions();
 			if(alternateProds != null){
-				IntegerObjectList<ArrayList<AbstractStackNode>> nextEdgesMap = next.getEdges();
-				ArrayList<Link>[] nextPrefixesMap = next.getPrefixesMap();
-				
 				for(int i = alternateProds.length - 1; i >= 0; --i){
 					prod = alternateProds[i];
 					if(nextDot == prod.length) continue;
@@ -266,16 +269,39 @@ public class SGTDBF implements IGTD{
 					if(nextNextAltAlternative != null){
 						if(nextNextAltAlternative.isMatchable()){
 							if(nextNextAltAlternative.isEmptyLeafNode()){
-								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextNextAltAlternative.getResult(), nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
+								if(nextNextEdgesMap != null){
+									AbstractNode nextNextAltAlternativeResult = nextNextAltAlternative.getResult();
+									if(nextNextAltAlternativeResult != null){
+										propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextNextAltAlternativeResult, nrOfAddedEdges, nextNextEdgesMap, nextNextPrefixesMap);
+									}
+								}else{
+									propagateEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextNextAltAlternative.getResult(), nrOfAddedEdges);
+								}
 							}else{
-								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+								if(nextNextEdgesMap != null){
+									nextNextAltAlternative.updatePrefixSharedNode(nextNextEdgesMap, nextNextPrefixesMap);
+								}else{
+									nextNextAltAlternative.updateNode(next, nextResult);
+									nextNextEdgesMap = nextNextAltAlternative.getEdges();
+									nextNextPrefixesMap = nextNextAltAlternative.getPrefixesMap();
+								}
 							}
 						}else{
 							AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
 							if(nextAltResultStore != null){
-								propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextEdgesMap, nextPrefixesMap);
+								if(nextNextEdgesMap != null){
+									propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextNextEdgesMap, nextNextPrefixesMap);
+								}else{
+									propagateEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges);
+								}
 							}else{
-								nextNextAltAlternative.updatePrefixSharedNode(nextEdgesMap, nextPrefixesMap);
+								if(nextNextEdgesMap != null){
+									nextNextAltAlternative.updatePrefixSharedNode(nextNextEdgesMap, nextNextPrefixesMap);
+								}else{
+									nextNextAltAlternative.updateNode(next, nextResult);
+									nextNextEdgesMap = nextNextAltAlternative.getEdges();
+									nextNextPrefixesMap = nextNextAltAlternative.getPrefixesMap();
+								}
 							}
 						}
 					}
