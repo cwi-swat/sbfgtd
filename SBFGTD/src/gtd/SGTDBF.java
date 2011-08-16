@@ -212,12 +212,12 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void propagatePrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int nrOfAddedEdges){
+	private void propagatePrefixes(AbstractStackNode next, AbstractNode nextResult, int nrOfAddedEdges){
 		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
 
 		// Proceed with the tail of the production.
 		int nextDot = next.getDot() + 1;
-		AbstractStackNode[] prod = node.getProduction();
+		AbstractStackNode[] prod = next.getProduction();
 		AbstractStackNode nextNext = prod[nextDot];
 		AbstractStackNode nextNextAlternative = sharedNextNodes.get(nextNext.getId());
 		if(nextNextAlternative != null){
@@ -238,7 +238,7 @@ public class SGTDBF implements IGTD{
 		}
 		
 		// Handle alternative nexts (and prefix sharing).
-		AbstractStackNode[][] alternateProds = node.getAlternateProductions();
+		AbstractStackNode[][] alternateProds = next.getAlternateProductions();
 		if(alternateProds != null){
 			if(nextNextAlternative == null){ // If the first continuation has not been initialized yet (it may be a matchable that didn't match), create a dummy version to construct the necessary edges and prefixes.
 				if(!nextNext.isMatchable()) return; // Matchable, abort.
@@ -290,7 +290,7 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(next.hasNext()){
-			propagatePrefixes(node, nodeResult, next, nextResult, nrOfAddedEdges);
+			propagatePrefixes(next, nextResult, nrOfAddedEdges);
 		}
 	}
 	
@@ -304,7 +304,7 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(next.hasNext()){
-			propagatePrefixes(node, nodeResult, next, nextResult, potentialNewEdges);
+			propagatePrefixes(next, nextResult, potentialNewEdges);
 		}
 	}
 	
