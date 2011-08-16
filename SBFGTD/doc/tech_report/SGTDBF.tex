@@ -592,13 +592,13 @@ For example, it is relatively simple to add the option to construct a partial pa
 
 To improve the usefulness of the parser on real grammars a few additional features were developed. Namely integrated support for lists and `optional' related features was added, along with a few other things. In this chapter we will discuss how these fit into our algorithm and implementation.
 
-\subsection{Lists}
+\subsection{Expandables}
 
-List, separated lists and optionals are handled in a similar way, because in essence they are the same. However their semantics are slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists that are restricted to one element at most; from here on out we will refer to all of these simply as `lists'.
+List, separated lists and optionals are handled in a similar way, because in essence they are the same; they are symbols that can be expanded in a particular way. Their semantics are only slightly different; separated lists are lists with extra symbols between their elements and optionals are, in essence, star-lists that are restricted to one element at most; from here on out we will refer to all of these simply as `expandables'.
 
-Often lists are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
+Often expandables are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
 
-Our approach involves special casing the handling of lists, by introducing additional types of graph nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal graph node; this $A$ graph node both has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a graph node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
+Our approach involves special casing the handling of expandables, by introducing additional types of graph nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal graph node; this $A$ graph node both has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a graph node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
 \begin{figure}[H]
 \centering
@@ -606,9 +606,9 @@ Our approach involves special casing the handling of lists, by introducing addit
 \caption{A graph representation of an expanded star-list; the solid arrows represent edges and the dotted arrows `next pointers' in a production.}
 \end{figure}
 
-These list children can be shared just like any other graph node. Nothing special needs to be done for this. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
+Children of expandable nodes can be shared just like any other graph node. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
 
-Exactly the same principle is used for separated lists and optionals. We will not go into detail on those, since one can easily imagine how these work.
+Exactly the same principle is used for all expandables. We will not go into detail on any others, since one can easily imagine how this works.
 
 \section{Optimizations}
 \label{chap:optimizations}
@@ -625,7 +625,7 @@ In essence, this optimization is fairly similar to having a built-in parallel sc
 \subsubsection{Eager matching}
 As one may have noticed, in our algorithm, we do not distinguish between the handling of leaf nodes in the graph (literals, characters, epsilons, etc.) and non-leaf nodes (non-terminals, lists, optionals, etc.). Making this distinction will however open up more possibilities for optimization, as certain assumptions related to specific graph nodes can be used to handle them more efficiently.
 
-One of these optimization we would like to call eager matching. What it boils down to is that we can prevent unnecessary work by checking whether or not a leaf node in the graph will match the input before actually constructing this node. This is an optimization that is trivial to implement, but can have a fairly big impact, as the amount of work it prevents can be significant. This optimization can be applied to both the expansion code and the code which handles the movement to the `next' items in productions.
+One of these optimization we would like to call eager matching. What it boils down to is that we can prevent unnecessary work by checking whether or not a leaf node in the graph will match the input before actually constructing this node. This is an optimization that is trivial to implement, but can have a fairly big impact, as the amount of unnecessary work it prevents can be significant. This optimization can be applied to both the expansion code and the code which handles the movement to the `next' items in productions.
 
 \subsubsection{Look-ahead}
 A more obvious optimization is adding support for look-ahead restrictions. By adding simple checks to the (generated) parser code, we can prevent unnecessary work; if we can determine up front that a certain alternative will never match, we do not need to expect it. This both improves performance and will make recognizing / parsing deterministic for all classes of LL grammars. When the prefix-sharing optimization (see section \ref{sec:prefixSharing}) is enabled, this will also be the case for all grammars that fall within any LR class.
