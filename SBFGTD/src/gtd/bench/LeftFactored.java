@@ -10,7 +10,6 @@ import gtd.stack.NonTerminalStackNode;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
-// NOTE: This version describes a slightly smaller language then intended, as it can't parse '1+1' for example, but this should have an impact on the test.
 public class LeftFactored extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_E1 = new NonTerminalStackNode(1, 1, "E");
 	private final static AbstractStackNode NONTERMINAL_E3 = new NonTerminalStackNode(3, 1, "E");
