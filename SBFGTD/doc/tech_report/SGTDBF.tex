@@ -722,11 +722,13 @@ Another disambiguation feature we supply comes in the form of nesting restrictio
 
 If one would like to implement priority and associativity rule handling, this would go as follows. If we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, where the $>$ sign indicates that $E\,*\,E$ has a higher priority then $E\,+\,E$, this would mean that $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative, since $E\,*\,E$ binds stronger. Associativity rule handling works in a similar way. If the rule $E\,::=\,E\,+\,E$ would be declared as being left associative, this means that it is not allowed for $E\,+\,E$ to be a child of itself at the rightmost $E$ of this alternative. Right or non-associativity can be achieved in a similarly. This restriction scheme allows priorities and associativity to both be mixed and nested arbitrarily.
 
-Our current implementation handles nesting restriction filtering completely at parse time. While reducing it checks whether or not each of the reductions are allowed; in case it is (and we are parsing), the result is stored in a result node that is identified by the sort name of the non-terminal which the edge we are currently following points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all the items associated with the same non-terminal sort and set of nesting restrictions. The reason for this is twofold. First of all it is required to enable the parser to handle cycles involving rules containing nesting restrictions correctly (in case they occur). And secondly, for the sake of efficiency.
+Our current implementation handles nesting restriction filtering completely at parse time. While reducing it checks whether or not each of the reductions are allowed; in case it is (and we are parsing), the result is stored in a result node that is identified by the sort name of the non-terminal which the edge we are currently following points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all the items associated with the same non-terminal sort and set of nesting restrictions. The reason for this sharing is twofold. First of all it is required to enable the parser to handle cycles involving rules containing nesting restrictions correctly (in case they occur). And secondly, for the sake of efficiency.
 
 The main advantage of handling nesting restrictions at parse time, opposed to implementing it as post-parse filter, is that it is more efficient. We prevent the construction of results that will be discarded later on, saving memory. Additionally it will prevent unnecessarily exploring certain parses, because we can determine they will be filtered earlier on, decreasing the total amount of work that needs to be done. For certain grammars the benefits of this approach can be very significant. Furthermore, it also enables the possibility of constructing a recognizer for languages that require nesting restrictions for disambiguation. This is because the way the filtering is implemented does not require any results to be constructed, rather it just prevents certain stacks from progressing.
 
-There is however one additional thing that needs to be noted. Handling nesting restriction filtering at parse time disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of a node at every reduction to check whether or not the nesting is allowed. Fortunately, it is reasonably simple to detect whether or not any nesting restrictions need to be applied for each batch of reductions. So it is possible to dynamically determine the appropriate reduction code path, depending on the type of node that needs to be handled. This means any possible performance impact will remain limited to the handling of rules on which nesting restrictions apply; making this solution, most likely, more efficient than any alternative implementation.
+There is however one additional thing that needs to be noted. Handling nesting restriction filtering at parse time, in the way described, disables the edge visit reduction optimization discussed in section \ref{subsec:edgeVisitOptimization}, since we now always need to visit each of the outgoing edges of a node at every reduction to check whether or not the nesting is allowed. Fortunately, this only potentially impacts performance in case the production we are handling is ambiguous. Additionally, it is reasonably simple to detect whether or not any nesting restrictions need to be applied for each batch of reductions. So it is possible to dynamically determine the appropriate reduction code path, depending on the type of node that needs to be handled. This means any possible performance impact will remain limited to the handling of rules on which nesting restrictions apply; making this solution, most likely, more efficient than alternative implementations.
+
+One last thing that needs mentioning is that the handling of nesting restriction can be implemented in a even more efficient way, as we currently determine whether or not a nesting is allowed after we have constructed the alternative. It is possible to prevent any unnecessary work from being done by executing the filtering at an earlier stage in the parse process. This would involve pre-computing allowed nestings and clustering alternatives or continuations of alternatives with similar nesting restrictions. Each of these clusters could then either be expanded or not for a certain item. This would allow the parser to become more deterministic on grammars containing nesting restrictions, improving scalability and performance at the potential cost of an increased amount of items, as the clustering could possibly prevent certain prefixes of alternatives, either partially or wholly, from being shared. The impact of this optimization can be very significant in some cases; on the other hand it can be reasonably complex to implement.
 
 \subsection{Semantic actions}
 
@@ -765,6 +767,7 @@ Benchmarks were executed on a machine with the following specifications:
 
 Measurements are listed in terms of CPU-time (system + user time) and are gathered using Java's build in management tool. Before performing the benchmarks, the recognizer / parser code was executed a number of times so Java's JIT compiler has the opportunity to optimize.
 
+\pagebreak
 \subsection{Worst case}
 \label{sec:worstcaseBench}
 
@@ -817,7 +820,6 @@ Surprising though is that, while this benchmark is one of the cases that is most
 
 One other thing to mention is that the left-factoring of the grammar also removes all ambiguities from it. Contrary to what one might expect, this does not have an impact on performance in this specific case, since in both the prefix-shared as the left-factored case there will never have more then one live stack.
 
-\pagebreak
 \subsection{Versus non-general}
 
 We also liked to know how we compare when pinned against non-general parsers, since general parsers have the image of being inferior in terms of performance, compared to `normal' LL or (LA)LR parsers.
@@ -856,7 +858,6 @@ The main purpose of this project has always been to create a working, usable gen
 
 Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal\cite{klint2011easy} meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
-\pagebreak
 \section{Future work}
 
 Numerous things can still be improved or changed. Mostly these involve optimizations or implementation improvements. We will not go into detail, but just list a number of ideas instead.
@@ -868,7 +869,7 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  
  \item We can pre-construct a data structure which contains mappings from non-terminal sorts to alternatives; optionally in combination with their associated look-ahead information. This can aid in increasing the performance of the expansion phase.
  \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (i.e. contain only non-terminals that are in LR(k) for example), to improve performance on non-ambiguous grammars even further.
- \item Pre-computed information about priority / associativity restrictions can be used to handle filtering more efficiently.
+ \item Pre-computed information about nesting restrictions can be used to improve the scalability and performance of the parser.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
  \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance.
 \end{itemize}
@@ -879,9 +880,6 @@ Finally, it would be interesting to create a C implementation of our parsing alg
 
 In this article we described our parsing algorithm, discussed optimizations that can be applied to it and gave an impression of its capabilities. To summarize, we developed a general parsing algorithm that is both easy to comprehend and scales and performs well, regardless of the input or grammar used. The best of both worlds, combined into one beautiful, elegant solution. Making compromises between performance and ease of use are now a thing of the past.
 
-\section{References}
-
-\pagebreak
 \bibliographystyle{plain}
 \bibliography{bibs.bib}
 
