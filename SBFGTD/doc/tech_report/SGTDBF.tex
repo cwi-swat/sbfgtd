@@ -799,7 +799,7 @@ What may appear surprising to some is the limited performance difference between
 \subsection{Grammar factoring}
 \label{sec:factoringBenchmark}
 
-Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case grammars, without ambiguous input. Here we will compare the performance of our parser between different versions of an expression grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
+Apart from worst-case behaviour in terms of the number of ambiguous parse results, it is also interesting to look at how well we perform on a different kind of worst-case scenario, without ambiguous input. Here we will compare the performance of our parser between different versions of an expression grammar; a non-prefix-shared version, a prefix-shared version and an equivalent left-factored version. The original grammar is the following:\\
 $S\,::=\,E+$\\
 $E\,::=\,a\,|\,E\,+\,E\,|\,E\,-\,E\,|\,E\,*\,E\,|\,E\,/\,E\,|\,E\,>\,E\,|\,...$ 25 more like it ...\\
 Input = $a\,*\,50000$, $a\,*\,100000$, $a\,*\,150000$ and $a\,*\,200000$
@@ -814,7 +814,7 @@ This grammar contains a lot of recursion and is highly ambiguous; the input, on 
 
 Our parser is more then four times as fast on the non-factored version of the grammar when prefix sharing is enabled. This is because both the number of graph nodes as the number of edge visits is significantly higher in case it is disabled. However, parsing performance still scales linear with respect to the length of the input regardless of this, due to the expansion optimization discussed in section \ref{subsec:nodeExpansionOptimization}.
 
-As can be seem, the non-factored prefix-shared and the left-factored versions of the grammar are fairly close together in terms of performance. The reason why our parser performs slightly better on the prefix-shared version of the grammar in comparison to the left-factored version, is purely a result of the transformation that was required to achieve the left-factoring.
+As can be seen, the non-factored prefix-shared and the left-factored versions of the grammar are fairly close together in terms of performance. The reason why our parser performs slightly better on the prefix-shared version of the grammar in comparison to the left-factored version, is purely a result of the transformation that was required to achieve the left-factoring.
 
 Surprising though is that, while this benchmark is one of the cases that is most heavily biased in favor of look-ahead filtering, the impact it has is hardly noticeable. Look-ahead filtering should have a positive influence on performance while parsing an input string for the left-factored version of the grammar, surprisingly the impact it has is so minor that it is hardly measurable. The main reason for this is the eager matching optimization, achieves almost the same goal as look-ahead filtering would have in this particular case. However, there are other situations in which look-ahead filtering can still be a potentially useful performance enhancing tool.
 
