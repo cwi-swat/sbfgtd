@@ -37,7 +37,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
  
  \item Worst-case cubic time and space bounds with respect to the length of the input.
  \item Worst-case quadratic performance on unambiguous grammars.
- \item Deterministic on all classes of LL\cite{ll} and LR\cite{lr} grammars.
+ \item Deterministic on all classes of LL and LR grammars.
  \item No penalty for handling nullables, hidden recursive or otherwise.
  \item No penalty for being scannerless.
  \item Generating or hand crafting the parse table / code from a grammar is trivial.
@@ -830,7 +830,7 @@ $E ::= E + F\,|\,F$\\
 $F ::= a\,|\,(\,E\,)$\\
 Input = `$A\,::=\,a\,|\,a+(A)$' from length $100003$, to length $1000003$ at $200000$ character intervals.
 
-We compared our performance with JavaCup\cite{javacup} (which was used in combination with JFlex\cite{jflex}), SGLR\cite{sglr}, JSGLR\cite{jsglr} and Bison\cite{bison} (in combination with Flex\cite{flex}). We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR\cite{lalr} parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java. Finally, Bison was selected to complete the picture.
+We compared our performance with JavaCup\cite{javacup} (which was used in combination with JFlex\cite{jflex}), SGLR\cite{sglr}, JSGLR\cite{jsglr} and Bison\cite{bison} (in combination with Flex\cite{flex}). We selected JavaCup, since it is one of the more widely known and used parser generators that produces LALR parsers in Java. SGLR, on the other hand, is a general parser (written in C) which we extensively used in the past. The reason we included JSGLR is to enable a better comparison against our own, since it is similar to SGLR but also written in Java. Finally, Bison was selected to complete the picture.
 
 To make the comparison as fair as possible, all parsers were purely executed as recognizers, so no trees were build and no filtering was applied. Both SGLR and Bison were compiled using GCC 4.2.2 with `-O2'. Additionally, we disabled the GSS garbage collector for the C implementation of SGLR, since it was triggering quardatic behaviour.
 
