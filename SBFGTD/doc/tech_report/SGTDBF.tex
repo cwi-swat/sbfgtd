@@ -870,7 +870,7 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  \item We can pre-construct a data structure which contains mappings from non-terminal sorts to alternatives; optionally in combination with their associated look-ahead information. This can aid in increasing the performance of the expansion phase.
  \item Pre-computed information about nesting restrictions can be used to improve the scalability and performance of the parser.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
- \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance.
+ \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance and open up new opportunities for optimization.
  \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (i.e. contain only non-terminals that are in LR(k) for example), to improve performance on non-ambiguous grammars even further.
 \end{itemize}
 
