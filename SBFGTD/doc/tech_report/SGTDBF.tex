@@ -10,6 +10,8 @@
 \usepackage{natbib}
 \usepackage{url}
 
+\bibpunct{[}{]}{;}{a}{}{,}
+
 %opening
 \title{General Context-free Top Down Parsing in Cubic Time}
 \author{Arnold Lankamp}
@@ -681,11 +683,11 @@ Also note that this optimization is not only useful in case we have numerous non
 In section \ref{sec:factoringBenchmark} we look at some experimental results related to this optimization.
 
 \subsubsection{Sharing}
-Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansionOptimization}, are uniquely associated with a level and a certain non-terminal sort, we can reuse these sets of edges for each item in the production. When moving to the next node in a production we transfer each of the sets of edges to this next node, depending whether or not it is present yet; if a set of edges is present for a certain level in this next node, it is guaranteed to be the exact same set of edges as we are trying to add. Because of this guarantee, it will never be necessary to duplicate these sets or any of its content. So in any scenario the worst-case number of edges that will be constructed during a parse will never exceed $N\,*\,\mathit{numberOfSorts}$, or $O(N)$, in total. This is quite an improvement over the original ${N}^2\,*\,\mathit{numberOfProductions}^2$ we would have had without either of the mentioned edge sharing optimizations.
+Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansionOptimization}, are uniquely associated with a level and a certain non-terminal sort, we can reuse these sets of edges for each item in the production. When moving to the next node in a production we transfer each of the sets of edges to this next node, depending whether or not it is present yet; if a set of edges is present for a certain level in this next node, it is guaranteed to be the exact same set of edges as we are trying to add. Because of this guarantee, it will never be necessary to duplicate these sets or any of its content. So in any scenario, the worst-case number of edges that will be constructed will never exceed $N\,*\,\mathit{numberOfSorts}$, or $O(N)$, in total. This is quite an improvement over the original ${N}^2\,*\,\mathit{numberOfProductions}^2$ we would have had without either of the mentioned edge sharing optimizations.
 
 \subsubsection{Visiting}
 \label{subsec:edgeVisitOptimization}
-As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to has already been reduced, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced, without having to execute any additional checks.
+As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edges set associated with that level. In case the node this edge points to already has registered derivations, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced, without having to execute any additional checks.
 
 \subsubsection{Conditional edge sharing}
 As mentioned earlier, distinguishing between different type of graph nodes can open up interesting opportunities for optimization.
@@ -720,7 +722,7 @@ When adding this feature to the implementation of the recognizer / parser one ca
 
 Another disambiguation feature we supply comes in the form of nesting restrictions. These restrictions can be used to indicate that certain reduction paths are invalid. This enables us to, for example, support things such as priority and associativity rules in grammars.
 
-If one would like to implement priority and associativity rule handling, this would go as follows. If we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, where the $>$ sign indicates that $E\,*\,E$ has a higher priority then $E\,+\,E$, this would mean that $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative, since $E\,*\,E$ binds stronger. Associativity rule handling works in a similar way. If the rule $E\,::=\,E\,+\,E$ would be declared as being left associative, this means that it is not allowed for $E\,+\,E$ to be a child of itself at the rightmost $E$ of this alternative. Right or non-associativity can be achieved in a similarly. This restriction scheme allows priorities and associativity to both be mixed and nested arbitrarily.
+If one would like to implement priority and associativity rule handling, this would go as follows. If we take the grammar rule $E\,::=\,E\,*\,E\,>\,E\,+\,E$, where the $>$ sign indicates that $E\,*\,E$ has a higher priority then $E\,+\,E$, this would mean that $E\,+\,E$ cannot be nested on either side of the $E\,*\,E$ alternative, since $E\,*\,E$ binds stronger. Associativity rule handling works in a similar way. If the rule $E\,::=\,E\,+\,E$ would be declared as being left associative, this means that it is not allowed for $E\,+\,E$ to be a child of itself at the rightmost $E$ of this alternative. Right or non-associativity can be achieved similarly. This restriction scheme allows priorities and associativity to both be mixed and nested arbitrarily.
 
 Our current implementation handles nesting restriction filtering completely at parse time. While reducing it checks whether or not each of the reductions are allowed; in case it is (and we are parsing), the result is stored in a result node that is identified by the sort name of the non-terminal which the edge we are currently following points to and the set of nesting restrictions associated with this node. This is because the result needs to be shared between all the items associated with the same non-terminal sort and set of nesting restrictions. The reason for this sharing is twofold. First of all it is required to enable the parser to handle cycles involving rules containing nesting restrictions correctly (in case they occur). And secondly, for the sake of efficiency.
 
@@ -734,7 +736,7 @@ One last thing that needs mentioning is that the handling of nesting restriction
 
 Support for semantic actions is also present. Each grammar rule can have a number of semantic actions associated with it. These semantic actions can be used to filter ambiguities that cannot be disambiguated using other filters, including non-context-free ambiguities (like C typedefs). It even opens up the opportunity to influence the behaviour of the parser while it is running.
 
-One has the choice to, either partially or wholly, integrate the execution of semantic actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that the implementation of semantic action support is not trivial, both because of their interaction with ambiguities and the parse forest and the possible side-effects they can have. Depending on what types of actions one wants to support, integrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parsing and flattening process, when we are in possession of a complete parse forest, is by far the easiest alternative.
+One has the choice to, either partially or wholly, integrate the execution of semantic actions into the core of the parser itself or to apply them as a post-parse filter during, or after, flattening; depending on the requirements or preference of the user. Keep in mind that the implementation of semantic action support is not trivial, both because of their interaction with ambiguities and the parse forest and the possible side-effects they can have. Depending on what types of actions one wants to support, integrating them into the parse process itself can be especially challenging. Postponing the execution of actions until after the parsing and flattening process, when we are in possession of a complete parse forest, is by far the easiest alternative, but also the least optimial.
 
 We will not go into detail about the implementation of actions, since that is outside the scope of this article. However, we will outline a proposal about how one could accommodate the integration of actions, to give an impression of what is involved and what issues may arise when implementing an alternative solution.
 
@@ -844,7 +846,7 @@ As expected JavaCup performs best in the Java category. For this specific gramma
 
 In the C category Bison dominates. SGLR is over fifteen times slower then Bison on this grammar. As can be seen, our parser also outperforms SGLR by quite a significant amount.
 
-Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between the different parsers does not change for different input lengths.
+Apart from this, our parser scales perfectly linear for this grammar, like the others. The data in the graph supports this, as the relative performance difference between the parsers does not change for increasing input lengths.
 
 It is worth mentioning that it is still possible to further optimize the performance of our parser on LL and (LA)LR grammars. One could imagine implementing a faster path for productions in slices of the grammar that conform to certain restrictions (i.e. they only contain non-terminals that are in LR(k) for example). By doing this we would be able to match the speed of any competing parser.
 
@@ -868,10 +870,10 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  \setlength{\parsep}{0pt}
  
  \item We can pre-construct a data structure which contains mappings from non-terminal sorts to alternatives; optionally in combination with their associated look-ahead information. This can aid in increasing the performance of the expansion phase.
- \item Pre-computed information about nesting restrictions can be used to improve the scalability and performance of the parser.
+ \item Pre-computed information about nesting restrictions can be used to improve scalability and performance.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
  \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance and open up new opportunities for optimization.
- \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (i.e. contain only non-terminals that are in LR(k) for example), to improve performance on non-ambiguous grammars even further.
+ \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (e.g. contain only non-terminals that are in LR(k)), to improve performance on non-ambiguous grammars even further.
 \end{itemize}
 
 Finally, it would be interesting to create a C implementation of our parsing algorithm, both to see how far we can push the throughput of the parser and to be able to make a broader and more accurate performance comparison with implementations of other (general) parsing algorithms. We expect to do fairly well in such a showdown.
