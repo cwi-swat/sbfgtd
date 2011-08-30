@@ -534,7 +534,7 @@ We looked at the worst-case behaviour of the recognizer in section \ref{subsec:r
 
 Every node in the tree is identified by the substring its contained result represents and its prefixes. There can be only one result per unique substring, this means there are at most $O(N^2)$ results. The prefix sets are identified by the start and end position of the substring they represent, so there are at most $O(N^2)$ of them. Each prefix set can contain up to $N$ different prefixes, which all denote the same substring; one per location (before the current location) in the input string at most. So there are at most $O(N^3)$ prefixes. The number of unique nodes is determined by multiplying the number of results by the number of prefix sets. However, since a prefix set can only be matched in a node, together with a result that starts at the same position as the prefix ends each prefix set can be associated with $O(N)$ different results at most. Hence the number of unique nodes is limited to $O(N^3)$, making the parse forest $O(N^3)$ worst-case.
 
-\subsection{Worst-case complexity for unambiguous cases}
+\subsubsection{Worst-case complexity for unambiguous cases}
 
 The scalability guarantees made for the recognizer do not change when it is extended to a parser. The reason for this is that each additional operation the parser requires over the recognizer, can be implemented in a way that only imposes a constant amount of extra work.
 
@@ -571,7 +571,7 @@ Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \caption{Worst-case parser statistics (for the fully optimized version).}
 \end{table}
 
-In the table above we can see how the different components in the parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably all edge sharing related optimizations (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
+In the table above we can see how the different components in the recognizer and parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably all edge sharing related optimizations (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
 
 The number of graph nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of forest nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to conceive.
 
@@ -598,7 +598,7 @@ To improve the usefulness of the parser on real grammars a few additional featur
 
 All these grammar extension are all handled in a similar way. For example lists, separated lists and optionals are in essence the same. Their semantics are only slightly different; separated lists are lists with extra symbols between their elements and optionals are, basically, star-lists that are restricted to one element at most. From here on out we will refer to these constructs as 'expandables'.
 
-Often expandables are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the list.
+Often expandables are implemented by adding extra `virtual' rules to the grammar. For example $S\,::=\,A+,\,A\,::=\,a$ can be parsed like a `normal' grammar, if we add the rule $A+\,::=\,AA+\,|\,A$. The advantage of this approach is that the parser does not need to be modified. On the other hand, we always get a binarized version of the list as a result, that uses these imaginary productions, which may not be what we wanted. Additionally, because an extra rule is inserted into the grammar we need more graph nodes to be able to parse the input for the list.
 
 Our approach involves special casing the handling of expandables, by introducing additional types of graph nodes that contain knowledge about how they need to be expanded. For example to expand the star-list $A*$, it would queue an $\epsilon$ and a $A$ non-terminal graph node; this $A$ graph node both has a `next' pointer to itself and is marked as last node in the `production' (see figure below). One could view this construction as a graph node with a kind of dynamically growing production as its child. Each time an $A$ is recognized the list is reduced and the next $A$ is pushed on the stack to be recognized; causing the next element to be appended to the list.
 
