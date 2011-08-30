@@ -676,7 +676,7 @@ This example clearly demonstrates quadratic behaviour. If we would cache the edg
  \item $.E+E$ $\Rightarrow$ $E$ edges += $.E+E$
  \item $.E-E$ $\Rightarrow$ $E$ edges += $.E-E$
 \end{enumerate}
-Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N\,*\,\mathit{numberOfSorts}$. Originally, without this kind of sharing, this would have been $N\,*\,\mathit{numberOfProductions}^2$, so this optimization results in an improvement of both a factor as an order of magnitude. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
+Now expansion completes in linear time. An additional benefit is that all the edge sets are shared between the children of the different $E$'s, saving memory. It will reduce the worst-case number of edges to $N^2\,*\,\mathit{numberOfSorts}$. Originally, without this kind of sharing, this would have been $N^2\,*\,\mathit{numberOfProductions}^2$, so this optimization results in an improvement of both a factor as an order of magnitude. One other benefit of this optimization is that it lessens the need for the left-factoring of grammars. In absence of look-ahead filtering expansion performance should be on par with the non-factored equivalent of the grammar; in cases where look-ahead information is used, it may be close enough to remove its necessity.
 
 Also note that this optimization is not only useful in case we have numerous non-factored productions. It also causes the set of edges to be shared between different alternatives associated with the same left-hand-side. So even if we would share the prefixes of all the alternatives (see \ref{sec:prefixSharing}), we would still gain something.
 
@@ -687,7 +687,7 @@ Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansio
 
 \subsubsection{Visiting}
 \label{subsec:edgeVisitOptimization}
-As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edges set associated with that level. In case the node this edge points to already has registered derivations, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced, without having to execute any additional checks.
+As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edges set associated with that level. In case the node this edge points to already has registered derivations, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly, in some cases. Additionally, it enables us to quickly determine whether or not the parents of a node still need to be reduced, without having to execute any additional checks.
 
 \subsubsection{Conditional edge sharing}
 As mentioned earlier, distinguishing between different type of graph nodes can open up interesting opportunities for optimization.
@@ -704,7 +704,7 @@ It is trivial to modify our algorithm to support this. Simply by allowing every 
 
 This optimization ensures that, in combination with look-ahead filtering, we can recognize and parse all classes of LR grammars deterministically, since there will only be one active stack at most.
 
-One may wonder why merging anything other then the prefixes of productions is not supported. While, in theory, sharing the postfixes of production is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and we assume that opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible for our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
+One may wonder why merging anything other then the prefixes of productions is not supported. While, in theory, sharing the postfixes of productions is also possible, this is more complicated to implement (for reasons we will not elaborate on here) and we assume that opportunities to apply this optimization rarely occur in reality. For these reasons we decided not to add this feature to our recognizer / parser. Merging blocks of symbols that are not located at either the beginning or end of productions will never be possible for our algorithm, since this may lead to incorrect results. For example if we had shared the $B$ of the following alternatives: $S\,::=\,ABC\,|\,DBE$ we would also end up with derivations for $ABE$ and $DBC$, which is obviously undesirable.
 
 \pagebreak
 \section{Filtering}
@@ -858,7 +858,7 @@ The development of this algorithm was approached in a rather unorthodox way. Rat
 
 The main purpose of this project has always been to create a working, usable general context-free parser implementation. The development of a new algorithm was secondary but required, since no suitable alternative was available for our purposes.
 
-Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal\cite{klint2011easy} meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other general parser implementations, which are mainly written in C and consequently have a major performance advantage.
+Our first implementation is written in Java. The reason we chose this language for our prototype was that is was both required for our current project (the interpreter and IDE for the Rascal\cite{klint2011easy} meta programming language), and gave us the opportunity to easily change and extend it. The down side is that it makes it harder to make a comparison with other (general) parser implementations, which are mainly written in C and consequently have a major performance advantage.
 
 \section{Future work}
 
@@ -873,7 +873,7 @@ Numerous things can still be improved or changed. Mostly these involve optimizat
  \item Pre-computed information about nesting restrictions can be used to improve scalability and performance.
  \item Multi-core / processor support is relatively easy to add and may be interesting to explore as possible performance booster for certain cases.
  \item The ability to generate directly executable parser code may be an interesting feature to look in to. This would further increase performance and open up new opportunities for optimization.
- \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (e.g. contain only non-terminals that are in LR(k)), to improve performance on non-ambiguous grammars even further.
+ \item Implement a faster path for handling productions in grammar slices that conform to certain restrictions (for example, if they only contain non-terminals that are in LR(k)), to improve performance on non-ambiguous grammars even further.
 \end{itemize}
 
 Finally, it would be interesting to create a C implementation of our parsing algorithm, both to see how far we can push the throughput of the parser and to be able to make a broader and more accurate performance comparison with implementations of other (general) parsing algorithms. We expect to do fairly well in such a showdown.
