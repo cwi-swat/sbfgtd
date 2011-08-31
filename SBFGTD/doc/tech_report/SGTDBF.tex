@@ -23,7 +23,7 @@
 \pagebreak
 \begin{abstract}
 
-In this article we will describe our general top-down parsing algorithm. The intent of this algorithm is to be both easy to comprehend and able to perform well for any grammar. In our opinion users should not be required to refactor their grammars to enable the parser to complete within an acceptable amount of time. Nor should it be difficult to comprehend what is going on under the hood, enabling one to easily visualize what is going on. From a developer's point of view, creating an implementation of the algorithm should also be similarly easy to do; often this is something that requires a considerable amount of effort to get right. While this sounds fairly ambitious, we managed it. We created a general parsing algorithm that is both easy to understand and can compete with any other general parsing algorithm out there in terms of scalability and performance.
+In this article we will describe our general top-down parsing algorithm. The intent of this algorithm is to be both easy to comprehend and able to perform well on any grammar. In our opinion users should not be required to refactor their grammars to enable the parser to complete within an acceptable amount of time. Nor should it be difficult to comprehend what is going on under the hood, enabling one to easily visualize what is going on. From a developer's point of view, creating an implementation of the algorithm should also be similarly easy to do; often this is something that requires a considerable amount of effort to get right. While this sounds fairly ambitious, we managed it. We created a general parsing algorithm that is both easy to understand and can compete with any other general parsing algorithm out there in terms of scalability and performance.
 
 \end{abstract}
 
@@ -54,7 +54,7 @@ To give an impression of the capabilities of our algorithm and implementation, w
 
 First we will discuss the algorithm for the recognizer, for simplicity's sake. Further on in this article we will explain how the recognizer can be extended to become a parser.
 
-Different variations of the algorithm are possible and while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first variant of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and also likely the one people will end up using because of its efficiency. See section \ref{sec:breadthFirstVsDepthFirst} for more details about this.
+Different variations of the algorithm are possible and while the recursive decent variant of the algorithm is more `beautiful', the main focus of this article will be on the breadth-first version of the algorithm. The reason for this is that it is the more complicated of the two, deserving of more attention and also likely the one people will end up using because of its efficiency. See section \ref{sec:breadthFirstVsDepthFirst} for more details about this.
 
 \subsection{Graph}
 
@@ -72,8 +72,8 @@ The basic idea behind the algorithm is fairly straightforward. In general terms 
  \setlength{\parsep}{0pt}
 
  \item Expand the left most node of every production that did not match anything yet on all stacks, until there are no stacks can be expanded anymore (i.e. they all have a terminal at the bottom).
- \item Match all nodes on the bottom of the stacks to the input. Reduce the ones that match, remove the ones that do not.
- \item Reduce the nodes on all stacks that matched something and have them queue the `next' node in the production they are part of where applicable, until no reductions are possible anymore.
+ \item Match all nodes on the bottom of the stacks to the input. Queue the ones that match for handling and discard the ones that do not.
+ \item For each node that needs to be handled, either queue their parent(s) for handling (in case the node was the last node in the production) or have them queue the `next' node in the production they are a part of for expansion. Repeat this process until there are no nodes left to handle.
  \item If there are nodes queued for expansion go to 1.
  \item If the end of the input has been reached and we have at least one derivation for one of the start symbols and are successful; otherwise recognition failed.
 \end{enumerate}
