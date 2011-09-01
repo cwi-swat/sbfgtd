@@ -9,13 +9,13 @@ import gtd.stack.NonTerminalStackNode;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
-public class LL extends SGTDBF{
+public class ASb extends SGTDBF{
 	private final static AbstractStackNode LITERAL_0 = new LiteralStackNode(0, 0, "a".toCharArray());
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode LITERAL_2 = new LiteralStackNode(2, 2, "b".toCharArray());
 	private final static AbstractStackNode LITERAL_4 = new LiteralStackNode(4, 0, "a".toCharArray());
 	
-	private LL(char[] input){
+	private ASb(char[] input){
 		super(input);
 	}
 	
@@ -66,8 +66,8 @@ public class LL extends SGTDBF{
 			cleanup();
 			
 			long start = tmxb.getCurrentThreadCpuTime();
-			LL ll = new LL(input);
-			ll.parse("S");
+			ASb aSb = new ASb(input);
+			aSb.parse("S");
 			long end = tmxb.getCurrentThreadCpuTime();
 			
 			long time = (end - start) / 1000000;
@@ -82,8 +82,8 @@ public class LL extends SGTDBF{
 		char[] input = createInput(5);
 		
 		for(int i = 9999; i >= 0; --i){
-			LL ll = new LL(input);
-			ll.parse("S");
+			ASb aSb = new ASb(input);
+			aSb.parse("S");
 		}
 		
 		// The benchmarks.
