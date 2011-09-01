@@ -8,6 +8,9 @@ import gtd.stack.EpsilonStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
 
+/*
+S ::= SSSS | a | epsilon
+*/
 public class HiddenHiddenRightRecursive extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
