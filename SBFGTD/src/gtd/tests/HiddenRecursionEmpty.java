@@ -12,7 +12,7 @@ S ::= S T U | epsilon
 T ::= T U S | epsilon
 U ::= U S T | epsilon
 */
-public class HiddenLeftRecursionEmpty extends SGTDBF{
+public class HiddenRecursionEmpty extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_T1 = new NonTerminalStackNode(1, 1, "T");
 	private final static AbstractStackNode NONTERMINAL_U2 = new NonTerminalStackNode(2, 2, "U");
@@ -29,7 +29,7 @@ public class HiddenLeftRecursionEmpty extends SGTDBF{
 	private final static AbstractStackNode EPSILON_11 = new EpsilonStackNode(11, 0);
 	private final static AbstractStackNode EPSILON_12 = new EpsilonStackNode(12, 0);
 	
-	public HiddenLeftRecursionEmpty(char[] input){
+	public HiddenRecursionEmpty(char[] input){
 		super(input);
 	}
 	
@@ -70,8 +70,8 @@ public class HiddenLeftRecursionEmpty extends SGTDBF{
 	}
 	
 	public static void main(String[] args){
-		HiddenLeftRecursionEmpty hlre = new HiddenLeftRecursionEmpty("".toCharArray());
-		AbstractNode result = hlre.parse("S");
+		HiddenRecursionEmpty hre = new HiddenRecursionEmpty("".toCharArray());
+		AbstractNode result = hre.parse("S");
 		System.out.println(result);
 		
 		System.out.println("[S(cycle(S,1),[T(cycle(T,1),[U(cycle(U,1),cycle(S,3),cycle(T,2)),U()],cycle(S,2)),T()],[U(cycle(U,1),cycle(S,2),[T(cycle(T,1),cycle(U,2),cycle(S,3)),T()]),U()]),S()] <- good");

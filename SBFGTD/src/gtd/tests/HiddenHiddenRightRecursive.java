@@ -8,7 +8,7 @@ import gtd.stack.EpsilonStackNode;
 import gtd.stack.LiteralStackNode;
 import gtd.stack.NonTerminalStackNode;
 
-public class HiddenHiddenRightRecursiveBugGrammar extends SGTDBF{
+public class HiddenHiddenRightRecursive extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode NONTERMINAL_S1 = new NonTerminalStackNode(1, 1, "S");
 	private final static AbstractStackNode NONTERMINAL_S2 = new NonTerminalStackNode(2, 2, "S");
@@ -16,7 +16,7 @@ public class HiddenHiddenRightRecursiveBugGrammar extends SGTDBF{
 	private final static AbstractStackNode LITERAL_a5 = new LiteralStackNode(5, 0, new char[]{'a'});
 	private final static AbstractStackNode EP6 = new EpsilonStackNode(6, 0);
 	
-	public HiddenHiddenRightRecursiveBugGrammar(char[] input){
+	public HiddenHiddenRightRecursive(char[] input){
 		super(input);
 	}
 	
@@ -34,8 +34,8 @@ public class HiddenHiddenRightRecursiveBugGrammar extends SGTDBF{
 	}
 	
 	public static void main(String[] args){
-		HiddenHiddenRightRecursiveBugGrammar hhrrbg = new HiddenHiddenRightRecursiveBugGrammar("a".toCharArray());
-		AbstractNode result = hhrrbg.parse("S");
+		HiddenHiddenRightRecursive hhrr = new HiddenHiddenRightRecursive("a".toCharArray());
+		AbstractNode result = hhrr.parse("S");
 		System.out.println(result);
 		
 		System.out.println("[S([S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],cycle(S,1)),S([S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],cycle(S,1),[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()]),S([S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],cycle(S,1),[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()]),S(cycle(S,1),[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()],[S(cycle(S,1),cycle(S,1),cycle(S,1),cycle(S,1)),S()]),S(a)] <- good");

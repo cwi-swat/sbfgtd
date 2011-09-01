@@ -12,7 +12,7 @@ S ::= S* T* U*
 T ::= T* U* S*
 U ::= U* S* T*
 */
-public class HiddenLeftRecursionListEmpty extends SGTDBF{
+public class HiddenRecursionListEmpty extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_S0 = new NonTerminalStackNode(0, 0, "S");
 	private final static AbstractStackNode LISTS0 = new ListStackNode(100, 0, NONTERMINAL_S0, "S*", false);
 	private final static AbstractStackNode NONTERMINAL_T1 = new NonTerminalStackNode(1, 0, "T");
@@ -34,7 +34,7 @@ public class HiddenLeftRecursionListEmpty extends SGTDBF{
 	private final static AbstractStackNode NONTERMINAL_T8 = new NonTerminalStackNode(8, 0, "T");
 	private final static AbstractStackNode LISTT8 = new ListStackNode(108, 2, NONTERMINAL_T8, "T*", false);
 	
-	public HiddenLeftRecursionListEmpty(char[] input){
+	public HiddenRecursionListEmpty(char[] input){
 		super(input);
 	}
 	
@@ -72,8 +72,8 @@ public class HiddenLeftRecursionListEmpty extends SGTDBF{
 	}
 	
 	public static void main(String[] args){
-		HiddenLeftRecursionListEmpty hlrle = new HiddenLeftRecursionListEmpty("".toCharArray());
-		AbstractNode result = hlrle.parse("S");
+		HiddenRecursionListEmpty hrle = new HiddenRecursionListEmpty("".toCharArray());
+		AbstractNode result = hrle.parse("S");
 		System.out.println(result);
 		
 		System.out.println("S([S*(repeat(cycle(S,2))),S*()],[T*(repeat(T([T*(repeat(cycle(T,2))),T*()],[U*(repeat(U([U*(repeat(cycle(U,2))),U*()],[S*(repeat(cycle(S,6))),S*()],[T*(repeat(cycle(T,4))),T*()]))),U*()],[S*(repeat(cycle(S,4))),S*()]))),T*()],[U*(repeat(U([U*(repeat(cycle(U,2))),U*()],[S*(repeat(cycle(S,4))),S*()],[T*(repeat(T([T*(repeat(cycle(T,2))),T*()],[U*(repeat(cycle(U,4))),U*()],[S*(repeat(cycle(S,6))),S*()]))),T*()]))),U*()]) <- good, but not minimal");
