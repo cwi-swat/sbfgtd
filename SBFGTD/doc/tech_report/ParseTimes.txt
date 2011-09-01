@@ -1,3 +1,6 @@
+NOTE: This is outdated stuff.
+
+
 SDF2 (1 char look-ahead; parsing + filtering + flattening)
 
 --------------------------
