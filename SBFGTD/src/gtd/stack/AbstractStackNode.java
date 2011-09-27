@@ -2,6 +2,7 @@ package gtd.stack;
 
 import gtd.result.AbstractNode;
 import gtd.result.struct.Link;
+import gtd.stack.edge.EdgesSet;
 import gtd.util.ArrayList;
 import gtd.util.IntegerList;
 import gtd.util.IntegerObjectList;
@@ -12,8 +13,10 @@ public abstract class AbstractStackNode{
 	
 	protected AbstractStackNode[] production;
 	protected AbstractStackNode[][] alternateProductions;
-	protected IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap;
+	protected IntegerObjectList<EdgesSet> edgesMap;
 	protected ArrayList<Link>[] prefixesMap;
+	
+	protected EdgesSet incomingEdges;
 	
 	protected final int id;
 	protected final int dot;
@@ -138,15 +141,19 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void initEdges(){
-		edgesMap = new IntegerObjectList<ArrayList<AbstractStackNode>>();
+		edgesMap = new IntegerObjectList<EdgesSet>();
 	}
 	
-	public ArrayList<AbstractStackNode> addEdge(AbstractStackNode edge){
+	public void setIncomingEdges(EdgesSet incomingEdges){
+		this.incomingEdges = incomingEdges;
+	}
+	
+	public EdgesSet addEdge(AbstractStackNode edge){
 		int startLocation = edge.getStartLocation();
 		
-		ArrayList<AbstractStackNode> edges = edgesMap.findValue(startLocation);
+		EdgesSet edges = edgesMap.findValue(startLocation);
 		if(edges == null){
-			edges = new ArrayList<AbstractStackNode>(1);
+			edges = new EdgesSet(1);
 			edgesMap.add(startLocation, edges);
 		}
 		
@@ -155,7 +162,7 @@ public abstract class AbstractStackNode{
 		return edges;
 	}
 	
-	public void addEdges(ArrayList<AbstractStackNode> edges, int startLocation){
+	public void addEdges(EdgesSet edges, int startLocation){
 		edgesMap.add(startLocation, edges);
 	}
 	
@@ -173,17 +180,42 @@ public abstract class AbstractStackNode{
 			}
 		}
 		
-		ArrayList<AbstractStackNode> edges;
+		EdgesSet edges;
 		int index = edgesMap.findKey(startLocation);
 		if(index == -1){
 			index = edgesMap.size();
 			
-			edges = new ArrayList<AbstractStackNode>(1);
+			edges = new EdgesSet(1);
 			edgesMap.add(startLocation, edges);
 		}else{
 			edges = edgesMap.getValue(index);
 		}
 		edges.add(edge);
+		
+		ArrayList<Link> prefixes = prefixesMap[index];
+		if(prefixes == null){
+			prefixes = new ArrayList<Link>(1);
+			prefixesMap[index] = prefixes;
+		}
+		prefixes.add(prefix);
+	}
+	
+	public void setEdgesSetWithPrefix(EdgesSet edges, Link prefix, int startLocation){
+		int edgesMapSize = edgesMap.size();
+		if(prefixesMap == null){
+			prefixesMap = (ArrayList<Link>[]) new ArrayList[(edgesMapSize + 1) << 1];
+		}else{
+			int prefixesMapSize = prefixesMap.length;
+			int possibleMaxSize = edgesMapSize + 1;
+			if(prefixesMapSize < possibleMaxSize){
+				ArrayList<Link>[] oldPrefixesMap = prefixesMap;
+				prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize << 1];
+				System.arraycopy(oldPrefixesMap, 0, prefixesMap, 0, edgesMapSize);
+			}
+		}
+		
+		int index = edgesMap.size();
+		edgesMap.add(startLocation, edges);
 		
 		ArrayList<Link> prefixes = prefixesMap[index];
 		if(prefixes == null){
@@ -224,11 +256,11 @@ public abstract class AbstractStackNode{
 	}
 	
 	public void updateNode(AbstractStackNode predecessor, AbstractNode result){
-		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
+		IntegerObjectList<EdgesSet> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
 		
 		if(edgesMap == null){
-			edgesMap = new IntegerObjectList<ArrayList<AbstractStackNode>>(edgesMapToAdd);
+			edgesMap = new IntegerObjectList<EdgesSet>(edgesMapToAdd);
 			
 			prefixesMap = (ArrayList<Link>[]) new ArrayList[edgesMap.size()];
 			
@@ -295,7 +327,7 @@ public abstract class AbstractStackNode{
 	}
 	
 	public int updateOvertakenNode(AbstractStackNode predecessor, AbstractNode result, int potentialNewEdges, IntegerList touched){
-		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMapToAdd = predecessor.edgesMap;
+		IntegerObjectList<EdgesSet> edgesMapToAdd = predecessor.edgesMap;
 		ArrayList<Link>[] prefixesMapToAdd = predecessor.prefixesMap;
 		
 		int edgesMapSize = edgesMap.size();
@@ -347,13 +379,17 @@ public abstract class AbstractStackNode{
 		return nrOfAddedEdges;
 	}
 	
-	public void updatePrefixSharedNode(IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	public void updatePrefixSharedNode(IntegerObjectList<EdgesSet> edgesMap, ArrayList<Link>[] prefixesMap){
 		this.edgesMap = edgesMap;
 		this.prefixesMap = prefixesMap;
 	}
 	
-	public IntegerObjectList<ArrayList<AbstractStackNode>> getEdges(){
+	public IntegerObjectList<EdgesSet> getEdges(){
 		return edgesMap;
+	}
+	
+	public EdgesSet getIncomingEdges(){
+		return incomingEdges;
 	}
 	
 	public ArrayList<Link>[] getPrefixesMap(){

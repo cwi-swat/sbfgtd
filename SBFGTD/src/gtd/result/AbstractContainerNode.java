@@ -35,4 +35,9 @@ public abstract class AbstractContainerNode extends AbstractNode{
 	public boolean isSeparator(){
 		return isSeparator;
 	}
+	
+	// NOTE: For internal use only; required for retrieving the result from the root node.
+	public AbstractNode getFirstAlternativeNode(){
+		return firstAlternative.node;
+	}
 }

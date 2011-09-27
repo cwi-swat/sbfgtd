@@ -8,6 +8,7 @@ import gtd.result.struct.Link;
 import gtd.stack.AbstractExpandableStackNode;
 import gtd.stack.AbstractStackNode;
 import gtd.stack.NonTerminalStackNode;
+import gtd.stack.edge.EdgesSet;
 import gtd.util.ArrayList;
 import gtd.util.DoubleStack;
 import gtd.util.HashMap;
@@ -27,11 +28,9 @@ public class SGTDBF implements IGTD{
 	private DoubleStack<AbstractStackNode, AbstractNode> stacksWithTerminalsToReduce;
 	private final DoubleStack<AbstractStackNode, AbstractNode> stacksWithNonTerminalsToReduce;
 	
-	private final HashMap<String, ArrayList<AbstractStackNode>> cachedEdgesForExpect;
+	private final HashMap<String, EdgesSet> cachedEdgesForExpect;
 	
 	private final IntegerKeyedHashMap<AbstractStackNode> sharedNextNodes;
-	
-	private final IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>> resultStoreCache;
 	
 	protected int location;
 	
@@ -51,11 +50,9 @@ public class SGTDBF implements IGTD{
 		stacksWithTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		stacksWithNonTerminalsToReduce = new DoubleStack<AbstractStackNode, AbstractNode>();
 		
-		cachedEdgesForExpect = new HashMap<String, ArrayList<AbstractStackNode>>();
+		cachedEdgesForExpect = new HashMap<String, EdgesSet>();
 		
 		sharedNextNodes = new IntegerKeyedHashMap<AbstractStackNode>();
-		
-		resultStoreCache = new IntegerKeyedHashMap<HashMap<String, AbstractContainerNode>>();
 		
 		location = 0;
 		
@@ -103,12 +100,13 @@ public class SGTDBF implements IGTD{
 						return alternative;
 					}
 				}else{
-					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
-					if(nextResult != null){
-						// Encountered stack 'overtake'.
-						propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
-						return alternative;
+					if(alternative.getStartLocation() == location){
+						EdgesSet alternativeEdgesSet = alternative.getIncomingEdges();
+						if(alternativeEdgesSet != null && alternativeEdgesSet.getLastVisistedLevel() == location){
+							AbstractContainerNode nextResult = alternativeEdgesSet.getLastResult();
+							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+							return alternative;
+						}
 					}
 				}
 			}
@@ -140,7 +138,7 @@ public class SGTDBF implements IGTD{
 		return next;
 	}
 	
-	private boolean updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	private boolean updateAlternativeNextNode(AbstractStackNode next, AbstractStackNode node, AbstractNode result, IntegerObjectList<EdgesSet> edgesMap, ArrayList<Link>[] prefixesMap){
 		AbstractStackNode alternative = sharedNextNodes.get(next.getId());
 		if(alternative != null){
 			if(result.isEmpty()){
@@ -151,12 +149,13 @@ public class SGTDBF implements IGTD{
 						return true;
 					}
 				}else{
-					HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-					AbstractContainerNode nextResult = levelResultStoreMap.get(alternative.getIdentifier());
-					if(nextResult != null){
-						// Encountered stack 'overtake'.
-						propagateAlternativeEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size(), edgesMap, prefixesMap);
-						return true;
+					if(alternative.getStartLocation() == location){
+						EdgesSet alternativeEdgesSet = alternative.getIncomingEdges();
+						if(alternativeEdgesSet != null && alternativeEdgesSet.getLastVisistedLevel() == location){
+							AbstractContainerNode nextResult = alternativeEdgesSet.getLastResult();
+							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+							return true;
+						}
 					}
 				}
 			}
@@ -192,7 +191,7 @@ public class SGTDBF implements IGTD{
 			propagatedReductions.add(next.getId(), touched);
 		}
 		
-		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<EdgesSet> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixes = node.getPrefixesMap();
 		
 		int fromIndex = edgesMap.size() - potentialNewEdges;
@@ -213,8 +212,6 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void propagatePrefixes(AbstractStackNode next, AbstractNode nextResult, int nrOfAddedEdges){
-		HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-
 		// Proceed with the tail of the production.
 		int nextDot = next.getDot() + 1;
 		AbstractStackNode[] prod = next.getProduction();
@@ -228,9 +225,9 @@ public class SGTDBF implements IGTD{
 					nextNextAlternative.updateNode(next, nextResult);
 				}
 			}else{
-				AbstractContainerNode nextNextResultStore = levelResultStoreMap.get(nextNextAlternative.getIdentifier());
-				if(nextNextResultStore != null){
-					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextResultStore, nrOfAddedEdges);
+				EdgesSet nextNextAlternativeEdgesSet = nextNextAlternative.getIncomingEdges();
+				if(nextNextAlternativeEdgesSet != null && nextNextAlternativeEdgesSet.getLastVisistedLevel() == location){
+					propagateEdgesAndPrefixes(next, nextResult, nextNextAlternative, nextNextAlternativeEdgesSet.getLastResult(), nrOfAddedEdges);
 				}else{
 					nextNextAlternative.updateNode(next, nextResult);
 				}
@@ -246,7 +243,7 @@ public class SGTDBF implements IGTD{
 				nextNextAlternative.updateNode(next, nextResult);
 			}
 			
-			IntegerObjectList<ArrayList<AbstractStackNode>> nextNextEdgesMap = nextNextAlternative.getEdges();
+			IntegerObjectList<EdgesSet> nextNextEdgesMap = nextNextAlternative.getEdges();
 			ArrayList<Link>[] nextNextPrefixesMap = nextNextAlternative.getPrefixesMap();
 			
 			for(int i = alternateProds.length - 1; i >= 0; --i){
@@ -263,9 +260,9 @@ public class SGTDBF implements IGTD{
 							nextNextAltAlternative.updatePrefixSharedNode(nextNextEdgesMap, nextNextPrefixesMap);
 						}
 					}else{
-						AbstractContainerNode nextAltResultStore = levelResultStoreMap.get(nextNextAltAlternative.getIdentifier());
-						if(nextAltResultStore != null){
-							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAltResultStore, nrOfAddedEdges, nextNextEdgesMap, nextNextPrefixesMap);
+						EdgesSet nextAlternativeEdgesSet = nextNextAlternative.getIncomingEdges();
+						if(nextAlternativeEdgesSet != null && nextAlternativeEdgesSet.getLastVisistedLevel() == location){
+							propagateAlternativeEdgesAndPrefixes(next, nextResult, nextNextAltAlternative, nextAlternativeEdgesSet.getLastResult(), nrOfAddedEdges, nextNextEdgesMap, nextNextPrefixesMap);
 						}else{
 							nextNextAltAlternative.updatePrefixSharedNode(nextNextEdgesMap, nextNextPrefixesMap);
 						}
@@ -294,7 +291,7 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap, ArrayList<Link>[] prefixesMap){
+	private void propagateAlternativeEdgesAndPrefixes(AbstractStackNode node, AbstractNode nodeResult, AbstractStackNode next, AbstractNode nextResult, int potentialNewEdges, IntegerObjectList<EdgesSet> edgesMap, ArrayList<Link>[] prefixesMap){
 		next.updatePrefixSharedNode(edgesMap, prefixesMap);
 		
 		if(potentialNewEdges == 0) return;
@@ -309,7 +306,7 @@ public class SGTDBF implements IGTD{
 	}
 	
 	private void updateEdges(AbstractStackNode node, AbstractNode result){
-		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<EdgesSet> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
@@ -326,7 +323,7 @@ public class SGTDBF implements IGTD{
 			propagatedReductions.add(node.getId(), touched);
 		}
 		
-		IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = node.getEdges();
+		IntegerObjectList<EdgesSet> edgesMap = node.getEdges();
 		ArrayList<Link>[] prefixesMap = node.getPrefixesMap();
 		
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
@@ -341,25 +338,12 @@ public class SGTDBF implements IGTD{
 		}
 	}
 	
-	private void handleEdgesList(ArrayList<AbstractStackNode> edgeList, Link resultLink, int startLocation){
-		AbstractStackNode edge = edgeList.get(0);
-		String identifier = edge.getIdentifier();
-		String nodeName = edge.getName();
-		HashMap<String, AbstractContainerNode>  levelResultStoreMap = resultStoreCache.get(startLocation);
+	private void handleEdgesList(EdgesSet edgeList, Link resultLink, int startLocation){
 		AbstractContainerNode resultStore = null;
-		if(levelResultStoreMap != null){
-			resultStore = levelResultStoreMap.get(identifier);
-		}else{
-			levelResultStoreMap = new HashMap<String, AbstractContainerNode>();
-			resultStoreCache.putUnsafe(startLocation, levelResultStoreMap);
-		}
-		
-		if(resultStore != null){
-			resultStore.addAlternative(resultLink);
-		}else{
-			resultStore = (!edge.isExpandable()) ? new SortContainerNode(nodeName, startLocation == location, edge.isSeparator()) : new ListContainerNode(nodeName, startLocation == location, edge.isSeparator());
-			levelResultStoreMap.putUnsafe(identifier, resultStore);
-			resultStore.addAlternative(resultLink);
+		if(edgeList.getLastVisistedLevel() != location){
+			AbstractStackNode edge = edgeList.get(0);
+			
+			resultStore = (!edge.isExpandable()) ? new SortContainerNode(edge.getName(), startLocation == location, edge.isSeparator()) : new ListContainerNode(edge.getName(), startLocation == location, edge.isSeparator());
 			
 			stacksWithNonTerminalsToReduce.push(edge, resultStore);
 			
@@ -367,7 +351,14 @@ public class SGTDBF implements IGTD{
 				edge = edgeList.get(j);
 				stacksWithNonTerminalsToReduce.push(edge, resultStore);
 			}
+		
+			edgeList.setLastVisistedLevel(location);
+			edgeList.setLastResult(resultStore);
+		}else{
+			resultStore = edgeList.getLastResult();
 		}
+		
+		resultStore.addAlternative(resultLink);
 	}
 	
 	private void moveToNext(AbstractStackNode node, AbstractNode result){
@@ -381,7 +372,7 @@ public class SGTDBF implements IGTD{
 		// Handle alternative nexts (and prefix sharing).
 		AbstractStackNode[][] alternateProds = node.getAlternateProductions();
 		if(alternateProds != null){
-			IntegerObjectList<ArrayList<AbstractStackNode>> edgesMap = null;
+			IntegerObjectList<EdgesSet> edgesMap = null;
 			ArrayList<Link>[] prefixesMap = null;
 			if(next != null){
 				edgesMap = next.getEdges();
@@ -460,17 +451,8 @@ public class SGTDBF implements IGTD{
 		return false;
 	}
 	
-	private boolean shareListNode(int id, AbstractStackNode stack){
-		AbstractStackNode sharedNode = sharedNextNodes.get(id);
-		if(sharedNode != null){
-			sharedNode.addEdgeWithPrefix(stack, null, location);
-			return true;
-		}
-		return false;
-	}
-	
-	private void handleExpects(AbstractStackNode stackBeingWorkedOn, AbstractStackNode[] expects){
-		ArrayList<AbstractStackNode> cachedEdges = null;
+	private EdgesSet handleExpects(AbstractStackNode stackBeingWorkedOn, AbstractStackNode[] expects){
+		EdgesSet cachedEdges = null;
 		
 		for(int i = expects.length - 1; i >= 0; --i){
 			AbstractStackNode first = expects[i];
@@ -503,7 +485,7 @@ public class SGTDBF implements IGTD{
 			}
 		}
 		
-		cachedEdgesForExpect.put(stackBeingWorkedOn.getName(), cachedEdges);
+		return cachedEdges;
 	}
 	
 	private void expandStack(AbstractStackNode node){
@@ -517,29 +499,50 @@ public class SGTDBF implements IGTD{
 			
 			terminalsTodo.push(node, node.getResult());
 		}else if(!node.isExpandable()){
-			ArrayList<AbstractStackNode> cachedEdges = cachedEdgesForExpect.get(node.getName());
+			EdgesSet cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges != null){
 				cachedEdges.add(node);
 				
-				HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(location);
-				if(levelResultStoreMap != null){
-					AbstractContainerNode resultStore = levelResultStoreMap.get(node.getIdentifier());
-					if(resultStore != null){ // Is nullable, add the known results.
-						stacksWithNonTerminalsToReduce.push(node, resultStore);
-					}
+				if(cachedEdges.getLastVisistedLevel() == location){ // Is nullable, add the known results.
+					stacksWithNonTerminalsToReduce.push(node, cachedEdges.getLastResult());
 				}
 			}else{
 				AbstractStackNode[] expects = invokeExpects(node.getMethodName());
 				if(expects == null) return;
-				handleExpects(node, expects);
+				cachedEdges = handleExpects(node, expects);
+				
+				cachedEdgesForExpect.put(node.getName(), cachedEdges);
 			}
+			
+			node.setIncomingEdges(cachedEdges);
 		}else{ // 'List'
 			AbstractStackNode[] listChildren = node.getChildren();
 			
-			for(int i = listChildren.length - 1; i >= 0; --i){
-				AbstractStackNode child = listChildren[i];
-				int childId = child.getId();
-				if(!shareListNode(childId, node)){
+			AbstractStackNode firstChild = listChildren[0];
+			int firstChildId = firstChild.getId();
+			
+			EdgesSet listEdges;
+			
+			AbstractStackNode sharedNode = sharedNextNodes.get(firstChildId);
+			if(sharedNode != null){
+				sharedNode.addEdgeWithPrefix(node, null, location);
+				
+				IntegerObjectList<EdgesSet> sharedListEdgesSets = sharedNode.getEdges();
+				listEdges = sharedListEdgesSets.findValue(location);
+				
+				if(node.canBeEmpty()){ // Star list or optional.
+					if(listEdges.getLastVisistedLevel() == location){
+						stacksWithNonTerminalsToReduce.push(node, listEdges.getLastResult());
+					}
+				}
+			}else{
+				listEdges = new EdgesSet();
+				listEdges.add(node);
+				
+				for(int i = listChildren.length - 1; i >= 0; --i){
+					AbstractStackNode child = listChildren[i];
+					int childId = child.getId();
+					
 					if(child.isMatchable()){
 						int endLocation = location + child.getLength();
 						if(endLocation > input.length) continue;
@@ -563,18 +566,20 @@ public class SGTDBF implements IGTD{
 					sharedNextNodes.putUnsafe(childId, child);
 					
 					child.initEdges();
-					child.addEdgeWithPrefix(node, null, location);
+					child.setEdgesSetWithPrefix(listEdges, null, location);
+				}
+				
+				if(node.canBeEmpty()){ // Star list or optional.
+					// This is always epsilon (and unique for this position); so shouldn't be shared.
+					AbstractStackNode empty = node.getEmptyChild().getCleanCopy(location);
+					empty.initEdges();
+					empty.addEdges(listEdges, location);
+					
+					stacksToExpand.push(empty);
 				}
 			}
 			
-			if(node.canBeEmpty()){ // Star list or optional.
-				// This is always epsilon (and unique for this position); so shouldn't be shared.
-				AbstractStackNode empty = node.getEmptyChild().getCleanCopy(location);
-				empty.initEdges();
-				empty.addEdge(node);
-				
-				stacksToExpand.push(empty);
-			}
+			node.setIncomingEdges(listEdges);
 		}
 	}
 	
@@ -606,10 +611,21 @@ public class SGTDBF implements IGTD{
 	
 	public AbstractNode parse(String start){
 		// Initialize.
+		// The root root node is necessary, because of the way the result caching works (bleh).
+		AbstractStackNode rootRootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
+		rootRootNode.setProduction(new AbstractStackNode[]{rootRootNode});
+		rootRootNode = rootRootNode.getCleanCopy(0);
+		rootRootNode.initEdges();
+		rootRootNode.markAsEndNode();
+		
 		AbstractStackNode rootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
 		rootNode.setProduction(new AbstractStackNode[]{rootNode});
 		rootNode = rootNode.getCleanCopy(0);
 		rootNode.initEdges();
+		rootNode.markAsEndNode();
+		
+		rootNode.addEdge(rootRootNode);
+		
 		stacksToExpand.push(rootNode);
 		expand();
 		
@@ -618,7 +634,6 @@ public class SGTDBF implements IGTD{
 			do{
 				if(shiftedLevel){ // Nullable fix for the first level.
 					sharedNextNodes.clear();
-					resultStoreCache.clear();
 					cachedEdgesForExpect.clear();
 					propagatedPrefixes.dirtyClear();
 					propagatedReductions.dirtyClear();
@@ -634,12 +649,11 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(location == input.length){
-			HashMap<String, AbstractContainerNode> levelResultStoreMap = resultStoreCache.get(0);
-			if(levelResultStoreMap != null){
-				AbstractContainerNode result = levelResultStoreMap.get(start);
-				if(result != null){
-					return result; // Success.
-				}
+			IntegerObjectList<EdgesSet> rootNodeEdges = rootNode.getEdges();
+			EdgesSet rootNodeEdgesSet = rootNodeEdges.findValue(0);
+			if(rootNodeEdgesSet != null && rootNodeEdgesSet.getLastVisistedLevel() == input.length){
+				AbstractContainerNode rootResultStore = rootNodeEdgesSet.getLastResult(); // Success.
+				return rootResultStore.getFirstAlternativeNode();
 			}
 		}
 		

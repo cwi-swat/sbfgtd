@@ -66,3 +66,17 @@ Input chars	| Average Time	| Lowest Time
 400			| 3068 ms		| 2880 ms
 450			| 4514 ms		| 4460 ms
 500			| 6464 ms		| 6400 ms
+
+---------------
+After the linearity fix:
+
+50: avg=4ms, lowest=0ms
+100: avg=28ms, lowest=20ms
+150: avg=94ms, lowest=90ms
+200: avg=232ms, lowest=230ms
+250: avg=486ms, lowest=470ms
+300: avg=898ms, lowest=870ms
+350: avg=1474ms, lowest=1460ms
+400: avg=2258ms, lowest=2250ms
+450: avg=3390ms, lowest=3370ms
+500: avg=4876ms, lowest=4870ms
