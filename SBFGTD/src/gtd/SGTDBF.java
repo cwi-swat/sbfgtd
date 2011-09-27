@@ -611,20 +611,10 @@ public class SGTDBF implements IGTD{
 	
 	public AbstractNode parse(String start){
 		// Initialize.
-		// The root root node is necessary, because of the way the result caching works (bleh).
-		AbstractStackNode rootRootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
-		rootRootNode.setProduction(new AbstractStackNode[]{rootRootNode});
-		rootRootNode = rootRootNode.getCleanCopy(0);
-		rootRootNode.initEdges();
-		rootRootNode.markAsEndNode();
-		
 		AbstractStackNode rootNode = new NonTerminalStackNode(AbstractStackNode.START_SYMBOL_ID, 0, start);
 		rootNode.setProduction(new AbstractStackNode[]{rootNode});
 		rootNode = rootNode.getCleanCopy(0);
 		rootNode.initEdges();
-		rootNode.markAsEndNode();
-		
-		rootNode.addEdge(rootRootNode);
 		
 		stacksToExpand.push(rootNode);
 		expand();
@@ -649,11 +639,9 @@ public class SGTDBF implements IGTD{
 		}
 		
 		if(location == input.length){
-			IntegerObjectList<EdgesSet> rootNodeEdges = rootNode.getEdges();
-			EdgesSet rootNodeEdgesSet = rootNodeEdges.findValue(0);
+			EdgesSet rootNodeEdgesSet = rootNode.getIncomingEdges();
 			if(rootNodeEdgesSet != null && rootNodeEdgesSet.getLastVisistedLevel() == input.length){
-				AbstractContainerNode rootResultStore = rootNodeEdgesSet.getLastResult(); // Success.
-				return rootResultStore.getFirstAlternativeNode();
+				return rootNodeEdgesSet.getLastResult(); // Success.
 			}
 		}
 		
