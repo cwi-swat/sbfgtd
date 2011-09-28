@@ -124,16 +124,25 @@ public class EFa extends SGTDBF{
 	}
 	
 	public static void main(String[] args) throws Exception{
-		// Warmup.
 		char[] input = createInput(5);
 		
+		EFa testOut = new EFa(input);
+		if(testOut.parse("S") != null) System.out.println("WARNING: Running in parser instead of recognizer mode.");
+		
+		// Warmup.
 		for(int i = 9999; i >= 0; --i){
 			EFa eFa = new EFa(input);
 			eFa.parse("S");
 		}
 		
+		for(int i = 200001; i <= 1000001; i += 200000){
+			input = createInput(i);
+			EFa eFa = new EFa(input);
+			eFa.parse("S");
+		}
+		
 		// The benchmarks.
-		for(int i = 50001; i <= 1000001; i += 50000){
+		for(int i = 200001; i <= 1000001; i += 200000){
 			input = createInput(i);
 			runTest(input);
 		}
