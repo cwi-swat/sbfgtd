@@ -525,7 +525,7 @@ Every node in the tree is identified by the substring its contained result repre
 The scalability guarantees made for the recognizer do not change when it is extended to a parser. The reason for this is that each additional operation the parser requires over the recognizer, can be implemented in a way that only imposes a constant amount of extra work.
 
 \subsubsection{Worst-case statistics}
-In this section we will highlight the $O(N^3)$ behaviour of the recognizer / parser in worst-case scenarios. To accomplish this we will give an overview of the most relevant parser statistics for the following grammar:\\
+In this section we will highlight the $O(N^3)$ behavior of the recognizer / parser in worst-case scenarios. To accomplish this we will give an overview of the most relevant parser statistics for the following grammar:\\
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
 Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
@@ -533,29 +533,31 @@ Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400
 \centering
 \begin{tabular}{ | p{7ex} | p{7ex} | p{7ex} | p{10ex} | p{8ex} | p{10ex} | p{10ex} | }
   \hline
-  Input & Graph & Edges & Edge & Results & Prefixes & Forest \\
+  Input & Graph & Edges & Edge set & Results & Prefixes & Forest \\
   length & nodes & & visits & & & nodes \\
   \hline
-  2 & 9 & 7 & 6 & 3 & 1 & 2 \\
-  3 & 13 & 10 & 15 & 6 & 4 & 8 \\
-  4 & 17 & 13 & 31 & 10 & 10 & 20 \\
-  5 & 21 & 16 & 56 & 15 & 20 & 40 \\
-  6 & 25 & 19 & 92 & 21 & 35 & 70 \\
-  7 & 29 & 22 & 141 & 28 & 56 & 102 \\
-  8 & 33 & 25 & 205 & 36 & 84 & 168 \\
-  9 & 37 & 28 & 286 & 45 & 120 & 240 \\
-  10 & 41 & 31 & 386 & 55 & 165 & 330 \\
+  2 & 9 & 7 & 3 & 5 & 4 & 7 \\
+  3 & 13 & 10 & 15 & 9 & 10 & 18 \\
+  4 & 17 & 13 & 31 & 14 & 20 & 38 \\
+  5 & 21 & 16 & 56 & 20 & 35 & 70 \\
+  6 & 25 & 19 & 92 & 27 & 56 & 117 \\
+  7 & 29 & 22 & 141 & 35 & 84 & 182 \\
+  8 & 33 & 25 & 205 & 44 & 120 & 268 \\
+  9 & 37 & 28 & 286 & 54 & 165 & 378 \\
+  10 & 41 & 31 & 386 & 65 & 220 & 515 \\
   \hline
-  50 & 201 & 151 & 42926 & 1275 & 20825 & 41650 \\
-  100 & 401 & 301 & 338351 & 5050 & 166650 & 333300 \\
-  200 & 801 & 601 & 2686701 & 20100 & 1333300 & 2666600 \\
-  300 & 1201 & 901 & 9045051 & 45150 & 4499950 & 8999900 \\
-  400 & 1601 & 1201 & 21413401 & 80200 & 10666600 & 21333200 \\
-  500 & 2001 & 1501 & 41791751 & 125250 & 20833250 & 41666500 \\
+  50 & 201 & 151 & 40475 & 22100 & 1325 & 62575 \\
+  100 & 401 & 301 & 328450 & 5150 & 171700 & 500150 \\
+  200 & 801 & 601 & 2646900 & 20300 & 1353400 & 4000300 \\
+  300 & 1201 & 901 & 8955350 & 45450 & 4545100 & 13500450 \\
+  400 & 1601 & 1201 & 21253800 & 80600 & 10746800 & 32000600 \\
+  500 & 2001 & 1501 & 41542250 & 125750 & 20958500 & 62500750 \\
   \hline
 \end{tabular}
 \caption{Worst-case parser statistics (for the fully optimized version).}
 \end{table}
+
+TODO: Update text.
 
 In the table above we can see how the different components in the recognizer and parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably all edge sharing related optimizations (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
 
