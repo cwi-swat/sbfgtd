@@ -148,9 +148,9 @@ expand(){
 \end{verbatim}
 }
 
-This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches (by matching we mean that the content of the node is equal to the part of the input string starting at the location associated with the node and ending at the current level), it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is associated with a non-terminal, we check if there is a cached set of edges available for that non-terminal's sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We do this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, by calling the {\bf setEdgesSet} method. Every {\bf edgesSet} may be updated with additional edges later on in the expansion process. Once this in done, we add the {\bf edgesSet} to the node we are currently expanding, with the {\bf addIncomingEdgesSet} call. This is necessary for a number of reason, which are described below in more detail. Also note that, the content of this {\bf edgesSet} can only extended in the current level, however, since the edges sets themselves get shared and will never be copied or cloned, as described in section \ref{subsec:edgesSetSharing}, the set of incoming edges of a node never changes.
+This is the expand loop. It will iterate over the {\bf toExpandSet} until there are no more stacks queued for expansion. While expanding we check the type of the node we are handling. If the node is a terminal or an epsilon it needs to match the input (epsilons naturally always match). If it matches (by matching we mean that the content of the node is equal to the part of the input string starting at the location associated with the node and ending at the current level), it is added to appropriate {\bf toReduceSet} in the {\bf toReduceStore}; otherwise we discard it, causing the stack it was associated with to die of. If the node is associated with a non-terminal, we check if there is a cached set of edges available for that non-terminal's sort. If there is, we queued the alternatives for that non-terminal sort before; since this is the case, we merge the current stack with the already expanded ones by adding an edge to the cached {\bf edgesSet} for this non-terminal sort. If a cached {\bf edgesSet} is not available, we have not encountered a non-terminal of this sort yet and need to expand it. We do this by retrieving its alternatives and queueing the first `child' of each alternative for expansion, by adding them to the {\bf toExpandSet}. We also create and cache a set of edges for this non-terminal sort, to which an edge to the current node will be added. Each of the `child' nodes will receive a reference to this {\bf edgesSet}, by calling the {\bf setEdgesSet} method. Every {\bf edgesSet} may be updated with additional edges later on in the expansion process. Once this in done, we add the {\bf edgesSet} to the node we are currently expanding, with the {\bf addIncomingEdgesSet} call. This is necessary for a number of reason, which are described below in more detail. Also note that, the content of this {\bf edgesSet} can only extended in the current level, however, since the edge sets themselves get shared and will never be copied or cloned, as described in section \ref{subsec:edgeSetSharing}, the set of incoming edges of a node never changes.
 
-Finally we check whether or not there have been nullable reductions for the non-terminal sort associated with the current node. This can happen as multiple iterations in this same level are required to be able to handle nullables. If such a nullable reduction has occured, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. The way we can check this, is by comparing the {\bf derivationMark} on the {\bf edgesSet} associated with the node we are currently expanding. This {\bf derivationMark} is updated during the reduction process and represents the last level at which the {\bf edgesSet} has been visited. In case it is equal the current level, this indicates a nullable reduction has occured for the node we are expanding in an earlier iteration of the current level. Note that the sharing of edges sets, as discussed in section \ref{subsec:edgesSetSharing} is required to enable this to work in the way described here. We will discuss the reasons behind the special treatment of nullables in more detail in section \ref{subsec:nullables}.
+Finally we check whether or not there have been nullable reductions for the non-terminal sort associated with the current node. This can happen as multiple iterations in this same level are required to be able to handle nullables. If such a nullable reduction has occured, we queue the current node for reduction by adding it to the {\bf toReduceSet} for the current level. The way we can check this, is by comparing the {\bf derivationMark} on the {\bf edgesSet} associated with the node we are currently expanding. This {\bf derivationMark} is updated during the reduction process and represents the last level at which the {\bf edgesSet} has been visited. In case it is equal the current level, this indicates a nullable reduction has occured for the node we are expanding in an earlier iteration of the current level. Note that the sharing of edge sets, as discussed in section \ref{subsec:edgeSetSharing} is required to enable this to work in the way described here. We will discuss the reasons behind the special treatment of nullables in more detail in section \ref{subsec:nullables}.
 
 \subsubsection{Reduction and moving}
 {\small
@@ -182,11 +182,11 @@ reduceAndMove(){
 \end{verbatim}
 }
 
-This is the reduce and move loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue the `parents' of this node for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead, merging them if necessary. In other words, we add all the edges sets on the current node to the next node for each level for which one is not present yet; the levels for which an edges set is already present, this is guaranteed to be the exact same one as we would want to add, due to the edges sharing optimization described in section \ref{subsec:edgesSetSharing}).
+This is the reduce and move loop. It will iterate over the {\bf toReduceSet} until there are no more stack nodes queued for reduction. When a node is being reduced, one of two things can happen. Either it is the last node in the production and we need to queue the `parents' of this node for reduction (if not reduced of queued for reduction already), by adding them to the {\bf toReduceSet}. Otherwise we need to move to the `next' node in the production, queue this `next' node for expansion and transfer all edges from this node to it. If the `next' node has already been scheduled for expansion it will be present in the {\bf sharedNextSet}. If this is the case we need to retrieve the shared equivalent of this `next' node from this set and add the edges to that node instead, merging them if necessary. In other words, we add all the edge sets on the current node to the next node for each level for which one is not present yet; the levels for which an edge set is already present, this is guaranteed to be the exact same one as we would want to add, due to the edges sharing optimization described in section \ref{subsec:edgeSetSharing}).
 
-The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgesSet} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by comparing the {\bf derivationMark} to the current location. If this {\bf derivationMark} is not equal to the current level, this indicates this is the first time we visit this specific {\bf edgesSet} in this level. If this is the case, we queue all of the nodes that are pointed to from edges in that {\bf edgesSet} for reduction; otherwise we do not as we know this has happened already. This is true since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level (and the edges sets are shared, as described in section \ref{subsec:edgesSetSharing}, enabling the possibility to check this one field to determine if an edges set has been visited yet in the current level). Handling the queueing of parent nodes in this way ensures no searching is ever needed, since we can always be certain about what nodes have already been queued or not. For more information about why this is the case see section \ref{subsec:edgeVisitOptimization}. After visiting each {\bf parent} pointed to from the edges in the {\bf edgesSet}, we set the {\bf derivationMark} to the current level, to indicate this fact.
+The edges are grouped by level. This level indicates the start location of the node the edge points to. To check whether or not the parents of a node need to be queued for reduction, we get one of the edges from each {\bf edgesSet} and check if there are reductions for the non-terminal sort associated with the node this edge points to, by comparing the {\bf derivationMark} to the current location. If this {\bf derivationMark} is not equal to the current level, this indicates this is the first time we visit this specific {\bf edgesSet} in this level. If this is the case, we queue all of the nodes that are pointed to from edges in that {\bf edgesSet} for reduction; otherwise we do not as we know this has happened already. This is true since every node containing a non-terminal of the same sort always has exactly the same alternatives in the same level (and the edge sets are shared, as described in section \ref{subsec:edgeSetSharing}, enabling the possibility to check this one field to determine if an edge set has been visited yet in the current level). Handling the queueing of parent nodes in this way ensures no searching is ever needed, since we can always be certain about what nodes have already been queued or not. For more information about why this is the case see section \ref{subsec:edgeVisitOptimization}. After visiting each {\bf parent} pointed to from the edges in the {\bf edgesSet}, we set the {\bf derivationMark} to the current level, to indicate this fact.
 
-Note that, to achieve linear merge performance for the {\bf addEdges} operation, we propose to implement the data structure that contains all the edges sets as a linked sorted list which is ordered by level. This way we can iterate over them both lists once, simultaneously and add any missing edges sets in constant time. If we would use something like a hash table to store the edges sets, we would not be able to guarantee this, since checking this kind of structure could consume a linear amount of time, in relation to the amount of entries in the table, in the worst-case.
+Note that, to achieve linear merge performance for the {\bf addEdges} operation, we propose to implement the data structure that contains all the edge sets as a linked sorted list which is ordered by level. This way we can iterate over them both lists once, simultaneously and add any missing edge sets in constant time. If we would use something like a hash table to store the edge sets, we would not be able to guarantee this, since checking this kind of structure could consume a linear amount of time, in relation to the amount of entries in the table, in the worst-case.
 
 \subsection{Correctness}
 
@@ -529,41 +529,73 @@ In this section we will highlight the $O(N^3)$ behavior of the recognizer / pars
 $S\,::=\,SSS\,|\,SS\,|\,a$\\
 Input = $a * 2$ to $a * 10$, $a * 50$, $a * 100$, $a * 200$, $a * 300$, $a * 400$ and $a * 500$
 
+In the tables below we can see how the different components in the recognizer and parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably all edge sharing related optimizations (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
+
 \begin{table}[H]
 \centering
-\begin{tabular}{ | p{7ex} | p{7ex} | p{7ex} | p{10ex} | p{8ex} | p{10ex} | p{10ex} | }
+\begin{tabular}{ | p{6ex} | p{6ex} | p{6ex} | p{5ex} | p{10ex} | p{7ex} | }
   \hline
-  Input & Graph & Edges & Edge set & Results & Prefixes & Forest \\
-  length & nodes & & visits & & & nodes \\
+  Input & Graph & Edges & Edge & Edge set & Edge \\
+  length & nodes & & sets & visits & visits \\
   \hline
-  2 & 9 & 7 & 3 & 5 & 4 & 7 \\
-  3 & 13 & 10 & 15 & 9 & 10 & 18 \\
-  4 & 17 & 13 & 31 & 14 & 20 & 38 \\
-  5 & 21 & 16 & 56 & 20 & 35 & 70 \\
-  6 & 25 & 19 & 92 & 27 & 56 & 117 \\
-  7 & 29 & 22 & 141 & 35 & 84 & 182 \\
-  8 & 33 & 25 & 205 & 44 & 120 & 268 \\
-  9 & 37 & 28 & 286 & 54 & 165 & 378 \\
-  10 & 41 & 31 & 386 & 65 & 220 & 515 \\
+  2 & 9 & 7 & 3 & 3 & 6 \\
+  3 & 13 & 10 & 4 & 8 & 13 \\
+  4 & 17 & 13 & 5 & 18 & 23 \\
+  5 & 21 & 16 & 6 & 35 & 36 \\
+  6 & 25 & 19 & 7 & 61 & 52 \\
+  7 & 29 & 22 & 8 & 98 & 71 \\
+  8 & 33 & 25 & 9 & 148 & 93 \\
+  9 & 37 & 28 & 10 & 213 & 118 \\
+  10 & 41 & 31 & 11 & 295 & 146 \\
   \hline
-  50 & 201 & 151 & 40475 & 22100 & 1325 & 62575 \\
-  100 & 401 & 301 & 328450 & 5150 & 171700 & 500150 \\
-  200 & 801 & 601 & 2646900 & 20300 & 1353400 & 4000300 \\
-  300 & 1201 & 901 & 8955350 & 45450 & 4545100 & 13500450 \\
-  400 & 1601 & 1201 & 21253800 & 80600 & 10746800 & 32000600 \\
-  500 & 2001 & 1501 & 41542250 & 125750 & 20958500 & 62500750 \\
+  50 & 201 & 151 & 51 & 40475 & 3726 \\
+  100 & 401 & 301 & 101 & 328450 & 14951 \\
+  200 & 801 & 601 & 201 & 2646900 & 59901 \\
+  300 & 1201 & 901 & 301 & 8955350 & 134851 \\
+  400 & 1601 & 1201 & 401 & 21253800 & 239801 \\
+  500 & 2001 & 1501 & 501 & 41542250 & 374751 \\
   \hline
 \end{tabular}
-\caption{Worst-case parser statistics (for the fully optimized version).}
+\caption{Worst-case recognizer related statistics (for the fully optimized version).}
 \end{table}
 
-TODO: Update text.
+The number of graph nodes, edges and edge sets scale linear with respect to the length of the input string. They can never exceed the number of items in the grammar times the length of the input string in total, due to sharing.
 
-In the table above we can see how the different components in the recognizer and parse forest increase with respect to the length of the input string. Note however that all optimizations mentioned in chapter \ref{chap:optimizations} were enabled while gathering these statistics; most notably all edge sharing related optimizations (\ref{sec:edgeOptimizations}) and graph prefix-sharing (\ref{sec:prefixSharing}).
+The number of edge set visits, during the reduction process is cubic in relation to the length of the input, since there are $N$ of edge sets, we visit them $N$ time per level at most and there are $N$ levels (where $N$ represents the input length). The number of edge visits, however, is quadratic in the size of the input. This is because we only visit an edge when necessary; once per level at most, to queue the node it points to for reduction. How this works is more fully described in section \ref{subsec:edgeVisitOptimization}.
 
-The number of graph nodes and number of edges scale linear with respect to the length of the input string. The number of edge visits remains within the cubic bound and is only slightly higher then the number of forest nodes. The `extra' visits are for failed parse results, one for each location in the input string squared. This means the number of edge visits is as low as they can possibly be; meaning we can conclude that an algorithm with less stack activity is impossible to conceive.
+\begin{table}[H]
+\centering
+\begin{tabular}{ | p{6ex} | p{7ex} | p{9ex} | p{7ex} | p{9ex} | }
+  \hline
+  Input & Prefix & Prefixes & Result & Result \\
+  length & sets & & stores & nodes \\
+  \hline
+  2 & 4 & 4 & 5 & 7 \\
+  3 & 9 & 10 & 9 & 18 \\
+  4 & 16 & 20 & 14 & 38 \\
+  5 & 25 & 35 & 20 & 70 \\
+  6 & 36 & 56 & 27 & 117 \\
+  7 & 49 & 84 & 35 & 182 \\
+  8 & 64 & 120 & 44 & 268 \\
+  9 & 81 & 165 & 54 & 378 \\
+  10 & 100 & 220 & 65 & 515 \\
+  \hline
+  50 & 2500 & 22100 & 1325 & 62575 \\
+  100 & 10000 & 171700 & 5150 & 500150 \\
+  200 & 40000 & 1353400 & 20300 & 4000300 \\
+  300 & 90000 & 4545100 & 45450 & 13500450 \\
+  400 & 160000 & 10746800 & 80600 & 32000600 \\
+  500 & 250000 & 20958500 & 125750 & 62500750 \\
+  \hline
+\end{tabular}
+\caption{Worst-case parser related statistics (for the fully optimized version).}
+\end{table}
 
-Looking at the parse forest related statistics we can see that the number of results increases by $N$ for every extra character in the input string. Which is because the number of results is equal to the number of different substrings in the input, in this case. As can be observed, the number of prefixes and number of nodes remains within cubic bounds for this worst-case example.
+Looking at the parse forest related statistics we can see that the number of result stores increases by $N + 1$ for every extra character in the input string. The reason for this is that there is one result store for $S$, for every possible substring in the input, plus one for every character in the input.
+
+The number of prefix sets is quadratic in the input length, since there is one for each location before the location of the node it is associated with at most. One might wonder why the number of prefix sets is larger then the number of result stores, when looking at the table; this is because the used grammar only contains one sort and there are two items / nodes in the graph that need prefixes. The number of prefixes is, at most, $N$ times higher then the number of prefix sets, as each prefix set can contain references to result nodes representing any possible substring ending at the start location of the node the prefix set is associated with.
+
+The result nodes form the links between the prefix sets and result stores. There are a cubic amount of these in the worst-case, as they can be identified by the start location of their prefix set, the end location of their result store and the combination of the end location of their prefix set an start location of their result store, as these needs to be the same. So there are three identifying numbers, representing locations in the input string, which make each result node unique, thus there can never be more then $O(N^3)$ of them. This is reflected by the numbers in the table.
 
 \subsubsection{Flattening}
 In most cases delivering a binarized parse forest as final result is not very convenient for the user. For this reason the option exists to output a flattened version of the parse forest at the user's request. Naturally the size of this parse forest will be unbound polynomial relative to the length of the input, in the worst-case. Although, in practice this is unlikely to happen; moreso since filtering can be done during parsing and flattening, making it improbable that many ambiguities remain in the final tree, in the general case. We will discuss filtering in chapter \ref{chap:filtering}.
@@ -628,6 +660,7 @@ Finally we would like to note that (as we hinted in section \ref{sec:breadthFirs
 
 Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numerous other opportunities for optimization.
 
+\pagebreak
 \subsubsection{Expansion}
 \label{subsec:nodeExpansionOptimization}
 First of all, by caching `expected children' for every type of node per level a substantial performance increase can be achieved. Additionally, this will ensure linear scaling relative to the size of the grammar, regardless whether or not the grammar contains (hidden) left recursive rules. The reason for this is the following; for example, if we take the grammar rules:\\
@@ -652,7 +685,7 @@ The expansion at the first level, without any optimizations, would look like thi
  \item $.E-E$ $\rightarrow$ $.E-E$
  \item $.E-E$ edges = \{$.E$, $.E+E$, $.E-E$\}
 \end{enumerate}
-This example clearly demonstrates quadratic behaviour. If we would cache the edges set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same parent(s). This will make the expansion look like this:
+This example clearly demonstrates quadratic behavior. If we would cache the edge set of one $E$, we could reuse it for any other $E$ in the same level and enable us to update it with additional edges by reference. This is possible since nodes are guaranteed to have the same edges if they are `expected' by the same parent(s). This will make the expansion look like this:
 \begin{enumerate}
  \setlength{\itemsep}{0pt}
  \setlength{\parskip}{0pt}
@@ -671,12 +704,12 @@ Also note that this optimization is not only useful in case we have numerous non
 In section \ref{sec:factoringBenchmark} we look at some experimental results related to this optimization.
 
 \subsubsection{Sharing}
-\label{subsec:edgesSetSharing}
-Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansionOptimization}, are uniquely associated with a level and a certain non-terminal sort, we can reuse these sets of edges for each item in the production. When moving to the next node in a production we transfer each of the sets of edges to this next node, depending on whether or not it is already present; if a set of edges is present for a certain level in this next node, it is guaranteed to be the exact same set of edges as we are trying to add. Because of this guarantee, it will never be necessary to duplicate these sets of edges or any of their content. The result of this is that the worst-case number of edges will never exceed $N\,*\,\mathit{numberOfSorts}$, or $O(N)$, in total. If we would duplicate all the edges in the edges sets while transferring them to the next node in the production, the worst-case number of edges would both become quadratic and scale with a factor that is related to the number of items in the grammar. So this optimization, in combination with the previously outlined edge sharing optimization, results in quite a substantial improvement.
+\label{subsec:edgeSetSharing}
+Secondly, since the sets of edges, mentioned in section \ref{subsec:nodeExpansionOptimization}, are uniquely associated with a level and a certain non-terminal sort, we can reuse these sets of edges for each item in the production. When moving to the next node in a production we transfer each of the sets of edges to this next node, depending on whether or not it is already present; if a set of edges is present for a certain level in this next node, it is guaranteed to be the exact same set of edges as we are trying to add. Because of this guarantee, it will never be necessary to duplicate these sets of edges or any of their content. The result of this is that the worst-case number of edges will never exceed $N\,*\,\mathit{numberOfSorts}$, or $O(N)$, in total. If we would duplicate all the edges in the edge sets while transferring them to the next node in the production, the worst-case number of edges would both become quadratic and scale with a factor that is related to the number of items in the grammar. So this optimization, in combination with the previously outlined edge sharing optimization, results in quite a substantial improvement.
 
 \subsubsection{Visiting}
 \label{subsec:edgeVisitOptimization}
-As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edges set associated with that level. In case the node this edge points to already has registered derivations, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly ($O(N^2)$ worst-case, instead of $O(N^3)$; the number of edges set visits will naturally remain $O(N^3)$ worst-case), when parsing for an ambiguous grammar. Additionally, this enables us to determine whether or not the parents of a node still need to be reduced in constant time, without having to execute any additional checks.
+As mentioned before, since every graph node that contains the same non-terminal sort always has the same children if they are in the same level, it is sufficient to initially just follow the first edge in the edge set associated with that level. In case the node this edge points to already has registered derivations, nothing needs to be done for this node or any of the other edges in this set (except record the results for the alternative, in case we are parsing and not just recognizing); otherwise all other edges in this set need to be followed as normally would have been the case, to queue their associated nodes for reduction. This reduces the number of edge visits significantly ($O(N^2)$ worst-case, instead of $O(N^3)$; the number of edge set visits will naturally remain $O(N^3)$ worst-case), when parsing for an ambiguous grammar. Additionally, this enables us to determine whether or not the parents of a node still need to be reduced in constant time, without having to execute any additional checks.
 
 \subsubsection{Conditional edge sharing}
 As mentioned earlier, distinguishing between different types of graph nodes can open up interesting opportunities for optimization.
