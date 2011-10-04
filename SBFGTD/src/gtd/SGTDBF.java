@@ -207,7 +207,7 @@ public class SGTDBF implements IGTD{
 			
 			Link resultLink = new Link(edgePrefixes, nextResultStore);
 			
-			handleEdgesList(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
+			handleEdgeSet(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
 		}
 	}
 	
@@ -312,7 +312,7 @@ public class SGTDBF implements IGTD{
 		for(int i = edgesMap.size() - 1; i >= 0; --i){
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
 			
-			handleEdgesList(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
+			handleEdgeSet(edgesMap.getValue(i), resultLink, edgesMap.getKey(i));
 		}
 	}
 	
@@ -334,28 +334,28 @@ public class SGTDBF implements IGTD{
 			
 			Link resultLink = new Link((prefixesMap != null) ? prefixesMap[i] : null, result);
 			
-			handleEdgesList(edgesMap.getValue(i), resultLink, startLocation);
+			handleEdgeSet(edgesMap.getValue(i), resultLink, startLocation);
 		}
 	}
 	
-	private void handleEdgesList(EdgesSet edgeList, Link resultLink, int startLocation){
+	private void handleEdgeSet(EdgesSet edgeSet, Link resultLink, int startLocation){
 		AbstractContainerNode resultStore = null;
-		if(edgeList.getLastVisistedLevel() != location){
-			AbstractStackNode edge = edgeList.get(0);
+		if(edgeSet.getLastVisistedLevel() != location){
+			AbstractStackNode edge = edgeSet.get(0);
 			
 			resultStore = (!edge.isExpandable()) ? new SortContainerNode(edge.getName(), startLocation == location, edge.isSeparator()) : new ListContainerNode(edge.getName(), startLocation == location, edge.isSeparator());
 			
 			stacksWithNonTerminalsToReduce.push(edge, resultStore);
 			
-			for(int j = edgeList.size() - 1; j >= 1; --j){
-				edge = edgeList.get(j);
+			for(int j = edgeSet.size() - 1; j >= 1; --j){
+				edge = edgeSet.get(j);
 				stacksWithNonTerminalsToReduce.push(edge, resultStore);
 			}
 		
-			edgeList.setLastVisistedLevel(location);
-			edgeList.setLastResult(resultStore);
+			edgeSet.setLastVisistedLevel(location);
+			edgeSet.setLastResult(resultStore);
 		}else{
-			resultStore = edgeList.getLastResult();
+			resultStore = edgeSet.getLastResult();
 		}
 		
 		resultStore.addAlternative(resultLink);
