@@ -55,10 +55,6 @@ public final class SeparatedListStackNode extends AbstractExpandableStackNode{
 		return empty;
 	}
 	
-	public String getIdentifier(){
-		return nodeName+id; // Add the id to make it unique.
-	}
-	
 	public String getName(){
 		return nodeName;
 	}

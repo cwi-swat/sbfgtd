@@ -16,10 +16,6 @@ public abstract class AbstractMatchableStackNode extends AbstractStackNode{
 	
 	public abstract int getLength();
 	
-	public String getIdentifier(){
-		throw new UnsupportedOperationException();
-	}
-	
 	public String getName(){
 		throw new UnsupportedOperationException();
 	}

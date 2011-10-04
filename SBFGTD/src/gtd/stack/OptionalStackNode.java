@@ -43,10 +43,6 @@ public final class OptionalStackNode extends AbstractExpandableStackNode{
 		return empty;
 	}
 	
-	public String getIdentifier(){
-		return nodeName+id; // Add the id to make it unique.
-	}
-	
 	public String getName(){
 		return nodeName;
 	}

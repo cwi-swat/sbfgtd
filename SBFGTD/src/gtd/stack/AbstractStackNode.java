@@ -86,8 +86,6 @@ public abstract class AbstractStackNode{
 	
 	public abstract boolean isEmptyLeafNode();
 	
-	public abstract String getIdentifier();
-	
 	public abstract String getName();
 	
 	public abstract String getMethodName();
