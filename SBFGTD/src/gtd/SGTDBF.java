@@ -531,9 +531,11 @@ public class SGTDBF implements IGTD{
 				listEdges = sharedListEdgesSets.findValue(location);
 				
 				if(node.canBeEmpty()){ // Star list or optional.
-					if(listEdges.getLastVisistedLevel() == location){
-						stacksWithNonTerminalsToReduce.push(node, listEdges.getLastResult());
-					}
+					// TODO Handle 'merge in the middle'
+				}
+				
+				if(listEdges.getLastVisistedLevel() == location){
+					stacksWithNonTerminalsToReduce.push(node, listEdges.getLastResult());
 				}
 			}else{
 				listEdges = new EdgesSet();
