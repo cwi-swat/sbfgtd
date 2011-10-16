@@ -658,7 +658,7 @@ Finally we would like to note that (as we hinted in section \ref{sec:breadthFirs
 \subsection{Edge related}
 \label{sec:edgeOptimizations}
 
-Generally parsers store results on edges in the graph. If we would refrain from doing this and store parse results elsewhere (in a table with constant look-up time), edges could remain pointers. At first sight this may not look like an advantage, however we would be able to share edges among graph nodes and it opens up numerous other opportunities for optimization.
+Generally parsers store results on the edges in the graph. If we would refrain from doing this, by storing these results elsewhere, edges can remain pointers. As a consequence of this numerous opportunities for optimization open up.
 
 \pagebreak
 \subsubsection{Expansion}
