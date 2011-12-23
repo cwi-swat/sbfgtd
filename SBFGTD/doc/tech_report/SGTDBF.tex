@@ -628,7 +628,9 @@ Our approach involves special casing the handling of expandables, by introducing
 \caption{A graph representation of an expanded star-list; the solid arrows represent edges and the dotted arrows `next pointers' in a production.}
 \end{figure}
 
-Children of expandable nodes can be shared just like any other graph node. Since this is the case, worst-case time and space bounds do not change by the introduction of this feature.
+These graph nodes representing expandables as well as their children can be shared like any other graph node. Since this is the case, and as our algorithm does not need to be modified to support expandables, the worst-case time and space bounds do not change by the introduction of this feature.
+
+However, implementors may need to take additional care to ensure that stack merges occur in all possible cases, as the children of expandables can be queued by both their predecessor in the `dynamic' production, as the graph node representing the expandable. Failure to do this may result in missing derivations.
 
 Exactly the same principle is used for all expandables. We will not go into detail on any others, since one can easily imagine how this works.
 

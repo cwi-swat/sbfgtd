@@ -516,72 +516,65 @@ public class SGTDBF implements IGTD{
 			
 			node.setIncomingEdges(cachedEdges);
 		}else{ // 'List'
-			AbstractStackNode[] listChildren = node.getChildren();
-			
-			AbstractStackNode firstChild = listChildren[0];
-			int firstChildId = firstChild.getId();
-			
-			EdgesSet listEdges;
-			
-			AbstractStackNode sharedNode = sharedNextNodes.get(firstChildId);
-			if(sharedNode != null){
-				sharedNode.addEdgeWithPrefix(node, null, location);
+			EdgesSet cachedEdges = cachedEdgesForExpect.get(node.getName());
+			if(cachedEdges == null){
+				cachedEdges = new EdgesSet();
 				
-				IntegerObjectList<EdgesSet> sharedListEdgesSets = sharedNode.getEdges();
-				listEdges = sharedListEdgesSets.findValue(location);
-				
-				if(node.canBeEmpty()){ // Star list or optional.
-					// TODO Handle 'merge in the middle'
-				}
-				
-				if(listEdges.getLastVisistedLevel() == location){
-					stacksWithNonTerminalsToReduce.push(node, listEdges.getLastResult());
-				}
-			}else{
-				listEdges = new EdgesSet();
-				listEdges.add(node);
+				AbstractStackNode[] listChildren = node.getChildren();
 				
 				for(int i = listChildren.length - 1; i >= 0; --i){
 					AbstractStackNode child = listChildren[i];
 					int childId = child.getId();
 					
-					if(child.isMatchable()){
-						int endLocation = location + child.getLength();
-						if(endLocation > input.length) continue;
-						
-						AbstractNode result = child.match(input, location);
-						if(result == null) continue; // Discard if it didn't match.
-						
-						DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
-						if(terminalsTodo == null){
-							terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
-							todoLists[endLocation] = terminalsTodo;
+					AbstractStackNode sharedChild = sharedNextNodes.get(childId);
+					if(sharedChild != null){
+						sharedChild.setEdgesSetWithPrefix(cachedEdges, null, location);
+					}else{
+						if(child.isMatchable()){
+							int endLocation = location + child.getLength();
+							if(endLocation > input.length) continue;
+							
+							AbstractNode result = child.match(input, location);
+							if(result == null) continue; // Discard if it didn't match.
+							
+							DoubleStack<AbstractStackNode, AbstractNode> terminalsTodo = todoLists[endLocation];
+							if(terminalsTodo == null){
+								terminalsTodo = new DoubleStack<AbstractStackNode, AbstractNode>();
+								todoLists[endLocation] = terminalsTodo;
+							}
+							
+							child = child.getCleanCopyWithResult(location, result);
+							terminalsTodo.push(child, result);
+						}else{
+							child = child.getCleanCopy(location);
+							stacksToExpand.push(child);
 						}
 						
-						child = child.getCleanCopyWithResult(location, result);
-						terminalsTodo.push(child, result);
-					}else{
-						child = child.getCleanCopy(location);
-						stacksToExpand.push(child);
+						child.initEdges();
+						child.setEdgesSetWithPrefix(cachedEdges, null, location);
+						
+						sharedNextNodes.putUnsafe(childId, child);
 					}
-					
-					sharedNextNodes.putUnsafe(childId, child);
-					
-					child.initEdges();
-					child.setEdgesSetWithPrefix(listEdges, null, location);
 				}
 				
+				cachedEdgesForExpect.put(node.getName(), cachedEdges);
+				
 				if(node.canBeEmpty()){ // Star list or optional.
-					// This is always epsilon (and unique for this position); so shouldn't be shared.
 					AbstractStackNode empty = node.getEmptyChild().getCleanCopy(location);
 					empty.initEdges();
-					empty.addEdges(listEdges, location);
+					empty.addEdges(cachedEdges, location);
 					
 					stacksToExpand.push(empty);
 				}
 			}
 			
-			node.setIncomingEdges(listEdges);
+			cachedEdges.add(node);
+			
+			node.setIncomingEdges(cachedEdges);
+			
+			if(cachedEdges.getLastVisistedLevel() == location){ // Is nullable, add the known results.
+				stacksWithNonTerminalsToReduce.push(node, cachedEdges.getLastResult());
+			}
 		}
 	}
 	
