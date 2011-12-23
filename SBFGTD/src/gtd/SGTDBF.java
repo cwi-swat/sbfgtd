@@ -451,9 +451,7 @@ public class SGTDBF implements IGTD{
 		return false;
 	}
 	
-	private EdgesSet handleExpects(AbstractStackNode stackBeingWorkedOn, AbstractStackNode[] expects){
-		EdgesSet cachedEdges = null;
-		
+	private void handleExpects(AbstractStackNode stackBeingWorkedOn, EdgesSet cachedEdges, AbstractStackNode[] expects){
 		for(int i = expects.length - 1; i >= 0; --i){
 			AbstractStackNode first = expects[i];
 			
@@ -478,14 +476,8 @@ public class SGTDBF implements IGTD{
 			}
 			
 			first.initEdges();
-			if(cachedEdges == null){
-				cachedEdges = first.addEdge(stackBeingWorkedOn);
-			}else{
-				first.addEdges(cachedEdges, location);
-			}
+			first.addEdges(cachedEdges, location);
 		}
-		
-		return cachedEdges;
 	}
 	
 	private void expandStack(AbstractStackNode node){
@@ -500,25 +492,30 @@ public class SGTDBF implements IGTD{
 			terminalsTodo.push(node, node.getResult());
 		}else if(!node.isExpandable()){
 			EdgesSet cachedEdges = cachedEdgesForExpect.get(node.getName());
-			if(cachedEdges != null){
-				cachedEdges.add(node);
+			if(cachedEdges == null){
+				cachedEdges = new EdgesSet(1);
 				
+				cachedEdgesForExpect.put(node.getName(), cachedEdges);
+				
+				AbstractStackNode[] expects = invokeExpects(node.getMethodName());
+				if(expects == null) return;
+				
+				handleExpects(node, cachedEdges, expects);
+			}else{
 				if(cachedEdges.getLastVisistedLevel() == location){ // Is nullable, add the known results.
 					stacksWithNonTerminalsToReduce.push(node, cachedEdges.getLastResult());
 				}
-			}else{
-				AbstractStackNode[] expects = invokeExpects(node.getMethodName());
-				if(expects == null) return;
-				cachedEdges = handleExpects(node, expects);
-				
-				cachedEdgesForExpect.put(node.getName(), cachedEdges);
 			}
+			
+			cachedEdges.add(node);
 			
 			node.setIncomingEdges(cachedEdges);
 		}else{ // 'List'
 			EdgesSet cachedEdges = cachedEdgesForExpect.get(node.getName());
 			if(cachedEdges == null){
 				cachedEdges = new EdgesSet();
+				
+				cachedEdgesForExpect.put(node.getName(), cachedEdges);
 				
 				AbstractStackNode[] listChildren = node.getChildren();
 				
@@ -557,8 +554,6 @@ public class SGTDBF implements IGTD{
 					}
 				}
 				
-				cachedEdgesForExpect.put(node.getName(), cachedEdges);
-				
 				if(node.canBeEmpty()){ // Star list or optional.
 					AbstractStackNode empty = node.getEmptyChild().getCleanCopy(location);
 					empty.initEdges();
@@ -568,13 +563,13 @@ public class SGTDBF implements IGTD{
 				}
 			}
 			
-			cachedEdges.add(node);
-			
-			node.setIncomingEdges(cachedEdges);
-			
 			if(cachedEdges.getLastVisistedLevel() == location){ // Is nullable, add the known results.
 				stacksWithNonTerminalsToReduce.push(node, cachedEdges.getLastResult());
 			}
+			
+			cachedEdges.add(node);
+			
+			node.setIncomingEdges(cachedEdges);
 		}
 	}
 	

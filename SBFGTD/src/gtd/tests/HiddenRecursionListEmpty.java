@@ -76,7 +76,6 @@ public class HiddenRecursionListEmpty extends SGTDBF{
 		AbstractNode result = hrle.parse("S");
 		System.out.println(result);
 		
-		System.out.println("S([S*(repeat(cycle(S,2))),S*()],[T*(repeat(T([T*(repeat(cycle(T,2))),T*()],[U*(repeat(U([U*(repeat(cycle(U,2))),U*()],[S*(repeat(cycle(S,6))),S*()],[T*(repeat(cycle(T,4))),T*()]))),U*()],[S*(repeat(cycle(S,4))),S*()]))),T*()],[U*(repeat(U([U*(repeat(cycle(U,2))),U*()],[S*(repeat(cycle(S,4))),S*()],[T*(repeat(T([T*(repeat(cycle(T,2))),T*()],[U*(repeat(cycle(U,4))),U*()],[S*(repeat(cycle(S,6))),S*()]))),T*()]))),U*()]) <- good, but not minimal");
-		//System.out.println("? <- good");
+		System.out.println("S([S*(repeat(cycle(S,2))),S*()],[T*(repeat(T(cycle(T*,2),[U*(repeat(U(cycle(U*,2),[S*(repeat(cycle(S,6))),S*()],cycle(T*,4)))),U*()],[S*(repeat(cycle(S,4))),S*()]))),T*()],[U*(repeat(U(cycle(U*,2),[S*(repeat(cycle(S,4))),S*()],[T*(repeat(T(cycle(T*,2),cycle(U*,4),[S*(repeat(cycle(S,6))),S*()]))),T*()]))),U*()]) <- good");
 	}
 }

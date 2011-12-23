@@ -146,20 +146,6 @@ public abstract class AbstractStackNode{
 		this.incomingEdges = incomingEdges;
 	}
 	
-	public EdgesSet addEdge(AbstractStackNode edge){
-		int startLocation = edge.getStartLocation();
-		
-		EdgesSet edges = edgesMap.findValue(startLocation);
-		if(edges == null){
-			edges = new EdgesSet(1);
-			edgesMap.add(startLocation, edges);
-		}
-		
-		edges.add(edge);
-		
-		return edges;
-	}
-	
 	public void addEdges(EdgesSet edges, int startLocation){
 		edgesMap.add(startLocation, edges);
 	}
