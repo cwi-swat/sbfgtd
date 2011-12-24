@@ -150,40 +150,6 @@ public abstract class AbstractStackNode{
 		edgesMap.add(startLocation, edges);
 	}
 	
-	public void addEdgeWithPrefix(AbstractStackNode edge, Link prefix, int startLocation){
-		int edgesMapSize = edgesMap.size();
-		if(prefixesMap == null){
-			prefixesMap = (ArrayList<Link>[]) new ArrayList[(edgesMapSize + 1) << 1];
-		}else{
-			int prefixesMapSize = prefixesMap.length;
-			int possibleMaxSize = edgesMapSize + 1;
-			if(prefixesMapSize < possibleMaxSize){
-				ArrayList<Link>[] oldPrefixesMap = prefixesMap;
-				prefixesMap = (ArrayList<Link>[]) new ArrayList[possibleMaxSize << 1];
-				System.arraycopy(oldPrefixesMap, 0, prefixesMap, 0, edgesMapSize);
-			}
-		}
-		
-		EdgesSet edges;
-		int index = edgesMap.findKey(startLocation);
-		if(index == -1){
-			index = edgesMap.size();
-			
-			edges = new EdgesSet(1);
-			edgesMap.add(startLocation, edges);
-		}else{
-			edges = edgesMap.getValue(index);
-		}
-		edges.add(edge);
-		
-		ArrayList<Link> prefixes = prefixesMap[index];
-		if(prefixes == null){
-			prefixes = new ArrayList<Link>(1);
-			prefixesMap[index] = prefixes;
-		}
-		prefixes.add(prefix);
-	}
-	
 	public void setEdgesSetWithPrefix(EdgesSet edges, Link prefix, int startLocation){
 		int edgesMapSize = edgesMap.size();
 		if(prefixesMap == null){

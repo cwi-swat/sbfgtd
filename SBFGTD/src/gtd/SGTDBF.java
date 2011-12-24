@@ -103,8 +103,8 @@ public class SGTDBF implements IGTD{
 					if(alternative.getStartLocation() == location){
 						EdgesSet alternativeEdgesSet = alternative.getIncomingEdges();
 						if(alternativeEdgesSet != null && alternativeEdgesSet.getLastVisistedLevel() == location){
-							AbstractContainerNode nextResult = alternativeEdgesSet.getLastResult();
-							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+							// Encountered stack 'overtake'.
+							propagateEdgesAndPrefixes(node, result, alternative, alternativeEdgesSet.getLastResult(), node.getEdges().size());
 							return alternative;
 						}
 					}
@@ -152,8 +152,8 @@ public class SGTDBF implements IGTD{
 					if(alternative.getStartLocation() == location){
 						EdgesSet alternativeEdgesSet = alternative.getIncomingEdges();
 						if(alternativeEdgesSet != null && alternativeEdgesSet.getLastVisistedLevel() == location){
-							AbstractContainerNode nextResult = alternativeEdgesSet.getLastResult();
-							propagateEdgesAndPrefixes(node, result, alternative, nextResult, node.getEdges().size());
+							// Encountered stack 'overtake'.
+							propagateEdgesAndPrefixes(node, result, alternative, alternativeEdgesSet.getLastResult(), node.getEdges().size());
 							return true;
 						}
 					}
