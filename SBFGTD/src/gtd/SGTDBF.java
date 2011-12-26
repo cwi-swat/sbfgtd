@@ -153,7 +153,7 @@ public class SGTDBF implements IGTD{
 						EdgesSet alternativeEdgesSet = alternative.getIncomingEdges();
 						if(alternativeEdgesSet != null && alternativeEdgesSet.getLastVisistedLevel() == location){
 							// Encountered stack 'overtake'.
-							propagateEdgesAndPrefixes(node, result, alternative, alternativeEdgesSet.getLastResult(), node.getEdges().size());
+							propagateAlternativeEdgesAndPrefixes(node, result, alternative, alternativeEdgesSet.getLastResult(), node.getEdges().size(), edgesMap, prefixesMap);
 							return true;
 						}
 					}
