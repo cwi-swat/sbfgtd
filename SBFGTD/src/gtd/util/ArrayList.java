@@ -1,5 +1,6 @@
 package gtd.util;
 
+@SuppressWarnings("unchecked")
 public class ArrayList<E>{
 	private final static int DEFAULT_SIZE = 8;
 	

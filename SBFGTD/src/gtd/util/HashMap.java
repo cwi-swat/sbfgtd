@@ -2,6 +2,7 @@ package gtd.util;
 
 import java.util.Iterator;
 
+@SuppressWarnings("unchecked")
 public class HashMap<K, V>{
 	private Entry<K, V>[] entries;
 

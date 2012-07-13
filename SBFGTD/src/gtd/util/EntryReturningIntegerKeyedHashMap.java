@@ -3,7 +3,7 @@ package gtd.util;
 import java.util.Iterator;
 
 @SuppressWarnings("unchecked")
-public class IntegerKeyedHashMap<V>{
+public class EntryReturningIntegerKeyedHashMap<V>{
 	private final static int DEFAULT_BIT_SIZE = 2;
 	
 	private Entry<V>[] entries;
@@ -14,7 +14,7 @@ public class IntegerKeyedHashMap<V>{
 	private int threshold;
 	private int load;
 	
-	public IntegerKeyedHashMap(){
+	public EntryReturningIntegerKeyedHashMap(){
 		super();
 		
 		int nrOfEntries = 1 << (bitSize = DEFAULT_BIT_SIZE);
@@ -27,7 +27,7 @@ public class IntegerKeyedHashMap<V>{
 		load = 0;
 	}
 	
-	public IntegerKeyedHashMap(IntegerKeyedHashMap<V> integerKeyedHashMap){
+	public EntryReturningIntegerKeyedHashMap(EntryReturningIntegerKeyedHashMap<V> integerKeyedHashMap){
 		super();
 		
 		hashMask = integerKeyedHashMap.hashMask;
@@ -90,29 +90,6 @@ public class IntegerKeyedHashMap<V>{
 		}
 	}
 	
-	public V put(int key, V value){
-		ensureCapacity();
-		
-		int position = key & hashMask;
-		
-		Entry<V> currentStartEntry = entries[position];
-		if(currentStartEntry != null){
-			Entry<V> entry = currentStartEntry;
-			do{
-				if(entry.key == key){
-					V oldValue = entry.value;
-					entry.value = value;
-					return oldValue;
-				}
-			}while((entry = entry.next) != null);
-		}
-		
-		entries[position] = new Entry<V>(key, value, currentStartEntry);
-		++load;
-		
-		return null;
-	}
-	
 	public V putUnsafe(int key, V value){
 		ensureCapacity();
 		
@@ -136,12 +113,12 @@ public class IntegerKeyedHashMap<V>{
 		return false;
 	}
 	
-	public V get(int key){
+	public Entry<V> get(int key){
 		int position = key & hashMask;
 		
 		Entry<V> entry = entries[position];
 		while(entry != null){
-			if(entry.key == key) return entry.value;
+			if(entry.key == key) return entry;
 			
 			entry = entry.next;
 		}
@@ -213,10 +190,10 @@ public class IntegerKeyedHashMap<V>{
 		private Entry<V> current;
 		private int index;
 		
-		public EntryIterator(IntegerKeyedHashMap<V> integerKeyedHashMap){
+		public EntryIterator(EntryReturningIntegerKeyedHashMap<V> flaggedValueIntegerKeyedHashMap){
 			super();
 			
-			data = integerKeyedHashMap.entries;
+			data = flaggedValueIntegerKeyedHashMap.entries;
 
 			index = data.length - 1;
 			current = new Entry<V>(-1, null, data[index]);

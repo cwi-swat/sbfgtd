@@ -7,6 +7,7 @@ import gtd.util.ArrayList;
 import gtd.util.IntegerList;
 import gtd.util.IntegerObjectList;
 
+@SuppressWarnings("unchecked")
 public abstract class AbstractStackNode{
 	public final static int START_SYMBOL_ID = -1; // 0xffffffff
 	public final static int DEFAULT_START_LOCATION = -1;
