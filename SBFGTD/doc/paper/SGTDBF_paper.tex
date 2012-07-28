@@ -1,0 +1,206 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{color}
+\usepackage{alltt}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+
+%opening
+\title{General Context-free Top Down Parsing in Cubic Time}
+\author{Arnold Lankamp}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+
+Highlight advantages.\\
+Simple, scalable, fast, good error messages, $O(N^3)$ with input, $O(N)$ with grammar size, linear with most unambiguous grammars, deterministic with LL and LR, easy to visualize, easy to generate good error messages and so on ....
+
+\section{Recognizer}
+
+Discuss recognizer first, then parser.
+
+\subsection{Parallel LL}
+
+Split stack for each alternative.
+
+\subsection{Sharing}
+
+Fix unbound polynomial behaviour.\\
+Fix LL shortcomings.
+
+\subsubsection{Graph}
+
+GSS like.\\
+Each node has an id, edges and an optional next node.
+
+\subsubsection{Left recursion}
+
+Sharing fixes the looping behaviour of LL.
+
+\subsubsection{Cycles}
+
+Sharing fixes cycle looping.
+
+\subsubsection{Nullables}
+
+We need multiple iterations in the same level, which complicates sharing.
+
+\subsubsection{Hidden right recursion}
+
+Propagate node updates forwards and execute reductions where needed.
+
+\subsubsection{Termination}
+
+Move to the next level when done.\\
+Each level converges to completion, due to sharing.\\
+Assumption: Input isn't infinite.
+
+\subsubsection{Breadth-first vs depth-first}
+
+Recursive decent is possible too.\\
+Doesn't break the cubic time bound.\\
+Node visits may be $N$ higher, but work per visit is inversely proportional to the amount of visits (1 edge added per time now).
+
+\subsection{Worst-case time complexity}
+
+$O(N^3)$ at most.
+
+\subsection{Unambiguous case time complexity}
+
+$O(N^2)$ upper bound.\\
+Deterministic on all classes of LL and LR grammars; depending on look-ahead.\\
+$O(N)$ on split only.\\
+$O(N^2)$ on split + merge.\\
+Graceful performance degradation with ambiguous grammars.\\
+At least as good as others.
+
+\subsection{Psuedocode}
+
+Expand.\\
+Reduce.\\
+Main loop.
+
+\section{Parser}
+
+Recognizer simple to modify.\\
+Will explain how.\\
+But talk about forest representation first.
+
+\subsection{Parse forest}
+
+Parse forest must be cubic to maintain $O(N^3)$ scalability guarantee.\\
+Has results, prefixes and nodes.
+
+\subsection{Recognizer augmentation}
+
+Easy.\\
+Add prefixes to graph nodes.\\
+Create results during reductions.
+
+\subsubsection{Cycles}
+
+Cycle in Graph, means cycle in forest as well; so no problem.
+
+\subsubsection{Hidden right recursion}
+
+Propagate prefixes properly as well.
+
+\subsubsection{Psuedocode}
+
+Expand (same).\\
+Reduce.\\
+Main loop.\\
+Result creation.
+
+\subsection{Worst-case complexity}
+
+Forest is $O(N^3)$ in size at most.
+
+\section{Optimizations}
+
+Make the performance acceptable.
+
+\subsection{Look-ahead}
+
+Makes LL and LR grammars deterministic.
+
+\subsection{Edge optimizations}
+
+Sharing needs caring.
+
+\subsubsection{Expansion}
+
+Makes performance linear with respect to the size of the grammar, regardless of what it looks like (i.e. recursion and such).
+
+\subsubsection{Reduction}
+
+Lowers edge visits to a 'perfect' level.
+
+\subsection{Prefix sharing}
+
+Makes performance linear for LR grammars.
+
+\section{Benchmarks}
+
+Show off.
+
+\subsection{Worst-case}
+
+Fast $O(N^3)$ parsing.
+
+\subsubsection{Statistics}
+
+Worst-case stats for graph and forest.
+
+\subsection{Grammar factoring}
+
+Linear all around.
+
+\subsection{Realistic cases}
+
+C, Java and such would be nice.\\
+Sucks to compare them to other parsers though.
+
+\section{Discussion}
+
+We're better and so on ....
+
+\section{Related work}
+
+GLL I suppose.\\
+Anything else?
+
+\section{Future work}
+
+\begin{itemize}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt}
+ \setlength{\parsep}{0pt}
+ 
+ \item Filtering
+ \item More optimizations
+\end{itemize}
+
+\section{Conclusion}
+
+Fast, scalable, simple, good error messages, easy to visualize, perfect ....
+
+\section{Acknowledgement}
+
+TODO
+
+\section{References}
+
+Nah, did it all myself ;-).
+
+\end{document}

@@ -1,0 +1,21 @@
+digraph graphname{
+  "S\n0-4" -> "A(a)\n3-4" [arrowhead=open]
+  "S\n0-4" -> "A(aa)\n2-4" [arrowhead=open]
+  
+  "A(a)\n2-3" -> "A(a)\n3-4" [arrowhead=none,arrowtail=normal]
+  "A(a)\n0-1" -> "A(a)\n1-2" [arrowhead=none,arrowtail=normal]
+  "A(a)\n1-2" -> "A(aa)\n2-4" [arrowhead=none,arrowtail=normal]
+  "A(aa)\n1-3" -> "A(a)\n3-4" [arrowhead=none,arrowtail=normal]
+  "A(a)\n0-1" -> "A(aa)\n1-3" [arrowhead=none,arrowtail=normal]
+  "A(aa)\n0-2" -> "A(a)\n2-3" [arrowhead=none,arrowtail=normal]
+  
+  "A(a)\n1-2" -> "A(a)\n2-3" [arrowhead=none,style=invisible]
+  //"A(aa)\n0-2" -> "A(aa)\n2-4" [arrowhead=none,style=invisible]
+  "A(aa)\n1-3" -> "A(aa)\n2-4" [arrowhead=none,style=invisible]
+  "A(aa)\n0-2" -> "A(a)\n0-1" [arrowhead=none,style=invisible]
+  "A(aa)\n2-4" -> "A(a)\n3-4" [arrowhead=none,style=invisible]
+  
+  {rank=same "A(a)\n0-1" "A(a)\n1-2" "A(a)\n2-3" "A(a)\n3-4"}
+  {rank=same "A(aa)\n0-2" "A(aa)\n1-3" "A(aa)\n2-4"}
+  {rank=min "S\n0-4"}
+}
